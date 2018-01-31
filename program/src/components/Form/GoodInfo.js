@@ -2,10 +2,10 @@
  * @Author: lll 
  * @Date: 2018-01-31 16:19:39 
  * @Last Modified by: lll
- * @Last Modified time: 2018-01-31 17:56:25
+ * @Last Modified time: 2018-01-31 18:27:05
  */
 import React, { PureComponent } from 'react';
-import { Form, Input, Row, Col } from 'antd';
+import { Form, Input, Row, Col, Upload, Icon } from 'antd';
 
 import styles from './good-info.less';
 
@@ -20,7 +20,7 @@ class GoodInfo extends PureComponent {
       if (data[keyName]) {
         const temp = {};
         temp[keyName] = data[keyName];
-        setFieldsValue(temp);       
+        setFieldsValue(temp);
       }
     }
   }
@@ -33,142 +33,161 @@ class GoodInfo extends PureComponent {
 
     const { getFieldDecorator } = this.props.form;
     const { data } = this.props;
+    const uploadButton = (
+      <div>
+        <Icon type="plus" />
+        <div className="ant-upload-text">上传</div>
+      </div>
+    );
     console.log(this.props);
-    
+
     return (
-      <Form layout="horizontal" className={`good-info ${styles['good-info']}`}>
-        <FormItem
-          label="所属分类"
-          {...formItemLayout}
-        >
-           {getFieldDecorator('cate', {
+      <div className={styles['good-info-wrap']}>
+        <Form layout="horizontal" className="good-info">
+          <FormItem
+            label="所属分类"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('cate', {
             })(
               <Input disabled />
             )}
-        </FormItem>
-        <FormItem
-          label="产品ID"
-          {...formItemLayout}
-        >
-           {getFieldDecorator('good_id', {
+          </FormItem>
+          <FormItem
+            label="产品ID"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('good_id', {
             })(
               <Input disabled />
             )}
-        </FormItem>
-        <FormItem
-          label="商品名称"
-          {...formItemLayout}
-        >
-          {getFieldDecorator('name', {
-            })(
-              <Input disabled />              
-            )}
-        </FormItem>
-        <FormItem
-          label="商品ID"
-          {...formItemLayout}
-        >
-           {getFieldDecorator('product_id', {
+          </FormItem>
+          <FormItem
+            label="商品名称"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('name', {
             })(
               <Input disabled />
             )}
-        </FormItem>
-        <FormItem
-          label="型号"
-          {...formItemLayout}
-        >
-          {getFieldDecorator('type', {
+          </FormItem>
+          <FormItem
+            label="商品ID"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('product_id', {
             })(
               <Input disabled />
             )}
-        </FormItem>
-        <FormItem
-          label="品牌"
-          {...formItemLayout}
-        >
-          {getFieldDecorator('band', {
+          </FormItem>
+          <FormItem
+            label="型号"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('type', {
             })(
               <Input disabled />
             )}
-        </FormItem>
-        <FormItem
-          label="英文名"
-          {...formItemLayout}
-        >
-           {getFieldDecorator('en_name', {
+          </FormItem>
+          <FormItem
+            label="品牌"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('band', {
             })(
               <Input disabled />
             )}
-        </FormItem>
-        <FormItem
-          label="产地"
-          {...formItemLayout}
-        >
-           {getFieldDecorator('place', {
+          </FormItem>
+          <FormItem
+            label="英文名"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('en_name', {
             })(
               <Input disabled />
             )}
-        </FormItem>
-        <FormItem
-          label="质保期"
-          {...formItemLayout}
-        >
-           {getFieldDecorator('warranty', {
+          </FormItem>
+          <FormItem
+            label="产地"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('place', {
+            })(
+              <Input disabled />
+            )}
+          </FormItem>
+          <FormItem
+            label="质保期"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('warranty', {
             })(
               <Input />
             )}
-        </FormItem>
-        <FormItem
-          label="销售单位"
-          {...formItemLayout}
-        >
-           {getFieldDecorator('unit', {
+          </FormItem>
+          <FormItem
+            label="销售单位"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('unit', {
             })(
               <Input />
             )}
-        </FormItem>
-        <Row gutter={24}>
-          <Col span={8}>
-            <FormItem
-              label="库存"
-              labelCol={{ span: 9 }}
-              wrapperCol={{ span: 11 }}   
-            >
-            {getFieldDecorator('stock', {
-              rules: [{ required: true, message: '请输入库存量' }],
-            })(
-              <Input />
-            )}
-            </FormItem>
-          </Col>
-          <Col span={8}>
-            <FormItem
-              label="最低采购量"
-              labelCol={{ span: 10 }}
-              wrapperCol={{ span: 11 }}          
-            >
+          </FormItem>
+          <Row gutter={24}>
+            <Col span={8}>
+              <FormItem
+                label="库存"
+                labelCol={{ span: 9 }}
+                wrapperCol={{ span: 11 }}
+              >
+                {getFieldDecorator('stock', {
+                  rules: [{ required: true, message: '请输入库存量' }],
+                })(
+                  <Input />
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem
+                label="最低采购量"
+                labelCol={{ span: 10 }}
+                wrapperCol={{ span: 11 }}
+              >
+                {
+                  getFieldDecorator('min_buy_num', {
+                    rules: [{ required: true, message: '请输入最低采购量' }],
+                  })(
+                    <Input />
+                  )
+                }
+              </FormItem>
+            </Col>
+          </Row>
+          <FormItem
+            label="运费"
+            {...formItemLayout}
+          >
             {
-              getFieldDecorator('min_buy_num', {
-                rules: [{ required: true, message: '请输入最低采购量' }],
-              })(
-                <Input />
-              )
-            }
-            </FormItem>
-          </Col>
-        </Row>
-        <FormItem
-          label="运费"
-          {...formItemLayout}
-        >
-          {
               getFieldDecorator('freight', {
               })(
                 <span>{data.freight}</span>
               )
             }
-        </FormItem>
-      </Form>
+          </FormItem>
+        </Form>
+        <div style={{ float: 'left' }}>
+          <h3>产品图片</h3>
+          <Upload
+            action="//jsonplaceholder.typicode.com/posts/"
+            listType="picture-card"
+            onPreview={this.handlePreview}
+            onChange={this.handleChange}
+          >
+            {uploadButton}
+          </Upload>
+        </div>
+      </div>
     );
   }
 }
