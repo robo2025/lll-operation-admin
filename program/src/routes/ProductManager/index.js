@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Icon, Button, Menu, DatePicker, message } from 'antd';
 import ProductTable from '../../components/StandardTable/ProductTable';
@@ -17,13 +17,18 @@ const { RangePicker } = DatePicker;
   loading: loading.models.rule,
 }))
 @Form.create()
-export default class ProductManager extends PureComponent {
-  state = {
-    modalVisible: false,
-    expandForm: false,
-    selectedRows: [],
-    formValues: {},
-  };
+export default class ProductManager extends Component {
+  constructor(props) {
+    super(props);
+    this.jumpToPage = this.jumpToPage.bind(this);
+    this.state = {
+      modalVisible: false,
+      expandForm: false,
+      selectedRows: [],
+      formValues: {},
+    };
+  }
+ 
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -153,6 +158,11 @@ export default class ProductManager extends PureComponent {
     this.setState({
       modalVisible: false,
     });
+  }
+
+  jumpToPage(url) {
+    const { history } = this.props;
+    history.push(url);
   }
 
   renderSimpleForm() {
@@ -317,11 +327,11 @@ export default class ProductManager extends PureComponent {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={4} sm={24}>
-              <FormItem label="源产品ID">
+            <FormItem label="源产品ID">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
-              </FormItem>
+            </FormItem>
           </Col>
         </Row>
         <div style={{ overflow: 'hidden' }}>
@@ -365,6 +375,8 @@ export default class ProductManager extends PureComponent {
               {this.renderForm()}
             </div>
             <div className={styles.tableListOperator}>
+              <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
+              <Button>删除</Button>
               <Button>导出数据</Button>
             </div>
             <ProductTable

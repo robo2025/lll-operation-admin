@@ -15,9 +15,6 @@ const tableData = [{
   create_man: '管理员',
   createdAt: new Date(`2017-07-${Math.floor(5 / 2) + 1}`),
   status: Math.floor(Math.random() * 10) % 2,
-  workId: '00001',
-  name: 'John Brown',
-  department: 'New York No. 1 Lake Park',
   children: [{
     key: '11',
     level: 1,
