@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Icon, Button, Menu, DatePicker, Modal, message } from 'antd';
 import GoodsTable from '../../components/StandardTable/GoodsTable';
@@ -16,7 +16,7 @@ const { RangePicker } = DatePicker;
   loading: loading.models.rule,
 }))
 @Form.create()
-export default class GoodsMananger extends PureComponent {
+export default class GoodsMananger extends Component {
   state = {
     modalVisible: false,
     expandForm: false,

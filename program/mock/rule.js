@@ -4,6 +4,7 @@ import { getUrlParams } from './utils';
 let tableListDataSource = [];
 for (let i = 0; i < 46; i += 1) {
   tableListDataSource.push({
+    idx: i + 1,
     key: i,
     disabled: ((i % 6) === 0),
     href: 'https://ant.design',

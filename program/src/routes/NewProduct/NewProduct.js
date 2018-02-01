@@ -2,19 +2,62 @@
  * @Author: lll 
  * @Date: 2018-02-01 11:30:59 
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-01 15:19:59
+ * @Last Modified time: 2018-02-01 17:44:16
  */
 import React, { Component } from 'react';
-import { Card, Button, Form, Input } from 'antd';
+import { connect } from 'dva';
+import { Card, Button, Form, Input, Modal, Row, Col, Upload } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ProductForm from '../../components/Form/ProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
+import ProductList from '../../components/CustomTable/ProductList';
+import AddAttrForm from '../../components/Form//AddAttrForm';
 
 import data from './product.json';
 
 const FormItem = Form.Item;
 
+@connect(({ rule, loading }) => ({
+  rule,
+  loading: loading.models.rule,
+}))
 export default class NewProduct extends Component {
+  constructor(props) {
+    super(props);
+    this.showModal = this.showModal.bind(this);
+    this.ShowAttrModal = this.ShowAttrModal.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+    this.onOk = this.onOk.bind(this);
+    this.state = {
+      isShowModal: false,
+      isShowAttrMOdal: false,
+    };
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'rule/fetch',
+    });
+  }
+
+  onCancel() {
+    this.setState({ isShowModal: false });
+    this.setState({ isShowAttrMOdal: false });
+  }
+
+  onOk() {
+    this.setState({ isShowModal: false });
+    this.setState({ isShowAttrMOdal: false });
+  }
+
+  showModal() {
+    this.setState({ isShowModal: true });
+  }
+  ShowAttrModal() {
+    this.setState({ isShowAttrMOdal: true });
+  }
+
   render() {
     const formItemLayout = {
       labelCol: {
@@ -29,13 +72,37 @@ export default class NewProduct extends Component {
 
     const buttonGrop = (
       <div style={{ display: 'inline-block', marginLeft: 20 }}>
-        <Button type="primary">关联参照数据</Button>
+        <Button type="primary" onClick={this.showModal}>关联参照数据</Button>
         <Button style={{ marginLeft: 20 }}>一键清除数据</Button>
       </div>);
 
+    const { isShowModal, isShowAttrMOdal } = this.state;
+    const { rule: { data: dataSource }, loading } = this.props;
     return (
       <PageHeaderLayout title="新建产品信息">
         <Card bordered={false}>
+          {/* 参照数据Modal */}
+          <Modal
+            width="60%"
+            visible={isShowModal}
+            title="关联参照数据"
+            okText=""
+            cancelText=""
+            onCancel={this.onCancel}
+            onOk={this.onOk}
+          >
+            <ProductList data={dataSource.list} />
+          </Modal>
+          {/* 添加其它属性Modal */}
+          <Modal
+            width="650px"
+            visible={isShowAttrMOdal}
+            title="添加属性项"
+            onCancel={this.onCancel}
+            onOk={this.onOk}
+          >
+            <AddAttrForm />
+          </Modal>
           <SectionHeader
             title="产品基础信息"
             extra={buttonGrop}
@@ -43,26 +110,83 @@ export default class NewProduct extends Component {
           <ProductForm data={data} />
           <SectionHeader
             title="产品其他属性"
-            extra={<Button style={{ marginLeft: 20 }} icon="plus">添加其他属性项</Button>}
+            extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}
           />
-          <Form style={{ width: 500, maxWidth: '50%' }}>
+          <Form style={{ width: 700, maxWidth: '70%' }}>
             <FormItem
               label="控制输出"
-              {...formItemLayout}
+              labelCol={{ span: 3 }}
+              wrapperCol={{ span: 21 }}
             >
-              <Input />
+              <Row gutter={12}>
+                <Col span={6}>
+                  <Input />
+                </Col>
+                <Col span={4}>
+                  <Upload>
+                    <Button icon="upload">上传</Button>
+                  </Upload>
+                </Col>
+                <Col span={6}>
+                  <span>图片：099884.jpg</span>
+                </Col>
+                <Col span={5}>
+                  <span>
+                    <a>删除</a>|
+                    <a>查看</a>
+                  </span>
+                </Col>
+              </Row>
             </FormItem>
             <FormItem
               label="检测物体"
-              {...formItemLayout}              
+              labelCol={{ span: 3 }}
+              wrapperCol={{ span: 21 }}
             >
-              <Input />
+              <Row gutter={12}>
+                <Col span={6}>
+                  <Input />
+                </Col>
+                <Col span={4}>
+                  <Upload>
+                    <Button icon="upload">上传</Button>
+                  </Upload>
+                </Col>
+                <Col span={6}>
+                  <span>图片：099884.jpg</span>
+                </Col>
+                <Col span={5}>
+                  <span>
+                    <a>删除</a>|
+                    <a>查看</a>
+                  </span>
+                </Col>
+              </Row>
             </FormItem>
             <FormItem
               label="形状"
-              {...formItemLayout}              
+              labelCol={{ span: 3 }}
+              wrapperCol={{ span: 21 }}
             >
-              <Input />
+              <Row gutter={12}>
+                <Col span={6}>
+                  <Input />
+                </Col>
+                <Col span={4}>
+                  <Upload>
+                    <Button icon="upload">上传</Button>
+                  </Upload>
+                </Col>
+                <Col span={6}>
+                  <span>图片：099884.jpg</span>
+                </Col>
+                <Col span={5}>
+                  <span>
+                    <a>删除</a>|
+                    <a>查看</a>
+                  </span>
+                </Col>
+              </Row>
             </FormItem>
           </Form>
         </Card>

@@ -52,6 +52,10 @@ class ProductTable extends React.Component {
 
     const columns = [
       {
+        title: '序号',
+        dataIndex: 'idx',
+      },
+      {
         title: '产品ID编号',
         dataIndex: 'no',
       },
