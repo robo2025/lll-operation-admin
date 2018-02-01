@@ -1,5 +1,5 @@
-# requirements-management-system
-需求管理系统后台
+# operation-admin
+运营管理系统后台
 
 ## 前序准备
 
