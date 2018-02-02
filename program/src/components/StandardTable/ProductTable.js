@@ -119,9 +119,9 @@ class ProductTable extends React.Component {
         title: '操作',
         render: () => (
           <Fragment>
-            <a href="">修改</a>
+            <a>修改</a>
             <Divider type="vertical" />
-            <a href="">供货消息</a>
+            <a>供货消息</a>
           </Fragment>
         ),
       },
@@ -147,9 +147,7 @@ class ProductTable extends React.Component {
           <Alert
             message={(
               <div>
-                已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
-                服务调用总计 <span style={{ fontWeight: 600 }}>{totalCallNo}</span> 万
-                <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>清空</a>
+                已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项
               </div>
             )}
             type="info"

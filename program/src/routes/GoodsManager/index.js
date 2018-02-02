@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Icon, Button, Menu, DatePicker, Modal, message } from 'antd';
+import { Row, Col, Card, Form, Input, Checkbox, Select, Icon, Button, Menu, DatePicker, Modal, message } from 'antd';
 import GoodsTable from '../../components/StandardTable/GoodsTable';
+import GoodCheckboxGroup from '../../components/Checkbox/GoodCheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './index.less';
 
@@ -17,12 +18,20 @@ const { RangePicker } = DatePicker;
 }))
 @Form.create()
 export default class GoodsMananger extends Component {
-  state = {
-    modalVisible: false,
-    expandForm: false,
-    selectedRows: [],
-    formValues: {},
-  };
+  constructor(props) {
+    super(props);
+    this.showExportModal = this.showExportModal.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.handleOk = this.handleOk.bind(this);
+    this.state = {
+      modalVisible: false,
+      expandForm: false,
+      selectedRows: [],
+      formValues: {},
+      isShowExportModal: false,
+    };
+  }
+
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -34,6 +43,20 @@ export default class GoodsMananger extends Component {
   onDatepickerChange = (date, dateString) => {
     console.log(date, dateString);
   }
+
+  // 显示导出数据Modal
+  showExportModal() {
+    this.setState({ isShowExportModal: true });
+  }
+  // 确定导出数据
+  handleCancel() {
+    this.setState({ isShowExportModal: false });
+  }
+  // 取消导出数据
+  handleOk() {
+    this.setState({ isShowExportModal: false });
+  }
+
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -334,7 +357,7 @@ export default class GoodsMananger extends Component {
 
   render() {
     const { rule: { data }, loading } = this.props;
-    const { selectedRows, modalVisible } = this.state;
+    const { selectedRows, modalVisible, isShowExportModal } = this.state;
 
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
@@ -356,8 +379,17 @@ export default class GoodsMananger extends Component {
               {this.renderForm()}
             </div>
             <div className={styles.tableListOperator}>
-              <Button>导出数据</Button>
+              <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
+            <Modal
+              visible={isShowExportModal}
+              width="600px"
+              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }}>全选</Checkbox></h4>}
+              onCancel={this.handleCancel}
+              onOk={this.handleOk}
+            >
+              <GoodCheckboxGroup />
+            </Modal>
             <GoodsTable
               selectedRows={selectedRows}
               loading={loading}

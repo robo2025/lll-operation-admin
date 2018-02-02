@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-01-26 14:08:45 
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-01 17:58:28
+ * @Last Modified time: 2018-02-02 17:13:43
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -62,7 +62,7 @@ class GoodsTable extends PureComponent {
       {
         title: '商品图片',
         dataIndex: 'pictures',
-        render: val => val.map((item, idx) => (<img width={10} height={10} style={{ display: 'inline' }} key={idx} src={item} />)),
+        render: val => val.map((item, idx) => (<img width={20} height={20} alt="图片" style={{ display: 'inline' }} key={idx} src={item} />)),
       },
       {
         title: '商品名称',
@@ -183,9 +183,7 @@ class GoodsTable extends PureComponent {
           <Alert
             message={(
               <div>
-                已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
-                服务调用总计 <span style={{ fontWeight: 600 }}>{totalCallNo}</span> 万
-                <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>清空</a>
+                已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项
               </div>
             )}
             type="info"

@@ -2,10 +2,11 @@
  * @Author: lll 
  * @Date: 2018-01-31 16:19:39 
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-01 11:23:18
+ * @Last Modified time: 2018-02-02 10:03:36
  */
 import React, { PureComponent } from 'react';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs } from 'antd';
+import SectionHeader from '../../components/PageHeader/SectionHeader';
 
 import styles from './good-info.less';
 
@@ -59,7 +60,7 @@ class GoodInfo extends PureComponent {
 
     return (
       <div className={styles['good-info-wrap']}>
-        <h2>商品基础信息</h2>
+        <SectionHeader title="商品基础信息" />
         {/* 商品主要属性 */}
         <div style={{ float: 'left', width: '50%' }}>
           <Form layout="horizontal">
@@ -251,22 +252,30 @@ class GoodInfo extends PureComponent {
           </Row>
         </div>
         {/* 商品图片和价格区间 */}
-        <div style={{ float: 'left' }}>
-          <h3>商品图片</h3>
-          <Upload
-            action="//jsonplaceholder.typicode.com/posts/"
-            listType="picture-card"
-            onPreview={this.handlePreview}
-            onChange={this.handleChange}
-          >
-            {uploadButton}
-          </Upload>
-          <Table
-            bordered
-            pagination={false}
-            dataSource={data.price_range}
-            columns={columns}
-          />
+        <div style={{ float: 'left', height: 546, position: 'relative' }}>
+          <div>
+            <h4>商品图片</h4>
+            <Upload
+              action="//jsonplaceholder.typicode.com/posts/"
+              listType="picture-card"
+              onPreview={this.handlePreview}
+              onChange={this.handleChange}
+            >
+              {uploadButton}
+            </Upload>
+          </div>
+          <div className={styles['price-range']}>
+            <h4>*价格设置</h4>
+            <Table
+              bordered
+              pagination={false}
+              size="small"
+              rowKey="123456"
+              dataSource={data.price_range}
+              columns={columns}
+            />
+          </div>
+
         </div>
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
@@ -295,7 +304,7 @@ class GoodInfo extends PureComponent {
             </TabPane>
           </Tabs>
         </div>
-        <h2>产品其他属性</h2>
+        <SectionHeader title="产品其他属性" />
         <div className="other-args">
           <Row gutter={24}>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -331,7 +340,7 @@ class GoodInfo extends PureComponent {
             </Col>
           </Row>
         </div>
-        <h2>佣金比率</h2>
+        <SectionHeader title="佣金比率" />
         <div className="commission">
           <Row gutter={24}>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -345,7 +354,7 @@ class GoodInfo extends PureComponent {
             </Col>
           </Row>
         </div>
-        <h2>供应商信息</h2>
+        <SectionHeader title="供应商信息" />
         <div className="commission">
           <Row gutter={24}>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -388,8 +397,6 @@ class GoodInfo extends PureComponent {
             </Col>
           </Row>
         </div>
-        <h2>操作记录</h2>
-
       </div>
     );
   }

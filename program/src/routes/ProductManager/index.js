@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Icon, Button, Menu, DatePicker, message } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Icon, Button, Menu, DatePicker, message, Modal, Checkbox } from 'antd';
 import ProductTable from '../../components/StandardTable/ProductTable';
+import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './product-manager.less';
 
@@ -21,14 +22,18 @@ export default class ProductManager extends Component {
   constructor(props) {
     super(props);
     this.jumpToPage = this.jumpToPage.bind(this);
+    this.showExportModal = this.showExportModal.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.handleOk = this.handleOk.bind(this);
     this.state = {
       modalVisible: false,
       expandForm: false,
       selectedRows: [],
       formValues: {},
+      isShowExportModal: false,
     };
   }
- 
+
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -39,6 +44,19 @@ export default class ProductManager extends Component {
 
   onChange = (date, dateString) => {
     console.log(date, dateString);
+  }
+
+  // 显示导出数据框
+  showExportModal() {
+    this.setState({ isShowExportModal: true });
+  }
+  // 取消导出数据
+  handleCancel() {
+    this.setState({ isShowExportModal: false });
+  }
+  // 确定导出数据
+  handleOk() {
+    this.setState({ isShowExportModal: false });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -353,7 +371,7 @@ export default class ProductManager extends Component {
 
   render() {
     const { rule: { data }, loading } = this.props;
-    const { selectedRows, modalVisible } = this.state;
+    const { selectedRows, modalVisible, isShowExportModal } = this.state;
 
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
@@ -376,9 +394,24 @@ export default class ProductManager extends Component {
             </div>
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
-              <Button>删除</Button>
-              <Button>导出数据</Button>
+              {
+                selectedRows.length > 0 && (
+                  <span>
+                    <Button>删除</Button>
+                  </span>
+                )
+              }
+              <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
+            <Modal
+              visible={isShowExportModal}
+              width="600px"
+              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }}>全选</Checkbox></h4>}
+              onCancel={this.handleCancel}
+              onOk={this.handleOk}
+            >
+              <CheckboxGroup />
+            </Modal>
             <ProductTable
               selectedRows={selectedRows}
               loading={loading}

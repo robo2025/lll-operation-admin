@@ -5,12 +5,30 @@
   input{
     border-radius: 0
   }
-  :global(.good-info){
-    float: left
+  :global{
+    .good-info{
+      float: left
+    }
+    .good-desc{
+      margin-top: 20px;
+      width: 70%;
+      margin-left: 70px;
+    }
   }
-  :global(.good-desc){
-    margin-top: 20px;
-    width: 70%;
-    margin-left: 70px;
+
+}
+
+// 商品图片和价格去加
+.price-range{
+  margin-top: 15px;
+  position: absolute;
+  left: 0;
+  bottom: 10px;
+  width: 300px;
+  table{
+    padding:0 !important;
+    td{
+      text-align: center;
+    }
   }
 }

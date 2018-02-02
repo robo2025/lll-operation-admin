@@ -1,6 +1,6 @@
+import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 import { URL1 } from '../constant/config';
-import Cookies from 'js-cookie';
 
 
 // 获取所有方案列表

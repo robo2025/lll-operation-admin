@@ -2,18 +2,18 @@
  * @Author: lll 
  * @Date: 2018-01-31 15:37:34 
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-01 11:25:45
+ * @Last Modified time: 2018-02-02 09:33:09
  */
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Card, Table } from 'antd';
+import { Card, Table, Button } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import GoodInfo from '../../components/Form//GoodInfo';
+import SectionHeader from '../../components/PageHeader/SectionHeader';
 import goodInfo from './good-info.json';
 import { actionsLog, actionsLog2, actionsLog3 } from './action-log';
 
 import styles from './good-detail.less';
-import { Button } from 'antd/lib/radio';
 
 const operationTabList = [{
   key: 'tab1',
@@ -87,6 +87,7 @@ class GoodDetail extends Component {
       <PageHeaderLayout title="商品详情审核页">
         <Card className={styles['good-detail-wrap']}>
           <GoodInfo data={goodInfo} />
+          <SectionHeader title="操作记录" />
         </Card>
         <Card
           className={styles.tabsCard}
@@ -97,7 +98,7 @@ class GoodDetail extends Component {
           {contentList[this.state.operationkey]}
 
           <Button style={{ margin: '30px 0 20px 45%' }} onClick={() => { window.history.back(); }}>返回</Button>
-          
+
         </Card>
       </PageHeaderLayout>
     );

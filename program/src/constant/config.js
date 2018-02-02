@@ -9,7 +9,7 @@ export const URL = 'https://login.robo2025.com';
 // export const URL = 'http://120.27.46.167:8011';
 
 // 网站内容接口URL
-export const URL1 = 'http://139.199.96.235:9002';
+export const API_URL = 'http://139.199.96.235:9005';
 
 // 验证登录接口URL
 export const LOGIN_URL = `${URL}/server/authorize`;
