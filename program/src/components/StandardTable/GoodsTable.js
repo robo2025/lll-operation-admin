@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-01-26 14:08:45 
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-02 17:13:43
+ * @Last Modified time: 2018-02-05 09:56:42
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -62,7 +62,7 @@ class GoodsTable extends PureComponent {
       {
         title: '商品图片',
         dataIndex: 'pictures',
-        render: val => val.map((item, idx) => (<img width={20} height={20} alt="图片" style={{ display: 'inline' }} key={idx} src={item} />)),
+        render: val => val.map((item, idx) => (<img width={15} height={15} alt="图片" style={{ display: 'inline' }} key={idx} src={item} />)),
       },
       {
         title: '商品名称',

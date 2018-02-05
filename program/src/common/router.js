@@ -65,7 +65,7 @@ export const getRouterData = (app) => {
       name: '新建产品信息',
     },
     '/product/menu': {
-      component: dynamicWrapper(app, ['rule'], () => import('../routes/ProductManager/MenuManager')),
+      component: dynamicWrapper(app, ['rule', 'catalog'], () => import('../routes/ProductManager/MenuManager')),
     },
   };
   // Get name from ./menu.js or just set it in the router data.

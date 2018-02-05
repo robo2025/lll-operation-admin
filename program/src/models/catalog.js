@@ -1,45 +1,84 @@
-import { addCatalog } from '../services/catalog';
+import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog } from '../services/catalog';
 
 export default {
   namespace: 'catalog',
 
   state: {
     list: [],
-    info: {},
-    loading: false,
-    currentUser: {},
   },
 
   effects: {
-   
+    *fetch(_, { call, put }) {
+      const response = yield call(queryCatalog);
+      // console.log('服务器目录列表', response);
+      yield put({
+        type: 'save',
+        payload: response.data,
+      });
+    },
+    *add({ pid, name, isActive, desc, callback }, { call, put }) {
+      yield call(addCatalog, { pid, name, isActive, desc });
+      const response = yield call(queryCatalog);
+      yield put({
+        type: 'saveOne',
+        payload: response.data,
+      });
+      if (callback) callback();
+    },
+    *modifyInfo({ categoryId, name, isActive, desc, callback }, { call, put }) {
+      const response = yield call(modifyCatalog, { categoryId, name, isActive, desc });
+      yield put({
+        type: 'modify',
+        payload: { name, isActive, desc, ...response.data },
+      });
+      if (callback) callback();
+    },
+    *modifyStatus({ categoryId, isActive, callback }, { call, put }) {
+      yield call(modifyCatalogStatus, { categoryId, isActive });
+      const response = yield call(queryCatalog);
+      yield put({
+        type: 'modify',
+        payload: response.data,
+      });
+      if (callback) callback();
+    },
+    *removeOne({ categoryId, callback }, { call, put }) {
+      const res = yield call(removeCatalog, { categoryId });
+      if (res.rescode !== 10000) {
+        if (callback) callback(res.msg); 
+        return;
+      } 
+      const response = yield call(queryCatalog);
+      yield put({
+        type: 'remove',
+        payload: response.data,
+      });
+    },
   },
 
   reducers: {
     save(state, action) {
       return {
         ...state,
-        info: action.payload,
+        list: action.payload,
       };
     },
-    changeLoading(state, action) {
+    saveOne(state, action) {
       return {
         ...state,
-        loading: action.payload,
+        list: action.payload,
       };
     },
-    saveCurrentUser(state, action) {
+    modify(state, action) {
       return {
         ...state,
-        currentUser: action.payload,
+        list: action.payload,
       };
     },
-    changeNotifyCount(state, action) {
+    remove(state, action) {
       return {
         ...state,
-        currentUser: {
-          ...state.currentUser,
-          notifyCount: action.payload,
-        },
+        list: action.payload,
       };
     },
   },
