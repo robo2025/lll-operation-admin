@@ -70,7 +70,7 @@ export default class MenuForm extends React.Component {
             <span>
               <a onClick={() => { this.showModal('isShowAddChildModal', record); }}>新增子类</a>
               <Divider type="vertical" />
-              <a onClick={() => { this.showModal('isShowModifyModal'); }}>修改</a>
+              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
                 <a>删除</a>
@@ -117,7 +117,7 @@ export default class MenuForm extends React.Component {
 
   // Modal事件：点击确定后关闭
   handleOk = (key) => {
-    const { addMenu } = this.props;
+    const { addMenu, modifyInfo } = this.props;
     if (key === 'visible') { // 添加以及目录
       const { catalogName, isActive } = this.state;
       if (!catalogName || !catalogName.value) { // 如果类目名称为空
@@ -132,6 +132,14 @@ export default class MenuForm extends React.Component {
         alert('请完善类目名称');
       } else { // 类目名称不为空
         addMenu(currCatalog.id, catalogName.value, isActive.value + 0, '');
+        this.hideModal(key);
+      }
+    } else if (key === 'isShowModifyModal') {
+      const { catalogName, isActive, currCatalog } = this.state;
+      if (!catalogName || !catalogName.value) { // 如果类目名称为空
+        alert('请完善类目名称');
+      } else { // 类目名称不为空
+        modifyInfo(currCatalog.id, catalogName.value, isActive.value + 0, '');
         this.hideModal(key);
       }
     }

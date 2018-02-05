@@ -13,8 +13,9 @@ const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 
 
-@connect(({ rule, loading }) => ({
+@connect(({ rule, loading, product }) => ({
   rule,
+  product,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -39,6 +40,9 @@ export default class ProductManager extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'rule/fetch',
+    });
+    dispatch({
+      type: 'product/fetch',
     });
   }
 
@@ -384,6 +388,8 @@ export default class ProductManager extends Component {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
     };
+
+console.log('product,', this.props);
 
     return (
       <PageHeaderLayout title="查询表格">

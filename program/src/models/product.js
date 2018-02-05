@@ -1,24 +1,25 @@
-import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog } from '../services/catalog';
+import { queryProducts, addProduct, removeProducts, modifyProduct } from '../services/product';
 
 export default {
-  namespace: 'catalog',
+  namespace: 'product',
 
   state: {
     list: [],
+    detail: {},
   },
 
   effects: {
     *fetch(_, { call, put }) {
-      const response = yield call(queryCatalog);
+      const response = yield call(queryProducts);
       // console.log('服务器目录列表', response);
       yield put({
         type: 'save',
         payload: response.data,
       });
     },
-    *add({ pid, name, isActive, desc, callback }, { call, put }) {
-      yield call(addCatalog, { pid, name, isActive, desc });
-      const response = yield call(queryCatalog);
+    *add({ data, callback }, { call, put }) {
+      yield call(addProduct, { data });
+      const response = yield call(queryProducts);
       yield put({
         type: 'saveOne',
         payload: response.data,
@@ -26,8 +27,8 @@ export default {
       if (callback) callback();
     },
     *modifyInfo({ categoryId, name, isActive, desc, callback }, { call, put }) {
-      const res = yield call(modifyCatalog, { categoryId, name, isActive, desc });
-      const response = yield call(queryCatalog);      
+      const res = yield call(modifyProduct, { categoryId, name, isActive, desc });
+      const response = yield call(queryProducts);      
       yield put({
         type: 'modify',
         payload: response.data,
@@ -35,8 +36,8 @@ export default {
       if (callback) callback();
     },
     *modifyStatus({ categoryId, isActive, callback }, { call, put }) {
-      yield call(modifyCatalogStatus, { categoryId, isActive });
-      const response = yield call(queryCatalog);
+      yield call(modifyProduct, { categoryId, isActive });
+      const response = yield call(queryProducts);
       yield put({
         type: 'modify',
         payload: response.data,
@@ -44,12 +45,12 @@ export default {
       if (callback) callback();
     },
     *removeOne({ categoryId, callback }, { call, put }) {
-      const res = yield call(removeCatalog, { categoryId });
+      const res = yield call(removeProducts, { categoryId });
       if (res.rescode !== 10000) {
         if (callback) callback(res.msg); 
         return;
       } 
-      const response = yield call(queryCatalog);
+      const response = yield call(queryProducts);
       yield put({
         type: 'remove',
         payload: response.data,

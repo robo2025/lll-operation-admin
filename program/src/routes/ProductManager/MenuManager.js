@@ -19,6 +19,7 @@ class MenuManager extends React.Component {
     this.addMenu = this.addMenu.bind(this);
     this.removeCatalog = this.removeCatalog.bind(this);
     this.modifyCatalogStatus = this.modifyCatalogStatus.bind(this);
+    this.modifyCatalog = this.modifyCatalog.bind(this);
   }
   componentDidMount() {
     const { dispatch } = this.props;
@@ -61,6 +62,18 @@ class MenuManager extends React.Component {
     });
   }
 
+  // 修改类目
+  modifyCatalog(categoryId, name, isActive, desc) {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'catalog/modifyInfo',
+      categoryId,
+      name,
+      isActive,
+      desc,
+    });
+  }
+
   render() {
     const { catalog, loading } = this.props;
     const catalogList = catalog.list;
@@ -72,6 +85,7 @@ class MenuManager extends React.Component {
             addMenu={this.addMenu}
             removeCatalog={this.removeCatalog}
             modifyStatus={this.modifyCatalogStatus}
+            modifyInfo={this.modifyCatalog}
           />
         </Card>
       </PageHeaderLayout>
