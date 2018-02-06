@@ -95,7 +95,7 @@ class ProductForm extends Component {
               })(
                 <Cascader
                   options={catalog}
-                  placeholder="请选择类目"
+                  placeholder="请您选择类目"
                 />
                 // <InputGroup compact >
                 //   <Select defaultValue="Option1-1">
