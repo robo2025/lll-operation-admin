@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-06 22:29:46
+ * @Last Modified time: 2018-02-06 23:26:41
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -14,7 +14,6 @@ import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
 import { queryString } from '../../utils/tools';
 
-import data from './product.json';
 
 const FormItem = Form.Item;
 
@@ -42,9 +41,6 @@ export default class ModifyProduct extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     const { args } = this.state;
-    dispatch({
-      type: 'rule/fetch',
-    });
     // 请求产品列表
     dispatch({
       type: 'product/fetch',
@@ -101,23 +97,16 @@ export default class ModifyProduct extends Component {
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 },
+        sm: { span: 3 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 10 },
+        sm: { span: 21 },
       },
     };
 
-    const buttonGrop = (
-      <div style={{ display: 'inline-block', marginLeft: 20 }}>
-        <Button type="primary" onClick={this.showModal}>关联参照数据</Button>
-        <Button style={{ marginLeft: 20 }}>一键清除数据</Button>
-      </div>);
-
     const { isShowModal, isShowAttrMOdal } = this.state;
     const { product, loading, catalog } = this.props;
-
 
     return (
       <PageHeaderLayout title="修改产品信息">
@@ -163,8 +152,7 @@ export default class ModifyProduct extends Component {
           <Form style={{ width: 700, maxWidth: '70%' }}>
             <FormItem
               label="控制输出"
-              labelCol={{ span: 3 }}
-              wrapperCol={{ span: 21 }}
+              {...formItemLayout}
             >
               <Row gutter={12}>
                 <Col span={6}>
@@ -188,8 +176,7 @@ export default class ModifyProduct extends Component {
             </FormItem>
             <FormItem
               label="检测物体"
-              labelCol={{ span: 3 }}
-              wrapperCol={{ span: 21 }}
+              {...formItemLayout}
             >
               <Row gutter={12}>
                 <Col span={6}>
@@ -213,8 +200,7 @@ export default class ModifyProduct extends Component {
             </FormItem>
             <FormItem
               label="形状"
-              labelCol={{ span: 3 }}
-              wrapperCol={{ span: 21 }}
+              {...formItemLayout}
             >
               <Row gutter={12}>
                 <Col span={6}>

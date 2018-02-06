@@ -35,7 +35,7 @@ class ProductForm extends Component {
     };
 
     const { getFieldDecorator } = this.props.form;
-    const { data, catalog } = this.props;
+    const { catalog } = this.props;
     const { previewVisible, previewImage } = this.state;
     const uploadButton = (
       <div>
