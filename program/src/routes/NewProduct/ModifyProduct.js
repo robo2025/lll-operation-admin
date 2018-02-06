@@ -1,18 +1,18 @@
 /*
- * @Author: lll 
- * @Date: 2018-02-01 11:30:59 
+ * @Author: lll
+ * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-06 17:42:56
+ * @Last Modified time: 2018-02-06 21:21:55
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Card, Button, Form, Input, Modal, Row, Col, Upload } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import ProductForm from '../../components/Form/ProductForm';
+import ModifyProductForm from '../../components/Form/ModifyProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-import { queryString } from '../../utils//tools';
+import { queryString } from '../../utils/tools';
 
 import data from './product.json';
 
@@ -23,7 +23,7 @@ const FormItem = Form.Item;
   catalog,
   loading: loading.models.product,
 }))
-export default class NewProduct extends Component {
+export default class ModifyProduct extends Component {
   constructor(props) {
     super(props);
     this.showModal = this.showModal.bind(this);
@@ -34,7 +34,7 @@ export default class NewProduct extends Component {
     this.state = {
       isShowModal: false,
       isShowAttrMOdal: false,
-      args: queryString.parse(this.props.location.search),   
+      args: queryString.parse(this.props.location.search),
       fields: this.props.product.detail,
     };
   }
@@ -47,17 +47,17 @@ export default class NewProduct extends Component {
     });
     // 请求产品列表
     dispatch({
-      type: 'product/fetch',      
+      type: 'product/fetch',
     });
     // 请求产品详情
     dispatch({
-      type: 'product/fetchDetail',    
-      productId: args.prdId || args.origin_prdId, 
-      callback: (detail) => { console.log('回调:', detail); this.setState({ fields: detail }); },
+      type: 'product/fetchDetail',
+      productId: args.prdId || args.origin_prdId,
+      callback: (detail) => { this.setState({ fields: detail }); },
     });
     // 请求目录列表
     dispatch({
-      type: 'catalog/fetch',
+      type: 'catalog/fetchLevel',
     });
   }
 
@@ -81,15 +81,15 @@ export default class NewProduct extends Component {
   /**
    * 点击关联后时间
    * @param {string=} prdId 产品ID
-   * 
-   * */ 
+   *
+   * */
   handleAssociate(prdId) {
     const { history } = this.props;
-    history.push('/product/list/modify?origin_prdId=' + prdId);
-    this.setState({ isShowModal: false });    
+    history.push(`/product/list/modify?origin_prdId=${prdId}`);
+    this.setState({ isShowModal: false });
   }
 
-  
+
   // 当表单输入框被修改事件
   handleFormChange = (changedFields) => {
     this.setState({
@@ -121,7 +121,7 @@ export default class NewProduct extends Component {
 
     return (
       <PageHeaderLayout title="修改产品信息">
-        <Card bordered={false}>
+        <Card bordered={false} loading={loading}>
           {/* 参照数据Modal */}
           <Modal
             width="60%"
@@ -133,8 +133,8 @@ export default class NewProduct extends Component {
             onOk={this.onOk}
           >
             <ProductList
-             data={product.list}
-             onAssociate={this.handleAssociate}
+              data={product.list}
+              onAssociate={this.handleAssociate}
             />
           </Modal>
           {/* 添加其它属性Modal */}
@@ -150,10 +150,10 @@ export default class NewProduct extends Component {
           <SectionHeader
             title="产品基础信息"
           />
-          <ProductForm
-           data={this.state.fields}
-           onChange={this.handleFormChange}
-           catalog={catalog.list}
+          <ModifyProductForm
+            data={this.state.fields}
+            onChange={this.handleFormChange}
+            catalog={catalog.level}
           />
           <SectionHeader
             title="产品其他属性"

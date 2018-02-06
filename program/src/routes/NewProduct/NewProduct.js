@@ -1,14 +1,14 @@
 /*
- * @Author: lll 
- * @Date: 2018-02-01 11:30:59 
+ * @Author: lll
+ * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-06 14:50:50
+ * @Last Modified time: 2018-02-06 21:23:04
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Card, Button, Form, Input, Modal, Row, Col, Upload } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import ProductForm from '../../components/Form/ProductForm';
+import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
@@ -19,8 +19,7 @@ const FormItem = Form.Item;
 
 @connect(({ rule, loading, product }) => ({
   product,
-  rule,
-  loading: loading.models.rule,
+  loading: loading.models.product,
 }))
 export default class NewProduct extends Component {
   constructor(props) {
@@ -42,7 +41,7 @@ export default class NewProduct extends Component {
       type: 'rule/fetch',
     });
     dispatch({
-      type: 'product/fetch',      
+      type: 'product/fetch',
     });
   }
 
@@ -66,12 +65,12 @@ export default class NewProduct extends Component {
   /**
    * 点击关联后事件
    * @param {string=} prdId 产品ID
-   * 
-   * */ 
+   *
+   * */
   handleAssociate(prdId) {
     const { history } = this.props;
-    history.push('/product/list/modify?origin_prdId=' + prdId);
-    this.setState({ isShowModal: false });    
+    history.push(`/product/list/modify?origin_prdId=${prdId}`);
+    this.setState({ isShowModal: false });
   }
 
   render() {
@@ -96,7 +95,7 @@ export default class NewProduct extends Component {
     const { product, loading } = this.props;
     return (
       <PageHeaderLayout title="新建产品信息">
-        <Card bordered={false}>
+        <Card bordered={false} loading={loading}>
           {/* 参照数据Modal */}
           <Modal
             width="60%"
@@ -108,8 +107,8 @@ export default class NewProduct extends Component {
             onOk={this.onOk}
           >
             <ProductList
-             data={product.list}
-             onAssociate={this.handleAssociate}
+              data={product.list}
+              onAssociate={this.handleAssociate}
             />
           </Modal>
           {/* 添加其它属性Modal */}
@@ -126,7 +125,9 @@ export default class NewProduct extends Component {
             title="产品基础信息"
             extra={buttonGrop}
           />
-          <ProductForm data={data} />
+          <NewProductForm
+            data={data}
+          />
           <SectionHeader
             title="产品其他属性"
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}

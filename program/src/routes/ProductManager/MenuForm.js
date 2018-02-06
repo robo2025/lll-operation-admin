@@ -173,7 +173,7 @@ export default class MenuForm extends React.Component {
    * 自定义表单校验
    * @param {string} name 行id
    * @param {string} value 行内容值
-   * @param {string} message 出错时提示信息 
+   * @param {string} message 出错时提示信息
    * */
   customValidate(name, value, message) {
     const tempJson = {};

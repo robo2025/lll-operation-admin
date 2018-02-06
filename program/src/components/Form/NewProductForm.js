@@ -1,27 +1,13 @@
 import React, { Component } from 'react';
-import { Form, Spin, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Select, Tabs } from 'antd';
+import { Form, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
 
 import styles from './product-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
-const InputGroup = Input.Group;
-const { Option } = Select;
 
 @Form.create({
-  mapPropsToFields(props) {
-    const { data } = props;
-    const fields = {};
-    Object.keys(data).forEach((key) => {
-      fields[key] = Form.createFormField({
-        value: data[key],
-      });
-    });
-    return {
-      ...fields,
-    };
-  },
   onValuesChange(props, values) {
     props.onChange(values);
   },
@@ -50,7 +36,7 @@ class ProductForm extends Component {
 
     const { getFieldDecorator } = this.props.form;
     const { data, catalog } = this.props;
-    const { previewVisible, previewImage, fileList } = this.state;
+    const { previewVisible, previewImage } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -60,8 +46,8 @@ class ProductForm extends Component {
     );
     let uploaders = [];
     if (data.pics) {
-      uploaders = data.pics.map((val, key) => (
-        <Col span={8} key={key}>
+      uploaders = data.pics.map(val => (
+        <Col span={8} key={val.id}>
           <Upload
             action="//jsonplaceholder.typicode.com/posts/"
             listType="picture-card"
@@ -76,8 +62,6 @@ class ProductForm extends Component {
           <p className="upload-pic-desc">{val.img_type}</p>
         </Col>
       ));
-    } else {
-      return <Spin spining />;
     }
 
     console.log(catalog, 'mulu');

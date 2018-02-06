@@ -39,7 +39,7 @@ export default {
     },
     *modifyInfo({ categoryId, name, isActive, desc, callback }, { call, put }) {
       const res = yield call(modifyProduct, { categoryId, name, isActive, desc });
-      const response = yield call(queryProducts);      
+      const response = yield call(queryProducts);
       yield put({
         type: 'modify',
         payload: response.data,
@@ -58,9 +58,9 @@ export default {
     *removeOne({ categoryId, callback }, { call, put }) {
       const res = yield call(removeProducts, { categoryId });
       if (res.rescode !== 10000) {
-        if (callback) callback(res.msg); 
+        if (callback) callback(res.msg);
         return;
-      } 
+      }
       const response = yield call(queryProducts);
       yield put({
         type: 'remove',

@@ -5,7 +5,7 @@ import { API_URL } from '../constant/config';
 
 /**
  *  获取服务器商品列表
- * 
+ *
 */
 export async function queryGoods() {
   const acess_token = Cookies.get('access_token');
@@ -19,7 +19,7 @@ export async function queryGoods() {
 
 /**
  * 添加商品信息
- * 
+ *
  * @param {object} data 商品数据
 */
 export async function addGood({ data }) {
@@ -38,7 +38,7 @@ export async function addGood({ data }) {
 
 /**
  * 修改商品信息
- * 
+ *
  * @param {object} data 商品数据
  *
 */
@@ -57,7 +57,7 @@ export async function modifyGood({ data }) {
 
 /**
  * 获取商品详情
- * 
+ *
  * @param {number} productId 商品id
 */
 export async function queryProductDetail({ productId }) {
@@ -73,7 +73,7 @@ export async function queryProductDetail({ productId }) {
 
 /**
  * 删除商品
- * 
+ *
  * @param {array} ids 商品id数组
 */
 export async function removeProducts({ ids }) {

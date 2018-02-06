@@ -63,7 +63,7 @@ export default class ProductManager extends Component {
   // 修改产品
   editProduct(productId) {
     const { history } = this.props;
-    history.push('/product/list/modify?prdId=' + productId);
+    history.push(`/product/list/modify?prdId=${productId}`);
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {

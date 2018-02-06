@@ -1,10 +1,11 @@
-import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog } from '../services/catalog';
+import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog, queryCatalogLevel } from '../services/catalog';
 
 export default {
   namespace: 'catalog',
 
   state: {
     list: [],
+    level: [],
   },
 
   effects: {
@@ -13,6 +14,14 @@ export default {
       // console.log('服务器目录列表', response);
       yield put({
         type: 'save',
+        payload: response.data,
+      });
+    },
+    *fetchLevel(_, { call, put }) {
+      const response = yield call(queryCatalogLevel);
+      // console.log('服务器目录列表', response);
+      yield put({
+        type: 'saveLevel',
         payload: response.data,
       });
     },
@@ -27,7 +36,7 @@ export default {
     },
     *modifyInfo({ categoryId, name, isActive, desc, callback }, { call, put }) {
       const res = yield call(modifyCatalog, { categoryId, name, isActive, desc });
-      const response = yield call(queryCatalog);      
+      const response = yield call(queryCatalog);
       yield put({
         type: 'modify',
         payload: response.data,
@@ -46,9 +55,9 @@ export default {
     *removeOne({ categoryId, callback }, { call, put }) {
       const res = yield call(removeCatalog, { categoryId });
       if (res.rescode !== 10000) {
-        if (callback) callback(res.msg); 
+        if (callback) callback(res.msg);
         return;
-      } 
+      }
       const response = yield call(queryCatalog);
       yield put({
         type: 'remove',
@@ -62,6 +71,12 @@ export default {
       return {
         ...state,
         list: action.payload,
+      };
+    },
+    saveLevel(state, action) {
+      return {
+        ...state,
+        level: action.payload,
       };
     },
     saveOne(state, action) {

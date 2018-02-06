@@ -13,10 +13,19 @@ export async function queryCatalog() {
   });
 }
 
+// 获取级联目录
+export async function queryCatalogLevel() {
+  const acess_token = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/api/product_categories/level_selection`, {
+    headers: {
+      Authorization: acess_token,
+    },
+  });  
+}
 
 /**
  * 添加目录信息
- * 
+ *
  * @param {number} pid 父目录id (一级目录为 0)
  * @param {string} name 目录名称
  * @param {number} isActive 是否启用 （0:禁用 1:启用）
@@ -41,7 +50,7 @@ export async function addCatalog({ pid, name, isActive, desc }) {
 
 /**
  * 修改目录信息
- * 
+ *
  * @param {number} categoryId 目录id (一级目录为 0)
  * @param {string} name 目录名称
  * @param {number} isActive 是否启用 （0:禁用 1:启用）
@@ -64,7 +73,7 @@ export async function modifyCatalog({ categoryId, name, isActive, desc }) {
 
 /**
  * 更改目录状态，是否启用
- * 
+ *
  * @param {number} categoryId 目录id (一级目录为 0)
  * @param {number} isActive 是否启用 （0:禁用 1:启用）
 */
@@ -84,7 +93,7 @@ export async function modifyCatalogStatus({ categoryId, isActive }) {
 
 /**
  * 删除目录
- * 
+ *
  * @param {number} categoryId 目录id (一级目录为 0)
 */
 export async function removeCatalog({ categoryId }) {
