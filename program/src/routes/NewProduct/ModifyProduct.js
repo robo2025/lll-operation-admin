@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-02-01 11:30:59 
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-06 14:50:50
+ * @Last Modified time: 2018-02-06 17:42:56
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -12,15 +12,16 @@ import ProductForm from '../../components/Form/ProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
+import { queryString } from '../../utils//tools';
 
 import data from './product.json';
 
 const FormItem = Form.Item;
 
-@connect(({ rule, loading, product }) => ({
+@connect(({ loading, product, catalog }) => ({
   product,
-  rule,
-  loading: loading.models.rule,
+  catalog,
+  loading: loading.models.product,
 }))
 export default class NewProduct extends Component {
   constructor(props) {
@@ -33,16 +34,30 @@ export default class NewProduct extends Component {
     this.state = {
       isShowModal: false,
       isShowAttrMOdal: false,
+      args: queryString.parse(this.props.location.search),   
+      fields: this.props.product.detail,
     };
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { args } = this.state;
     dispatch({
       type: 'rule/fetch',
     });
+    // 请求产品列表
     dispatch({
       type: 'product/fetch',      
+    });
+    // 请求产品详情
+    dispatch({
+      type: 'product/fetchDetail',    
+      productId: args.prdId || args.origin_prdId, 
+      callback: (detail) => { console.log('回调:', detail); this.setState({ fields: detail }); },
+    });
+    // 请求目录列表
+    dispatch({
+      type: 'catalog/fetch',
     });
   }
 
@@ -64,7 +79,7 @@ export default class NewProduct extends Component {
   }
 
   /**
-   * 点击关联后事件
+   * 点击关联后时间
    * @param {string=} prdId 产品ID
    * 
    * */ 
@@ -72,6 +87,14 @@ export default class NewProduct extends Component {
     const { history } = this.props;
     history.push('/product/list/modify?origin_prdId=' + prdId);
     this.setState({ isShowModal: false });    
+  }
+
+  
+  // 当表单输入框被修改事件
+  handleFormChange = (changedFields) => {
+    this.setState({
+      fields: { ...this.state.fields, ...changedFields },
+    });
   }
 
   render() {
@@ -93,9 +116,11 @@ export default class NewProduct extends Component {
       </div>);
 
     const { isShowModal, isShowAttrMOdal } = this.state;
-    const { product, loading } = this.props;
+    const { product, loading, catalog } = this.props;
+
+
     return (
-      <PageHeaderLayout title="新建产品信息">
+      <PageHeaderLayout title="修改产品信息">
         <Card bordered={false}>
           {/* 参照数据Modal */}
           <Modal
@@ -124,9 +149,12 @@ export default class NewProduct extends Component {
           </Modal>
           <SectionHeader
             title="产品基础信息"
-            extra={buttonGrop}
           />
-          <ProductForm data={data} />
+          <ProductForm
+           data={this.state.fields}
+           onChange={this.handleFormChange}
+           catalog={catalog.list}
+          />
           <SectionHeader
             title="产品其他属性"
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}

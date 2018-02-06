@@ -1,4 +1,4 @@
-import { queryProducts, addProduct, removeProducts, modifyProduct } from '../services/product';
+import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail } from '../services/product';
 
 export default {
   namespace: 'product',
@@ -14,6 +14,17 @@ export default {
       // console.log('服务器目录列表', response);
       yield put({
         type: 'save',
+        payload: response.data,
+      });
+    },
+    *fetchDetail({ productId, callback }, { call, put }) {
+      const response = yield call(queryProductDetail, { productId });
+      if (response.rescode >> 0 === 10000) {
+        if (callback)callback(response.data);
+      }
+      console.log('产品详情:', response);
+      yield put({
+        type: 'saveDetail',
         payload: response.data,
       });
     },
@@ -63,6 +74,12 @@ export default {
       return {
         ...state,
         list: action.payload,
+      };
+    },
+    saveDetail(state, action) {
+      return {
+        ...state,
+        detail: action.payload,
       };
     },
     saveOne(state, action) {

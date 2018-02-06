@@ -62,7 +62,7 @@ export async function modifyProduct({ data }) {
 */
 export async function queryProductDetail({ productId }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/product/${productId}`, {
+  return lyRequest(`${API_URL}/api/products/${productId}`, {
     method: 'get',
     headers: {
       Authorization: acess_token,

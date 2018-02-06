@@ -14,15 +14,15 @@ const { RangePicker } = DatePicker;
 
 
 @connect(({ rule, loading, product }) => ({
-  rule,
   product,
-  loading: loading.models.rule,
+  loading: loading.models.product,
 }))
 @Form.create()
 export default class ProductManager extends Component {
   constructor(props) {
     super(props);
     this.jumpToPage = this.jumpToPage.bind(this);
+    this.editProduct = this.editProduct.bind(this);
     this.showExportModal = this.showExportModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOk = this.handleOk.bind(this);
@@ -38,9 +38,6 @@ export default class ProductManager extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'rule/fetch',
-    });
     dispatch({
       type: 'product/fetch',
     });
@@ -61,6 +58,12 @@ export default class ProductManager extends Component {
   // 确定导出数据
   handleOk() {
     this.setState({ isShowExportModal: false });
+  }
+
+  // 修改产品
+  editProduct(productId) {
+    const { history } = this.props;
+    history.push('/product/list/modify?prdId=' + productId);
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -374,9 +377,9 @@ export default class ProductManager extends Component {
   }
 
   render() {
-    const { rule: { data }, loading } = this.props;
+    const { loading, product } = this.props;
     const { selectedRows, modalVisible, isShowExportModal } = this.state;
-
+    const data = product.list;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
@@ -389,7 +392,7 @@ export default class ProductManager extends Component {
       handleModalVisible: this.handleModalVisible,
     };
 
-console.log('product,', this.props);
+    console.log('product,', data);
 
     return (
       <PageHeaderLayout title="查询表格">
@@ -424,6 +427,7 @@ console.log('product,', this.props);
               data={data}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
+              editProduct={this.editProduct}
             />
           </div>
         </Card>

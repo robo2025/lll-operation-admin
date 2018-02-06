@@ -58,10 +58,10 @@ export const queryString = {
 
 // 验证文件类型
 export const fileArr = ['pdf', 'doc', 'xls', 'ppt', 'docx', 'xlsx', 'pptx'];
-export function checkFile(filename, fileArr) {
+export function checkFile(filename, filelist) {
   const postfix = filename.split('.')[1];
-  for (let i = 0, fileLen = fileArr.length; i < fileLen; i++) {
-    if (postfix === fileArr[i]) {
+  for (let i = 0, fileLen = filelist.length; i < fileLen; i++) {
+    if (postfix === filelist[i]) {
       return true;
     }
   }

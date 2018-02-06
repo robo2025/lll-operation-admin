@@ -45,7 +45,7 @@ class ProductTable extends React.Component {
 
   render() {
     const { selectedRowKeys, totalCallNo } = this.state;
-    const { data: { list, pagination }, loading } = this.props;
+    const { data, loading } = this.props;
 
     const audit_status = ['待审核', '审核通过', '审核不通过'];
     const status = ['下架中', '已上架'];
@@ -53,45 +53,49 @@ class ProductTable extends React.Component {
     const columns = [
       {
         title: '序号',
-        dataIndex: 'idx',
+        dataIndex: 'id',
+        key: 'id',
       },
       {
         title: '产品ID编号',
-        dataIndex: 'no',
+        dataIndex: 'pno',
+        key: 'pno',
       },
       {
         title: '产品图片',
-        dataIndex: 'pictures',
-        render: val => val.map((item, idx) => (<img alt="缩略图" width={10} height={10} style={{ display: 'inline' }} key={`key${idx}`} src={item} />)),
+        dataIndex: 'pics',
+        render: val => val.map((item, idx) => (<img alt="缩略图" width={10} height={10} style={{ display: 'inline' }} key={`key${idx}`} src={item.img_url} />)),
       },
       {
         title: '产品名称',
-        dataIndex: 'title',
+        dataIndex: 'product_name',
+        key: 'product_name',
       },
       {
         title: '型号',
-        dataIndex: 'type',
-        align: 'right',
+        dataIndex: 'partnumber',
+        align: 'partnumber',
         render: val => `${val}`,
       },
       {
         title: '一级类目',
-        dataIndex: 'menu1',
-
+        dataIndex: 'category',
+        render: val => (val.category_name),
       },
       {
         title: '二级类目',
-        dataIndex: 'menu2',
+        dataIndex: 'category',
+        render: val => (val.children.category_name),
 
       },
       {
         title: '三级类目',
-        dataIndex: 'menu3',
-
+        dataIndex: 'category',
+        render: val => (val.children.children.category_name),
       },
       {
         title: '品牌',
-        dataIndex: 'band',
+        dataIndex: 'brand_name',
 
       },
       {
@@ -101,25 +105,25 @@ class ProductTable extends React.Component {
       },
       {
         title: '已有供应商条数',
-        dataIndex: 'good_status',
+        dataIndex: 'goods_count',
 
       },
       {
         title: '创建人',
-        dataIndex: 'create_man',
+        dataIndex: 'staff_name',
 
       },
       {
         title: '产品创建时间',
-        dataIndex: 'updatedAt',
+        dataIndex: 'created_time',
         sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
       {
         title: '操作',
-        render: () => (
+        render: (text, record) => (
           <Fragment>
-            <a>修改</a>
+            <a onClick={() => { this.props.editProduct(record.id); }}>修改</a>
             <Divider type="vertical" />
             <a>供货消息</a>
           </Fragment>
@@ -130,7 +134,6 @@ class ProductTable extends React.Component {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      ...pagination,
     };
 
     const rowSelection = {
@@ -157,9 +160,9 @@ class ProductTable extends React.Component {
         <Table
           className={styles['goods-table']}
           loading={loading}
-          rowKey={record => record.key}
+          rowKey={record => record.id}
           rowSelection={rowSelection}
-          dataSource={list}
+          dataSource={data}
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
