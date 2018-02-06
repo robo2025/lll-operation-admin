@@ -41,28 +41,8 @@ class ProductForm extends Component {
       <div>
         <Icon type="plus" />
         <div className="ant-upload-text">上传</div>
-        <p className="upload-pic-desc">正面</p>
       </div>
     );
-    let uploaders = [];
-    if (data.pics) {
-      uploaders = data.pics.map(val => (
-        <Col span={8} key={val.id}>
-          <Upload
-            action="//jsonplaceholder.typicode.com/posts/"
-            listType="picture-card"
-            fileList={[{
-              uid: -1,
-              name: '测试',
-              url: val.img_url,
-            }]}
-            onPreview={this.handlePreview}
-            onChange={this.handleChange}
-          />
-          <p className="upload-pic-desc">{val.img_type}</p>
-        </Col>
-      ));
-    }
 
     console.log(catalog, 'mulu');
 
@@ -95,7 +75,7 @@ class ProductForm extends Component {
                 //     <Option value="Option2-2">轴</Option>
                 //   </Select>
                 // </InputGroup>
-              )}
+                )}
             </FormItem>
             <FormItem
               label="产品名称"
@@ -104,7 +84,7 @@ class ProductForm extends Component {
               {getFieldDecorator('product_name', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="产品ID"
@@ -113,7 +93,7 @@ class ProductForm extends Component {
               {getFieldDecorator('pno', {
               })(
                 <Input disabled />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="型号"
@@ -122,7 +102,7 @@ class ProductForm extends Component {
               {getFieldDecorator('partnumber', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="品牌"
@@ -131,7 +111,7 @@ class ProductForm extends Component {
               {getFieldDecorator('brand_name', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="英文名"
@@ -140,7 +120,7 @@ class ProductForm extends Component {
               {getFieldDecorator('english_name', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="产地"
@@ -149,7 +129,7 @@ class ProductForm extends Component {
               {getFieldDecorator('prodution_place', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
           </Form>
           <Row gutter={24}>
@@ -202,25 +182,42 @@ class ProductForm extends Component {
         </Modal >
         <div style={{ float: 'left', maxWidth: 360 }}>
           <h3>商品图片</h3>
-          <Row gutter={16}>
-            {uploaders}
-            {
-              (data.pics && data.pics.length < 6) ?
-                (
-                  <Col span={6} >
-                    <Upload
-                      action="//jsonplaceholder.typicode.com/posts/"
-                      listType="picture-card"
-                      onPreview={this.handlePreview}
-                      onChange={this.handleChange}
-                    >
-                      {uploadButton}
-                    </Upload>
-                    <p className="upload-pic-desc">包装图</p>
-                  </Col>
-                )
-                : null
-            }
+          <Row gutter={24}>
+            <Col span={8}>
+              <Upload
+                action="//jsonplaceholder.typicode.com/posts/"
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                onChange={this.handleChange}
+              >
+                {uploadButton}
+
+              </Upload>
+              <p className="upload-pic-desc">正面</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                action="//jsonplaceholder.typicode.com/posts/"
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                onChange={this.handleChange}
+              >
+                {uploadButton}
+
+              </Upload>
+              <p className="upload-pic-desc">反面</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                action="//jsonplaceholder.typicode.com/posts/"
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                onChange={this.handleChange}
+              >
+                {uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">侧面</p>
+            </Col>
           </Row>
         </div>
         {/* 商品描述、详情 */}

@@ -7,6 +7,16 @@ const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
+function getStanrdCatalog(data) {
+  data.forEach((val) => {
+    val.value = val.id;
+    val.label = val.category_name;
+    if (val.children.length > 0) {
+      getStanrdCatalog(val.children);
+    }
+  });
+}
+
 @Form.create({
   mapPropsToFields(props) {
     const { data } = props;
@@ -47,13 +57,18 @@ class ProductForm extends Component {
     };
 
     const { getFieldDecorator } = this.props.form;
-    const { data, catalog } = this.props;
+    const { data, catalog, loading } = this.props;
+    const { category } = data;
+    const slectedCatagory = category ? [
+      category.id,
+      category.children.id,
+      category.children.children.id,
+    ] : [];
     const { previewVisible, previewImage } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
         <div className="ant-upload-text">上传</div>
-        <p className="upload-pic-desc">正面</p>
       </div>
     );
     let uploaders = [];
@@ -75,10 +90,10 @@ class ProductForm extends Component {
         </Col>
       ));
     } else {
-      return <Spin spining />;
+      return <Spin spining={loading} />;
     }
 
-    console.log(catalog, 'mulu');
+    getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构
 
     return (
       <div className={styles['product-info-wrap']} >
@@ -89,27 +104,12 @@ class ProductForm extends Component {
               label="所属分类"
               {...formItemLayout}
             >
-              {getFieldDecorator('cate', {
-              })(
-                <Cascader
-                  options={catalog}
-                  placeholder="请您选择类目"
-                />
-                // <InputGroup compact >
-                //   <Select defaultValue="Option1-1">
-                //     <Option value="Option1-1">{data.category.category_name}</Option>
-                //     <Option value="Option1-2">{data.category.category_name}</Option>
-                //   </Select>
-                //   <Select defaultValue="二级目录">
-                //     <Option value="Option2-1">传感器</Option>
-                //     <Option value="Option2-2">传感器</Option>
-                //   </Select>
-                //   <Select defaultValue="三级目录">
-                //     <Option value="Option2-1">轴</Option>
-                //     <Option value="Option2-2">轴</Option>
-                //   </Select>
-                // </InputGroup>
-              )}
+              <Cascader
+                defaultValue={slectedCatagory}
+                options={catalog}
+                placeholder="请您选择类目"
+                onChange={(values) => { console.log('您选择的是', values); }}
+              />
             </FormItem>
             <FormItem
               label="产品名称"
@@ -118,7 +118,7 @@ class ProductForm extends Component {
               {getFieldDecorator('product_name', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="产品ID"
@@ -127,7 +127,7 @@ class ProductForm extends Component {
               {getFieldDecorator('pno', {
               })(
                 <Input disabled />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="型号"
@@ -136,7 +136,7 @@ class ProductForm extends Component {
               {getFieldDecorator('partnumber', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="品牌"
@@ -145,7 +145,7 @@ class ProductForm extends Component {
               {getFieldDecorator('brand_name', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="英文名"
@@ -154,7 +154,7 @@ class ProductForm extends Component {
               {getFieldDecorator('english_name', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
             <FormItem
               label="产地"
@@ -163,7 +163,7 @@ class ProductForm extends Component {
               {getFieldDecorator('prodution_place', {
               })(
                 <Input />
-              )}
+                )}
             </FormItem>
           </Form>
           <Row gutter={24}>

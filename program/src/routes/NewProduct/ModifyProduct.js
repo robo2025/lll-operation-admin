@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-06 21:21:55
+ * @Last Modified time: 2018-02-06 22:29:46
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -154,6 +154,7 @@ export default class ModifyProduct extends Component {
             data={this.state.fields}
             onChange={this.handleFormChange}
             catalog={catalog.level}
+            loading={loading}
           />
           <SectionHeader
             title="产品其他属性"
