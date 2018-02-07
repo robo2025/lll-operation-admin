@@ -2,9 +2,10 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-02 09:33:09
+ * @Last Modified time: 2018-02-07 17:00:27
  */
 import React, { Component } from 'react';
+import { connect } from 'dva';
 import moment from 'moment';
 import { Card, Table, Button } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -12,7 +13,7 @@ import GoodInfo from '../../components/Form//GoodInfo';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import goodInfo from './good-info.json';
 import { actionsLog, actionsLog2, actionsLog3 } from './action-log';
-
+import { queryString } from '../../utils/tools';
 import styles from './good-detail.less';
 
 const operationTabList = [{
@@ -28,6 +29,7 @@ const operationTabList = [{
 
 const mapStatus = ['失败', '成功'];
 
+// 操作记录列
 const columns = [{
   title: '操作类型',
   dataIndex: 'type',
@@ -53,16 +55,44 @@ const columns = [{
   render: (text, record) => (<span>{`${record.elapsed}s`}</span>),
 }];
 
+// 商品详情页
+@connect(({ good, loading }) => ({
+  good,
+  loading: loading.models.good,
+})
+)
 class GoodDetail extends Component {
-  state = {
-    operationkey: 'tab1',
+  constructor(props) {
+    super(props);
+    this.state = {
+      operationkey: 'tab1',
+      args: queryString.parse(this.props.location.search),
+    };
   }
+
+  componentDidMount() {
+    console.log(this.state);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'good/fetchDetail',
+      goodId: this.state.args.goodId,
+    });
+  }
+
   onOperationTabChange = (key) => {
     this.setState({ operationkey: key });
   }
 
+  // 当表单输入框被修改事件
+  handleFormChange = (changedFields) => {
+    this.setState({
+      fields: { ...this.state.fields, ...changedFields },
+    });
+  }
+
   render() {
-    console.log('---', actionsLog);
+    console.log('detail props:', this.props);
+    const { good, loading } = this.props;
     const contentList = {
       tab1: <Table
         pagination={false}
@@ -85,8 +115,12 @@ class GoodDetail extends Component {
     };
     return (
       <PageHeaderLayout title="商品详情审核页">
-        <Card className={styles['good-detail-wrap']}>
-          <GoodInfo data={goodInfo} />
+        <Card className={styles['good-detail-wrap']} loading={loading}>
+          <GoodInfo
+            data={good.detail}
+            onChange={this.handleFormChange}
+            loading={loading}
+          />
           <SectionHeader title="操作记录" />
         </Card>
         <Card

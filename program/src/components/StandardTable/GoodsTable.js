@@ -2,15 +2,15 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-05 09:56:42
+ * @Last Modified time: 2018-02-07 16:54:31
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
 import { Table, Alert, Badge, Divider } from 'antd';
 import styles from './goods-table.less';
 
-const AuditStatusMap = ['processing', 'success', 'error'];// 上下架状态
-const GoodsStatusMap = ['default', 'success'];// 商品状态
+const AuditStatusMap = ['processing', 'success'];// 上下架状态
+const GoodsStatusMap = ['default', 'success'];// 商品审核状态
 class GoodsTable extends PureComponent {
   state = {
     selectedRowKeys: [],
@@ -49,81 +49,101 @@ class GoodsTable extends PureComponent {
 
   render() {
     const { selectedRowKeys, totalCallNo } = this.state;
-    const { data: { list, pagination }, loading } = this.props;
+    const { data, loading } = this.props;
 
-    const audit_status = ['待审核', '审核通过', '审核不通过'];
+    const auditStatus = ['待审核', '审核通过', '审核不通过'];
     const status = ['下架中', '已上架'];
 
     const columns = [
       {
         title: '商品ID编号',
-        dataIndex: 'no',
+        dataIndex: 'gno',
       },
       {
         title: '商品图片',
-        dataIndex: 'pictures',
-        render: val => val.map((item, idx) => (<img width={15} height={15} alt="图片" style={{ display: 'inline' }} key={idx} src={item} />)),
+        dataIndex: 'product',
+        render: val => val.pics.map((item, idx) => {
+          if (idx < 3) {
+            return (
+              <img
+                width={15}
+                height={15}
+                alt={item.img_tyle}
+                style={{ display: 'inline' }}
+                key={idx}
+                src={item.img_url}
+              />);
+          }
+        }),
       },
       {
         title: '商品名称',
-        dataIndex: 'title',
+        dataIndex: 'product',
+        render: val => (<span >{val.product_name}</span>),
+        key: 'product_name',
       },
       {
         title: '型号',
-        dataIndex: 'type',
+        dataIndex: 'product',
         sorter: true,
         align: 'right',
-        render: val => `${val} 万`,
+        render: val => (<span >{val.partnumber}</span>),
+        key: 'partnumber',
       },
       {
         title: '一级类目',
-        dataIndex: 'menu1',
-
+        dataIndex: 'product',
+        render: val => (<span >{val.category.category_name}</span>),
+        key: 'category_name_1',
       },
       {
         title: '二级类目',
-        dataIndex: 'menu2',
-
+        dataIndex: 'product',
+        render: val => (<span >{val.category.children.category_name}</span>),
+        key: 'category_name_2',
       },
       {
         title: '三级类目',
-        dataIndex: 'menu3',
-
+        dataIndex: 'product',
+        render: val => (<span >{val.category.children.children.category_name}</span>),
+        key: 'category_name_3',
       },
       {
         title: '品牌',
-        dataIndex: 'band',
-
+        dataIndex: 'product',
+        render: val => (<span >{val.brand_name}</span>),
+        key: 'brand_name',
       },
       {
         title: '价格（含税）',
-        dataIndex: 'price',
-
+        dataIndex: 'prices',
+        render: val => (<span >{val[0].price}</span>),
+        key: 'price',
       },
       {
         title: '审核状态',
         dataIndex: 'audit_status',
         filters: [
           {
-            text: audit_status[0],
+            text: auditStatus[0],
             value: 0,
           },
           {
-            text: audit_status[1],
+            text: auditStatus[1],
             value: 1,
           },
           {
-            text: audit_status[2],
+            text: auditStatus[2],
             value: 2,
           },
         ],
         render(val) {
-          return <Badge status={AuditStatusMap[val]} text={audit_status[val]} />;
+          return <Badge status={AuditStatusMap[val]} text={auditStatus[val]} />;
         },
       },
       {
         title: '上下架状态',
-        dataIndex: 'good_status',
+        dataIndex: 'is_publish',
         filters: [
           {
             text: status[0],
@@ -141,23 +161,23 @@ class GoodsTable extends PureComponent {
       {
         title: '佣金比率',
         dataIndex: 'commission',
-        render: val => <span>{`${val}%`}</span>,
+        render: () => <span>0.5%</span>,
       },
       {
         title: '商品提交时间',
-        dataIndex: 'updatedAt',
+        dataIndex: 'created_time',
         sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
       {
         title: '操作',
-        render: () => (
+        render: (text, record) => (
           <Fragment>
             <a>审核</a>
             <Divider type="vertical" />
             <a>下架</a>
             <Divider type="vertical" />
-            <a href="#/goods/list/detail">查看</a>
+            <a href={'#/goods/list/detail?goodId=' + record.id}>查看</a>
           </Fragment>
         ),
       },
@@ -166,7 +186,7 @@ class GoodsTable extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      ...pagination,
+      // ...pagination,
     };
 
     const rowSelection = {
@@ -176,6 +196,12 @@ class GoodsTable extends PureComponent {
         disabled: record.disabled,
       }),
     };
+
+    if (data.length < 1) {
+      return (<div>没有数据</div>);
+    } else {
+      console.log('-------------', data, loading);
+    }
 
     return (
       <div className={styles.standardTable}>
@@ -193,9 +219,9 @@ class GoodsTable extends PureComponent {
         <Table
           className={styles['goods-table']}
           loading={loading}
-          rowKey={record => record.key}
+          rowKey={record => record.gno}
           rowSelection={rowSelection}
-          dataSource={list}
+          dataSource={data}
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}

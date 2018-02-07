@@ -65,7 +65,7 @@ export default class MenuForm extends React.Component {
       dataIndex: '',
       key: 'x',
       render: (text, record) => {
-        return record.level < 3 ?
+        return record.level < 4 ?
           (
             <span>
               <a onClick={() => { this.showModal('isShowAddChildModal', record); }}>新增子类</a>

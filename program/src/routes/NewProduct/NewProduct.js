@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-06 21:23:04
+ * @Last Modified time: 2018-02-07 14:40:40
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -12,14 +12,14 @@ import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-
-import data from './product.json';
+import styles from './newproduct.less';
 
 const FormItem = Form.Item;
 
-@connect(({ rule, loading, product }) => ({
+@connect(({ loading, product, catalog }) => ({
   product,
-  loading: loading.models.product,
+  catalog,
+  loading: loading.models.catalog,
 }))
 export default class NewProduct extends Component {
   constructor(props) {
@@ -27,21 +27,29 @@ export default class NewProduct extends Component {
     this.showModal = this.showModal.bind(this);
     this.ShowAttrModal = this.ShowAttrModal.bind(this);
     this.handleAssociate = this.handleAssociate.bind(this);
+    this.handleFormChange = this.handleFormChange.bind(this);
+    this.handleProductAttr = this.handleProductAttr.bind(this);
+    this.handleSubmitProduct = this.handleSubmitProduct.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onOk = this.onOk.bind(this);
     this.state = {
       isShowModal: false,
       isShowAttrMOdal: false,
+      fields: {
+        attr: {},
+        pics: [],
+      },
     };
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/fetch',
-    });
-    dispatch({
       type: 'product/fetch',
+    });
+    // 请求目录列表
+    dispatch({
+      type: 'catalog/fetchLevel',
     });
   }
 
@@ -73,15 +81,62 @@ export default class NewProduct extends Component {
     this.setState({ isShowModal: false });
   }
 
+  // 当表单被修改事件
+  handleFormChange = (changedFields) => {
+    console.log('handleFormChange', Object.keys(changedFields));
+    if (Object.keys(changedFields)[0] === 'category') {
+      const categoryIdsArr = changedFields.category;
+      const [category_id_1, category_id_2, category_id_3, category_id_4] = categoryIdsArr;
+      this.setState({
+        fields: {
+          ...this.state.fields,
+          category_id_1,
+          category_id_2,
+          category_id_3,
+          category_id_4,
+        },
+      });
+    } else {
+      this.setState({
+        fields: { ...this.state.fields, ...changedFields },
+      });
+    }
+  }
+
+  /**
+   * 当产品其他属性被修改事件[产品概述、详情、FAQ,其他属性，图片]
+   * 
+   * @param {object} obj json对象，产品属性key=>value
+   * 
+   */
+  handleProductAttr(obj) {
+    this.setState({
+      fields: { ...this.state.fields, ...obj },
+    });
+  }
+
+  /**
+   * 提交产品信息
+   * 
+   */
+  handleSubmitProduct() {
+    console.log('产品信息', this.state.fields);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'product/add',
+      data: this.state.fields,
+    });
+  }
+
   render() {
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 },
+        sm: { span: 3 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 10 },
+        sm: { span: 21 },
       },
     };
 
@@ -92,7 +147,10 @@ export default class NewProduct extends Component {
       </div>);
 
     const { isShowModal, isShowAttrMOdal } = this.state;
-    const { product, loading } = this.props;
+    const { product, loading, catalog } = this.props;
+
+    console.log('newproduct state', this.state);
+
     return (
       <PageHeaderLayout title="新建产品信息">
         <Card bordered={false} loading={loading}>
@@ -126,8 +184,12 @@ export default class NewProduct extends Component {
             extra={buttonGrop}
           />
           <NewProductForm
-            data={data}
+            onChange={this.handleFormChange}
+            catalog={catalog.level}
+            loading={loading}
+            onAttrChange={this.handleProductAttr}
           />
+          {/* 产品其他属性 */}
           <SectionHeader
             title="产品其他属性"
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}
@@ -135,8 +197,7 @@ export default class NewProduct extends Component {
           <Form style={{ width: 700, maxWidth: '70%' }}>
             <FormItem
               label="控制输出"
-              labelCol={{ span: 3 }}
-              wrapperCol={{ span: 21 }}
+              {...formItemLayout}
             >
               <Row gutter={12}>
                 <Col span={6}>
@@ -160,8 +221,7 @@ export default class NewProduct extends Component {
             </FormItem>
             <FormItem
               label="检测物体"
-              labelCol={{ span: 3 }}
-              wrapperCol={{ span: 21 }}
+              {...formItemLayout}
             >
               <Row gutter={12}>
                 <Col span={6}>
@@ -185,8 +245,7 @@ export default class NewProduct extends Component {
             </FormItem>
             <FormItem
               label="形状"
-              labelCol={{ span: 3 }}
-              wrapperCol={{ span: 21 }}
+              {...formItemLayout}
             >
               <Row gutter={12}>
                 <Col span={6}>
@@ -209,6 +268,10 @@ export default class NewProduct extends Component {
               </Row>
             </FormItem>
           </Form>
+          <div className={styles['submit-btn-wrap']}>
+            <Button>取消</Button>
+            <Button type="primary" onClick={this.handleSubmitProduct}>提交</Button>
+          </div>
         </Card>
       </PageHeaderLayout>
     );

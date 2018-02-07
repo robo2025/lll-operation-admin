@@ -81,17 +81,19 @@ class ProductTable extends React.Component {
         title: '一级类目',
         dataIndex: 'category',
         render: val => (val.category_name),
+        key: 'menu-1',
       },
       {
         title: '二级类目',
         dataIndex: 'category',
         render: val => (val.children.category_name),
-
+        key: 'menu-2',
       },
       {
         title: '三级类目',
         dataIndex: 'category',
         render: val => (val.children.children.category_name),
+        key: 'menu-3',        
       },
       {
         title: '品牌',

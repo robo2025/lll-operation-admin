@@ -12,8 +12,9 @@ const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 
-@connect(({ rule, loading }) => ({
+@connect(({ rule, loading, good }) => ({
   rule,
+  good,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -37,6 +38,9 @@ export default class GoodsMananger extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'rule/fetch',
+    });
+    dispatch({
+      type: 'good/fetch',
     });
   }
 
@@ -356,15 +360,17 @@ export default class GoodsMananger extends Component {
   }
 
   render() {
-    const { rule: { data }, loading } = this.props;
+    const { loading, good } = this.props;
     const { selectedRows, modalVisible, isShowExportModal } = this.state;
-
+    const data = good.list;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
         <Menu.Item key="approval">批量审批</Menu.Item>
       </Menu>
     );
+
+    console.log('商品列表', good);
 
     const parentMethods = {
       handleAdd: this.handleAdd,

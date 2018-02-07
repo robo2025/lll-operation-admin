@@ -90,7 +90,7 @@ class ProductForm extends Component {
         </Col>
       ));
     } else {
-      return <Spin spining={loading} />;
+      return <Spin spinning={loading || true} />;
     }
 
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构
@@ -118,7 +118,7 @@ class ProductForm extends Component {
               {getFieldDecorator('product_name', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="产品ID"
@@ -127,7 +127,7 @@ class ProductForm extends Component {
               {getFieldDecorator('pno', {
               })(
                 <Input disabled />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="型号"
@@ -136,7 +136,7 @@ class ProductForm extends Component {
               {getFieldDecorator('partnumber', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="品牌"
@@ -145,7 +145,7 @@ class ProductForm extends Component {
               {getFieldDecorator('brand_name', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="英文名"
@@ -154,7 +154,7 @@ class ProductForm extends Component {
               {getFieldDecorator('english_name', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="产地"
@@ -163,7 +163,7 @@ class ProductForm extends Component {
               {getFieldDecorator('prodution_place', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
           </Form>
           <Row gutter={24}>
@@ -246,6 +246,7 @@ class ProductForm extends Component {
                 autosize={{
                   minRows: 20,
                 }}
+                defaultValue={data.attr ? data.attr.summary : ''}
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
@@ -253,6 +254,7 @@ class ProductForm extends Component {
                 autosize={{
                   minRows: 20,
                 }}
+                defaultValue={data.attr ? data.attr.description : ''}                
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
@@ -260,6 +262,7 @@ class ProductForm extends Component {
                 autosize={{
                   minRows: 20,
                 }}
+                defaultValue={data.attr ? data.attr.faq : ''}                                
               />
             </TabPane>
           </Tabs>

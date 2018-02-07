@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-02 10:03:36
+ * @Last Modified time: 2018-02-07 17:17:18
  */
 import React, { PureComponent } from 'react';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs } from 'antd';
@@ -14,19 +14,24 @@ const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
-@Form.create()
+@Form.create({
+  mapPropsToFields(props) {
+    const { data } = props;
+    const fields = {};
+    Object.keys(data).forEach((key) => {
+      fields[key] = Form.createFormField({
+        value: data[key],
+      });
+    });
+    return {
+      ...fields,
+    };
+  },
+  onValuesChange(props, values) {
+    props.onChange(values);
+  },
+})
 class GoodInfo extends PureComponent {
-  componentDidMount() {
-    const { setFieldsValue } = this.props.form;
-    const { data } = this.props;
-    for (const keyName in data) {
-      if (data[keyName]) {
-        const temp = {};
-        temp[keyName] = data[keyName];
-        setFieldsValue(temp);
-      }
-    }
-  }
 
   render() {
     const formItemLayout = {
@@ -77,7 +82,7 @@ class GoodInfo extends PureComponent {
               label="产品ID"
               {...formItemLayout}
             >
-              {getFieldDecorator('good_id', {
+              {getFieldDecorator('gno', {
               })(
                 <Input disabled />
               )}
@@ -86,7 +91,8 @@ class GoodInfo extends PureComponent {
               label="商品名称"
               {...formItemLayout}
             >
-              {getFieldDecorator('name', {
+              {getFieldDecorator('product_name', {
+                initialValue: "test",
               })(
                 <Input disabled />
               )}
@@ -140,7 +146,7 @@ class GoodInfo extends PureComponent {
               label="质保期"
               {...formItemLayout}
             >
-              {getFieldDecorator('warranty', {
+              {getFieldDecorator('shelf_life', {
               })(
                 <Input />
               )}
@@ -149,7 +155,7 @@ class GoodInfo extends PureComponent {
               label="销售单位"
               {...formItemLayout}
             >
-              {getFieldDecorator('unit', {
+              {getFieldDecorator('sales_unit', {
               })(
                 <Input />
               )}
@@ -175,7 +181,7 @@ class GoodInfo extends PureComponent {
                   wrapperCol={{ span: 11 }}
                 >
                   {
-                    getFieldDecorator('min_buy_num', {
+                    getFieldDecorator('min_buy', {
                       rules: [{ required: true, message: '请输入最低采购量' }],
                     })(
                       <Input />
@@ -189,9 +195,9 @@ class GoodInfo extends PureComponent {
               {...formItemLayout}
             >
               {
-                getFieldDecorator('freight', {
+                getFieldDecorator('shipping_fee_type', {
                 })(
-                  <span>{data.freight}</span>
+                  <span>{data.shipping_fee_type}</span>
                 )
               }
             </FormItem>

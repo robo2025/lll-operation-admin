@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-06 23:26:41
+ * @Last Modified time: 2018-02-07 16:59:09
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -13,7 +13,7 @@ import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
 import { queryString } from '../../utils/tools';
-
+import styles from './modify-product.less';
 
 const FormItem = Form.Item;
 
@@ -75,7 +75,7 @@ export default class ModifyProduct extends Component {
   }
 
   /**
-   * 点击关联后时间
+   * 点击关联按钮后事件
    * @param {string=} prdId 产品ID
    *
    * */
@@ -223,6 +223,10 @@ export default class ModifyProduct extends Component {
               </Row>
             </FormItem>
           </Form>
+          <div className={styles['submit-btn-wrap']}>
+            <Button>取消</Button>
+            <Button type="primary">提交</Button>
+          </div>
         </Card>
       </PageHeaderLayout>
     );

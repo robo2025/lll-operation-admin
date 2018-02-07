@@ -7,6 +7,16 @@ const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
+function getStanrdCatalog(data) {
+  data.forEach((val) => {
+    val.value = val.id;
+    val.label = val.category_name;
+    if (val.children.length > 0) {
+      getStanrdCatalog(val.children);
+    }
+  });
+}
+
 @Form.create({
   onValuesChange(props, values) {
     props.onChange(values);
@@ -28,6 +38,13 @@ class ProductForm extends Component {
       previewVisible: true,
     });
   }
+
+  handleChange(key, value) {
+    const tempJson = {};
+    tempJson[key] = value;
+    this.props.onAttrChange(tempJson);
+  }
+
   render() {
     const formItemLayout = {
       labelCol: { span: 3 },
@@ -35,7 +52,7 @@ class ProductForm extends Component {
     };
 
     const { getFieldDecorator } = this.props.form;
-    const { catalog } = this.props;
+    const { catalog, onAttrChange } = this.props;
     const { previewVisible, previewImage } = this.state;
     const uploadButton = (
       <div>
@@ -44,7 +61,8 @@ class ProductForm extends Component {
       </div>
     );
 
-    console.log(catalog, 'mulu');
+    getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构    
+    // console.log('目录', catalog);
 
     return (
       <div className={styles['product-info-wrap']} >
@@ -55,7 +73,7 @@ class ProductForm extends Component {
               label="所属分类"
               {...formItemLayout}
             >
-              {getFieldDecorator('cate', {
+              {getFieldDecorator('category', {
               })(
                 <Cascader
                   options={catalog}
@@ -75,7 +93,7 @@ class ProductForm extends Component {
                 //     <Option value="Option2-2">轴</Option>
                 //   </Select>
                 // </InputGroup>
-                )}
+              )}
             </FormItem>
             <FormItem
               label="产品名称"
@@ -84,16 +102,7 @@ class ProductForm extends Component {
               {getFieldDecorator('product_name', {
               })(
                 <Input />
-                )}
-            </FormItem>
-            <FormItem
-              label="产品ID"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('pno', {
-              })(
-                <Input disabled />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="型号"
@@ -102,7 +111,7 @@ class ProductForm extends Component {
               {getFieldDecorator('partnumber', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="品牌"
@@ -111,7 +120,7 @@ class ProductForm extends Component {
               {getFieldDecorator('brand_name', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="英文名"
@@ -120,7 +129,7 @@ class ProductForm extends Component {
               {getFieldDecorator('english_name', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
             <FormItem
               label="产地"
@@ -129,52 +138,52 @@ class ProductForm extends Component {
               {getFieldDecorator('prodution_place', {
               })(
                 <Input />
-                )}
+              )}
             </FormItem>
+            <Row gutter={24}>
+              <Col span={8}>
+                <FormItem
+                  label="CAD图"
+                  labelCol={{ span: 9 }}
+                  wrapperCol={{ span: 10 }}
+                >
+                  <Upload>
+                    <Button icon="upload">上传</Button>
+                  </Upload>
+                </FormItem>
+              </Col>
+            </Row>
+            <Row gutter={24}>
+              <Col span={8}>
+                <FormItem
+                  label=""
+                  labelCol={{ span: 9 }}
+                  wrapperCol={{ span: 10, offset: 9 }}
+                >
+                  <span>商品设计图.cad</span>
+                </FormItem>
+              </Col>
+              <Col span={5}>
+                <FormItem
+                  labelCol={{ span: 1 }}
+                  wrapperCol={{ span: 23 }}
+                >
+                  <span>2017-12-29 12:36:45</span>
+                </FormItem>
+              </Col>
+              <Col span={5}>
+                <FormItem
+                  labelCol={{ span: 1 }}
+                  wrapperCol={{ span: 12 }}
+                >
+                  <div>
+                    <a>删除</a>
+                    <a>查看</a>
+                  </div>
+                </FormItem>
+              </Col>
+            </Row>
           </Form>
-          <Row gutter={24}>
-            <Col span={8}>
-              <FormItem
-                label="CAD图"
-                labelCol={{ span: 9 }}
-                wrapperCol={{ span: 10 }}
-              >
-                <Upload>
-                  <Button icon="upload">上传</Button>
-                </Upload>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={24}>
-            <Col span={8}>
-              <FormItem
-                label=""
-                labelCol={{ span: 9 }}
-                wrapperCol={{ span: 10, offset: 9 }}
-              >
-                <span>商品设计图.cad</span>
-              </FormItem>
-            </Col>
-            <Col span={5}>
-              <FormItem
-                labelCol={{ span: 1 }}
-                wrapperCol={{ span: 23 }}
-              >
-                <span>2017-12-29 12:36:45</span>
-              </FormItem>
-            </Col>
-            <Col span={5}>
-              <FormItem
-                labelCol={{ span: 1 }}
-                wrapperCol={{ span: 12 }}
-              >
-                <div>
-                  <a>删除</a>
-                  <a>查看</a>
-                </div>
-              </FormItem>
-            </Col>
-          </Row>
         </div >
         {/* 商品图片 */}
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} >
@@ -229,6 +238,7 @@ class ProductForm extends Component {
                 autosize={{
                   minRows: 20,
                 }}
+                onChange={(e) => { this.handleChange('summary', e.target.value); }}
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
@@ -236,6 +246,7 @@ class ProductForm extends Component {
                 autosize={{
                   minRows: 20,
                 }}
+                onChange={(e) => { this.handleChange('description', e.target.value); }}                
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
@@ -243,6 +254,7 @@ class ProductForm extends Component {
                 autosize={{
                   minRows: 20,
                 }}
+                onChange={(e) => { this.handleChange('faq', e.target.value); }}                                
               />
             </TabPane>
           </Tabs>

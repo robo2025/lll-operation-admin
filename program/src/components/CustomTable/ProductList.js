@@ -37,17 +37,19 @@ class ProductList extends React.Component {
         title: '一级类目',
         dataIndex: 'category',
         render: val => (val.category_name),
+        key: 'menu1',
       },
       {
         title: '二级类目',
         dataIndex: 'category',
         render: val => (val.children.category_name),
-
+        key: 'menu2',        
       },
       {
         title: '三级类目',
         dataIndex: 'category',
         render: val => (val.children.children.category_name),
+        key: 'menu3',                
       },
       {
         title: '品牌',
@@ -71,6 +73,7 @@ class ProductList extends React.Component {
         <Table
           columns={this.columns}
           dataSource={dataSource}
+          rowKey={record => (`${record.pno}-${record.id}`)}
         />
       </div>
     );
