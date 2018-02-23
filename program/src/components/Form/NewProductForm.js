@@ -227,6 +227,39 @@ class ProductForm extends Component {
               </Upload>
               <p className="upload-pic-desc">侧面</p>
             </Col>
+            <Col span={8}>
+              <Upload
+                action="//jsonplaceholder.typicode.com/posts/"
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                onChange={this.handleChange}
+              >
+                {uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">包装图</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                action="//jsonplaceholder.typicode.com/posts/"
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                onChange={this.handleChange}
+              >
+                {uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">包装图</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                action="//jsonplaceholder.typicode.com/posts/"
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                onChange={this.handleChange}
+              >
+                {uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">包装图</p>
+            </Col>
           </Row>
         </div>
         {/* 商品描述、详情 */}
