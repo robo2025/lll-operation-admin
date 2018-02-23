@@ -32,7 +32,6 @@ const { TextArea } = Input;
   },
 })
 class GoodInfo extends PureComponent {
-
   render() {
     const formItemLayout = {
       labelCol: { span: 3 },
@@ -92,7 +91,7 @@ class GoodInfo extends PureComponent {
               {...formItemLayout}
             >
               {getFieldDecorator('product_name', {
-                initialValue: "test",
+                initialValue: 'test',
               })(
                 <Input disabled />
               )}

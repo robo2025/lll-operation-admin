@@ -6,7 +6,6 @@ import styles from './product-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const { TextArea } = Input;
 
 function getStanrdCatalog(data) {
   data.forEach((val) => {
