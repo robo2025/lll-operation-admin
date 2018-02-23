@@ -2,13 +2,6 @@ import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 import { URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE } from '../constant/config';
 
-export async function query() {
-  return request('/api/users');
-}
-
-export async function queryCurrent() {
-  return request('/api/currentUser');
-}
 
 // 获取用户信息
 export async function getUserInfo() {
@@ -27,8 +20,12 @@ export function register() {
 // 登出
 export function logout() {
   const access_token = Cookies.get('access_token');
-  Cookies.remove('access_token');
-  window.location.href = `${LOGOUT_URL}?access_token=${access_token}&next=${HOME_PAGE}`;
+  if (access_token) {
+    Cookies.remove('access_token');
+    window.location.href = `${LOGOUT_URL}?access_token=${access_token}&next=${HOME_PAGE}`;
+  } else {
+    window.location.href = `${LOGOUT_URL}`;
+  }
 }
 
 // 登录操作

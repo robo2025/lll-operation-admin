@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
+import RichEditor from '../../components/RichEditor/RichEditor';
 
 import styles from './product-info.less';
 
@@ -200,7 +201,6 @@ class ProductForm extends Component {
                 onChange={this.handleChange}
               >
                 {uploadButton}
-
               </Upload>
               <p className="upload-pic-desc">正面</p>
             </Col>
@@ -234,27 +234,18 @@ class ProductForm extends Component {
         <div className="good-desc">
           <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
             <TabPane tab="商品概述" key="1">
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
-                onChange={(e) => { this.handleChange('summary', e.target.value); }}
+              <RichEditor
+                onChange={(html) => { this.handleChange('summary', html); }}
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
-                onChange={(e) => { this.handleChange('description', e.target.value); }}                
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
-                onChange={(e) => { this.handleChange('faq', e.target.value); }}                                
+              <RichEditor
+                onChange={(html) => { this.handleChange('faq', html); }}
               />
             </TabPane>
           </Tabs>

@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { query as queryUsers, queryCurrent, getUserInfo } from '../services/user';
 
 export default {
@@ -18,6 +19,7 @@ export default {
       });
       const response = yield call(getUserInfo);
       window.sessionStorage.setItem('userinfo', JSON.stringify(response.data));
+      Cookies.set('userinfo', JSON.stringify(response.data), { expires: 7 });
       yield put({
         type: 'save',
         payload: response.data,

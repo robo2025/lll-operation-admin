@@ -42,9 +42,9 @@ export async function addProduct({ data }) {
  * @param {object} data 产品数据
  *
 */
-export async function modifyProduct({ data }) {
+export async function modifyProduct({ prdId, data }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/products`, {
+  return lyRequest(`${API_URL}/api/products/${prdId}`, {
     method: 'put',
     headers: {
       Authorization: acess_token,

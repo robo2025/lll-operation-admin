@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { login, jumpToLogin } from '../services/user';
 import { Modal, notification } from 'antd';
+import { login, jumpToLogin } from '../services/user';
 
 
 const codeMessage = {

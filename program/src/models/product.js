@@ -37,8 +37,8 @@ export default {
       });
       if (callback) callback();
     },
-    *modifyInfo({ categoryId, name, isActive, desc, callback }, { call, put }) {
-      const res = yield call(modifyProduct, { categoryId, name, isActive, desc });
+    *modifyInfo({ prdId, data, callback }, { call, put }) {
+      const res = yield call(modifyProduct, { prdId, data });
       const response = yield call(queryProducts);
       yield put({
         type: 'modify',

@@ -1,4 +1,5 @@
 import React from 'react';
+import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import { Layout, Icon, message } from 'antd';
 import DocumentTitle from 'react-document-title';
@@ -84,10 +85,10 @@ class BasicLayout extends React.PureComponent {
       });
     });
 
-    this.props.dispatch({
+   /*  this.props.dispatch({
       type: 'user/fetch',
-    });
-    // console.log("基础也渲染好了")
+    }); */
+    console.log('基础也渲染好了', Cookies.get('userinfo'));
   }
   getPageTitle() {
     const { routerData, location } = this.props;
@@ -127,7 +128,7 @@ class BasicLayout extends React.PureComponent {
     const {
       collapsed, fetchingNotices, notices, routerData, match, location,
     } = this.props;
-    const currentUser = JSON.parse(window.sessionStorage.getItem('userinfo'));
+    const currentUser = JSON.parse(Cookies.get('userinfo'));
     // console.log('baseLayout', this.props);
     const layout = (
       <Layout>

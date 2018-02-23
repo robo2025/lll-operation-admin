@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-07 14:40:40
+ * @Last Modified time: 2018-02-23 11:30:28
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -36,8 +36,8 @@ export default class NewProduct extends Component {
       isShowModal: false,
       isShowAttrMOdal: false,
       fields: {
-        attr: {},
         pics: [],
+        other_attrs: [],
       },
     };
   }

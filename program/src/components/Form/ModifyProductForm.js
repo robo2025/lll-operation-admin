@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Spin, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
+import RichEditor from '../../components/RichEditor/RichEditor';
 
 import styles from './product-info.less';
 
@@ -50,6 +51,13 @@ class ProductForm extends Component {
       previewVisible: true,
     });
   }
+
+  handleChange(key, value) {
+    const tempJson = {};
+    tempJson[key] = value;
+    this.props.onAttrChange(tempJson);
+  }
+
   render() {
     const formItemLayout = {
       labelCol: { span: 3 },
@@ -210,18 +218,18 @@ class ProductForm extends Component {
             </Col>
           </Row>
         </div >
-        {/* 商品图片 */}
+        {/* 产品图片 */}
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} >
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal >
-        <div style={{ float: 'left', maxWidth: 360 }}>
-          <h3>商品图片</h3>
-          <Row gutter={16}>
+        <div style={{ float: 'left', width: 360 }}>
+          <h3>产品图片</h3>
+          <Row gutter={24}>
             {uploaders}
             {
               (data.pics && data.pics.length < 6) ?
                 (
-                  <Col span={6} >
+                  <Col span={8} >
                     <Upload
                       action="//jsonplaceholder.typicode.com/posts/"
                       listType="picture-card"
@@ -242,27 +250,21 @@ class ProductForm extends Component {
         <div className="good-desc">
           <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
             <TabPane tab="商品概述" key="1">
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
-                defaultValue={data.attr ? data.attr.summary : ''}
+              <RichEditor
+                onChange={(html) => { this.handleChange('summary', html); }}
+                defaultValue={data.summary}
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
-                defaultValue={data.attr ? data.attr.description : ''}                
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
+                defaultValue={data.description}
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
-                defaultValue={data.attr ? data.attr.faq : ''}                                
+              <RichEditor
+                onChange={(html) => { this.handleChange('faq', html); }}
+                defaultValue={data.faq}
               />
             </TabPane>
           </Tabs>

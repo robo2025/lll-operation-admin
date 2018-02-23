@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-07 16:59:09
+ * @Last Modified time: 2018-02-23 16:44:47
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -28,8 +28,10 @@ export default class ModifyProduct extends Component {
     this.showModal = this.showModal.bind(this);
     this.ShowAttrModal = this.ShowAttrModal.bind(this);
     this.handleAssociate = this.handleAssociate.bind(this);
+    this.handleProductAttr = this.handleProductAttr.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onOk = this.onOk.bind(this);
+    this.handleSubmitProduct = this.handleSubmitProduct.bind(this);
     this.state = {
       isShowModal: false,
       isShowAttrMOdal: false,
@@ -49,7 +51,19 @@ export default class ModifyProduct extends Component {
     dispatch({
       type: 'product/fetchDetail',
       productId: args.prdId || args.origin_prdId,
-      callback: (detail) => { this.setState({ fields: detail }); },
+      callback: (detail) => { 
+        this.setState({ 
+          fields: { 
+            ...detail,
+            category_id_1: detail.category.id, // 一级目录
+            category_id_2: detail.category.children.id, // 二级目录
+            category_id_3: detail.category.children.children.id, // 三级目录
+            category_id_4: detail.category.children.children.children.id, // 四级目录
+            cad_url: [],
+            pdf_url: [],
+           },
+         }); 
+      },
     });
     // 请求目录列表
     dispatch({
@@ -85,12 +99,48 @@ export default class ModifyProduct extends Component {
     this.setState({ isShowModal: false });
   }
 
+    /**
+   * 当产品其他属性被修改事件[产品概述、详情、FAQ,其他属性，图片]
+   * 
+   * @param {object} obj json对象，产品属性key=>value
+   * 
+   */
+  handleProductAttr(obj) {
+    this.setState({
+      fields: { ...this.state.fields, ...obj },
+    });
+    console.log('产品信息', { ...this.state.fields, ...obj });
+  }
 
   // 当表单输入框被修改事件
   handleFormChange = (changedFields) => {
     this.setState({
       fields: { ...this.state.fields, ...changedFields },
     });
+  }
+
+  
+  /**
+   * 提交产品信息
+   * 
+   */
+  handleSubmitProduct() {
+    const argsKey = Object.keys(this.state.args);
+    console.log('产品信息', this.state.fields, Object.keys(this.state.args));
+    const { dispatch } = this.props;
+    
+    if (argsKey.includes('prdId')) { // 如果是修改产品
+      dispatch({
+        type: 'product/modifyInfo',
+        prdId: this.state.args.prdId,
+        data: this.state.fields,
+      });
+    } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
+      dispatch({
+        type: 'product/add',
+        data: this.state.fields,
+      });
+    }
   }
 
   render() {
@@ -144,6 +194,7 @@ export default class ModifyProduct extends Component {
             onChange={this.handleFormChange}
             catalog={catalog.level}
             loading={loading}
+            onAttrChange={this.handleProductAttr}            
           />
           <SectionHeader
             title="产品其他属性"
@@ -225,7 +276,7 @@ export default class ModifyProduct extends Component {
           </Form>
           <div className={styles['submit-btn-wrap']}>
             <Button>取消</Button>
-            <Button type="primary">提交</Button>
+            <Button type="primary" onClick={this.handleSubmitProduct}>提交</Button>
           </div>
         </Card>
       </PageHeaderLayout>

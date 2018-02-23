@@ -32,12 +32,12 @@ const columns = [{
 
 class Dashboard extends PureComponent {
   componentDidMount() {
-    this.props.dispatch({
+   /*  this.props.dispatch({
       type: 'user/fetch',
-    });
+    }); */
   }
   render() {
-    const { user: { list, loading } } = this.props;
+    // const { user: { list, loading } } = this.props;
     return (
       <div>
         <Row gutter={24}>
@@ -86,7 +86,7 @@ class Dashboard extends PureComponent {
               bordered={false}
               extra={<Icon type="setting" />}
             >
-              <Table dataSource={list} loading={loading} columns={columns} />
+              {/* <Table dataSource={list} loading={loading} columns={columns} /> */}
             </Card>
           </Col>
         </Row>
