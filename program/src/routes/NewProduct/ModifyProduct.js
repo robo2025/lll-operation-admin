@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-23 16:44:47
+ * @Last Modified time: 2018-02-23 19:48:04
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -17,6 +17,7 @@ import styles from './modify-product.less';
 
 const FormItem = Form.Item;
 
+// 修改产品信息
 @connect(({ loading, product, catalog }) => ({
   product,
   catalog,
