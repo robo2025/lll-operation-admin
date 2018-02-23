@@ -29,6 +29,10 @@ class ProductForm extends Component {
     this.state = {
       previewVisible: false,
       previewImage: '',
+      a: [],
+      b: [],
+      c: [],
+      d: [],
     };
   }
 
@@ -37,6 +41,7 @@ class ProductForm extends Component {
     this.setState({
       previewImage: file.url || file.thumbUrl,
       previewVisible: true,
+      fileList: [],
     });
   }
 
@@ -44,6 +49,13 @@ class ProductForm extends Component {
     const tempJson = {};
     tempJson[key] = value;
     this.props.onAttrChange(tempJson);
+  }
+
+  handleUploaderChange(key, fileList) {
+    console.log(key, fileList);
+    const tempJson = {};
+    tempJson[key] = fileList;
+    this.setState(tempJson);
   }
 
   render() {
@@ -54,7 +66,7 @@ class ProductForm extends Component {
 
     const { getFieldDecorator } = this.props.form;
     const { catalog, onAttrChange } = this.props;
-    const { previewVisible, previewImage } = this.state;
+    const { previewVisible, previewImage, a, b, c, d, e, f, g } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -80,20 +92,6 @@ class ProductForm extends Component {
                   options={catalog}
                   placeholder="请您选择类目"
                 />
-                // <InputGroup compact >
-                //   <Select defaultValue="Option1-1">
-                //     <Option value="Option1-1">{data.category.category_name}</Option>
-                //     <Option value="Option1-2">{data.category.category_name}</Option>
-                //   </Select>
-                //   <Select defaultValue="二级目录">
-                //     <Option value="Option2-1">传感器</Option>
-                //     <Option value="Option2-2">传感器</Option>
-                //   </Select>
-                //   <Select defaultValue="三级目录">
-                //     <Option value="Option2-1">轴</Option>
-                //     <Option value="Option2-2">轴</Option>
-                //   </Select>
-                // </InputGroup>
               )}
             </FormItem>
             <FormItem
@@ -195,12 +193,25 @@ class ProductForm extends Component {
           <Row gutter={24}>
             <Col span={8}>
               <Upload
+                name="a"
                 action="//jsonplaceholder.typicode.com/posts/"
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                onChange={this.handleChange}
+                onChange={({ fileList }) => { this.handleUploaderChange('a', fileList); }}
               >
-                {uploadButton}
+                {a.length >= 1 ? null : uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">正面</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                name="b"
+                action="//jsonplaceholder.typicode.com/posts/"
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
+              >
+                {b.length >= 1 ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">正面</p>
             </Col>
