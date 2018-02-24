@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { query as queryUsers, queryCurrent, getUserInfo } from '../services/user';
+import { queryCurrent, getSupplierInfo, getUserInfo } from '../services/user';
 
 export default {
   namespace: 'user',
@@ -9,6 +9,7 @@ export default {
     info: {},
     loading: false,
     currentUser: {},
+    supplier: {},
   },
 
   effects: {
@@ -33,6 +34,13 @@ export default {
       const response = yield call(queryCurrent);
       yield put({
         type: 'saveCurrentUser',
+        payload: response,
+      });
+    },
+    *fetchSupplierInfo({ supplierid }, { call, put }) {
+      const response = yield call(getSupplierInfo, supplierid);
+      yield put({
+        type: 'saveSupplier',
         payload: response,
       });
     },
@@ -64,6 +72,12 @@ export default {
           ...state.currentUser,
           notifyCount: action.payload,
         },
+      };
+    },
+    saveSupplier(state, action) {
+      return {
+        ...state,
+        supplier: action.payload,
       };
     },
   },

@@ -20,9 +20,8 @@ export default {
     *fetchDetail({ goodId, callback }, { call, put }) {
       const response = yield call(queryGoodDetail, { goodId });
       if (response.rescode >> 0 === 10000) {
-        if (callback)callback(response.data);
+        if (callback)callback(response.data.id);
       }
-      console.log('商品详情:', response);
       yield put({
         type: 'saveDetail',
         payload: response.data,

@@ -2,17 +2,17 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-07 17:17:18
+ * @Last Modified time: 2018-02-24 18:41:44
  */
 import React, { PureComponent } from 'react';
-import { Form, Input, Row, Col, Upload, Icon, Table, Tabs } from 'antd';
+import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
+import RichEditor from '../../components/RichEditor/RichEditor';
 
 import styles from './good-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const { TextArea } = Input;
 
 @Form.create({
   mapPropsToFields(props) {
@@ -32,6 +32,18 @@ const { TextArea } = Input;
   },
 })
 class GoodInfo extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  // 输入框有改变时
+  handleChange(key, value) {
+    const tempJson = {};
+    tempJson[key] = value;
+    this.props.onAttrChange(tempJson);
+  }
+
   render() {
     const formItemLayout = {
       labelCol: { span: 3 },
@@ -40,28 +52,34 @@ class GoodInfo extends PureComponent {
 
     const columns = [{
       title: '采购量',
-      dataIndex: 'num',
-      key: 'num',
+      key: 'id',
+      render: record => (<span>{`${record.min_quantity}~${record.max_quantity}`}</span>),
     }, {
       title: '销售单价(含税)',
       dataIndex: 'price',
       key: 'price',
     }, {
       title: '发货日',
-      dataIndex: 'delivery',
-      key: 'delivery',
+      dataIndex: 'lead_time',
+      key: 'lead_time',
     }];
 
     const { getFieldDecorator } = this.props.form;
     const { data } = this.props;
+    if (!data.product) {
+      return <Spin spinning />;
+    }
+    const { product } = data;
+    const category = product ? product.category : '';
+    const categoryStr = category ?
+      `${category.category_name}-${category.children.category_name}-${category.children.children.category_name}-${category.children.children.children.category_name}`
+      : '';
     const uploadButton = (
       <div>
         <Icon type="plus" />
         <div className="ant-upload-text">上传</div>
       </div>
     );
-    console.log(this.props);
-
     return (
       <div className={styles['good-info-wrap']}>
         <SectionHeader title="商品基础信息" />
@@ -73,6 +91,7 @@ class GoodInfo extends PureComponent {
               {...formItemLayout}
             >
               {getFieldDecorator('cate', {
+                initialValue: categoryStr,
               })(
                 <Input disabled />
               )}
@@ -81,7 +100,8 @@ class GoodInfo extends PureComponent {
               label="产品ID"
               {...formItemLayout}
             >
-              {getFieldDecorator('gno', {
+              {getFieldDecorator('pno', {
+                initialValue: product.pno,
               })(
                 <Input disabled />
               )}
@@ -91,7 +111,7 @@ class GoodInfo extends PureComponent {
               {...formItemLayout}
             >
               {getFieldDecorator('product_name', {
-                initialValue: 'test',
+                initialValue: product.product_name,
               })(
                 <Input disabled />
               )}
@@ -100,7 +120,7 @@ class GoodInfo extends PureComponent {
               label="商品ID"
               {...formItemLayout}
             >
-              {getFieldDecorator('product_id', {
+              {getFieldDecorator('gno', {
               })(
                 <Input disabled />
               )}
@@ -109,7 +129,8 @@ class GoodInfo extends PureComponent {
               label="型号"
               {...formItemLayout}
             >
-              {getFieldDecorator('type', {
+              {getFieldDecorator('partnumber', {
+                initialValue: product.partnumber,
               })(
                 <Input disabled />
               )}
@@ -119,6 +140,7 @@ class GoodInfo extends PureComponent {
               {...formItemLayout}
             >
               {getFieldDecorator('band', {
+                initialValue: product.brand_name,
               })(
                 <Input disabled />
               )}
@@ -128,6 +150,7 @@ class GoodInfo extends PureComponent {
               {...formItemLayout}
             >
               {getFieldDecorator('en_name', {
+                initialValue: product.english_name,
               })(
                 <Input disabled />
               )}
@@ -136,7 +159,8 @@ class GoodInfo extends PureComponent {
               label="产地"
               {...formItemLayout}
             >
-              {getFieldDecorator('place', {
+              {getFieldDecorator('prodution_place', {
+                initialValue: product.prodution_place,
               })(
                 <Input disabled />
               )}
@@ -196,7 +220,7 @@ class GoodInfo extends PureComponent {
               {
                 getFieldDecorator('shipping_fee_type', {
                 })(
-                  <span>{data.shipping_fee_type}</span>
+                  <span>{data.shipping_fee_type === 1 ? '包邮' : '货到付款'}</span>
                 )
               }
             </FormItem>
@@ -260,14 +284,15 @@ class GoodInfo extends PureComponent {
         <div style={{ float: 'left', height: 546, position: 'relative' }}>
           <div>
             <h4>商品图片</h4>
-            <Upload
-              action="//jsonplaceholder.typicode.com/posts/"
-              listType="picture-card"
-              onPreview={this.handlePreview}
-              onChange={this.handleChange}
-            >
-              {uploadButton}
-            </Upload>
+            <Row style={{ maxWidth: 360 }} gutter={12}>
+              {
+                product.pics.map(val => (
+                  <Col span={8} key={val.id} >
+                    <img src={val.img_url} alt={val.img_type} title={val.img_type} width="100%" style={{ marginTop: 5, marginBottom: 8 }} />
+                  </Col>
+                ))
+              }
+            </Row>
           </div>
           <div className={styles['price-range']}>
             <h4>*价格设置</h4>
@@ -275,8 +300,8 @@ class GoodInfo extends PureComponent {
               bordered
               pagination={false}
               size="small"
-              rowKey="123456"
-              dataSource={data.price_range}
+              rowKey={item => (item.id + Math.random)}
+              dataSource={data.prices}
               columns={columns}
             />
           </div>
@@ -287,63 +312,41 @@ class GoodInfo extends PureComponent {
         <div className="good-desc">
           <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
             <TabPane tab="商品概述" key="1">
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
+              <RichEditor
+                onChange={(html) => { this.handleChange('summary', html); }}
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
-              <TextArea
-                autosize={{
-                  minRows: 20,
-                }}
+              <RichEditor
+                onChange={(html) => { this.handleChange('faq', html); }}
               />
             </TabPane>
           </Tabs>
         </div>
         <SectionHeader title="产品其他属性" />
-        <div className="other-args">
-          <Row gutter={24}>
-            <Col span={8} style={{ textAlign: 'left' }}>
-              <FormItem
-                label="控制输出"
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 10 }}
-              >
-                <span>NPM及电路开路输出</span>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={24}>
-            <Col span={8} style={{ textAlign: 'left' }}>
-              <FormItem
-                label="检测物体"
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 10 }}
-              >
-                <span>不透明物体 min.08×1.8mm</span>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={24}>
-            <Col span={8} style={{ textAlign: 'left' }}>
-              <FormItem
-                label="形状"
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 10 }}
-              >
-                <span>L型</span>
-              </FormItem>
-            </Col>
-          </Row>
+        <div className="other-attrs">
+
+          {
+            product.other_attrs.map((val, idx) => (
+              <Row gutter={24} key={idx}>
+                <Col span={8} style={{ textAlign: 'left' }}>
+                  <FormItem
+                    label={val.attr_name}
+                    labelCol={{ span: 5 }}
+                    wrapperCol={{ span: 10 }}
+                  >
+                    <span>{val.attr_value}</span>
+                  </FormItem>
+                </Col>
+              </Row>
+
+            ))
+          }
         </div>
         <SectionHeader title="佣金比率" />
         <div className="commission">

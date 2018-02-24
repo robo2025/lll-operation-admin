@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Form, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
+import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
-
+import { checkFile, getFileSuffix } from '../../utils/tools';
 import styles from './product-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const { TextArea } = Input;
+const FILE_TYPES = ['jpg', 'png', 'gif']; // 支持上传的文件类型
 
 function getStanrdCatalog(data) {
   data.forEach((val) => {
@@ -26,13 +26,19 @@ function getStanrdCatalog(data) {
 class ProductForm extends Component {
   constructor(props) {
     super(props);
+    this.beforeUpload = this.beforeUpload.bind(this);
     this.state = {
       previewVisible: false,
       previewImage: '',
+      isPicture: true,
+      file: { uid: '', name: '' },
+      pics: [], // 产品图片集合
       a: [],
       b: [],
       c: [],
-      d: [],
+      d1: [],
+      d2: [],
+      d3: [],
     };
   }
 
@@ -41,32 +47,74 @@ class ProductForm extends Component {
     this.setState({
       previewImage: file.url || file.thumbUrl,
       previewVisible: true,
-      fileList: [],
     });
   }
 
+  // 输入框有改变时
   handleChange(key, value) {
     const tempJson = {};
     tempJson[key] = value;
     this.props.onAttrChange(tempJson);
   }
 
+  // 图片上传前处理：验证文件类型
+  beforeUpload(key, file) {
+    this.setState({ file });
+    // console.log('before', file);
+    if (!checkFile(file.name, FILE_TYPES)) {
+      message.error(`${file.name} 暂不支持上传`);
+      this.setState({ isPicture: false });
+      return false;
+    }
+  }
+
+  // 图片上传时处理
   handleUploaderChange(key, fileList) {
-    console.log(key, fileList);
-    const tempJson = {};
-    tempJson[key] = fileList;
-    this.setState(tempJson);
+    const { pics } = this.state;
+    const { onAttrChange } = this.props;
+    if (this.state.isPicture) {
+      const tempJson = {};
+      tempJson[key] = fileList;
+      this.setState(tempJson);
+      // console.log('状态改变', fileList);
+      const that = this;
+      // 上传成功，则将图片放入state里的pics数组内
+      fileList.map((file) => {
+        if (file.status === 'done') {
+          message.success(`${file.name} 文件上传成功`);
+          // that.setState({ file_url: file.response.key });
+          if (key === 'a') {
+            this.setState({ pics: [...pics, { img_type: '正面', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '正面', img_url: file.response.key }] });
+          } else if (key === 'b') {
+            this.setState({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });            
+            onAttrChange({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });            
+          } else if (key === 'c') {
+            this.setState({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
+          } else if (key.substr(0, 1) === 'd') {
+            this.setState({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
+          }
+        } else if (file.status === 'error') {
+          message.error(`${file.name} 文件上传失败`);
+        }
+        return file;
+      });
+    }
   }
 
   render() {
+    console.log('state:', this.state);
     const formItemLayout = {
       labelCol: { span: 3 },
       wrapperCol: { span: 12 },
     };
 
     const { getFieldDecorator } = this.props.form;
-    const { catalog, onAttrChange } = this.props;
-    const { previewVisible, previewImage, a, b, c, d, e, f, g } = this.state;
+    const { catalog, uploadToken } = this.props;
+    const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
+    const { previewVisible, previewImage, a, b, c, d1, d2, d3, file } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -75,7 +123,7 @@ class ProductForm extends Component {
     );
 
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构    
-    // console.log('目录', catalog);
+    // console.log('目录', uploadToken);
 
     return (
       <div className={styles['product-info-wrap']} >
@@ -193,11 +241,18 @@ class ProductForm extends Component {
           <Row gutter={24}>
             <Col span={8}>
               <Upload
-                name="a"
-                action="//jsonplaceholder.typicode.com/posts/"
+                name="file"
+                action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
                 onChange={({ fileList }) => { this.handleUploaderChange('a', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
               >
                 {a.length >= 1 ? null : uploadButton}
               </Upload>
@@ -205,69 +260,96 @@ class ProductForm extends Component {
             </Col>
             <Col span={8}>
               <Upload
-                name="b"
-                action="//jsonplaceholder.typicode.com/posts/"
+                name="file"
+                action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
                 onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
               >
                 {b.length >= 1 ? null : uploadButton}
-              </Upload>
-              <p className="upload-pic-desc">正面</p>
-            </Col>
-            <Col span={8}>
-              <Upload
-                action="//jsonplaceholder.typicode.com/posts/"
-                listType="picture-card"
-                onPreview={this.handlePreview}
-                onChange={this.handleChange}
-              >
-                {uploadButton}
-
               </Upload>
               <p className="upload-pic-desc">反面</p>
             </Col>
             <Col span={8}>
               <Upload
-                action="//jsonplaceholder.typicode.com/posts/"
+                name="file"              
+                action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                onChange={this.handleChange}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                onChange={({ fileList }) => { this.handleUploaderChange('c', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
               >
-                {uploadButton}
+                {c.length >= 1 ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">侧面</p>
             </Col>
             <Col span={8}>
               <Upload
-                action="//jsonplaceholder.typicode.com/posts/"
+                name="file"              
+                action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                onChange={this.handleChange}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                onChange={({ fileList }) => { this.handleUploaderChange('d1', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
               >
-                {uploadButton}
+                {d1.length >= 1 ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">包装图</p>
             </Col>
             <Col span={8}>
               <Upload
-                action="//jsonplaceholder.typicode.com/posts/"
+                name="file"              
+                action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                onChange={this.handleChange}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                onChange={({ fileList }) => { this.handleUploaderChange('d2', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
               >
-                {uploadButton}
+                {d2.length >= 1 ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">包装图</p>
             </Col>
             <Col span={8}>
               <Upload
-                action="//jsonplaceholder.typicode.com/posts/"
+                name="file"              
+                action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                onChange={this.handleChange}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                onChange={({ fileList }) => { this.handleUploaderChange('d2', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
               >
-                {uploadButton}
+                {d3.length >= 1 ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">包装图</p>
             </Col>

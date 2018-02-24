@@ -20,7 +20,7 @@ export default {
     *fetchDetail({ productId, callback }, { call, put }) {
       const response = yield call(queryProductDetail, { productId });
       if (response.rescode >> 0 === 10000) {
-        if (callback)callback(response.data);
+        if (callback) callback(response.data);
       }
       console.log('产品详情:', response);
       yield put({
@@ -31,11 +31,14 @@ export default {
     *add({ data, callback }, { call, put }) {
       yield call(addProduct, { data });
       const response = yield call(queryProducts);
+      alert(1);
+      if (response.status === 10000) {
+        if (callback) callback();
+      }
       yield put({
         type: 'saveOne',
         payload: response.data,
       });
-      if (callback) callback();
     },
     *modifyInfo({ prdId, data, callback }, { call, put }) {
       const res = yield call(modifyProduct, { prdId, data });
@@ -55,13 +58,14 @@ export default {
       });
       if (callback) callback();
     },
-    *removeOne({ categoryId, callback }, { call, put }) {
-      const res = yield call(removeProducts, { categoryId });
-      if (res.rescode !== 10000) {
+    *remove({ ids, callback }, { call, put }) {
+      const res = yield call(removeProducts, { ids });
+      if (res.rescode >> 0 !== 10000) {
         if (callback) callback(res.msg);
         return;
       }
       const response = yield call(queryProducts);
+      console.log('新的产品列表', response);
       yield put({
         type: 'remove',
         payload: response.data,

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-23 11:30:28
+ * @Last Modified time: 2018-02-24 17:16:44
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -16,9 +16,10 @@ import styles from './newproduct.less';
 
 const FormItem = Form.Item;
 
-@connect(({ loading, product, catalog }) => ({
+@connect(({ loading, product, catalog, upload }) => ({
   product,
   catalog,
+  upload,
   loading: loading.models.catalog,
 }))
 export default class NewProduct extends Component {
@@ -50,6 +51,10 @@ export default class NewProduct extends Component {
     // 请求目录列表
     dispatch({
       type: 'catalog/fetchLevel',
+    });
+    // 获取upload_token
+    dispatch({
+      type: 'upload/fetch',
     });
   }
 
@@ -120,11 +125,12 @@ export default class NewProduct extends Component {
    * 
    */
   handleSubmitProduct() {
-    console.log('产品信息', this.state.fields);
-    const { dispatch } = this.props;
+    console.log('提交产品信息', this.state.fields);
+    const { dispatch, history } = this.props;
     dispatch({
       type: 'product/add',
       data: this.state.fields,
+      callback: history.push('/product/list'),
     });
   }
 
@@ -147,7 +153,7 @@ export default class NewProduct extends Component {
       </div>);
 
     const { isShowModal, isShowAttrMOdal } = this.state;
-    const { product, loading, catalog } = this.props;
+    const { product, loading, catalog, upload } = this.props;
 
     console.log('newproduct state', this.state);
 
@@ -188,6 +194,7 @@ export default class NewProduct extends Component {
             catalog={catalog.level}
             loading={loading}
             onAttrChange={this.handleProductAttr}
+            uploadToken={upload.upload_token}
           />
           {/* 产品其他属性 */}
           <SectionHeader

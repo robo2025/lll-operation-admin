@@ -1,12 +1,23 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
-import { URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE } from '../constant/config';
+import { URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE } from '../constant/config';
 
 
 // 获取用户信息
 export async function getUserInfo() {
   const access_token = Cookies.get('access_token');
   return lyRequest(`${URL}/server/verify`, {
+    headers: {
+      Authorization: access_token,
+    },
+  });
+}
+
+
+// 获取供应商信息
+export async function getSupplierInfo(supplierid) {
+  const access_token = Cookies.get('access_token');
+  return lyRequest(`${USERS_URL}/api/suppliers/${supplierid}`, {
     headers: {
       Authorization: access_token,
     },

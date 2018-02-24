@@ -57,7 +57,6 @@ export const queryString = {
 
 
 // 验证文件类型
-export const fileArr = ['pdf', 'doc', 'xls', 'ppt', 'docx', 'xlsx', 'pptx'];
 export function checkFile(filename, filelist) {
   const postfix = filename.split('.')[1];
   for (let i = 0, fileLen = filelist.length; i < fileLen; i++) {
@@ -81,4 +80,10 @@ export function timeStampToDate(timeStamp) {
     S: date.getSeconds(),
   };
   return { ...time, timeStr: `${time.year}-${time.month}-${time.day} ${time.H}:${time.M}:${time.S}` };
+}
+
+
+// 获取文件的后缀名
+export function getFileSuffix(filename) {
+ return filename.split('.').slice(-1)[0]; 
 }

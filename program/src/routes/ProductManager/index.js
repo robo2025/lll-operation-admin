@@ -26,6 +26,7 @@ export default class ProductManager extends Component {
     this.showExportModal = this.showExportModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOk = this.handleOk.bind(this);
+    this.removeProducts = this.removeProducts.bind(this);
     this.state = {
       modalVisible: false,
       expandForm: false,
@@ -64,6 +65,16 @@ export default class ProductManager extends Component {
   editProduct(productId) {
     const { history } = this.props;
     history.push(`/product/list/modify?prdId=${productId}`);
+  }
+
+  // 删除产品
+  removeProducts() {
+    const { dispatch } = this.props;
+    const ids = this.state.selectedRows.map(val => val.id);
+    dispatch({
+      type: 'product/remove',
+      ids,
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -392,7 +403,7 @@ export default class ProductManager extends Component {
       handleModalVisible: this.handleModalVisible,
     };
 
-    console.log('product,', data);
+    console.log('product', this.state);
 
     return (
       <PageHeaderLayout title="查询表格">
@@ -406,7 +417,10 @@ export default class ProductManager extends Component {
               {
                 selectedRows.length > 0 && (
                   <span>
-                    <Button>删除</Button>
+                    <Button
+                      onClick={this.removeProducts}
+                    >删除
+                    </Button>
                   </span>
                 )
               }

@@ -57,7 +57,7 @@ class ProductTable extends React.Component {
         key: 'id',
       },
       {
-        title: '产品ID编号',
+        title: 'ID编号',
         dataIndex: 'pno',
         key: 'pno',
       },
@@ -96,13 +96,14 @@ class ProductTable extends React.Component {
         key: 'menu-3',        
       },
       {
-        title: '品牌',
-        dataIndex: 'brand_name',
-
+        title: '四级类目',
+        dataIndex: 'category',
+        render: val => (val.children.children.children.category_name),
+        key: 'menu-4',        
       },
       {
-        title: '原产品ID',
-        dataIndex: 'productId',
+        title: '品牌',
+        dataIndex: 'brand_name',
 
       },
       {
@@ -116,7 +117,7 @@ class ProductTable extends React.Component {
 
       },
       {
-        title: '产品创建时间',
+        title: '创建时间',
         dataIndex: 'created_time',
         sorter: true,
         render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-07 17:00:27
+ * @Last Modified time: 2018-02-24 18:45:15
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -11,7 +11,6 @@ import { Card, Table, Button } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import GoodInfo from '../../components/Form//GoodInfo';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
-import goodInfo from './good-info.json';
 import { actionsLog, actionsLog2, actionsLog3 } from './action-log';
 import { queryString } from '../../utils/tools';
 import styles from './good-detail.less';
@@ -64,9 +63,12 @@ const columns = [{
 class GoodDetail extends Component {
   constructor(props) {
     super(props);
+    this.getSupplierInfo = this.getSupplierInfo.bind(this);
+    this.handleProductAttr = this.handleProductAttr.bind(this);
     this.state = {
       operationkey: 'tab1',
       args: queryString.parse(this.props.location.search),
+      fields: {},
     };
   }
 
@@ -76,11 +78,22 @@ class GoodDetail extends Component {
     dispatch({
       type: 'good/fetchDetail',
       goodId: this.state.args.goodId,
+      // callback: this.getSupplierInfo,
     });
   }
 
+
   onOperationTabChange = (key) => {
     this.setState({ operationkey: key });
+  }
+
+  // 获取供应商信息
+  getSupplierInfo(supplierid) {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'user/fetchSupplierInfo',
+      supplierid,
+    });
   }
 
   // 当表单输入框被修改事件
@@ -90,8 +103,20 @@ class GoodDetail extends Component {
     });
   }
 
+  /**
+   * 当产品其他属性被修改事件[产品概述、详情、FAQ,其他属性，图片]
+   * 
+   * @param {object} obj json对象，产品属性key=>value
+   * 
+   */
+  handleProductAttr(obj) {
+    this.setState({
+      fields: { ...this.state.fields, ...obj },
+    });
+  }
+
   render() {
-    console.log('detail props:', this.props);
+    console.log('detail state:', this.state);
     const { good, loading } = this.props;
     const contentList = {
       tab1: <Table
@@ -117,9 +142,10 @@ class GoodDetail extends Component {
       <PageHeaderLayout title="商品详情审核页">
         <Card className={styles['good-detail-wrap']} loading={loading}>
           <GoodInfo
-            data={good.detail}
+            data={{ ...good.detail, ...this.state.fields }}
             onChange={this.handleFormChange}
             loading={loading}
+            onAttrChange={this.handleProductAttr}
           />
           <SectionHeader title="操作记录" />
         </Card>

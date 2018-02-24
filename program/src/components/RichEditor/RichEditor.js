@@ -24,13 +24,14 @@ export default class RichEditor extends React.Component {
 
   render() {
     // 编辑器的初始内容,raw字符串
-    const rawContent = this.props.defaultValue ? JSON.parse(this.props.defaultValue) : null; 
+    const rawContent = this.props.defaultValue ? this.props.defaultValue : '""'; 
     const editorProps = {
       height: 500,
       placeholder: '请输入内容...',
-      initialContent: rawContent,
+      initialContent: rawContent.replace(/^("?)|("?)$/g, ''),
       onChange: this.handleChange,
       onHTMLChange: this.handleHTMLChange,
+      contentFormat: 'html',
       viewWrapper: '.demo',
       media: {
         image: true, // 开启图片插入功能
