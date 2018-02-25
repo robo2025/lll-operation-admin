@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-23 21:02:26
+ * @Last Modified time: 2018-02-26 00:33:23
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -18,9 +18,10 @@ import styles from './modify-product.less';
 const FormItem = Form.Item;
 
 // 修改产品信息
-@connect(({ loading, product, catalog }) => ({
+@connect(({ loading, product, catalog, upload }) => ({
   product,
   catalog,
+  upload,
   loading: loading.models.product,
 }))
 export default class ModifyProduct extends Component {
@@ -60,8 +61,6 @@ export default class ModifyProduct extends Component {
             category_id_2: detail.category.children.id, // 二级目录
             category_id_3: detail.category.children.children.id, // 三级目录
             category_id_4: detail.category.children.children.children.id, // 四级目录
-            cad_url: [],
-            pdf_url: [],
            },
          }); 
       },
@@ -69,6 +68,10 @@ export default class ModifyProduct extends Component {
     // 请求目录列表
     dispatch({
       type: 'catalog/fetchLevel',
+    });
+     // 获取upload_token
+     dispatch({
+      type: 'upload/fetch',
     });
   }
 
@@ -157,7 +160,7 @@ export default class ModifyProduct extends Component {
     };
 
     const { isShowModal, isShowAttrMOdal } = this.state;
-    const { product, loading, catalog } = this.props;
+    const { product, loading, catalog, upload } = this.props;
 
     return (
       <PageHeaderLayout title="修改产品信息">
@@ -195,7 +198,8 @@ export default class ModifyProduct extends Component {
             onChange={this.handleFormChange}
             catalog={catalog.level}
             loading={loading}
-            onAttrChange={this.handleProductAttr}            
+            onAttrChange={this.handleProductAttr} 
+            uploadToken={upload.upload_token}                       
           />
           <SectionHeader
             title="产品其他属性"

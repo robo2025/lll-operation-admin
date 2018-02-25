@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Form, Spin, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
+import { Form, Spin, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs, message } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
+import { checkFile, getFileSuffix } from '../../utils/tools';
 
 import styles from './product-info.less';
 
@@ -37,9 +38,12 @@ function getStanrdCatalog(data) {
 class ProductForm extends Component {
   constructor(props) {
     super(props);
+    this.beforeUpload = this.beforeUpload.bind(this);
+    this.handleUploaderChange = this.handleUploaderChange.bind(this);    
     this.state = {
       previewVisible: false,
       previewImage: '',
+      file: { uid: '', name: '' },      
     };
   }
 
@@ -57,21 +61,93 @@ class ProductForm extends Component {
     this.props.onAttrChange(tempJson);
   }
 
+   // 图片上传前处理：验证文件类型
+   beforeUpload(key, file) {
+    this.setState({ file });
+    // console.log('before', file);
+    if (checkFile(file.name, ['cad'])) {
+      this.setState({ isCad: true });
+    } else if (checkFile(file.name, FILE_TYPES)) {
+      this.setState({ isPicture: true });
+    }
+    if (key === 'cad_url') {
+      if (!checkFile(file.name, ['cad'])) {
+        message.error(`${file.name} 暂不支持上传`);
+        this.setState({ isCad: false });
+        return false;
+      } 
+    } else if (!checkFile(file.name, FILE_TYPES)) {
+      message.error(`${file.name} 暂不支持上传`);
+      this.setState({ isPicture: false });
+      return false;
+    }
+  }
+
+  // cad和图片上传时处理
+  handleUploaderChange(key, fileList) {
+    console.log('文件上传', key, fileList);
+    const { pics, cad_url } = this.state;
+    const { onAttrChange } = this.props;
+    // 如果上传的是cad文件
+    if (key === 'cad_url' && this.state.isCad) {
+      fileList.slice(-1).forEach((file) => {
+        if (file.status === 'done') {
+          this.setState({ cad_url: [...cad_url, file.response.key] });
+          onAttrChange({ cad_url: [...cad_url, file.response.key] });
+        }
+      });
+      return;
+    }
+    // 如果上传的是图片
+    if (this.state.isPicture) {
+      const tempJson = {};
+      tempJson[key] = fileList;
+      this.setState(tempJson);
+      // console.log('状态改变', fileList);
+      const that = this;
+      // 上传成功，则将图片放入state里的pics数组内
+      fileList.map((file) => {
+        if (file.status === 'done') {
+          message.success(`${file.name} 文件上传成功`);
+          // that.setState({ file_url: file.response.key });
+          if (key === 'a') {
+            this.setState({ pics: [...pics, { img_type: '正面', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '正面', img_url: file.response.key }] });
+          } else if (key === 'b') {
+            this.setState({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });
+          } else if (key === 'c') {
+            this.setState({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
+          } else if (key.substr(0, 1) === 'd') {
+            this.setState({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
+          }
+        } else if (file.status === 'error') {
+          message.error(`${file.name} 文件上传失败`);
+        }
+        return file;
+      });
+    } else if (this.state.isCad) {
+      console.log('cad fileList', fileList);
+    }
+  }
+
   render() {
     const formItemLayout = {
       labelCol: { span: 3 },
       wrapperCol: { span: 12 },
     };
-
+    const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
     const { getFieldDecorator } = this.props.form;
-    const { data, catalog, loading } = this.props;
-    const { category } = data;
+    const { data, catalog, loading, uploadToken } = this.props;
+    const { category, cad_url } = data;
     const slectedCatagory = category ? [
       category.id,
       category.children.id,
       category.children.children.id,
     ] : [];
-    const { previewVisible, previewImage } = this.state;
+    const { previewVisible, previewImage, file } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -101,6 +177,15 @@ class ProductForm extends Component {
     }
 
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构
+    const cadFileList = cad_url.map((val, idx) => ({
+      uid: idx,
+      name: 'cad图',
+      status: 'done',
+      reponse: '200', // custom error message to show
+      url: val,
+    }));
+    console.log('产品详情', cadFileList);
+
 
     return (
       <div className={styles['product-info-wrap']} >
@@ -174,45 +259,27 @@ class ProductForm extends Component {
             </FormItem>
           </Form>
           <Row gutter={24}>
-            <Col span={8}>
+            <Col span={24}>
               <FormItem
                 label="CAD图"
-                labelCol={{ span: 9 }}
-                wrapperCol={{ span: 10 }}
-              >
-                <Upload>
-                  <Button icon="upload">上传</Button>
-                </Upload>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={24}>
-            <Col span={8}>
-              <FormItem
-                label=""
-                labelCol={{ span: 9 }}
-                wrapperCol={{ span: 10, offset: 9 }}
-              >
-                <span>商品设计图.cad</span>
-              </FormItem>
-            </Col>
-            <Col span={5}>
-              <FormItem
-                labelCol={{ span: 1 }}
-                wrapperCol={{ span: 23 }}
-              >
-                <span>2017-12-29 12:36:45</span>
-              </FormItem>
-            </Col>
-            <Col span={5}>
-              <FormItem
-                labelCol={{ span: 1 }}
+                labelCol={{ span: 3 }}
                 wrapperCol={{ span: 12 }}
               >
-                <div>
-                  <a>删除</a>
-                  <a>查看</a>
-                </div>
+                <Upload
+                  name="file"
+                  action={UPLOAD_URL}
+                  defaultFileList={cadFileList}
+                  beforeUpload={(currFile) => { this.beforeUpload('cad_url', currFile); }}
+                  onChange={({ fileList }) => { this.handleUploaderChange('cad_url', fileList); }}
+                  data={
+                    {
+                      token: uploadToken,
+                      key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    }
+                  }
+                >
+                  <Button icon="upload">上传</Button>
+                </Upload>
               </FormItem>
             </Col>
           </Row>
@@ -230,10 +297,18 @@ class ProductForm extends Component {
                 (
                   <Col span={8} >
                     <Upload
-                      action="//jsonplaceholder.typicode.com/posts/"
-                      listType="picture-card"
-                      onPreview={this.handlePreview}
-                      onChange={this.handleChange}
+                       name="file"
+                       action={UPLOAD_URL}
+                       listType="picture-card"
+                       onPreview={this.handlePreview}
+                       beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                       onChange={({ fileList }) => { this.handleUploaderChange('a', fileList); }}
+                       data={
+                         {
+                           token: uploadToken,
+                           key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                         }
+                       }
                     >
                       {uploadButton}
                     </Upload>

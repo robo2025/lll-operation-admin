@@ -219,7 +219,7 @@ class ProductForm extends Component {
                 <FormItem
                   label="CAD图"
                   labelCol={{ span: 3 }}
-                  wrapperCol={{ span: 15 }}
+                  wrapperCol={{ span: 12 }}
                 >
                   <Upload
                     name="file"
