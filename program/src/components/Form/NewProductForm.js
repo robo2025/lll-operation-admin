@@ -6,7 +6,7 @@ import styles from './product-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const FILE_TYPES = ['jpg', 'png', 'gif']; // 支持上传的文件类型
+const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 
 function getStanrdCatalog(data) {
   data.forEach((val) => {
@@ -31,8 +31,10 @@ class ProductForm extends Component {
       previewVisible: false,
       previewImage: '',
       isPicture: true,
+      isCad: true,
       file: { uid: '', name: '' },
       pics: [], // 产品图片集合
+      cad_url: [], // 产品cad文件集合
       a: [],
       b: [],
       c: [],
@@ -61,17 +63,40 @@ class ProductForm extends Component {
   beforeUpload(key, file) {
     this.setState({ file });
     // console.log('before', file);
-    if (!checkFile(file.name, FILE_TYPES)) {
+    if (checkFile(file.name, ['cad'])) {
+      this.setState({ isCad: true });
+    } else if (checkFile(file.name, FILE_TYPES)) {
+      this.setState({ isPicture: true });
+    }
+    if (key === 'cad_url') {
+      if (!checkFile(file.name, ['cad'])) {
+        message.error(`${file.name} 暂不支持上传`);
+        this.setState({ isCad: false });
+        return false;
+      } 
+    } else if (!checkFile(file.name, FILE_TYPES)) {
       message.error(`${file.name} 暂不支持上传`);
       this.setState({ isPicture: false });
       return false;
     }
   }
 
-  // 图片上传时处理
+  // cad和图片上传时处理
   handleUploaderChange(key, fileList) {
-    const { pics } = this.state;
+    console.log('文件上传', key, fileList);
+    const { pics, cad_url } = this.state;
     const { onAttrChange } = this.props;
+    // 如果上传的是cad文件
+    if (key === 'cad_url' && this.state.isCad) {
+      fileList.slice(-1).forEach((file) => {
+        if (file.status === 'done') {
+          this.setState({ cad_url: [...cad_url, file.response.key] });
+          onAttrChange({ cad_url: [...cad_url, file.response.key] });
+        }
+      });
+      return;
+    }
+    // 如果上传的是图片
     if (this.state.isPicture) {
       const tempJson = {};
       tempJson[key] = fileList;
@@ -87,8 +112,8 @@ class ProductForm extends Component {
             this.setState({ pics: [...pics, { img_type: '正面', img_url: file.response.key }] });
             onAttrChange({ pics: [...pics, { img_type: '正面', img_url: file.response.key }] });
           } else if (key === 'b') {
-            this.setState({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });            
-            onAttrChange({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });            
+            this.setState({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });
           } else if (key === 'c') {
             this.setState({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
             onAttrChange({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
@@ -101,6 +126,8 @@ class ProductForm extends Component {
         }
         return file;
       });
+    } else if (this.state.isCad) {
+      console.log('cad fileList', fileList);
     }
   }
 
@@ -188,45 +215,27 @@ class ProductForm extends Component {
               )}
             </FormItem>
             <Row gutter={24}>
-              <Col span={8}>
+              <Col span={24}>
                 <FormItem
                   label="CAD图"
-                  labelCol={{ span: 9 }}
-                  wrapperCol={{ span: 10 }}
+                  labelCol={{ span: 3 }}
+                  wrapperCol={{ span: 15 }}
                 >
-                  <Upload>
+                  <Upload
+                    name="file"
+                    action={UPLOAD_URL}
+                    defaultFileList={this.state.cad_url}
+                    beforeUpload={(currFile) => { this.beforeUpload('cad_url', currFile); }}
+                    onChange={({ fileList }) => { this.handleUploaderChange('cad_url', fileList); }}
+                    data={
+                      {
+                        token: uploadToken,
+                        key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                      }
+                    }
+                  >
                     <Button icon="upload">上传</Button>
                   </Upload>
-                </FormItem>
-              </Col>
-            </Row>
-            <Row gutter={24}>
-              <Col span={8}>
-                <FormItem
-                  label=""
-                  labelCol={{ span: 9 }}
-                  wrapperCol={{ span: 10, offset: 9 }}
-                >
-                  <span>商品设计图.cad</span>
-                </FormItem>
-              </Col>
-              <Col span={5}>
-                <FormItem
-                  labelCol={{ span: 1 }}
-                  wrapperCol={{ span: 23 }}
-                >
-                  <span>2017-12-29 12:36:45</span>
-                </FormItem>
-              </Col>
-              <Col span={5}>
-                <FormItem
-                  labelCol={{ span: 1 }}
-                  wrapperCol={{ span: 12 }}
-                >
-                  <div>
-                    <a>删除</a>
-                    <a>查看</a>
-                  </div>
                 </FormItem>
               </Col>
             </Row>
@@ -264,7 +273,7 @@ class ProductForm extends Component {
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
                 onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
                 data={
                   {
@@ -279,11 +288,11 @@ class ProductForm extends Component {
             </Col>
             <Col span={8}>
               <Upload
-                name="file"              
+                name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
                 onChange={({ fileList }) => { this.handleUploaderChange('c', fileList); }}
                 data={
                   {
@@ -298,11 +307,11 @@ class ProductForm extends Component {
             </Col>
             <Col span={8}>
               <Upload
-                name="file"              
+                name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
                 onChange={({ fileList }) => { this.handleUploaderChange('d1', fileList); }}
                 data={
                   {
@@ -317,11 +326,11 @@ class ProductForm extends Component {
             </Col>
             <Col span={8}>
               <Upload
-                name="file"              
+                name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
                 onChange={({ fileList }) => { this.handleUploaderChange('d2', fileList); }}
                 data={
                   {
@@ -336,11 +345,11 @@ class ProductForm extends Component {
             </Col>
             <Col span={8}>
               <Upload
-                name="file"              
+                name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}                
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
                 onChange={({ fileList }) => { this.handleUploaderChange('d2', fileList); }}
                 data={
                   {

@@ -24,6 +24,7 @@ export default class GoodsMananger extends Component {
     this.showExportModal = this.showExportModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOk = this.handleOk.bind(this);
+    this.handlePublishGood = this.handlePublishGood.bind(this);
     this.state = {
       modalVisible: false,
       expandForm: false,
@@ -61,6 +62,17 @@ export default class GoodsMananger extends Component {
     this.setState({ isShowExportModal: false });
   }
 
+  // 上下架商品
+  handlePublishGood(goodId, status) {
+    const { dispatch } = this.props;
+    console.log(goodId, status);
+    dispatch({
+      type: 'good/modifyGoodStatus',
+      goodId,
+      goodStatus: status,
+      callback: () => { alert('下架成功'); },
+    });
+  }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -200,7 +212,7 @@ export default class GoodsMananger extends Component {
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">待审核</Option>
                   <Option value="1">审核通过</Option>
-                  <Option value="1">审核不通过</Option>
+                  <Option value="2">审核不通过</Option>
                 </Select>
               )}
             </FormItem>
@@ -211,7 +223,7 @@ export default class GoodsMananger extends Component {
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">下架中</Option>
-                  <Option value="1">已上架</Option>
+                  <Option value="2">已上架</Option>
                 </Select>
               )}
             </FormItem>
@@ -402,6 +414,7 @@ export default class GoodsMananger extends Component {
               data={data}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
+              onPublish={this.handlePublishGood}
             />
           </div>
         </Card>

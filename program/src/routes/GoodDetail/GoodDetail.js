@@ -2,12 +2,12 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-24 18:45:15
+ * @Last Modified time: 2018-02-25 22:02:51
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Table, Button } from 'antd';
+import { Card, Table, Button, Radio, Input, Tooltip, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import GoodInfo from '../../components/Form//GoodInfo';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
@@ -15,6 +15,7 @@ import { actionsLog, actionsLog2, actionsLog3 } from './action-log';
 import { queryString } from '../../utils/tools';
 import styles from './good-detail.less';
 
+const RadioGroup = Radio.Group;
 const operationTabList = [{
   key: 'tab1',
   tab: '操作日志一',
@@ -65,20 +66,39 @@ class GoodDetail extends Component {
     super(props);
     this.getSupplierInfo = this.getSupplierInfo.bind(this);
     this.handleProductAttr = this.handleProductAttr.bind(this);
+    this.handleRadioChange = this.handleRadioChange.bind(this);
+    this.handleAuditDesc = this.handleAuditDesc.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
       operationkey: 'tab1',
       args: queryString.parse(this.props.location.search),
       fields: {},
+      audit_status: 1, // 审核状态
+      audit_desc: '', // 审批意见
     };
   }
 
   componentDidMount() {
-    console.log(this.state);
     const { dispatch } = this.props;
+    
     dispatch({
       type: 'good/fetchDetail',
       goodId: this.state.args.goodId,
-      // callback: this.getSupplierInfo,
+      callback: (res) => { 
+        console.log('毁掉函数', res);
+        const { shelf_life, sales_unit, stock, min_buy, audit_status, audit_desc, shipping_fee_type } = res;
+        // 获取供应商信息
+        // this.getSupplierInfo(res.supplier_id); 
+        this.setState({ fields: {
+          shelf_life, // 质保期
+          sales_unit, // 销售单位
+          stock, // 库存
+          min_buy, // 最小采购量
+          audit_status, // 审核状态 (1:审核通过 2:审核不通过)
+          audit_desc, // 审核说明 (审核不通过需要填写)
+          shipping_fee_type, // 运费类型
+        } });
+      },
     });
   }
 
@@ -86,6 +106,7 @@ class GoodDetail extends Component {
   onOperationTabChange = (key) => {
     this.setState({ operationkey: key });
   }
+
 
   // 获取供应商信息
   getSupplierInfo(supplierid) {
@@ -115,9 +136,47 @@ class GoodDetail extends Component {
     });
   }
 
+  // 处理审批意见的单选框按钮
+  handleRadioChange(e) {
+    console.log('radio checked', e.target.value);
+    this.setState({
+      audit_status: e.target.value,
+    });
+  }
+
+  // 处理填写审批意见
+  handleAuditDesc(e) {
+    this.setState({
+      audit_desc: e.target.value,
+    });
+  }
+
+  // 提交审核
+  handleSubmit() {
+    const { fields, audit_status, audit_desc } = this.state;
+    const { dispatch, history } = this.props;
+    const data = {
+      ...fields,
+      audit_status,
+      audit_desc,
+    };
+    if (audit_status === 2 && !audit_desc) {
+      message.info('审批意见必须填写');
+    } else {
+      console.log('提交审核数据', data);      
+      dispatch({
+        type: 'good/modifyInfo',
+        goodId: this.state.args.goodId,
+        data,
+        callback: () => { history.push('/goods/list'); },
+      });
+    }
+  }
+
   render() {
     console.log('detail state:', this.state);
     const { good, loading } = this.props;
+    const { audit_status } = this.state;
     const contentList = {
       tab1: <Table
         pagination={false}
@@ -157,8 +216,27 @@ class GoodDetail extends Component {
         >
           {contentList[this.state.operationkey]}
 
-          <Button style={{ margin: '30px 0 20px 45%' }} onClick={() => { window.history.back(); }}>返回</Button>
+          <div className={styles['submit-btn-wrap']}>
+            <div className="left">
+              审批意见：
+              <RadioGroup onChange={this.handleRadioChange} value={audit_status}>
+                <Radio value={1}>通过</Radio>
+                <Radio value={2}>不通过</Radio>
+              </RadioGroup>
+              <Tooltip title="审批意见不能为空" visible={audit_status === 2} autoAdjustOverflow={false}>
+                <Input
+                  placeholder="未通过说明"
+                  className={audit_status === 2 ? 'show-inline' : 'hide'}
+                  onChange={e => this.handleAuditDesc(e)}
+                />
+              </Tooltip>
+            </div>
+            <div className="right">
+              <Button>取消</Button>
+              <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+            </div>
 
+          </div>
         </Card>
       </PageHeaderLayout>
     );

@@ -55,21 +55,26 @@ class ProductTable extends React.Component {
         title: '序号',
         dataIndex: 'id',
         key: 'id',
+        width: 50,
+        fixed: 'left',
       },
       {
         title: 'ID编号',
         dataIndex: 'pno',
         key: 'pno',
+        fixed: 'left',
       },
       {
         title: '产品图片',
         dataIndex: 'pics',
-        render: val => val.map((item, idx) => (<img alt="缩略图" width={10} height={10} style={{ display: 'inline' }} key={`key${idx}`} src={item.img_url} />)),
+        render: val => val.map((item, idx) => (<img className='product-thumb' alt="缩略图"  key={`key${idx}`} src={item.img_url} />)),
+        fixed: 'left',              
       },
       {
         title: '产品名称',
         dataIndex: 'product_name',
         key: 'product_name',
+        fixed: 'left',        
       },
       {
         title: '型号',
@@ -131,6 +136,7 @@ class ProductTable extends React.Component {
             <a>供货消息</a>
           </Fragment>
         ),
+        fixed: 'right',        
       },
     ];
 
@@ -161,7 +167,6 @@ class ProductTable extends React.Component {
           />
         </div>
         <Table
-          className={styles['goods-table']}
           loading={loading}
           rowKey={record => record.id}
           rowSelection={rowSelection}
@@ -169,6 +174,7 @@ class ProductTable extends React.Component {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
+          scroll={{ x: 1800 }}
         />
       </div>
     );

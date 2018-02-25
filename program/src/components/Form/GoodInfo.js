@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-24 18:41:44
+ * @Last Modified time: 2018-02-25 20:03:32
  */
 import React, { PureComponent } from 'react';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
@@ -74,12 +74,12 @@ class GoodInfo extends PureComponent {
     const categoryStr = category ?
       `${category.category_name}-${category.children.category_name}-${category.children.children.category_name}-${category.children.children.children.category_name}`
       : '';
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">上传</div>
-      </div>
-    );
+    // const uploadButton = (
+    //   <div>
+    //     <Icon type="plus" />
+    //     <div className="ant-upload-text">上传</div>
+    //   </div>
+    // );
     return (
       <div className={styles['good-info-wrap']}>
         <SectionHeader title="商品基础信息" />
@@ -310,20 +310,25 @@ class GoodInfo extends PureComponent {
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
-          <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
-            <TabPane tab="商品概述" key="1">
+          <Tabs defaultActiveKey="2" onChange={(key) => { console.log(key); }}>
+            {/* <TabPane tab="商品概述" key="1">
               <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
+                defaultValue={data.summary}
               />
-            </TabPane>
+            </TabPane> */}
             <TabPane tab="商品详情" key="2">
               <RichEditor
                 onChange={(html) => { this.handleChange('description', html); }}
+                defaultValue={data.description}
+                disabled        
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
+                defaultValue={data.faq}   
+                disabled             
               />
             </TabPane>
           </Tabs>

@@ -2,15 +2,17 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-07 16:54:31
+ * @Last Modified time: 2018-02-25 18:47:56
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
 import { Table, Alert, Badge, Divider } from 'antd';
 import styles from './goods-table.less';
 
-const AuditStatusMap = ['processing', 'success'];// 上下架状态
-const GoodsStatusMap = ['default', 'success'];// 商品审核状态
+const AuditStatusMap = ['processing', 'success', 'error'];// 审核状态
+const auditStatus = ['待审核', '已通过', '未通过'];
+const GoodsStatusMap = ['default', 'success'];// 上下架状态
+const status = ['下架中', '已上架'];
 class GoodsTable extends PureComponent {
   state = {
     selectedRowKeys: [],
@@ -49,15 +51,14 @@ class GoodsTable extends PureComponent {
 
   render() {
     const { selectedRowKeys, totalCallNo } = this.state;
-    const { data, loading } = this.props;
-
-    const auditStatus = ['待审核', '审核通过', '审核不通过'];
-    const status = ['下架中', '已上架'];
+    const { data, loading, onPublish } = this.props;
 
     const columns = [
       {
         title: '商品ID编号',
         dataIndex: 'gno',
+        width: 120,
+        fixed: 'left',        
       },
       {
         title: '商品图片',
@@ -66,21 +67,21 @@ class GoodsTable extends PureComponent {
           if (idx < 3) {
             return (
               <img
-                width={15}
-                height={15}
+                className="goods-thumb"
                 alt={item.img_tyle}
-                style={{ display: 'inline' }}
                 key={idx}
                 src={item.img_url}
               />);
           }
         }),
+        fixed: 'left',        
       },
       {
         title: '商品名称',
         dataIndex: 'product',
         render: val => (<span >{val.product_name}</span>),
         key: 'product_name',
+        fixed: 'left',        
       },
       {
         title: '型号',
@@ -137,9 +138,7 @@ class GoodsTable extends PureComponent {
             value: 2,
           },
         ],
-        render(val) {
-          return <Badge status={AuditStatusMap[val]} text={auditStatus[val]} />;
-        },
+        render: val => (<Badge status={AuditStatusMap[val]} text={auditStatus[val]} />),
       },
       {
         title: '上下架状态',
@@ -173,13 +172,14 @@ class GoodsTable extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            <a>审核</a>
+            <a href={'#/goods/list/detail?goodId=' + record.id}>审核</a>
             <Divider type="vertical" />
-            <a>下架</a>
+            <a onClick={() => onPublish(record.id, 2)} disabled={(record.audit_status !== 1) || (record.is_published === 0)}>下架</a>
             <Divider type="vertical" />
             <a href={'#/goods/list/detail?goodId=' + record.id}>查看</a>
           </Fragment>
         ),
+        fixed: 'right',
       },
     ];
 
@@ -217,7 +217,6 @@ class GoodsTable extends PureComponent {
           />
         </div>
         <Table
-          className={styles['goods-table']}
           loading={loading}
           rowKey={record => record.gno}
           rowSelection={rowSelection}
@@ -225,6 +224,7 @@ class GoodsTable extends PureComponent {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
+          scroll={{ x: 1800 }}          
         />
       </div>
     );

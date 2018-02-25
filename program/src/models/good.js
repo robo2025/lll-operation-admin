@@ -20,7 +20,7 @@ export default {
     *fetchDetail({ goodId, callback }, { call, put }) {
       const response = yield call(queryGoodDetail, { goodId });
       if (response.rescode >> 0 === 10000) {
-        if (callback)callback(response.data.id);
+        if (callback) callback(response.data);
       }
       yield put({
         type: 'saveDetail',
@@ -46,8 +46,10 @@ export default {
       });
     },
     *modifyGoodStatus({ goodId, goodStatus, callback }, { call, put }) {
-      yield call(modifyGoodStatus, { goodId, goodStatus });
-      if (callback) callback();      
+      const res = yield call(modifyGoodStatus, { goodId, goodStatus });
+      if (res.rescode >> 0 === 10000) {
+        if (callback) callback(res);
+      }
       const response = yield call(queryGoods);
       yield put({
         type: 'modify',
