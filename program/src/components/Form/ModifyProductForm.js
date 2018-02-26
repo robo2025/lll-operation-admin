@@ -7,6 +7,7 @@ import styles from './product-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 
 function getStanrdCatalog(data) {
   data.forEach((val) => {
@@ -326,18 +327,21 @@ class ProductForm extends Component {
             <TabPane tab="商品概述" key="1">
               <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
+                token={uploadToken}                
                 defaultValue={data.summary}
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
               <RichEditor
                 onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}                                
                 defaultValue={data.description}
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
+                token={uploadToken}                                
                 defaultValue={data.faq}
               />
             </TabPane>

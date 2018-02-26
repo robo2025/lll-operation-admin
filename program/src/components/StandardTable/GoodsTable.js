@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-25 18:47:56
+ * @Last Modified time: 2018-02-26 13:49:12
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -58,7 +58,7 @@ class GoodsTable extends PureComponent {
         title: '商品ID编号',
         dataIndex: 'gno',
         width: 120,
-        fixed: 'left',        
+        fixed: 'left',
       },
       {
         title: '商品图片',
@@ -74,14 +74,14 @@ class GoodsTable extends PureComponent {
               />);
           }
         }),
-        fixed: 'left',        
+        fixed: 'left',
       },
       {
         title: '商品名称',
         dataIndex: 'product',
         render: val => (<span >{val.product_name}</span>),
         key: 'product_name',
-        fixed: 'left',        
+        fixed: 'left',
       },
       {
         title: '型号',
@@ -174,7 +174,12 @@ class GoodsTable extends PureComponent {
           <Fragment>
             <a href={'#/goods/list/detail?goodId=' + record.id}>审核</a>
             <Divider type="vertical" />
-            <a onClick={() => onPublish(record.id, 2)} disabled={(record.audit_status !== 1) || (record.is_published === 0)}>下架</a>
+            <a
+              onClick={() => onPublish(record.id, 0)}
+              disabled={(record.audit_status !== 1) || (record.is_published === 0)}
+            >
+              下架
+            </a>
             <Divider type="vertical" />
             <a href={'#/goods/list/detail?goodId=' + record.id}>查看</a>
           </Fragment>
@@ -224,7 +229,7 @@ class GoodsTable extends PureComponent {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 1800 }}          
+          scroll={{ x: 1800 }}
         />
       </div>
     );

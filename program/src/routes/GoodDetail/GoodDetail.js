@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-25 22:02:51
+ * @Last Modified time: 2018-02-26 15:21:30
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -11,7 +11,6 @@ import { Card, Table, Button, Radio, Input, Tooltip, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import GoodInfo from '../../components/Form//GoodInfo';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
-import { actionsLog, actionsLog2, actionsLog3 } from './action-log';
 import { queryString } from '../../utils/tools';
 import styles from './good-detail.less';
 
@@ -28,31 +27,32 @@ const operationTabList = [{
 }];
 
 const mapStatus = ['失败', '成功'];
+const actionFlag = ['新增', '修改', '删除']; // 操作类型 (1:新增 2:修改 3:删除)
 
 // 操作记录列
 const columns = [{
   title: '操作类型',
-  dataIndex: 'type',
-  key: 'type',
+  dataIndex: 'action_flag',
+  key: 'action_flag',
+  render: val => <span>{actionFlag[val - 1]}</span>,
 }, {
-  title: '操作员',
-  dataIndex: 'operator',
-  key: 'operator',
+  title: '操作员ID',
+  dataIndex: 'staff_id',
+  key: 'staff_id',
 }, {
   title: '执行结果',
   dataIndex: 'status',
   key: 'status',
-  render: (text, record) => (<span>{`${mapStatus[record.status]}`}</span>),
+  render: () => (<span>成功</span>),
 }, {
   title: '操作时间',
-  dataIndex: 'createdAt',
-  key: 'createdAt',
-  render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+  dataIndex: 'action_time',
+  key: 'action_time',
+  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
 }, {
-  title: '耗时',
-  dataIndex: 'elapsed',
-  key: 'elapsed',
-  render: (text, record) => (<span>{`${record.elapsed}s`}</span>),
+  title: '说明',
+  dataIndex: 'change_message',
+  key: 'change_message',
 }];
 
 // 商品详情页
@@ -80,7 +80,7 @@ class GoodDetail extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    
+    // 获取商品详情
     dispatch({
       type: 'good/fetchDetail',
       goodId: this.state.args.goodId,
@@ -99,6 +99,11 @@ class GoodDetail extends Component {
           shipping_fee_type, // 运费类型
         } });
       },
+    });
+    // 获取操作日志
+    dispatch({
+      type: 'good/queryLogs',
+      module: 'product',
     });
   }
 
@@ -181,19 +186,19 @@ class GoodDetail extends Component {
       tab1: <Table
         pagination={false}
         loading={false}
-        dataSource={actionsLog}
+        dataSource={good.logs}
         columns={columns}
       />,
       tab2: <Table
         pagination={false}
         loading={false}
-        dataSource={actionsLog2}
+        dataSource={good.logs}
         columns={columns}
       />,
       tab3: <Table
         pagination={false}
         loading={false}
-        dataSource={actionsLog3}
+        dataSource={good.logs}
         columns={columns}
       />,
     };

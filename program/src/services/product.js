@@ -88,3 +88,19 @@ export async function removeProducts({ ids }) {
     },
   });
 }
+
+
+/**
+ * 产品操作日志
+ *
+ * @param {array} module 模块
+*/
+export async function queryOperationLog({ module, productId }) {
+  const acess_token = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/api/adminlogs?module=${module}`, {
+    method: 'get',
+    headers: {
+      Authorization: acess_token,
+    },
+  });
+}

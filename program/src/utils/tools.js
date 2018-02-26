@@ -1,5 +1,5 @@
-import { LOGIN_URL, NEXT_URL, HOME_PAGE, VERIFY_PAGE } from '../constant/config';
 import Cookies from 'js-cookie';
+import { LOGIN_URL, NEXT_URL, HOME_PAGE, VERIFY_PAGE } from '../constant/config';
 
 // 验证是否登录
 export function verifyLogin() {

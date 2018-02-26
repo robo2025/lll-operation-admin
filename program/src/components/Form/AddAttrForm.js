@@ -10,7 +10,9 @@ const formItemLayout = {
 };
 
 // 添加商品属性表单
-@Form.create()
+@Form.create({
+  onFieldsChange: (props, fileds) => { props.onFieldsChange(fileds); },
+})
 class AddAttrForm extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -24,7 +26,7 @@ class AddAttrForm extends Component {
               wrapperCol={{ span: 15 }}
             >
               {
-                getFieldDecorator('attr', {
+                getFieldDecorator('attr_name', {
                   rules: [{
                     required: true,
                     message: '属性名称必须填写',
@@ -42,7 +44,7 @@ class AddAttrForm extends Component {
               wrapperCol={{ span: 15 }}
             >
               {
-                getFieldDecorator('num', {
+                getFieldDecorator('attr_value', {
                   rules: [{
                     required: true,
                     message: '数值名称必须填写',

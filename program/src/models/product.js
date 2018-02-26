@@ -1,4 +1,4 @@
-import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail } from '../services/product';
+import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail, queryOperationLog } from '../services/product';
 
 export default {
   namespace: 'product',
@@ -6,6 +6,7 @@ export default {
   state: {
     list: [],
     detail: {},
+    logs: [],
   },
 
   effects: {
@@ -29,12 +30,15 @@ export default {
       });
     },
     *add({ data, callback }, { call, put }) {
-      yield call(addProduct, { data });
+      const res = yield call(addProduct, { data });
+      if (res.rescode >> 0 === 10000) {
+        if (callback) callback(res);
+      } else {
+        alert(res.msg);
+        return;                      
+      };
       const response = yield call(queryProducts);
-      alert(1);
-      if (response.status === 10000) {
-        if (callback) callback();
-      }
+      
       yield put({
         type: 'saveOne',
         payload: response.data,
@@ -61,14 +65,20 @@ export default {
     *remove({ ids, callback }, { call, put }) {
       const res = yield call(removeProducts, { ids });
       if (res.rescode >> 0 !== 10000) {
-        if (callback) callback(res.msg);
+        alert(res.msg.split(':')[1]);        
         return;
-      }
+      } else if (callback) callback(res);
       const response = yield call(queryProducts);
-      console.log('新的产品列表', response);
       yield put({
         type: 'remove',
         payload: response.data,
+      });
+    },
+    *queryLogs({ module }, { call, put }) {
+      const res = yield call(queryOperationLog, { module });
+      yield put({
+        type: 'logs',
+        payload: res.data,
       });
     },
   },
@@ -102,6 +112,12 @@ export default {
       return {
         ...state,
         list: action.payload,
+      };
+    },
+    logs(state, action) {
+      return {
+        ...state,
+        logs: action.payload,
       };
     },
   },

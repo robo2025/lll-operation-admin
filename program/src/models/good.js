@@ -1,4 +1,4 @@
-import { queryGoods, queryGoodDetail, modifyGoodStatus, modifyGoodInfo, addGood } from '../services/good';
+import { queryGoods, queryGoodDetail, modifyGoodStatus, modifyGoodInfo, addGood, queryOperationLog } from '../services/good';
 
 export default {
   namespace: 'good',
@@ -6,6 +6,7 @@ export default {
   state: {
     list: [],
     detail: {},
+    logs: [],
   },
 
   effects: {
@@ -56,6 +57,14 @@ export default {
         payload: response.data,
       });
     },
+    *queryLogs({ module }, { call, put }) {
+      const res = yield call(queryOperationLog, { module });
+      console.log('操作日志', res);
+      yield put({
+        type: 'logs',
+        payload: res.data,
+      });
+    },
   },
 
   reducers: {
@@ -87,6 +96,12 @@ export default {
       return {
         ...state,
         list: action.payload,
+      };
+    },
+    logs(state, action) {
+      return {
+        ...state,
+        logs: action.payload,
       };
     },
   },
