@@ -44,7 +44,7 @@ class ProductForm extends Component {
     this.state = {
       previewVisible: false,
       previewImage: '',
-      file: { uid: '', name: '' },      
+      file: { uid: '', name: '' },    
     };
   }
 
@@ -315,7 +315,7 @@ class ProductForm extends Component {
                     >
                       {uploadButton}
                     </Upload>
-                    <p className="upload-pic-desc">包装图</p>
+                    <p className="upload-pic-desc">图片</p>
                   </Col>
                 )
                 : null

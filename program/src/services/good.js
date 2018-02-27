@@ -124,3 +124,16 @@ export async function queryOperationLog({ module, goodId }) {
   });
 }
 
+// 导出数据
+export async function exportGood({ fields }) {
+  const acess_token = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/api/goods_reports`, {
+    method: 'post',
+    headers: {
+      Authorization: acess_token,
+    },
+    data: {
+      fields,
+    },
+  });
+}

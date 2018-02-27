@@ -4,7 +4,7 @@ import { Table, Button, Input, Popconfirm, Divider, Modal, Form, Radio } from 'a
 
 const FormItem = Form.Item;
 const mapStatus = ['禁用', '启用'];
-const mapLevel = ['一级类目', '二级类目', '三级类目'];
+const mapLevel = ['一级类目', '二级类目', '三级类目', '四级类目'];
 
 const EditableCell = ({ editable, value, onChange }) => (
   <div>
@@ -88,13 +88,18 @@ export default class MenuForm extends React.Component {
             <span>
               <a disabled>新增子类</a>
               <Divider type="vertical" />
-              <a>修改</a>
+              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.key)}>
                 <a>删除</a>
               </Popconfirm>
               <Divider type="vertical" />
-              <a>启用</a>
+              {
+                record.is_active === 0 ?
+                  <a onClick={() => this.changeCatalogStatus(record.id, 1)}>启用</a>
+                  :
+                  <a onClick={() => this.changeCatalogStatus(record.id, 0)}>禁用</a>
+              }
             </span>
           );
       },
@@ -309,6 +314,7 @@ export default class MenuForm extends React.Component {
           </Form>
         </Modal>
         <Table
+          defaultExpandAllRows
           columns={this.columns}
           dataSource={data}
           rowKey={record => (record.id)}

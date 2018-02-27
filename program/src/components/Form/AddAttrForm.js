@@ -19,7 +19,7 @@ class AddAttrForm extends Component {
     return (
       <Form>
         <Row gutter={24}>
-          <Col span={9}>
+          <Col span={9} offset={2}>
             <FormItem
               label="属性名称"
               labelCol={{ span: 9 }}
@@ -55,7 +55,7 @@ class AddAttrForm extends Component {
               }
             </FormItem>
           </Col>
-          <Col span={6}>
+         {/*  <Col span={6}>
             <FormItem
               wrapperCol={{ span: 24 }}
             >
@@ -65,7 +65,7 @@ class AddAttrForm extends Component {
                 <Icon type="camera" style={{ fontSize: 26, color: '#08c' }} />
               </span>
             </FormItem>
-          </Col>
+          </Col> */}
         </Row>
       </Form>
     );

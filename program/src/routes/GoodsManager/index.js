@@ -31,6 +31,7 @@ export default class GoodsMananger extends Component {
       selectedRows: [],
       formValues: {},
       isShowExportModal: false,
+      exportFields: [], // 导出产品字段      
     };
   }
 
@@ -49,17 +50,32 @@ export default class GoodsMananger extends Component {
     console.log(date, dateString);
   }
 
+  // 导出数据复选框改变
+  onExportFieldsChange = (fields) => {
+    this.setState({ exportFields: fields });
+  }
+
   // 显示导出数据Modal
   showExportModal() {
     this.setState({ isShowExportModal: true });
   }
-  // 确定导出数据
+  // 取消导出数据
   handleCancel() {
     this.setState({ isShowExportModal: false });
   }
-  // 取消导出数据
+  // 确定导出数据
   handleOk() {
     this.setState({ isShowExportModal: false });
+    console.log('商品导出数据项目', this.state.exportFields);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'good/queryExport',
+      fields: this.state.exportFields,
+      callback: (res) => {
+        console.log('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
+        window.open('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
+      },
+    });
   }
 
   // 上下架商品
@@ -406,7 +422,9 @@ export default class GoodsMananger extends Component {
               onCancel={this.handleCancel}
               onOk={this.handleOk}
             >
-              <GoodCheckboxGroup />
+              <GoodCheckboxGroup
+                onChange={this.onExportFieldsChange}
+              />
             </Modal>
             <GoodsTable
               selectedRows={selectedRows}

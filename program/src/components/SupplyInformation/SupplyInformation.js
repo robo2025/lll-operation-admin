@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import { Table, Row, Col } from 'antd';
 import { connect } from 'dva';
 import styles from './supply-infomation.less';
@@ -71,11 +72,12 @@ export default class SupplyInformation extends Component {
               }
             </Col>
             <Col span={8}>创建人：{currProduct[0].staff_name}</Col>
-            <Col span={7} offset={1}>创建时间：{currProduct[0].created_time}</Col>
+            <Col span={7} offset={1}>创建时间：{moment(currProduct[0].created_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
           </Row>
         </div>
         <Table
           loading={loadding}
+          bordered
           dataSource={product.supplierList}
           columns={this.columns}
           rowKey={record => (`${record.pno}-${record.id}`)}

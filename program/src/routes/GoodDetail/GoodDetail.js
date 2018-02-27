@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-26 15:21:30
+ * @Last Modified time: 2018-02-27 16:50:12
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -56,9 +56,10 @@ const columns = [{
 }];
 
 // 商品详情页
-@connect(({ good, loading }) => ({
+@connect(({ good, loading, user }) => ({
   good,
   loading: loading.models.good,
+  user,
 })
 )
 class GoodDetail extends Component {
@@ -88,7 +89,7 @@ class GoodDetail extends Component {
         console.log('毁掉函数', res);
         const { shelf_life, sales_unit, stock, min_buy, audit_status, audit_desc, shipping_fee_type } = res;
         // 获取供应商信息
-        // this.getSupplierInfo(res.supplier_id); 
+        this.getSupplierInfo(res.supplier_id); 
         this.setState({ fields: {
           shelf_life, // 质保期
           sales_unit, // 销售单位
@@ -158,7 +159,7 @@ class GoodDetail extends Component {
 
   // 提交审核
   handleSubmit() {
-    const { fields, audit_status, audit_desc } = this.state;
+    const { fields, audit_status, audit_desc, args } = this.state;
     const { dispatch, history } = this.props;
     const data = {
       ...fields,
@@ -180,7 +181,7 @@ class GoodDetail extends Component {
 
   render() {
     console.log('detail state:', this.state);
-    const { good, loading } = this.props;
+    const { good, loading, user } = this.props;
     const { audit_status } = this.state;
     const contentList = {
       tab1: <Table
@@ -210,6 +211,7 @@ class GoodDetail extends Component {
             onChange={this.handleFormChange}
             loading={loading}
             onAttrChange={this.handleProductAttr}
+            user={user}
           />
           <SectionHeader title="操作记录" />
         </Card>

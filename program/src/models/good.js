@@ -1,4 +1,4 @@
-import { queryGoods, queryGoodDetail, modifyGoodStatus, modifyGoodInfo, addGood, queryOperationLog } from '../services/good';
+import { queryGoods, queryGoodDetail, modifyGoodStatus, modifyGoodInfo, addGood, queryOperationLog, exportGood } from '../services/good';
 
 export default {
   namespace: 'good',
@@ -65,6 +65,18 @@ export default {
         payload: res.data,
       });
     },
+    *queryExport({ fields, callback }, { call, put }) {
+      const res = yield call(exportGood, { fields });
+      console.log('导出数据服务器返回数据：', res);
+      if (res.rescode >> 0 === 10000) {
+        alert('导出成功');
+        if (callback) callback(res.data);
+      }
+      yield put({
+        type: 'export',
+        payload: res.data,
+      });
+    },
   },
 
   reducers: {
@@ -102,6 +114,12 @@ export default {
       return {
         ...state,
         logs: action.payload,
+      };
+    },
+    export(state, action) {
+      return {
+        ...state,
+        export: action.payload,
       };
     },
   },

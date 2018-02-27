@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-26 09:11:22
+ * @Last Modified time: 2018-02-27 17:51:51
  */
 import React, { PureComponent } from 'react';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
@@ -65,7 +65,7 @@ class GoodInfo extends PureComponent {
     }];
 
     const { getFieldDecorator } = this.props.form;
-    const { data } = this.props;
+    const { data, user } = this.props;
     if (!data.product) {
       return <Spin spinning />;
     }
@@ -80,7 +80,7 @@ class GoodInfo extends PureComponent {
     //     <div className="ant-upload-text">上传</div>
     //   </div>
     // );
-    console.log('product', product);
+    console.log('product', product, user);
     return (
       <div className={styles['good-info-wrap']}>
         <SectionHeader title="商品基础信息" />
@@ -229,23 +229,23 @@ class GoodInfo extends PureComponent {
           {
             product.cad_url.map((val, idx) => (
               <Row gutter={24} key={idx}>
-                <Col span={8}>
+                <Col span={12}>
                   <FormItem
                     label={idx === 0 ? 'CAD图' : ''}
-                    labelCol={{ span: 9 }}
-                    wrapperCol={(idx === 0) ? { span: 10 } : { span: 10, offset: 9 }}
+                    labelCol={{ span: 6 }}
+                    wrapperCol={(idx === 0) ? { span: 15 } : { span: 15, offset: 9 }}
                   >
                     <span>{val.split('/').slice(-1)[0]}</span>
                   </FormItem>
                 </Col>
-                <Col span={5}>
+               {/*  <Col span={5}>
                   <FormItem
                     labelCol={{ span: 1 }}
                     wrapperCol={{ span: 23 }}
                   >
                     <span>2017-12-29 12:36:45</span>
                   </FormItem>
-                </Col>
+                </Col> */}
                 <Col span={5}>
                   <FormItem
                     labelCol={{ span: 1 }}
@@ -262,11 +262,11 @@ class GoodInfo extends PureComponent {
         <div style={{ float: 'left', height: 546, position: 'relative' }}>
           <div>
             <h4>商品图片</h4>
-            <Row style={{ maxWidth: 360 }} gutter={12}>
+            <Row style={{ maxWidth: 500 }} gutter={24}>
               {
                 product.pics.map(val => (
                   <Col span={8} key={val.id} >
-                    <img src={val.img_url} alt={val.img_type} title={val.img_type} width="100%" style={{ marginTop: 5, marginBottom: 8 }} />
+                    <img src={val.img_url} alt={val.img_type} title={val.img_type} width="110px" height="110px" style={{ marginTop: 5, marginBottom: 8 }} />
                   </Col>
                 ))
               }
@@ -313,7 +313,9 @@ class GoodInfo extends PureComponent {
         </div>
         <SectionHeader title="产品其他属性" />
         <div className="other-attrs">
-
+          {
+            product.other_attrs < 1 ? <Row gutter={24}><Col span={8} offset={1}>无</Col></Row> : ''
+          }
           {
             product.other_attrs.map((val, idx) => (
               <Row gutter={24} key={idx}>
@@ -327,7 +329,6 @@ class GoodInfo extends PureComponent {
                   </FormItem>
                 </Col>
               </Row>
-
             ))
           }
         </div>
@@ -354,7 +355,7 @@ class GoodInfo extends PureComponent {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>某某某</span>
+                <span>{user.supplier.contactname}</span>
               </FormItem>
             </Col>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -363,7 +364,7 @@ class GoodInfo extends PureComponent {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>13574488306</span>
+                <span>{user.supplier.mobile}</span>
               </FormItem>
             </Col>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -372,7 +373,7 @@ class GoodInfo extends PureComponent {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>湖南孚中信息</span>
+                <span>{user.supplier.company}</span>
               </FormItem>
             </Col>
           </Row>
@@ -383,7 +384,7 @@ class GoodInfo extends PureComponent {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>湖南长沙岳麓挑子湖</span>
+                <span>{user.supplier.shipping_address}</span>
               </FormItem>
             </Col>
           </Row>

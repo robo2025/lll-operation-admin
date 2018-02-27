@@ -41,7 +41,7 @@ export default {
       const response = yield call(getSupplierInfo, supplierid);
       yield put({
         type: 'saveSupplier',
-        payload: response,
+        payload: response.data,
       });
     },
   },
