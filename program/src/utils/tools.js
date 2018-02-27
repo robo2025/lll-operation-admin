@@ -98,3 +98,4 @@ export function getCategoryStr(category) {
   if (category.children) { getCategoryStr(category.children); }
   return categoryStr;
 }
+

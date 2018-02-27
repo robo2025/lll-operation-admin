@@ -9,6 +9,7 @@ const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 
+// 将服务器目录转换成需求目录
 function getStanrdCatalog(data) {
   data.forEach((val) => {
     val.value = val.id;
@@ -17,6 +18,19 @@ function getStanrdCatalog(data) {
       getStanrdCatalog(val.children);
     }
   });
+}
+
+// 拼凑单个商品图片数据
+function getPic(key, pics) {
+  if (!Array.isArray(pics)) {
+    throw new Error('传参必须是一个数组');
+  }
+  const pic = pics.filter(val => (val.img_type === key));
+  if (pic.length > 0) {
+    return [{ uid: pic[0].id, name: pic[0].img_type, url: pic[0].img_url }];
+  } else {
+    return [];
+  }
 }
 
 @Form.create({
@@ -40,13 +54,30 @@ class ProductForm extends Component {
   constructor(props) {
     super(props);
     this.beforeUpload = this.beforeUpload.bind(this);
-    this.handleUploaderChange = this.handleUploaderChange.bind(this);    
+    this.handleUploaderChange = this.handleUploaderChange.bind(this);
+    this.pics = props.data.pics ? props.data.pics : [];
+    console.log('gouzaohanshu', this.pics);
     this.state = {
       previewVisible: false,
       previewImage: '',
-      file: { uid: '', name: '' },      
+      isPicture: true,
+      isCad: true,
+      file: { uid: '', name: '' },
+      pics: [], // 产品图片集合
+      cad_url: [], // 产品cad文件集合
+      a: getPic('正面', this.pics),
+      b: getPic('反面', this.pics),
+      c: getPic('侧面', this.pics),
+      d1: getPic('包装图1', this.pics),
+      d2: getPic('包装图2', this.pics),
+      d3: getPic('包装图3', this.pics),
     };
   }
+
+  componentWillReceiveProps(nextProps) {
+    console.log('will reiceve', nextProps);
+  }
+
 
   handleCancel = () => this.setState({ previewVisible: false })
   handlePreview = (file) => {
@@ -62,8 +93,8 @@ class ProductForm extends Component {
     this.props.onAttrChange(tempJson);
   }
 
-   // 图片上传前处理：验证文件类型
-   beforeUpload(key, file) {
+  // 图片上传前处理：验证文件类型
+  beforeUpload(key, file) {
     this.setState({ file });
     // console.log('before', file);
     if (checkFile(file.name, ['cad'])) {
@@ -76,7 +107,7 @@ class ProductForm extends Component {
         message.error(`${file.name} 暂不支持上传`);
         this.setState({ isCad: false });
         return false;
-      } 
+      }
     } else if (!checkFile(file.name, FILE_TYPES)) {
       message.error(`${file.name} 暂不支持上传`);
       this.setState({ isPicture: false });
@@ -121,8 +152,9 @@ class ProductForm extends Component {
             this.setState({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
             onAttrChange({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
           } else if (key.substr(0, 1) === 'd') {
-            this.setState({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
-            onAttrChange({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
+            const idx = key.substr(1, 1);
+            this.setState({ pics: [...pics, { img_type: '包装图' + idx, img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '包装图' + idx, img_url: file.response.key }] });
           }
         } else if (file.status === 'error') {
           message.error(`${file.name} 文件上传失败`);
@@ -149,7 +181,8 @@ class ProductForm extends Component {
       category.children.children.id,
       category.children.children.children.id,
     ] : [];
-    const { previewVisible, previewImage, file } = this.state;
+    const { previewVisible, previewImage, a, b, c, d1, d2, d3, file } = this.state;
+
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -169,7 +202,7 @@ class ProductForm extends Component {
               url: val.img_url,
             }]}
             onPreview={this.handlePreview}
-            onChange={this.handleChange}
+            onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
           />
           <p className="upload-pic-desc">{val.img_type}</p>
         </Col>
@@ -186,7 +219,7 @@ class ProductForm extends Component {
       reponse: '200', // custom error message to show
       url: val,
     }));
-    console.log('产品详情', cadFileList);
+    console.log('产品详情图片包装图', getPic('测试', data.pics));
 
 
     return (
@@ -294,7 +327,129 @@ class ProductForm extends Component {
         <div style={{ float: 'left', width: 360 }}>
           <h3>产品图片</h3>
           <Row gutter={24}>
-            {uploaders}
+            <Col span={8}>
+              <Upload
+                name="file"
+                action={UPLOAD_URL}
+                listType="picture-card"
+                defaultFileList={a}
+                onPreview={this.handlePreview}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('a', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
+              >
+                {(a.length >= 1) ? null : uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">正面</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                name="file"
+                action={UPLOAD_URL}
+                listType="picture-card"
+                defaultFileList={b}
+                onPreview={this.handlePreview}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
+              >
+                {(b.length >= 1) ? null : uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">反面</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                name="file"
+                action={UPLOAD_URL}
+                listType="picture-card"
+                onPreview={this.handlePreview}
+                defaultFileList={c}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('c', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
+              >
+                {(c.length >= 1) ? null : uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">侧面</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                name="file"
+                action={UPLOAD_URL}
+                listType="picture-card"
+                defaultFileList={d1}
+                onPreview={this.handlePreview}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('d1', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
+              >
+                {(d1.length >= 1) ? null : uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">包装图1</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                name="file"
+                action={UPLOAD_URL}
+                listType="picture-card"
+                defaultFileList={d2}
+                onPreview={this.handlePreview}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('d2', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
+              >
+                {(d2.length >= 1) ? null : uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">包装图2</p>
+            </Col>
+            <Col span={8}>
+              <Upload
+                name="file"
+                action={UPLOAD_URL}
+                listType="picture-card"
+                defaultFileList={d3}
+                onPreview={this.handlePreview}
+                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('d3', fileList); }}
+                data={
+                  {
+                    token: uploadToken,
+                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                  }
+                }
+              >
+                {(d3.length >= 1) ? null : uploadButton}
+              </Upload>
+              <p className="upload-pic-desc">包装图3</p>
+            </Col>
+          </Row>
+          {/* <Row gutter={24}>
+            
             {
               (data.pics && data.pics.length < 6) ?
                 (
@@ -320,7 +475,7 @@ class ProductForm extends Component {
                 )
                 : null
             }
-          </Row>
+          </Row> */}
         </div>
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
@@ -329,21 +484,21 @@ class ProductForm extends Component {
             <TabPane tab="商品概述" key="1">
               <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
-                token={uploadToken}                
+                token={uploadToken}
                 defaultValue={data.summary}
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
               <RichEditor
                 onChange={(html) => { this.handleChange('description', html); }}
-                token={uploadToken}                                
+                token={uploadToken}
                 defaultValue={data.description}
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
-                token={uploadToken}                                
+                token={uploadToken}
                 defaultValue={data.faq}
               />
             </TabPane>
