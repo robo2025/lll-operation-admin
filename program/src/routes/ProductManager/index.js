@@ -27,6 +27,7 @@ export default class ProductManager extends Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleOk = this.handleOk.bind(this);
     this.removeProducts = this.removeProducts.bind(this);
+    this.querySupplyInfo = this.querySupplyInfo.bind(this);
     this.state = {
       modalVisible: false,
       expandForm: false,
@@ -74,6 +75,16 @@ export default class ProductManager extends Component {
     dispatch({
       type: 'product/remove',
       ids,
+    });
+  }
+
+  // 获取供货信息
+  querySupplyInfo(productId) {
+    console.log('productId', productId);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'product/querySupplyInfo',
+      productId,
     });
   }
 
@@ -442,6 +453,7 @@ export default class ProductManager extends Component {
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
               editProduct={this.editProduct}
+              querySupplyInfo={this.querySupplyInfo}
             />
           </div>
         </Card>

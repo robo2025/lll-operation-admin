@@ -1,4 +1,4 @@
-import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail, queryOperationLog } from '../services/product';
+import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail, querySupplyInfo, queryOperationLog } from '../services/product';
 
 export default {
   namespace: 'product',
@@ -7,6 +7,7 @@ export default {
     list: [],
     detail: {},
     logs: [],
+    supplierList: [],
   },
 
   effects: {
@@ -74,6 +75,14 @@ export default {
         payload: response.data,
       });
     },
+    *querySupplyInfo({ productId }, { call, put }) {
+      const res = yield call(querySupplyInfo, { productId });
+      console.log('供货信息models', res);
+      yield put({
+        type: 'supplyInfo',
+        payload: res.data,
+      });
+    },
     *queryLogs({ module }, { call, put }) {
       const res = yield call(queryOperationLog, { module });
       yield put({
@@ -112,6 +121,12 @@ export default {
       return {
         ...state,
         list: action.payload,
+      };
+    },
+    supplyInfo(state, action) {
+      return {
+        ...state,
+        supplierList: action.payload,
       };
     },
     logs(state, action) {

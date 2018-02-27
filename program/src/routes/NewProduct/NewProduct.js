@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-26 17:33:58
+ * @Last Modified time: 2018-02-27 15:00:41
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -36,6 +36,7 @@ export default class NewProduct extends Component {
     this.handleSubmitProduct = this.handleSubmitProduct.bind(this);
     this.handleAddProductOtherAttr = this.handleAddProductOtherAttr.bind(this);
     this.handleAddOtherAttrFiled = this.handleAddOtherAttrFiled.bind(this);
+    this.handleDeleteOtherAttrFiled = this.handleDeleteOtherAttrFiled.bind(this);
     this.beforeUpload = this.beforeUpload.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onOk = this.onOk.bind(this);
@@ -170,6 +171,23 @@ export default class NewProduct extends Component {
   }
 
   /**
+   * 删除产品其他属性项目
+   * 
+   * @param {string} id 属性id
+   * 
+   */
+  handleDeleteOtherAttrFiled(id) {
+    const { otherAttrsFiled } = this.state;
+    const newOtherAttrsFiled = otherAttrsFiled.filter((val, idx) => {
+      return idx + 1 !== id;
+    });
+    this.setState({
+      otherAttrsFiled: newOtherAttrsFiled,
+    });
+    console.log('删除属性ID', id, newOtherAttrsFiled);    
+  }
+
+  /**
    * 添加产品其他属性内容
    * 
    * @param {string} id 其他属性的唯一id
@@ -229,7 +247,7 @@ export default class NewProduct extends Component {
   }
 
   /**
-   * 提交产品信息
+   * 提交新产品信息
    * 
    */
   handleSubmitProduct() {
@@ -238,7 +256,7 @@ export default class NewProduct extends Component {
     const { dispatch, history } = this.props;
     dispatch({
       type: 'product/add',
-      data: { ...fields, other_attrs: otherAttrs },
+      data: { ...fields, other_attrs: otherAttrs, paf_url: [] },
       callback: () => { history.push('/product/list'); },
     });
   }
@@ -268,7 +286,7 @@ export default class NewProduct extends Component {
 
     return (
       <PageHeaderLayout title="新建产品信息">
-        <Card bordered={false} loading={loading}>
+        <Card bordered={false} loading={loading} className={styles['new-product-wrap']}>
           {/* 参照数据Modal */}
           <Modal
             width="60%"
@@ -355,7 +373,7 @@ export default class NewProduct extends Component {
                     </Col> */}
                     <Col span={5}>
                       <span>
-                        <a>删除</a>|
+                        <a onClick={() => { this.handleDeleteOtherAttrFiled(idx + 1); }}>删除</a>|
                         <a>查看</a>
                       </span>
                     </Col>

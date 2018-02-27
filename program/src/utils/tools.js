@@ -87,3 +87,14 @@ export function timeStampToDate(timeStamp) {
 export function getFileSuffix(filename) {
  return filename.split('.').slice(-1)[0]; 
 }
+
+// 获取目录字符串
+let categoryStr = '';
+export function getCategoryStr(category) {
+  if (typeof category !== 'object') {
+    throw new Error('参数必须是一个json对象');
+  }
+  categoryStr += '-' + category.category_name;
+  if (category.children) { getCategoryStr(category.children); }
+  return categoryStr;
+}

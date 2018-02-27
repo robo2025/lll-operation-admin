@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-26 13:49:12
+ * @Last Modified time: 2018-02-27 11:01:30
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -74,6 +74,7 @@ class GoodsTable extends PureComponent {
               />);
           }
         }),
+        width: 150,                        
         fixed: 'left',
       },
       {
@@ -184,6 +185,7 @@ class GoodsTable extends PureComponent {
             <a href={'#/goods/list/detail?goodId=' + record.id}>查看</a>
           </Fragment>
         ),
+        width: 150,
         fixed: 'right',
       },
     ];

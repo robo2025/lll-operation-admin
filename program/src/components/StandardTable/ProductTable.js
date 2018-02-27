@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
-import { Table, Alert, Badge, Divider } from 'antd';
+import { Table, Alert, Badge, Divider, Modal } from 'antd';
+import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
 import styles from './product-table.less';
 
 const AuditStatusMap = ['processing', 'success', 'error'];// 上下架状态
@@ -11,6 +12,8 @@ class ProductTable extends React.Component {
   state = {
     selectedRowKeys: [],
     totalCallNo: 0,
+    isShowModal: false,
+    productId: '',
   };
 
   componentWillReceiveProps(nextProps) {
@@ -21,6 +24,12 @@ class ProductTable extends React.Component {
         totalCallNo: 0,
       });
     }
+  }
+
+
+  // 关闭供货信息弹窗
+  onCancel = () => {
+    this.setState({ isShowModal: false });
   }
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
@@ -43,8 +52,14 @@ class ProductTable extends React.Component {
     this.handleRowSelectChange([], []);
   }
 
+  // 点击供货信息
+  handleSupplyInfoBtnClick = (productId) => {
+    this.setState({ isShowModal: true, productId });
+    this.props.querySupplyInfo(productId);
+  }
+
   render() {
-    const { selectedRowKeys, totalCallNo } = this.state;
+    const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
     const { data, loading } = this.props;
 
     const audit_status = ['待审核', '审核通过', '审核不通过'];
@@ -62,19 +77,31 @@ class ProductTable extends React.Component {
         title: 'ID编号',
         dataIndex: 'pno',
         key: 'pno',
+        width: 110,
         fixed: 'left',
       },
       {
         title: '产品图片',
         dataIndex: 'pics',
-        render: val => val.map((item, idx) => (<img className='product-thumb' alt="缩略图"  key={`key${idx}`} src={item.img_url} />)),
-        fixed: 'left',              
+        render: val => val.map((item, idx) => {
+          if (idx < 3) {
+            return (
+              <img
+                className="product-thumb"
+                alt={item.img_tyle}
+                key={idx}
+                src={item.img_url}
+              />);
+          }
+        }),
+        width: 150,
+        fixed: 'left',
       },
       {
         title: '产品名称',
         dataIndex: 'product_name',
         key: 'product_name',
-        fixed: 'left',        
+        fixed: 'left',
       },
       {
         title: '型号',
@@ -98,13 +125,13 @@ class ProductTable extends React.Component {
         title: '三级类目',
         dataIndex: 'category',
         render: val => (val.children.children.category_name),
-        key: 'menu-3',        
+        key: 'menu-3',
       },
       {
         title: '四级类目',
         dataIndex: 'category',
         render: val => (val.children.children.children.category_name),
-        key: 'menu-4',        
+        key: 'menu-4',
       },
       {
         title: '品牌',
@@ -133,10 +160,11 @@ class ProductTable extends React.Component {
           <Fragment>
             <a onClick={() => { this.props.editProduct(record.id); }}>修改</a>
             <Divider type="vertical" />
-            <a>供货消息</a>
+            <a onClick={() => { this.handleSupplyInfoBtnClick(record.id); }}>供货信息</a>
           </Fragment>
         ),
-        fixed: 'right',        
+        width: 135,
+        fixed: 'right',
       },
     ];
 
@@ -176,6 +204,18 @@ class ProductTable extends React.Component {
           onChange={this.handleTableChange}
           scroll={{ x: 1800 }}
         />
+        {/* 供货信息 */}
+        <Modal
+          width="60%"
+          visible={isShowModal}
+          title="供货信息"
+          okText=""
+          cancelText=""
+          onCancel={this.onCancel}
+          onOk={this.onOk}
+        >
+          <SupplyInformation productId={this.state.productId} />
+        </Modal>
       </div>
     );
   }

@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import moment from 'moment';
 import { Table } from 'antd';
 
 

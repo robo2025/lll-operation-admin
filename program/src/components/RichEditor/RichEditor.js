@@ -6,7 +6,7 @@ import { getFileSuffix } from '../../utils/tools';
 import styles from './rich-editor.less';
 
 const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
-const IMG_SERVER = '//imgcdn.robo2025.com/'; ;
+const IMG_SERVER = 'http://imgcdn.robo2025.com/'; ;
 export default class RichEditor extends React.Component {
   state = {
     htmlContent: '',
@@ -16,7 +16,7 @@ export default class RichEditor extends React.Component {
     // this.setState({ content });    
     // console.log('content', content);
     if (this.props.onChange) {
-      this.props.onChange(JSON.stringify(content));
+      this.props.onChange(content);
     }
   }
 
@@ -71,7 +71,7 @@ export default class RichEditor extends React.Component {
     };
 
     // 编辑器的初始内容,raw字符串
-    const rawContent = this.props.defaultValue ? this.props.defaultValue : '""';
+    const rawContent = this.props.defaultValue ? this.props.defaultValue : '';
     const editorProps = {
       height: 500,
       placeholder: '请输入内容...',

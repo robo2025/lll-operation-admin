@@ -147,6 +147,7 @@ class ProductForm extends Component {
       category.id,
       category.children.id,
       category.children.children.id,
+      category.children.children.children.id,
     ] : [];
     const { previewVisible, previewImage, file } = this.state;
     const uploadButton = (
@@ -216,6 +217,7 @@ class ProductForm extends Component {
             <FormItem
               label="产品ID"
               {...formItemLayout}
+              style={{ display: 'none' }}
             >
               {getFieldDecorator('pno', {
               })(

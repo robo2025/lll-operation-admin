@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-26 17:40:34
+ * @Last Modified time: 2018-02-27 14:45:57
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -73,6 +73,7 @@ export default class ModifyProduct extends Component {
     this.onCancel = this.onCancel.bind(this);
     this.onOk = this.onOk.bind(this);
     this.handleSubmitProduct = this.handleSubmitProduct.bind(this);
+    this.handleClearData = this.handleClearData.bind(this);
     this.state = {
       isShowModal: false,
       isShowAttrMOdal: false,
@@ -238,6 +239,22 @@ export default class ModifyProduct extends Component {
       console.log('存在', id, newOtherAttrs);
     }
   }
+  
+  // 一键清除数据
+  handleClearData() {
+    const { fields } = this.state;
+    this.setState({
+      fields: {
+       ...fields,
+       category: '',
+       product_name: '',
+       partnumber: '',
+       brand_name: '',
+       english_name: '',
+       prodution_place: '',
+     },
+    });
+  }
 
   /**
    * 提交产品信息
@@ -257,7 +274,7 @@ export default class ModifyProduct extends Component {
     } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
       dispatch({
         type: 'product/add',
-        data: this.state.fields,
+        data: { ...this.state.fields, pdf_url: ['没有'] },
       });
     }
   }
@@ -265,6 +282,11 @@ export default class ModifyProduct extends Component {
   render() {
     const { isShowModal, isShowAttrMOdal, otherAttrsFiled } = this.state;
     const { product, loading, catalog, upload } = this.props;
+    const buttonGrop = (
+      <div style={{ display: 'inline-block', marginLeft: 20 }}>
+        <Button type="primary" onClick={this.showModal}>关联产品数据模板</Button>
+        <Button style={{ marginLeft: 20 }} onClick={this.handleClearData}>一键清除数据</Button>
+      </div>);
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -329,6 +351,7 @@ export default class ModifyProduct extends Component {
           </Modal>
           <SectionHeader
             title="产品基础信息"
+            extra={buttonGrop}
           />
           <ModifyProductForm
             data={this.state.fields}

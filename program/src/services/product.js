@@ -89,6 +89,20 @@ export async function removeProducts({ ids }) {
   });
 }
 
+/**
+ * 供货信息
+ *
+ * @param {array} module 模块
+*/
+export async function querySupplyInfo({ productId }) {
+  const acess_token = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/api/goods?product_id=${productId}`, {
+    method: 'get',
+    headers: {
+      Authorization: acess_token,
+    },
+  });
+}
 
 /**
  * 产品操作日志

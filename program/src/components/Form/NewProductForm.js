@@ -371,16 +371,19 @@ class ProductForm extends Component {
             <TabPane tab="商品概述" key="1">
               <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
+                token={uploadToken}                                                
               />
             </TabPane>
             <TabPane tab="商品详情" key="2">
               <RichEditor
                 onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}                                                
               />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
+                token={uploadToken}                
               />
             </TabPane>
           </Tabs>
