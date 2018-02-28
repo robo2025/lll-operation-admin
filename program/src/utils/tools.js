@@ -85,7 +85,7 @@ export function timeStampToDate(timeStamp) {
 
 // 获取文件的后缀名
 export function getFileSuffix(filename) {
- return filename.split('.').slice(-1)[0]; 
+  return filename.split('.').slice(-1)[0];
 }
 
 // 获取目录字符串
@@ -97,4 +97,33 @@ export function getCategoryStr(category) {
   categoryStr += '-' + category.category_name;
   if (category.children) { getCategoryStr(category.children); }
   return categoryStr;
+}
+
+
+/**
+ * 根据指定key替换数组中的的某一个对象
+ * 
+ * @param {obj} obj 用来替换的json对象
+ * @param {arr} arr 放置了很多个json对象的数据
+ * @param {string} key 用于替换查找的key
+ * 
+ * demo 
+ * var arr1 = [{name:'test1'},{name:'test2'},{name:'test3'}]
+ * 执行replaceObjFromArr({name:'test1',age:25},arr1,"name");
+ * 结果：[{name:'test1',age:23},{name:'test2'},{name:'test3'}]
+ */
+export function replaceObjFromArr(obj, arr, key) {
+  if (!Array.isArray(arr)) {
+    throw new Error('传参必须是数组');
+  }
+  let isExist = false;
+  const newArr = arr.map((val) => {
+    if (val[key] === obj[key]) {
+      isExist = true;
+      return obj;
+    } else {
+      return val;
+    }
+  });
+  return isExist ? newArr : [...newArr, obj];
 }

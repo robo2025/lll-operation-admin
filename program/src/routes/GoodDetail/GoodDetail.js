@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-27 16:50:12
+ * @Last Modified time: 2018-02-28 09:37:39
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -85,20 +85,22 @@ class GoodDetail extends Component {
     dispatch({
       type: 'good/fetchDetail',
       goodId: this.state.args.goodId,
-      callback: (res) => { 
+      callback: (res) => {
         console.log('毁掉函数', res);
         const { shelf_life, sales_unit, stock, min_buy, audit_status, audit_desc, shipping_fee_type } = res;
         // 获取供应商信息
-        this.getSupplierInfo(res.supplier_id); 
-        this.setState({ fields: {
-          shelf_life, // 质保期
-          sales_unit, // 销售单位
-          stock, // 库存
-          min_buy, // 最小采购量
-          audit_status, // 审核状态 (1:审核通过 2:审核不通过)
-          audit_desc, // 审核说明 (审核不通过需要填写)
-          shipping_fee_type, // 运费类型
-        } });
+        this.getSupplierInfo(res.supplier_id);
+        this.setState({
+          fields: {
+            shelf_life, // 质保期
+            sales_unit, // 销售单位
+            stock, // 库存
+            min_buy, // 最小采购量
+            audit_status, // 审核状态 (1:审核通过 2:审核不通过)
+            audit_desc, // 审核说明 (审核不通过需要填写)
+            shipping_fee_type, // 运费类型
+          },
+        });
       },
     });
     // 获取操作日志
@@ -169,7 +171,7 @@ class GoodDetail extends Component {
     if (audit_status === 2 && !audit_desc) {
       message.info('审批意见必须填写');
     } else {
-      console.log('提交审核数据', data);      
+      console.log('提交审核数据', data);
       dispatch({
         type: 'good/modifyInfo',
         goodId: this.state.args.goodId,
@@ -185,20 +187,29 @@ class GoodDetail extends Component {
     const { audit_status } = this.state;
     const contentList = {
       tab1: <Table
-        pagination={false}
-        loading={false}
+        pagination={{
+          defaultPageSize: 6,
+          pageSize: 6,
+        }}
+        loading={loading}
         dataSource={good.logs}
         columns={columns}
       />,
       tab2: <Table
-        pagination={false}
-        loading={false}
+        pagination={{
+          defaultPageSize: 5,
+          pageSize: 5,
+        }}
+        loading={loading}
         dataSource={good.logs}
         columns={columns}
       />,
       tab3: <Table
-        pagination={false}
-        loading={false}
+        pagination={{
+          defaultPageSize: 3,
+          pageSize: 3,
+        }}
+        loading={loading}
         dataSource={good.logs}
         columns={columns}
       />,
@@ -239,7 +250,7 @@ class GoodDetail extends Component {
               </Tooltip>
             </div>
             <div className="right">
-              <Button>取消</Button>
+              <Button onClick={() => { this.props.history.push('/goods/list'); }}>返回列表</Button>
               <Button type="primary" onClick={this.handleSubmit}>提交</Button>
             </div>
 

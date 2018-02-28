@@ -70,7 +70,7 @@ class ProductTable extends React.Component {
         title: '序号',
         dataIndex: 'id',
         key: 'id',
-        width: 50,
+        width: 60,
         fixed: 'left',
       },
       {

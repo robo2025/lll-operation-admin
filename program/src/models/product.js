@@ -48,6 +48,12 @@ export default {
     },
     *modifyInfo({ prdId, data, callback }, { call, put }) {
       const res = yield call(modifyProduct, { prdId, data });
+      if (res.rescode >> 0 === 10000) {
+        if (callback) callback(res);
+      } else {
+        alert(res.msg);
+        return;                      
+      };
       const response = yield call(queryProducts);
       yield put({
         type: 'modify',

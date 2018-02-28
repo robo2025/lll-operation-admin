@@ -3,16 +3,30 @@ import { Checkbox, Row, Col } from 'antd';
 
 import styles from './checkbox-group.less';
 
+const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
 
 // 产品导出数据选择项目
 export default class CheckboxGroup extends PureComponent {
-  onChange = (checkedValues) => {
-    this.props.onChange(checkedValues);
+  state = {
+    checkedList: [],
+  }
+  componentWillReceiveProps(nextProps) {
+    console.log('接受参数', nextProps);
+    this.setState({
+      checkedList: nextProps.isCheckAll ? plainOptions : nextProps.checkedList,
+    });
+  }
+  onChange = (checkedList) => {
+   /*  this.setState({
+      checkedList,
+    }); */
+    console.log('checkbox', checkedList);
+    this.props.onChange(checkedList);
   }
 
   render() {
     return (
-      <Checkbox.Group style={{ width: '100%' }} onChange={this.onChange}>
+      <Checkbox.Group style={{ width: '100%' }} onChange={this.onChange} value={this.state.checkedList}>
         <Row className={styles['tips-row']}>
           <Col span={24} className="tips">请选择导出项目：</Col>
         </Row>

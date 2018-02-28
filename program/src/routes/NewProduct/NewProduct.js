@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-27 15:00:41
+ * @Last Modified time: 2018-02-28 09:34:30
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -365,7 +365,7 @@ export default class NewProduct extends Component {
                           }
                         }
                       >
-                        <Button icon="upload">上传</Button>
+                        <Button icon="upload">上传图片</Button>
                       </Upload>
                     </Col>
                     {/* <Col span={4}>

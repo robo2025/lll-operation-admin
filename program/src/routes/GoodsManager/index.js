@@ -11,6 +11,8 @@ const { Option } = Select;
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
+const plainOptions = ['gno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'stock', 'price', 'supplier_name', 'min_buy', 'audit_status', 'publish_status', 'created_time'];// 所有选项
+
 
 @connect(({ rule, loading, good }) => ({
   rule,
@@ -31,7 +33,8 @@ export default class GoodsMananger extends Component {
       selectedRows: [],
       formValues: {},
       isShowExportModal: false,
-      exportFields: [], // 导出产品字段      
+      exportFields: [], // 导出产品字段 
+      isCheckAll: false, // 是否全选导出数据     
     };
   }
 
@@ -52,13 +55,26 @@ export default class GoodsMananger extends Component {
 
   // 导出数据复选框改变
   onExportFieldsChange = (fields) => {
-    this.setState({ exportFields: fields });
+    console.log('exportFiles', fields);
+    this.setState({ 
+      exportFields: fields,
+      isCheckAll: fields.length === plainOptions.length,
+     });
+  }
+
+  // 全选按钮改变
+  onCheckAllChange = (e) => {
+    this.setState({
+      isCheckAll: e.target.checked,
+      exportFields: e.target.checked ? plainOptions : [],
+    });
   }
 
   // 显示导出数据Modal
   showExportModal() {
     this.setState({ isShowExportModal: true });
   }
+
   // 取消导出数据
   handleCancel() {
     this.setState({ isShowExportModal: false });
@@ -418,12 +434,14 @@ export default class GoodsMananger extends Component {
             <Modal
               visible={isShowExportModal}
               width="600px"
-              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }}>全选</Checkbox></h4>}
+              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }} onChange={this.onCheckAllChange} checked={this.state.isCheckAll}>全选</Checkbox></h4>}
               onCancel={this.handleCancel}
               onOk={this.handleOk}
             >
               <GoodCheckboxGroup
                 onChange={this.onExportFieldsChange}
+                isCheckAll={this.state.isCheckAll}
+                checkedList={this.state.exportFields}
               />
             </Modal>
             <GoodsTable

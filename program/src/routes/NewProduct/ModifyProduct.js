@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-27 14:45:57
+ * @Last Modified time: 2018-02-28 13:41:20
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -68,7 +68,7 @@ export default class ModifyProduct extends Component {
     this.ShowAttrModal = this.ShowAttrModal.bind(this);
     this.handleAssociate = this.handleAssociate.bind(this);
     this.handleProductAttr = this.handleProductAttr.bind(this);
-    this.handleAddOtherAttrFiled = this.handleAddOtherAttrFiled.bind(this);    
+    this.handleAddOtherAttrFiled = this.handleAddOtherAttrFiled.bind(this);
     this.handleAddProductOtherAttr = this.handleAddProductOtherAttr.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onOk = this.onOk.bind(this);
@@ -196,7 +196,7 @@ export default class ModifyProduct extends Component {
       fields: { ...this.state.fields, ...changedFields },
     });
   }
- 
+
   /**
    * 添加产品其他属性项目
    * 
@@ -239,20 +239,20 @@ export default class ModifyProduct extends Component {
       console.log('存在', id, newOtherAttrs);
     }
   }
-  
+
   // 一键清除数据
   handleClearData() {
     const { fields } = this.state;
     this.setState({
       fields: {
-       ...fields,
-       category: '',
-       product_name: '',
-       partnumber: '',
-       brand_name: '',
-       english_name: '',
-       prodution_place: '',
-     },
+        ...fields,
+        category: '',
+        product_name: '',
+        partnumber: '',
+        brand_name: '',
+        english_name: '',
+        prodution_place: '',
+      },
     });
   }
 
@@ -262,19 +262,22 @@ export default class ModifyProduct extends Component {
    */
   handleSubmitProduct() {
     const argsKey = Object.keys(this.state.args);
-    console.log('产品信息', this.state.fields, Object.keys(this.state.args));
+    const { fields, otherAttrs } = this.state;
+    console.log('产品信息', { ...fields, other_attrs: otherAttrs }, Object.keys(this.state.args));
     const { dispatch } = this.props;
 
     if (argsKey.includes('prdId')) { // 如果是修改产品
       dispatch({
         type: 'product/modifyInfo',
         prdId: this.state.args.prdId,
-        data: { ...this.state.fields, pdf_url: ['没有'] },
+        data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
+        callback: () => { this.props.history.push('/product/list'); },
       });
     } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
       dispatch({
         type: 'product/add',
-        data: { ...this.state.fields, pdf_url: ['没有'] },
+        data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
+        callback: () => { this.props.history.push('/product/list'); },        
       });
     }
   }
@@ -300,19 +303,28 @@ export default class ModifyProduct extends Component {
 
     const contentList = {
       tab1: <Table
-        pagination={false}
+        pagination={{
+          defaultPageSize: 6,
+          pageSize: 6,
+        }}
         loading={loading}
         dataSource={product.logs}
         columns={columns}
       />,
       tab2: <Table
-        pagination={false}
+        pagination={{
+          defaultPageSize: 5,
+          pageSize: 5,
+        }}
         loading={loading}
         dataSource={product.logs}
         columns={columns}
       />,
       tab3: <Table
-        pagination={false}
+        pagination={{
+          defaultPageSize: 3,
+          pageSize: 3,
+        }}
         loading={loading}
         dataSource={product.logs}
         columns={columns}
@@ -320,7 +332,7 @@ export default class ModifyProduct extends Component {
     };
 
 
-    console.log('修改state', this.state);
+    console.log('产品修改页面state', this.state);
     return (
       <PageHeaderLayout title="修改产品信息">
         <Card bordered={false} loading={loading}>
@@ -388,7 +400,7 @@ export default class ModifyProduct extends Component {
                     </Col>
                     <Col span={4}>
                       <Upload>
-                        <Button icon="upload">上传</Button>
+                        <Button icon="upload">上传图片</Button>
                       </Upload>
                     </Col>
                     <Col span={4}>
@@ -418,7 +430,7 @@ export default class ModifyProduct extends Component {
           </Card>
 
           <div className={styles['submit-btn-wrap']}>
-            <Button>取消</Button>
+            <Button onClick={() => { this.props.history.push('/product/list'); }}>取消</Button>
             <Button type="primary" onClick={this.handleSubmitProduct}>提交</Button>
           </div>
         </Card>

@@ -118,8 +118,9 @@ class ProductForm extends Component {
             this.setState({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
             onAttrChange({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
           } else if (key.substr(0, 1) === 'd') {
-            this.setState({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
-            onAttrChange({ pics: [...pics, { img_type: '包装图', img_url: file.response.key }] });
+            const idx = key.substr(1, 1);
+            this.setState({ pics: [...pics, { img_type: '包装图' + idx, img_url: file.response.key }] });
+            onAttrChange({ pics: [...pics, { img_type: '包装图' + idx, img_url: file.response.key }] });
           }
         } else if (file.status === 'error') {
           message.error(`${file.name} 文件上传失败`);
@@ -322,7 +323,7 @@ class ProductForm extends Component {
               >
                 {d1.length >= 1 ? null : uploadButton}
               </Upload>
-              <p className="upload-pic-desc">包装图</p>
+              <p className="upload-pic-desc">包装图1</p>
             </Col>
             <Col span={8}>
               <Upload
@@ -341,7 +342,7 @@ class ProductForm extends Component {
               >
                 {d2.length >= 1 ? null : uploadButton}
               </Upload>
-              <p className="upload-pic-desc">包装图</p>
+              <p className="upload-pic-desc">包装图2</p>
             </Col>
             <Col span={8}>
               <Upload
@@ -350,7 +351,7 @@ class ProductForm extends Component {
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
-                onChange={({ fileList }) => { this.handleUploaderChange('d2', fileList); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('d3', fileList); }}
                 data={
                   {
                     token: uploadToken,
@@ -360,7 +361,7 @@ class ProductForm extends Component {
               >
                 {d3.length >= 1 ? null : uploadButton}
               </Upload>
-              <p className="upload-pic-desc">包装图</p>
+              <p className="upload-pic-desc">包装图3</p>
             </Col>
           </Row>
         </div>

@@ -11,6 +11,7 @@ const { Option } = Select;
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
+const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
 
 
 @connect(({ rule, loading, product }) => ({
@@ -35,6 +36,7 @@ export default class ProductManager extends Component {
       formValues: {},
       isShowExportModal: false,
       exportFields: [], // 导出产品字段
+      isCheckAll: false,
     };
   }
 
@@ -50,9 +52,20 @@ export default class ProductManager extends Component {
     console.log(date, dateString);
   }
 
+  // 全选按钮改变
+  onCheckAllChange = (e) => {
+    this.setState({
+      isCheckAll: e.target.checked,
+      exportFields: e.target.checked ? plainOptions : [],
+    });
+  }
+
   // 导出数据复选框改变
   onExportFieldsChange = (fields) => {
-    this.setState({ exportFields: fields });
+    this.setState({ 
+      exportFields: fields,
+      isCheckAll: fields.length === plainOptions.length,
+     });
   } 
 
   // 显示导出数据框
@@ -460,12 +473,14 @@ export default class ProductManager extends Component {
             <Modal
               visible={isShowExportModal}
               width="600px"
-              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }}>全选</Checkbox></h4>}
+              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }} onChange={this.onCheckAllChange} checked={this.state.isCheckAll}>全选</Checkbox></h4>}
               onCancel={this.handleCancel}
               onOk={this.handleOk}
             >
               <CheckboxGroup
                 onChange={this.onExportFieldsChange}
+                isCheckAll={this.state.isCheckAll}
+                checkedList={this.state.exportFields}
               />
             </Modal>
             <ProductTable
