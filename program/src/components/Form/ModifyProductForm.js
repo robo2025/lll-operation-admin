@@ -143,18 +143,18 @@ class ProductForm extends Component {
           message.success(`${file.name} 文件上传成功`);
           // that.setState({ file_url: file.response.key });
           if (key === 'a') {
-            this.setState({ pics: replaceObjFromArr({ img_type: '正面', img_url: file.response.key }, pics, 'img_type') });
-            onAttrChange({ pics: [...pics, { img_type: '正面', img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '正面', img_url: file.response.key }, pics, 'img_type') });
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '正面', img_url: file.response.key }] });
           } else if (key === 'b') {
-            this.setState({ pics: replaceObjFromArr({ img_type: '反面', img_url: file.response.key }, pics, 'img_type') });            
-            onAttrChange({ pics: [...pics, { img_type: '反面', img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '反面', img_url: file.response.key }, pics, 'img_type') });            
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '反面', img_url: file.response.key }] });
           } else if (key === 'c') {
-            this.setState({ pics: replaceObjFromArr({ img_type: '侧面', img_url: file.response.key }, pics, 'img_type') });            
-            onAttrChange({ pics: [...pics, { img_type: '侧面', img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '侧面', img_url: file.response.key }, pics, 'img_type') });            
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '侧面', img_url: file.response.key }] });
           } else if (key.substr(0, 1) === 'd') {
             const idx = key.substr(1, 1);
-            this.setState({ pics: replaceObjFromArr({ img_type: '包装图' + idx, img_url: file.response.key }, pics, 'img_type') });            
-            onAttrChange({ pics: [...pics, { img_type: '包装图' + idx, img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '包装图' + idx, img_url: file.response.key }, pics, 'img_type') });            
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '包装图' + idx, img_url: file.response.key }] });
           }
         } else if (file.status === 'error') {
           message.error(`${file.name} 文件上传失败`);

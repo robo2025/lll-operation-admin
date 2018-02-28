@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-28 13:41:20
+ * @Last Modified time: 2018-02-28 16:59:22
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -149,7 +149,7 @@ export default class ModifyProduct extends Component {
         otherAttrs: [
           ...otherAttrs,
           {
-            id: otherAttrsFiled.length + 1,
+            id: otherAttrsFiled.length - 100,
             attr_name: newFiled.attr_name.value,
             attr_value: newFiled.attr_value.value,
           },
@@ -390,7 +390,7 @@ export default class ModifyProduct extends Component {
                       <Input
                         defaultValue={val.attr_value}
                         onChange={(e) => {
-                          this.handleAddProductOtherAttr(idx + 1, {
+                          this.handleAddProductOtherAttr(idx - 100, {
                             attr_name: val.attr_name,
                             attr_value: e.target.value,
                           });

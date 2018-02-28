@@ -17,7 +17,7 @@ export async function getUserInfo() {
 // 获取供应商信息
 export async function getSupplierInfo(supplierid) {
   const access_token = Cookies.get('access_token');
-  return lyRequest(`${USERS_URL}/api/suppliers/${supplierid}`, {
+  return lyRequest(`${USERS_URL}/suppliers/${supplierid}`, {
     headers: {
       Authorization: access_token,
     },

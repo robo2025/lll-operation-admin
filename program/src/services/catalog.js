@@ -6,7 +6,7 @@ import { API_URL } from '../constant/config';
 // 获取服务器目录信息
 export async function queryCatalog() {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/product_categories`, {
+  return lyRequest(`${API_URL}/product_categories`, {
     headers: {
       Authorization: acess_token,
     },
@@ -16,7 +16,7 @@ export async function queryCatalog() {
 // 获取级联目录
 export async function queryCatalogLevel() {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/product_categories/level_selection`, {
+  return lyRequest(`${API_URL}/product_categories/level_selection`, {
     headers: {
       Authorization: acess_token,
     },
@@ -33,7 +33,7 @@ export async function queryCatalogLevel() {
 */
 export async function addCatalog({ pid, name, isActive, desc }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/product_categories`, {
+  return lyRequest(`${API_URL}/product_categories`, {
     method: 'post',
     headers: {
       Authorization: acess_token,
@@ -58,7 +58,7 @@ export async function addCatalog({ pid, name, isActive, desc }) {
 */
 export async function modifyCatalog({ categoryId, name, isActive, desc }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/product_categories/${categoryId}`, {
+  return lyRequest(`${API_URL}/product_categories/${categoryId}`, {
     method: 'put',
     headers: {
       Authorization: acess_token,
@@ -79,7 +79,7 @@ export async function modifyCatalog({ categoryId, name, isActive, desc }) {
 */
 export async function modifyCatalogStatus({ categoryId, isActive }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/product_categories/${categoryId}/active_status`, {
+  return lyRequest(`${API_URL}/product_categories/${categoryId}/active_status`, {
     method: 'put',
     headers: {
       Authorization: acess_token,
@@ -98,7 +98,7 @@ export async function modifyCatalogStatus({ categoryId, isActive }) {
 */
 export async function removeCatalog({ categoryId }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/api/product_categories/${categoryId}`, {
+  return lyRequest(`${API_URL}/product_categories/${categoryId}`, {
     method: 'delete',
     headers: {
       Authorization: acess_token,
