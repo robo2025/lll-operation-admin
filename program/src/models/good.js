@@ -57,8 +57,8 @@ export default {
         payload: response.data,
       });
     },
-    *queryLogs({ module }, { call, put }) {
-      const res = yield call(queryOperationLog, { module });
+    *queryLogs({ module, goodId }, { call, put }) {
+      const res = yield call(queryOperationLog, { module, goodId });
       console.log('操作日志', res);
       yield put({
         type: 'logs',

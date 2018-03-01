@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-28 16:59:22
+ * @Last Modified time: 2018-03-01 17:16:13
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -36,8 +36,8 @@ const columns = [{
   render: val => <span>{actionFlag[val - 1]}</span>,
 }, {
   title: '操作员',
-  dataIndex: 'staff_name',
-  key: 'staff_name',
+  dataIndex: 'username',
+  key: 'username',
 }, {
   title: '执行结果',
   dataIndex: 'status',
@@ -122,7 +122,9 @@ export default class ModifyProduct extends Component {
     dispatch({
       type: 'product/queryLogs',
       module: 'product',
+      productId: args.prdId,
     });
+    console.log('参数', args);
   }
 
   onOperationTabChange = (key) => {

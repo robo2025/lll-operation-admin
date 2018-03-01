@@ -116,7 +116,7 @@ export async function removeProducts({ ids }) {
 */
 export async function queryOperationLog({ module, goodId }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/adminlogs?module=${module}`, {
+  return lyRequest(`${API_URL}/operationlogs?module=${module}&object_id=${goodId}`, {
     method: 'get',
     headers: {
       Authorization: acess_token,

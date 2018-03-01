@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-28 09:37:39
+ * @Last Modified time: 2018-03-01 17:20:41
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -81,6 +81,7 @@ class GoodDetail extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { args } = this.state;
     // 获取商品详情
     dispatch({
       type: 'good/fetchDetail',
@@ -106,7 +107,8 @@ class GoodDetail extends Component {
     // 获取操作日志
     dispatch({
       type: 'good/queryLogs',
-      module: 'product',
+      module: 'goods',
+      goodId: args.goodId,
     });
   }
 

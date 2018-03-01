@@ -90,8 +90,8 @@ export default {
         payload: res.data,
       });
     },
-    *queryLogs({ module }, { call, put }) {
-      const res = yield call(queryOperationLog, { module });
+    *queryLogs({ module, productId }, { call, put }) {
+      const res = yield call(queryOperationLog, { module, productId });
       yield put({
         type: 'logs',
         payload: res.data,
