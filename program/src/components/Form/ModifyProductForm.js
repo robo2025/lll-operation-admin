@@ -65,12 +65,12 @@ class ProductForm extends Component {
       file: { uid: '', name: '' },
       pics: this.pics, // 产品图片集合
       cad_url: [], // 产品cad文件集合
-      a: getPic('正面', this.pics),
-      b: getPic('反面', this.pics),
-      c: getPic('侧面', this.pics),
-      d1: getPic('包装图1', this.pics),
-      d2: getPic('包装图2', this.pics),
-      d3: getPic('包装图3', this.pics),
+      a: getPic('1', this.pics),
+      b: getPic('2', this.pics),
+      c: getPic('3', this.pics),
+      d4: getPic('4', this.pics),
+      d5: getPic('5', this.pics),
+      d6: getPic('6', this.pics),
     };
   }
 
@@ -143,18 +143,18 @@ class ProductForm extends Component {
           message.success(`${file.name} 文件上传成功`);
           // that.setState({ file_url: file.response.key });
           if (key === 'a') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '正面', img_url: file.response.key }, pics, 'img_type') });
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '正面', img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '1', img_url: file.response.key }, pics, 'img_type') });
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '1', img_url: file.response.key }] });
           } else if (key === 'b') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '反面', img_url: file.response.key }, pics, 'img_type') });            
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '反面', img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '2', img_url: file.response.key }, pics, 'img_type') });            
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '2', img_url: file.response.key }] });
           } else if (key === 'c') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '侧面', img_url: file.response.key }, pics, 'img_type') });            
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '侧面', img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '3', img_url: file.response.key }, pics, 'img_type') });            
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '3', img_url: file.response.key }] });
           } else if (key.substr(0, 1) === 'd') {
             const idx = key.substr(1, 1);
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '包装图' + idx, img_url: file.response.key }, pics, 'img_type') });            
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '包装图' + idx, img_url: file.response.key }] });
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: idx, img_url: file.response.key }, pics, 'img_type') });            
+            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: idx, img_url: file.response.key }] });
           }
         } else if (file.status === 'error') {
           message.error(`${file.name} 文件上传失败`);
@@ -181,7 +181,7 @@ class ProductForm extends Component {
       category.children.children.id,
       category.children.children.children.id,
     ] : [];
-    const { previewVisible, previewImage, a, b, c, d1, d2, d3, file } = this.state;
+    const { previewVisible, previewImage, a, b, c, d4, d5, d6, file } = this.state;
 
     const uploadButton = (
       <div>
@@ -392,10 +392,10 @@ class ProductForm extends Component {
                 name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
-                defaultFileList={d1}
+                defaultFileList={d4}
                 onPreview={this.handlePreview}
                 beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
-                onChange={({ fileList }) => { this.handleUploaderChange('d1', fileList); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('d4', fileList); }}
                 data={
                   {
                     token: uploadToken,
@@ -403,7 +403,7 @@ class ProductForm extends Component {
                   }
                 }
               >
-                {(d1.length >= 1) ? null : uploadButton}
+                {(d4.length >= 1) ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">包装图1</p>
             </Col>
@@ -412,10 +412,10 @@ class ProductForm extends Component {
                 name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
-                defaultFileList={d2}
+                defaultFileList={d5}
                 onPreview={this.handlePreview}
                 beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
-                onChange={({ fileList }) => { this.handleUploaderChange('d2', fileList); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('d5', fileList); }}
                 data={
                   {
                     token: uploadToken,
@@ -423,7 +423,7 @@ class ProductForm extends Component {
                   }
                 }
               >
-                {(d2.length >= 1) ? null : uploadButton}
+                {(d5.length >= 1) ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">包装图2</p>
             </Col>
@@ -432,10 +432,10 @@ class ProductForm extends Component {
                 name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
-                defaultFileList={d3}
+                defaultFileList={d6}
                 onPreview={this.handlePreview}
                 beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
-                onChange={({ fileList }) => { this.handleUploaderChange('d3', fileList); }}
+                onChange={({ fileList }) => { this.handleUploaderChange('d6', fileList); }}
                 data={
                   {
                     token: uploadToken,
@@ -443,7 +443,7 @@ class ProductForm extends Component {
                   }
                 }
               >
-                {(d3.length >= 1) ? null : uploadButton}
+                {(d6.length >= 1) ? null : uploadButton}
               </Upload>
               <p className="upload-pic-desc">包装图3</p>
             </Col>

@@ -15,7 +15,7 @@ export const API_URL = 'http://139.199.96.235:9005/api/admin';
 export const UPLOAD_URL = 'http://139.199.96.235:9002';
 
 // 用户管理系统API URL
-export const USERS_URL = 'http://139.199.96.235:9006';
+export const USERS_URL = 'http://139.199.96.235:9006/api';
 
 // 验证登录接口URL
 export const LOGIN_URL = `${URL}/server/authorize`;

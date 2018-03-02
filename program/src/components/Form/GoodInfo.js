@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-02-27 17:51:51
+ * @Last Modified time: 2018-03-02 15:51:55
  */
 import React, { PureComponent } from 'react';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
@@ -227,7 +227,9 @@ class GoodInfo extends PureComponent {
             </FormItem>
           </Form>
           {
-            product.cad_url.map((val, idx) => (
+
+             product.cad_url ?
+             product.cad_url.map((val, idx) => (
               <Row gutter={24} key={idx}>
                 <Col span={12}>
                   <FormItem
@@ -238,14 +240,6 @@ class GoodInfo extends PureComponent {
                     <span>{val.split('/').slice(-1)[0]}</span>
                   </FormItem>
                 </Col>
-               {/*  <Col span={5}>
-                  <FormItem
-                    labelCol={{ span: 1 }}
-                    wrapperCol={{ span: 23 }}
-                  >
-                    <span>2017-12-29 12:36:45</span>
-                  </FormItem>
-                </Col> */}
                 <Col span={5}>
                   <FormItem
                     labelCol={{ span: 1 }}
@@ -255,7 +249,7 @@ class GoodInfo extends PureComponent {
                   </FormItem>
                 </Col>
               </Row>
-            ))
+            )) : 'null'
           }
         </div>
         {/* 商品图片和价格区间 */}
