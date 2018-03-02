@@ -10,7 +10,7 @@ const menuData = [{
   ],
 }, {
   name: '产品管理',
-  icon: 'dashboard',
+  icon: 'appstore-o',
   path: 'product',
   children: [
     {
@@ -19,6 +19,20 @@ const menuData = [{
     }, {
       name: '产品类目管理',
       path: 'menu',
+    },
+  ],
+}, {
+  name: '客户订单管理',
+  path: 'orders',
+  icon: 'bars',
+  children: [
+    {    
+      name: '订单列表',
+      path: 'list',
+    },
+    {    
+      name: '订单详情',
+      path: 'detail',
     },
   ],
 }, {
