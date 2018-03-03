@@ -42,9 +42,6 @@ export default class GoodsMananger extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/fetch',
-    });
-    dispatch({
       type: 'good/fetch',
     });
   }
@@ -125,11 +122,6 @@ export default class GoodsMananger extends Component {
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
-
-    dispatch({
-      type: 'rule/fetch',
-      payload: params,
-    });
   }
 
   handleFormReset = () => {
