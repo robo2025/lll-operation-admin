@@ -153,10 +153,6 @@ export default class ProductManager extends Component {
     this.setState({
       formValues: {},
     });
-    dispatch({
-      type: 'rule/fetch',
-      payload: {},
-    });
   }
 
   toggleForm = () => {
@@ -250,14 +246,14 @@ export default class ProductManager extends Component {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="产品ID编号">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="审核状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -268,7 +264,7 @@ export default class ProductManager extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="上限架状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -279,14 +275,14 @@ export default class ProductManager extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="供应商名称">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="价格">
               {getFieldDecorator('no')(
                 <InputGroup>
@@ -315,37 +311,44 @@ export default class ProductManager extends Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem label="商品ID编号">
+         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="产品ID编号">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="审核状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">待审核</Option>
                   <Option value="1">审核通过</Option>
-                  <Option value="1">审核不通过</Option>
+                  <Option value="2">审核不通过</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="上限架状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">下架中</Option>
-                  <Option value="1">已上架</Option>
+                  <Option value="2">已上架</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="供应商名称">
+              {getFieldDecorator('no')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="价格">
               {getFieldDecorator('no')(
                 <InputGroup>
@@ -356,37 +359,30 @@ export default class ProductManager extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
-            <FormItem label="佣金比率">
-              {getFieldDecorator('no')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-        </Row>
+         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="产品名称">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="型号">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="品牌">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="所属类目">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -397,16 +393,14 @@ export default class ProductManager extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="产品提交日期">
               {getFieldDecorator('no')(
                 <RangePicker onChange={this.onChange} />
               )}
             </FormItem>
           </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="源产品ID">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />

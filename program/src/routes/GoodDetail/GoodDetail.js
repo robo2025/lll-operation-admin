@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-01 17:20:41
+ * @Last Modified time: 2018-03-05 16:35:10
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -18,12 +18,6 @@ const RadioGroup = Radio.Group;
 const operationTabList = [{
   key: 'tab1',
   tab: '操作日志一',
-}, {
-  key: 'tab2',
-  tab: '操作日志二',
-}, {
-  key: 'tab3',
-  tab: '操作日志三',
 }];
 
 const mapStatus = ['失败', '成功'];
@@ -192,24 +186,6 @@ class GoodDetail extends Component {
         pagination={{
           defaultPageSize: 6,
           pageSize: 6,
-        }}
-        loading={loading}
-        dataSource={good.logs}
-        columns={columns}
-      />,
-      tab2: <Table
-        pagination={{
-          defaultPageSize: 5,
-          pageSize: 5,
-        }}
-        loading={loading}
-        dataSource={good.logs}
-        columns={columns}
-      />,
-      tab3: <Table
-        pagination={{
-          defaultPageSize: 3,
-          pageSize: 3,
         }}
         loading={loading}
         dataSource={good.logs}

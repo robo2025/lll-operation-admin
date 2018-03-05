@@ -223,14 +223,14 @@ export default class GoodsMananger extends Component {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col xxl={4} md={6} sm={24}>
             <FormItem label="商品ID编号">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xxl={4} md={6} sm={24}>
             <FormItem label="审核状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -241,7 +241,7 @@ export default class GoodsMananger extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xxl={4} md={6} sm={24}>
             <FormItem label="上限架状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -252,7 +252,14 @@ export default class GoodsMananger extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col xxl={4} md={6} sm={24}>
+            <FormItem label="佣金比率">
+              {getFieldDecorator('no')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col xxl={5} md={8} sm={24}>
             <FormItem label="价格">
               {getFieldDecorator('no')(
                 <InputGroup>
@@ -263,13 +270,7 @@ export default class GoodsMananger extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
-            <FormItem label="佣金比率">
-              {getFieldDecorator('no')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
+          
         </Row>
         <div style={{ overflow: 'hidden' }}>
           <span style={{ float: 'right', marginBottom: 24 }}>
@@ -289,14 +290,14 @@ export default class GoodsMananger extends Component {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="商品ID编号">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="审核状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -307,7 +308,7 @@ export default class GoodsMananger extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="上限架状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -318,7 +319,14 @@ export default class GoodsMananger extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="佣金比率">
+              {getFieldDecorator('no')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="价格">
               {getFieldDecorator('no')(
                 <InputGroup>
@@ -329,37 +337,30 @@ export default class GoodsMananger extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
-            <FormItem label="佣金比率">
-              {getFieldDecorator('no')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="商品名称">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="型号">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="品牌">
               {getFieldDecorator('no')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="所属类目">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -370,7 +371,7 @@ export default class GoodsMananger extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={10} sm={24}>
             <FormItem label="产品提交日期">
               {getFieldDecorator('no')(
                 <RangePicker onChange={this.onDatepickerChange} />

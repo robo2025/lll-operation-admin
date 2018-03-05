@@ -135,8 +135,8 @@ class ProductForm extends Component {
   render() {
     console.log('state:', this.state);
     const formItemLayout = {
-      labelCol: { span: 3 },
-      wrapperCol: { span: 12 },
+      labelCol: { span: 4 },
+      wrapperCol: { span: 15 },
     };
 
     const { getFieldDecorator } = this.props.form;
@@ -219,7 +219,7 @@ class ProductForm extends Component {
               <Col span={24}>
                 <FormItem
                   label="CAD图"
-                  labelCol={{ span: 3 }}
+                  labelCol={{ span: 4 }}
                   wrapperCol={{ span: 12 }}
                 >
                   <Upload

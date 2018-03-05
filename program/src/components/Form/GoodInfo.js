@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-02 15:51:55
+ * @Last Modified time: 2018-03-05 16:41:05
  */
 import React, { PureComponent } from 'react';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
@@ -46,8 +46,8 @@ class GoodInfo extends PureComponent {
 
   render() {
     const formItemLayout = {
-      labelCol: { span: 3 },
-      wrapperCol: { span: 12 },
+      labelCol: { span: 4 },
+      wrapperCol: { span: 18 },
     };
 
     const columns = [{
@@ -85,7 +85,7 @@ class GoodInfo extends PureComponent {
       <div className={styles['good-info-wrap']}>
         <SectionHeader title="商品基础信息" />
         {/* 商品主要属性 */}
-        <div style={{ float: 'left', width: '50%' }}>
+        <div style={{ float: 'left', width: '45%', borderRight: '1px solid #eee' }}>
           <Form layout="horizontal">
             <FormItem
               label="所属分类"
@@ -185,11 +185,11 @@ class GoodInfo extends PureComponent {
               )}
             </FormItem>
             <Row gutter={24}>
-              <Col span={8}>
+              <Col span={10}>
                 <FormItem
                   label="库存"
-                  labelCol={{ span: 9 }}
-                  wrapperCol={{ span: 11 }}
+                  labelCol={{ span: 10 }}
+                  wrapperCol={{ span: 12 }}
                 >
                   {getFieldDecorator('stock', {
                     rules: [{ required: true, message: '请输入库存量' }],
@@ -198,11 +198,11 @@ class GoodInfo extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <FormItem
                   label="最低采购量"
-                  labelCol={{ span: 10 }}
-                  wrapperCol={{ span: 11 }}
+                  labelCol={{ span: 14 }}
+                  wrapperCol={{ span: 10 }}
                 >
                   {
                     getFieldDecorator('min_buy', {
@@ -225,59 +225,68 @@ class GoodInfo extends PureComponent {
                 )
               }
             </FormItem>
+            <FormItem
+              label="价格设置"
+              {...formItemLayout}
+            >
+              <div className={styles['price-range']}>
+                <Table
+                  bordered
+                  pagination={false}
+                  size="small"
+                  rowKey={item => (item.id + Math.random)}
+                  dataSource={data.prices}
+                  columns={columns}
+                />
+              </div>
+
+            </FormItem>
           </Form>
           {
 
-             product.cad_url ?
-             product.cad_url.map((val, idx) => (
-              <Row gutter={24} key={idx}>
-                <Col span={12}>
-                  <FormItem
-                    label={idx === 0 ? 'CAD图' : ''}
-                    labelCol={{ span: 6 }}
-                    wrapperCol={(idx === 0) ? { span: 15 } : { span: 15, offset: 9 }}
-                  >
-                    <span>{val.split('/').slice(-1)[0]}</span>
-                  </FormItem>
-                </Col>
-                <Col span={5}>
-                  <FormItem
-                    labelCol={{ span: 1 }}
-                    wrapperCol={{ span: 12 }}
-                  >
-                    <a href={val}>查看</a>
-                  </FormItem>
-                </Col>
-              </Row>
-            )) : 'null'
+            product.cad_url ?
+              product.cad_url.map((val, idx) => (
+                <Row gutter={24} key={idx}>
+                  <Col span={12}>
+                    <FormItem
+                      label={idx === 0 ? 'CAD图' : ''}
+                      labelCol={{ span: 6 }}
+                      wrapperCol={(idx === 0) ? { span: 15 } : { span: 15, offset: 9 }}
+                    >
+                      <span>{val.split('/').slice(-1)[0]}</span>
+                    </FormItem>
+                  </Col>
+                  <Col span={5}>
+                    <FormItem
+                      labelCol={{ span: 1 }}
+                      wrapperCol={{ span: 12 }}
+                    >
+                      <a href={val}>查看</a>
+                    </FormItem>
+                  </Col>
+                </Row>
+              )) : null
           }
         </div>
         {/* 商品图片和价格区间 */}
-        <div style={{ float: 'left', height: 546, position: 'relative' }}>
+        <div style={{ float: 'left', height: 546, width: '50%', marginLeft: '5%', position: 'relative' }}>
           <div>
-            <h4>商品图片</h4>
-            <Row style={{ maxWidth: 500 }} gutter={24}>
+            {/* <h4>商品图片</h4> */}
+            <Row style={{ maxWidth: 500 }} gutter={48}>
               {
                 product.pics.map(val => (
-                  <Col span={8} key={val.id} >
-                    <img src={val.img_url} alt={val.img_type} title={val.img_type} width="110px" height="110px" style={{ marginTop: 5, marginBottom: 8 }} />
+                  <Col span={6} key={val.id} >
+                    <img 
+                      className="good-pics"
+                      src={val.img_url} 
+                      alt={val.img_type} 
+                      title={val.img_type} 
+                    />
                   </Col>
                 ))
               }
             </Row>
           </div>
-          <div className={styles['price-range']}>
-            <h4>*价格设置</h4>
-            <Table
-              bordered
-              pagination={false}
-              size="small"
-              rowKey={item => (item.id + Math.random)}
-              dataSource={data.prices}
-              columns={columns}
-            />
-          </div>
-
         </div>
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
@@ -308,7 +317,7 @@ class GoodInfo extends PureComponent {
         <SectionHeader title="产品其他属性" />
         <div className="other-attrs">
           {
-            product.other_attrs < 1 ? <Row gutter={24}><Col span={8} offset={1}>无</Col></Row> : ''
+            product.other_attrs < 1 ? <Row gutter={24}><Col span={8} offset={1}>无</Col></Row> : null
           }
           {
             product.other_attrs.map((val, idx) => (
@@ -327,7 +336,7 @@ class GoodInfo extends PureComponent {
           }
         </div>
         <SectionHeader title="佣金比率" />
-        <div className="commission">
+        <div className="other-attrs">
           <Row gutter={24}>
             <Col span={8} style={{ textAlign: 'left' }}>
               <FormItem
@@ -335,7 +344,7 @@ class GoodInfo extends PureComponent {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>5%</span>
+                <span> 5%</span>
               </FormItem>
             </Col>
           </Row>
