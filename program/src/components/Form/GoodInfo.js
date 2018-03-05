@@ -2,12 +2,14 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 17:55:58
+ * @Last Modified time: 2018-03-05 20:21:47
  */
 import React, { PureComponent } from 'react';
+import 'braft-editor/dist/braft.css';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import RichEditor from '../../components/RichEditor/RichEditor';
+import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
 
 import styles from './good-info.less';
 
@@ -85,7 +87,7 @@ class GoodInfo extends React.Component {
     //     <div className="ant-upload-text">上传</div>
     //   </div>
     // );
-    console.log('product', product, user);
+    console.log('product', data.product.description);
     return (
       <div className={styles['good-info-wrap']}>
         <SectionHeader title="商品基础信息" />
@@ -295,24 +297,11 @@ class GoodInfo extends React.Component {
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
           <Tabs defaultActiveKey="2" onChange={(key) => { console.log(key); }}>
-            <TabPane tab="商品概述" key="1">
-             <div ref={(dom) => { this.goodDescDom = dom; }}>
-               {goodDesc}
-             </div>
-            </TabPane>
             <TabPane tab="商品详情" key="2">
-              <RichEditor
-                onChange={(html) => { this.handleChange('description', html); }}
-                defaultValue={data.description}
-                disabled
-              />
+              <RichEditorShow content={data.product.description} />
             </TabPane>
             <TabPane tab="常见问题FAQ" key="3" >
-              <RichEditor
-                onChange={(html) => { this.handleChange('faq', html); }}
-                defaultValue={data.faq}
-                disabled
-              />
+              <RichEditorShow content={data.product.faq} />
             </TabPane>
           </Tabs>
         </div>
