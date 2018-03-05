@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 16:41:05
+ * @Last Modified time: 2018-03-05 17:55:58
  */
 import React, { PureComponent } from 'react';
 import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
@@ -13,6 +13,7 @@ import styles from './good-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+const goodDesc = '<p>详情\</p><p></p><div class="media-wrap image-wrap"><img src="http://imgcdn.robo2025.com/product/images/introduction/1520234005555_677.png"/></div><p></p>';
 
 @Form.create({
   mapPropsToFields(props) {
@@ -31,10 +32,14 @@ const { TabPane } = Tabs;
     props.onChange(values);
   },
 })
-class GoodInfo extends PureComponent {
+class GoodInfo extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentDidMount() {
+    console.log('渲染好了', this.goodDescDom, this);
   }
 
   // 输入框有改变时
@@ -225,6 +230,30 @@ class GoodInfo extends PureComponent {
                 )
               }
             </FormItem>
+            {
+              product.cad_url ?
+                product.cad_url.map((val, idx) => (
+                  <Row gutter={24} key={idx}>
+                    <Col span={12}>
+                      <FormItem
+                        label={idx === 0 ? 'CAD图' : ''}
+                        labelCol={{ span: 8 }}
+                        wrapperCol={(idx === 0) ? { span: 15 } : { span: 15, offset: 9 }}
+                      >
+                        <span>{val.split('/').slice(-1)[0]}</span>
+                      </FormItem>
+                    </Col>
+                    <Col span={12}>
+                      <FormItem
+                        labelCol={{ span: 1 }}
+                        wrapperCol={{ span: 20, offset: 15 }}
+                      >
+                        <a href={val}>查看</a>
+                      </FormItem>
+                    </Col>
+                  </Row>
+                )) : null
+            }
             <FormItem
               label="价格设置"
               {...formItemLayout}
@@ -239,34 +268,8 @@ class GoodInfo extends PureComponent {
                   columns={columns}
                 />
               </div>
-
             </FormItem>
           </Form>
-          {
-
-            product.cad_url ?
-              product.cad_url.map((val, idx) => (
-                <Row gutter={24} key={idx}>
-                  <Col span={12}>
-                    <FormItem
-                      label={idx === 0 ? 'CAD图' : ''}
-                      labelCol={{ span: 6 }}
-                      wrapperCol={(idx === 0) ? { span: 15 } : { span: 15, offset: 9 }}
-                    >
-                      <span>{val.split('/').slice(-1)[0]}</span>
-                    </FormItem>
-                  </Col>
-                  <Col span={5}>
-                    <FormItem
-                      labelCol={{ span: 1 }}
-                      wrapperCol={{ span: 12 }}
-                    >
-                      <a href={val}>查看</a>
-                    </FormItem>
-                  </Col>
-                </Row>
-              )) : null
-          }
         </div>
         {/* 商品图片和价格区间 */}
         <div style={{ float: 'left', height: 546, width: '50%', marginLeft: '5%', position: 'relative' }}>
@@ -276,11 +279,11 @@ class GoodInfo extends PureComponent {
               {
                 product.pics.map(val => (
                   <Col span={6} key={val.id} >
-                    <img 
+                    <img
                       className="good-pics"
-                      src={val.img_url} 
-                      alt={val.img_type} 
-                      title={val.img_type} 
+                      src={val.img_url}
+                      alt={val.img_type}
+                      title={val.img_type}
                     />
                   </Col>
                 ))
@@ -292,12 +295,11 @@ class GoodInfo extends PureComponent {
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
           <Tabs defaultActiveKey="2" onChange={(key) => { console.log(key); }}>
-            {/* <TabPane tab="商品概述" key="1">
-              <RichEditor
-                onChange={(html) => { this.handleChange('summary', html); }}
-                defaultValue={data.summary}
-              />
-            </TabPane> */}
+            <TabPane tab="商品概述" key="1">
+             <div ref={(dom) => { this.goodDescDom = dom; }}>
+               {goodDesc}
+             </div>
+            </TabPane>
             <TabPane tab="商品详情" key="2">
               <RichEditor
                 onChange={(html) => { this.handleChange('description', html); }}

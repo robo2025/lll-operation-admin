@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 15:00:26
+ * @Last Modified time: 2018-03-05 17:22:42
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -24,12 +24,6 @@ const actionFlag = ['新增', '修改', '删除']; // 操作类型 (1:新增 2:�
 const operationTabList = [{
   key: 'tab1',
   tab: '操作日志一',
-}, {
-  key: 'tab2',
-  tab: '操作日志二',
-}, {
-  key: 'tab3',
-  tab: '操作日志三',
 }];
 // 操作记录列
 const columns = [{
@@ -349,24 +343,6 @@ export default class ModifyProduct extends Component {
         dataSource={product.logs}
         columns={columns}
       />,
-      tab2: <Table
-        pagination={{
-          defaultPageSize: 5,
-          pageSize: 5,
-        }}
-        loading={loading}
-        dataSource={product.logs}
-        columns={columns}
-      />,
-      tab3: <Table
-        pagination={{
-          defaultPageSize: 3,
-          pageSize: 3,
-        }}
-        loading={loading}
-        dataSource={product.logs}
-        columns={columns}
-      />,
     };
 
 
@@ -416,6 +392,7 @@ export default class ModifyProduct extends Component {
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}
           />
           <Form style={{ width: 700, maxWidth: '70%' }} >
+            { otherAttrsFiled.length <= 0 ? <p style={{ textIndent: 16 }}>无</p> : null}
             {
               otherAttrsFiled.map((val, idx) => (
                 <FormItem

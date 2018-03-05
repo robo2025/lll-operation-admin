@@ -298,7 +298,7 @@ export default class ProductManager extends Component {
           <span style={{ float: 'right', marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">查询</Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+            <a style={{ marginLeft: 8 }} onClick={this.toggleForm} className="unfold">
               展开 <Icon type="down" />
             </a>
           </span>
@@ -412,7 +412,7 @@ export default class ProductManager extends Component {
           <span style={{ float: 'right', marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">查询</Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+            <a style={{ marginLeft: 8 }} onClick={this.toggleForm} className="unfold">
               收起 <Icon type="up" />
             </a>
           </span>
@@ -445,11 +445,14 @@ export default class ProductManager extends Component {
 
     return (
       <PageHeaderLayout title="产品管理">
+        <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
+          <div className={styles.tableListForm}>
+                {this.renderForm()}
+          </div>
+        </Card>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>
-              {this.renderForm()}
-            </div>
+           
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
               {
