@@ -339,7 +339,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -359,7 +359,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -379,7 +379,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -399,7 +399,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -419,7 +419,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -439,7 +439,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >

@@ -90,7 +90,7 @@ export default class MenuForm extends React.Component {
               <Divider type="vertical" />
               <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
               <Divider type="vertical" />
-              <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.key)}>
+              <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
                 <a>删除</a>
               </Popconfirm>
               <Divider type="vertical" />

@@ -64,7 +64,7 @@ export default class RichEditor extends React.Component {
     
       fd.append('file', param.file);
       fd.append('token', token); // 七牛云上传token
-      fd.append('key', `/product/${param.libraryId}.${getFileSuffix(param.file.name)}`);// 七牛云上传文件名
+      fd.append('key', `product/images/introduction/${param.libraryId}.${getFileSuffix(param.file.name)}`);// 七牛云上传文件名
     
       xhr.open('POST', serverURL, true);
       xhr.send(fd);

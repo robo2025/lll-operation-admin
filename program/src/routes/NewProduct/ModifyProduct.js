@@ -2,21 +2,24 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-01 17:16:13
+ * @Last Modified time: 2018-03-05 15:00:26
  */
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Card, Button, Form, Input, Modal, Row, Col, Upload, Table } from 'antd';
+import { Card, Button, Form, Input, Modal, Row, Col, Upload, Table, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ModifyProductForm from '../../components/Form/ModifyProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-import { queryString } from '../../utils/tools';
+import { queryString, checkFile, getFileSuffix } from '../../utils/tools';
+
 import styles from './modify-product.less';
 
 const FormItem = Form.Item;
+const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
+const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 const actionFlag = ['新增', '修改', '删除']; // 操作类型 (1:新增 2:修改 3:删除)
 const operationTabList = [{
   key: 'tab1',
@@ -82,7 +85,8 @@ export default class ModifyProduct extends Component {
       otherAttrsFiled: [],
       otherAttrs: [],
       operationkey: 'tab1',
-      newFiled: {}, // 用户自定义的其他属性      
+      newFiled: {}, // 用户自定义的其他属性   
+      file: { uid: '', name: '' },   
     };
   }
 
@@ -258,6 +262,38 @@ export default class ModifyProduct extends Component {
     });
   }
 
+   // 其他属性图片上传前处理：验证文件类型
+   beforeUpload = (key, file) => {
+    this.setState({ file });
+    // console.log('before', file);
+    if (checkFile(file.name, FILE_TYPES)) {
+      this.setState({ isPicture: true });
+    }
+    if (!checkFile(file.name, FILE_TYPES)) {
+      message.error(`${file.name} 暂不支持上传`);
+      this.setState({ isPicture: false });
+      return false;
+    }
+  }
+
+  // 其他属性图片上传时处理
+  handleUploaderChange = (key, fileList) => {
+    console.log('文件上传', key, fileList);
+    const { isPicture } = this.state;
+    if (!isPicture) { return; }
+    // 上传成功，则将图片放入state里的pics数组内
+    fileList.map((file) => {
+      if (file.status === 'done') {
+        message.success(`${file.name} 文件上传成功`);
+        this.handleAddProductOtherAttr(key, { img_url: file.response.key });
+      } else if (file.status === 'error') {
+        message.error(`${file.name} 文件上传失败`);
+      }
+      return file;
+    });
+  }
+
+
   /**
    * 提交产品信息
    * 
@@ -285,7 +321,7 @@ export default class ModifyProduct extends Component {
   }
 
   render() {
-    const { isShowModal, isShowAttrMOdal, otherAttrsFiled } = this.state;
+    const { isShowModal, isShowAttrMOdal, otherAttrsFiled, file } = this.state;
     const { product, loading, catalog, upload } = this.props;
     const buttonGrop = (
       <div style={{ display: 'inline-block', marginLeft: 20 }}>
@@ -401,7 +437,19 @@ export default class ModifyProduct extends Component {
                       />
                     </Col>
                     <Col span={4}>
-                      <Upload>
+                      <Upload
+                        name="file"
+                        action={UPLOAD_URL}
+                        listType="picture"
+                        beforeUpload={(currFile) => { this.beforeUpload('cad_url', currFile); }}
+                        onChange={({ fileList }) => { this.handleUploaderChange(idx + 1, fileList); }}
+                        data={
+                          {
+                            token: upload.upload_token,
+                            key: `product/images/attribute/${file.uid}.${getFileSuffix(file.name)}`,
+                          }
+                        }
+                      >
                         <Button icon="upload">上传图片</Button>
                       </Upload>
                     </Col>

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-02 15:53:22
+ * @Last Modified time: 2018-03-05 14:54:33
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -361,7 +361,7 @@ export default class NewProduct extends Component {
                         data={
                           {
                             token: upload.upload_token,
-                            key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                            key: `product/images/attribute/${file.uid}.${getFileSuffix(file.name)}`,
                           }
                         }
                       >

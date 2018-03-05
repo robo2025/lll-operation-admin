@@ -52,6 +52,7 @@ export default class OrderList extends Component {
     modalTempJson['isShowModal' + modalKey] = true;
     this.setState({ ...modalTempJson, orderId });
   }
+
   /**
    * 处理Modal的隐藏
    * @param {string} modalKey Modal的key
@@ -61,6 +62,11 @@ export default class OrderList extends Component {
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = false;
     this.setState({ ...modalTempJson });
+  }
+
+  // modal内容改变时处理
+  handleModalContentChange = (content) => {
+    console.log('modal conten change:', content);
   }
 
   renderSimpleForm() {
@@ -220,23 +226,30 @@ export default class OrderList extends Component {
               title="催单操作"
               onCancel={() => { this.handleModalHidden(1); }}
             >
-              <ReminderContent />
+              <ReminderContent
+                onChange={this.handleModalContentChange}
+              />
             </Modal>
             {/* 订单取消Modal */}
             <Modal
               visible={isShowModal2}
               title="取消订单"
-              onCancel={() => { this.handleModalHidden(2); }}              
+              onCancel={() => { this.handleModalHidden(2); }}
             >
-              <CancelOrderContent />
+              <CancelOrderContent
+                onChange={this.handleModalContentChange}
+
+              />
             </Modal>
             {/* 收货延迟Modal */}
             <Modal
               visible={isShowModal3}
               title="收货延迟"
-              onCancel={() => { this.handleModalHidden(3); }}              
+              onCancel={() => { this.handleModalHidden(3); }}
             >
-              <DelayOrderContent />
+              <DelayOrderContent
+                onChange={this.handleModalContentChange}
+              />
             </Modal>
           </div>
         </Card>

@@ -38,9 +38,9 @@ class ProductForm extends Component {
       a: [],
       b: [],
       c: [],
-      d1: [],
-      d2: [],
-      d3: [],
+      d4: [],
+      d5: [],
+      d6: [],
     };
   }
 
@@ -231,7 +231,7 @@ class ProductForm extends Component {
                     data={
                       {
                         token: uploadToken,
-                        key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                        key: `product/attachment/cad/${file.uid}.${getFileSuffix(file.name)}`,
                       }
                     }
                   >
@@ -260,7 +260,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -279,7 +279,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -298,7 +298,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -317,7 +317,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -336,7 +336,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
@@ -355,7 +355,7 @@ class ProductForm extends Component {
                 data={
                   {
                     token: uploadToken,
-                    key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                    key: `product/images/show/${file.uid}.${getFileSuffix(file.name)}`,
                   }
                 }
               >
