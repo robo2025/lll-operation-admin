@@ -14,7 +14,7 @@ const { RangePicker } = DatePicker;
 const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
 
 
-@connect(({ rule, loading, product }) => ({
+@connect(({ loading, product }) => ({
   product,
   loading: loading.models.product,
 }))
@@ -450,7 +450,7 @@ export default class ProductManager extends Component {
     console.log('product', this.state);
 
     return (
-      <PageHeaderLayout title="查询表格">
+      <PageHeaderLayout title="产品管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
