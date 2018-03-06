@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import { Table, Button, Input, Popconfirm, Divider, Modal, Form, Radio } from 'antd';
+import { Table, Button, Input, Popconfirm, Divider, Modal, Form, Radio, Breadcrumb } from 'antd';
+import styles from './menu-manager.less';
 
 const FormItem = Form.Item;
 const mapStatus = ['禁用', '启用'];
@@ -15,6 +16,7 @@ const EditableCell = ({ editable, value, onChange }) => (
   </div>
 );
 
+
 export default class MenuForm extends React.Component {
   constructor(props) {
     super(props);
@@ -28,6 +30,8 @@ export default class MenuForm extends React.Component {
       isShowModifyModal: false,
       catalogName: {},
       isActive: { value: true },
+      breadData: [{ level: 0, id: 0, category_name: '根目录' }],
+      currCatalogData: this.props.data,
     };
     this.columns = [{
       title: '类目级别',
@@ -38,6 +42,7 @@ export default class MenuForm extends React.Component {
       title: '类目名称',
       dataIndex: 'category_name',
       key: 'category_name',
+      render: (text, record) => (<a onClick={() => { this.handleCatelogItemClick(record); }}>{text}</a>),
     }, {
       title: '类目ID',
       dataIndex: 'id',
@@ -104,6 +109,43 @@ export default class MenuForm extends React.Component {
           );
       },
     }];
+  }
+
+
+  componentDidMount() {
+    this.setState({ currCatalogData: this.props.data });
+  }
+
+
+  // 类目点击
+  handleCatelogItemClick = (record) => {
+    console.log('当前点击record', record, record.children);
+    if (record.id === 0) {
+      this.setState({ currCatalogData: this.props.data });
+    } else {
+      this.setState({ currCatalogData: record.children });
+    }
+    const { breadData } = this.state;
+    const lastBreadDataLevel = breadData[breadData.length - 1].level;
+    if (record.level === lastBreadDataLevel) {
+      breadData.pop();
+      const newBreadData = [
+        ...breadData,
+        record,
+      ];
+      this.setState({ breadData: newBreadData });
+    } else if (record.level > lastBreadDataLevel) {
+      const newBreadData = [
+        ...breadData,
+        record,
+      ];
+      this.setState({ breadData: newBreadData });
+    }
+  }
+
+  // 面包屑被点击
+  handleBreadClick = (record) => {
+
   }
 
   // 是否展示Modal，key:state对应的key
@@ -217,8 +259,17 @@ export default class MenuForm extends React.Component {
     const { data } = this.props; // 表单数据
     const { catalogName, currCatalog } = this.state;
 
+    // const dataTemp = JSON.stringify(data);
+    // const data2 = JSON.parse(dataTemp);
+    // data2.forEach((val) => {
+    //   delete val.children;
+    // });
+
+    // console.log('当前类目:', this.state.currCatalogData, this.state);
+    
+
     return (
-      <div>
+      <div className={styles['catelog-wrap']}>
         <Button type="primary" icon="plus" onClick={() => { this.showModal('visible'); }} style={{ marginBottom: 15 }}>新增一级类目</Button>
         {/* 新建类目弹窗 */}
         <Modal
@@ -313,11 +364,22 @@ export default class MenuForm extends React.Component {
             </FormItem>
           </Form>
         </Modal>
+
+        <Breadcrumb>
+          {this.state.breadData.map((val, idx) => (
+            <Breadcrumb.Item
+              key={idx}
+            >
+              <a onClick={() => { this.handleCatelogItemClick(val); }}>{val.category_name}</a>
+            </Breadcrumb.Item>
+          ))}
+        </Breadcrumb>
         <Table
-          defaultExpandAllRows
           columns={this.columns}
-          dataSource={data}
+          dataSource={this.state.currCatalogData}
           rowKey={record => (record.id)}
+          onExpand={() => { console.log('you need expand me?'); }}
+          expandRowByClick={false}
         />
       </div>
     );
