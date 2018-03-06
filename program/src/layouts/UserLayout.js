@@ -18,15 +18,15 @@ const links = [{
   href: '',
 }];
 
-const copyright = <div>Copyright <Icon type="copyright" /> 2018 孚中数据科技有限公司</div>;
+const copyright = <div>Copyright <Icon type="copyright" /> 2018 工业魔方</div>;
 
 class UserLayout extends React.PureComponent {
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = '孚中数据科技';
+    let title = '工业魔方';
     if (routerData[pathname] && routerData[pathname].name) {
-      title = `${routerData[pathname].name} - 孚中数据科技`;
+      title = `${routerData[pathname].name} - 工业模仿`;
     }
     return title;
   }
