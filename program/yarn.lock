@@ -1713,9 +1713,9 @@ braces@^2.3.0:
     split-string "^3.0.2"
     to-regex "^3.0.1"
 
-braft-editor@^1.4.0:
-  version "1.4.0"
-  resolved "http://registry.npm.taobao.org/braft-editor/download/braft-editor-1.4.0.tgz#d7914588f9f44df33e0bee3fc6122eb2b7a6839b"
+braft-editor@^1.6.1:
+  version "1.6.1"
+  resolved "http://registry.npm.taobao.org/braft-editor/download/braft-editor-1.6.1.tgz#91b9c9386365ea75e6d33aa8e9bf71e3d14f5f88"
   dependencies:
     draft-convert "^2.0.0"
     draft-js "^0.10.3"

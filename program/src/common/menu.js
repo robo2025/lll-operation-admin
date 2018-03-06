@@ -1,6 +1,6 @@
 const menuData = [{
   name: '商品管理',
-  icon: 'dashboard',
+  icon: 'shop',
   path: 'goods',
   children: [
     {
