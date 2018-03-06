@@ -2,17 +2,17 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 14:54:33
+ * @Last Modified time: 2018-03-06 10:31:20
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Form, Input, Modal, Row, Col, Upload, message } from 'antd';
+import { Card, Button, Form, Input, Modal, Row, Col, Table, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-import { checkFile, getFileSuffix } from '../../utils/tools';
+import { checkFile } from '../../utils/tools';
 import styles from './newproduct.less';
 
 const FormItem = Form.Item;
@@ -49,11 +49,9 @@ export default class NewProduct extends Component {
       },
       newFiled: {}, // 用户自定义的其他属性
       otherAttrsFiled: [{
-        attr_name: '形状',
-      }, {
-        attr_name: '控制输出',
-      }, {
-        attr_name: '检测物体',
+        id: 0,
+        attr_name: '参数一',
+        attr_value: '',
       }],
       otherAttrs: [],
       file: { uid: '', name: '' },
@@ -179,7 +177,7 @@ export default class NewProduct extends Component {
   handleDeleteOtherAttrFiled(id) {
     const { otherAttrsFiled } = this.state;
     const newOtherAttrsFiled = otherAttrsFiled.filter((val, idx) => {
-      return idx + 1 !== id;
+      return val.id !== id;
     });
     this.setState({
       otherAttrsFiled: newOtherAttrsFiled,
@@ -273,6 +271,26 @@ export default class NewProduct extends Component {
       },
     };
 
+    // 其他属性列
+    const attrClomns = [{
+      title: '属性名',
+      dataIndex: 'attr_name',
+      key: 'attr_name',
+    }, {
+      title: '属性值',
+      dataIndex: 'attr_value',
+      key: 'attr_value',
+      render: (text, record) => (
+      <Input 
+        defaultValue={text}      
+        onChange={(e) => { this.handleAddProductOtherAttr(record.id, { attr_name: record.attr_name, attr_value: e.target.value }); }}
+      />
+      ),
+    }, {
+      title: '操作',
+      render: (text, record) => (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
+    }];
+
     const buttonGrop = (
       <div style={{ display: 'inline-block', marginLeft: 20 }}>
         <Button type="primary" onClick={this.showModal}>关联产品数据模板</Button>
@@ -330,58 +348,15 @@ export default class NewProduct extends Component {
             title="产品其他属性"
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}
           />
-          <Form style={{ width: 700, maxWidth: '70%' }}>
-            {
-              otherAttrsFiled.map((val, idx) => (
-                <FormItem
-                  label={val.attr_name}
-                  key={'otherAttr' + idx}
-                  {...formItemLayout}
-                >
-                  <Row gutter={12}>
-                    <Col span={6}>
-                      <Input
-                        defaultValue={val.attr_value}
-                        onChange={(e) => {
-                          this.handleAddProductOtherAttr(idx - 100, {
-                            attr_name: val.attr_name,
-                            attr_value: e.target.value,
-                          });
-                        }
-                        }
-                      />
-                    </Col>
-                    <Col span={8}>
-                      <Upload
-                        name="file"
-                        action={UPLOAD_URL}
-                        listType="picture"
-                        beforeUpload={(currFile) => { this.beforeUpload('cad_url', currFile); }}
-                        onChange={({ fileList }) => { this.handleUploaderChange(idx + 1, fileList); }}
-                        data={
-                          {
-                            token: upload.upload_token,
-                            key: `product/images/attribute/${file.uid}.${getFileSuffix(file.name)}`,
-                          }
-                        }
-                      >
-                        <Button icon="upload">上传图片</Button>
-                      </Upload>
-                    </Col>
-                    {/* <Col span={4}>
-                      <span>{val.img_url}</span>
-                    </Col> */}
-                    <Col span={5}>
-                      <span>
-                        <a onClick={() => { this.handleDeleteOtherAttrFiled(idx + 1); }}>删除</a>|
-                        <a>查看</a>
-                      </span>
-                    </Col>
-                  </Row>
-                </FormItem>
-              ))
-            }
-          </Form>
+          <div style={{ width: 700, maxWidth: '70%' }}>
+            <Table
+              className="attr-table"
+              bordered
+              pagination={false}
+              columns={attrClomns}
+              dataSource={otherAttrsFiled}
+            />
+          </div>
           <div className={styles['submit-btn-wrap']}>
             <Button>取消</Button>
             <Button type="primary" onClick={this.handleSubmitProduct}>提交</Button>

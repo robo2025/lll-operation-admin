@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 20:21:47
+ * @Last Modified time: 2018-03-06 10:42:49
  */
 import React, { PureComponent } from 'react';
 import 'braft-editor/dist/braft.css';
@@ -15,7 +15,6 @@ import styles from './good-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const goodDesc = '<p>详情\</p><p></p><div class="media-wrap image-wrap"><img src="http://imgcdn.robo2025.com/product/images/introduction/1520234005555_677.png"/></div><p></p>';
 
 @Form.create({
   mapPropsToFields(props) {
@@ -308,12 +307,12 @@ class GoodInfo extends React.Component {
         <SectionHeader title="产品其他属性" />
         <div className="other-attrs">
           {
-            product.other_attrs < 1 ? <Row gutter={24}><Col span={8} offset={1}>无</Col></Row> : null
+            product.other_attrs < 1 ? <Row gutter={8}><Col span={8} offset={1}>无</Col></Row> : null
           }
           {
             product.other_attrs.map((val, idx) => (
               <Row gutter={24} key={idx}>
-                <Col span={8} style={{ textAlign: 'left' }}>
+                <Col span={3} style={{ textAlign: 'left' }}>
                   <FormItem
                     label={val.attr_name}
                     labelCol={{ span: 5 }}

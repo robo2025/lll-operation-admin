@@ -163,6 +163,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('category', {
+                rules: [{ required: true }],
               })(
                 <Cascader
                   options={catalog}
@@ -175,6 +176,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('product_name', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -184,6 +186,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('partnumber', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -193,6 +196,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('brand_name', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -202,6 +206,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('english_name', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -211,6 +216,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('prodution_place', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -369,19 +375,19 @@ class ProductForm extends Component {
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
           <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
-            <TabPane tab="商品概述" key="1">
+            <TabPane tab="*商品概述" key="1">
               <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
                 token={uploadToken}                                                
               />
             </TabPane>
-            <TabPane tab="商品详情" key="2">
+            <TabPane tab="*商品详情" key="2">
               <RichEditor
                 onChange={(html) => { this.handleChange('description', html); }}
                 token={uploadToken}                                                
               />
             </TabPane>
-            <TabPane tab="常见问题FAQ" key="3" >
+            <TabPane tab="*常见问题FAQ" key="3" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
                 token={uploadToken}                

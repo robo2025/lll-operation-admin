@@ -47,7 +47,7 @@ class MenuManager extends React.Component {
       type: 'catalog/removeOne',
       categoryId: id,
       callback: (msg) => {
-        message.error(msg, 2.5);
+        message.success(msg, 2.5);
       },
     });
   }

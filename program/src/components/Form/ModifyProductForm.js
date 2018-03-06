@@ -243,6 +243,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('product_name', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -253,6 +254,7 @@ class ProductForm extends Component {
               style={{ display: 'none' }}
             >
               {getFieldDecorator('pno', {
+                rules: [{ required: true }],                
               })(
                 <Input disabled />
               )}
@@ -262,6 +264,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('partnumber', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -271,6 +274,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('brand_name', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -280,6 +284,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('english_name', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}
@@ -289,6 +294,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('prodution_place', {
+                rules: [{ required: true }],                
               })(
                 <Input />
               )}

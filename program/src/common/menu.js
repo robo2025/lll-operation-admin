@@ -1,24 +1,26 @@
 const menuData = [{
-  name: '商品管理',
-  icon: 'shop',
-  path: 'goods',
-  children: [
-    {
-      name: '供应商商品列表',
-      path: 'list',
-    },
-  ],
-}, {
   name: '产品管理',
   icon: 'appstore-o',
   path: 'product',
   children: [
     {
-      name: '产品列表',
-      path: 'list',
-    }, {
-      name: '产品类目管理',
+      name: '1. 产品类目管理',
       path: 'menu',
+    },
+    {
+      name: '2.  产品列表',
+      path: 'list',
+    },
+  ],
+
+}, {
+  name: '商品管理',
+  icon: 'shop',
+  path: 'goods',
+  children: [
+    {
+      name: '1. 供应商商品列表',
+      path: 'list',
     },
   ],
 }, {
@@ -26,12 +28,12 @@ const menuData = [{
   path: 'orders',
   icon: 'bars',
   children: [
-    {    
-      name: '订单列表',
+    {
+      name: '1. 订单列表',
       path: 'list',
     },
-    {    
-      name: '订单详情',
+    {
+      name: '2. 订单详情',
       path: 'detail',
     },
   ],

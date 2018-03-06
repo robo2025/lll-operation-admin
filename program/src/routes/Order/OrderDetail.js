@@ -190,7 +190,7 @@ export default class OrderList extends Component {
     };
     return (
       <PageHeaderLayout title="订单详情">
-        <Card bordered={false}>
+        <Card bordered={false} className={styles['order-detail']}>
           <DescriptionList size="large" title="订单信息" style={{ marginBottom: 32 }}>
             <Description term="客户订单编号">1000000000</Description>
             <Description term="支付状态">已支付</Description>
@@ -279,7 +279,7 @@ export default class OrderList extends Component {
             columns={logisticsColumns}
             rowKey="id"
           />
-          <Divider style={{ marginBottom: 32 }} />          
+          {/* <Divider style={{ marginBottom: 32 }} />           */}
           <div className={styles.title}>操作日志记录</div>    
           <Card
             className={styles.tabsCard}

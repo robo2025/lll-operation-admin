@@ -139,7 +139,7 @@ class ProductTable extends React.Component {
 
       },
       {
-        title: '已有供应商条数',
+        title: '已有商品条数',
         dataIndex: 'goods_count',
 
       },
@@ -177,7 +177,7 @@ class ProductTable extends React.Component {
       selectedRowKeys,
       onChange: this.handleRowSelectChange,
       getCheckboxProps: record => ({
-        disabled: record.disabled,
+        disabled: record.goods_count >= 1,
       }),
     };
 

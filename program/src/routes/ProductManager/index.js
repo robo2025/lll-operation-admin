@@ -429,12 +429,6 @@ export default class ProductManager extends Component {
     const { loading, product } = this.props;
     const { selectedRows, modalVisible, isShowExportModal } = this.state;
     const data = product.list;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
-      </Menu>
-    );
 
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -456,14 +450,14 @@ export default class ProductManager extends Component {
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
               {
-                selectedRows.length > 0 && (
+                selectedRows.length > 0 ? (
                   <span>
                     <Button
                       onClick={this.removeProducts}
                     >删除
                     </Button>
                   </span>
-                )
+                ) : null
               }
               <Button onClick={this.showExportModal}>导出数据</Button>
             </div>

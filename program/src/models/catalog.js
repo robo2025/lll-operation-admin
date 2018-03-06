@@ -1,4 +1,5 @@
 import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog, queryCatalogLevel } from '../services/catalog';
+import { message } from 'antd';
 
 export default {
   namespace: 'catalog',
@@ -54,8 +55,10 @@ export default {
     },
     *removeOne({ categoryId, callback }, { call, put }) {
       const res = yield call(removeCatalog, { categoryId });
-      if (res.rescode !== 10000) {
+      if (res.rescode >> 0 === 10000) {
         if (callback) callback(res.msg);
+      } else {
+        message.error(res.msg);
         return;
       }
       const response = yield call(queryCatalog);

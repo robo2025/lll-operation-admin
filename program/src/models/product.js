@@ -73,12 +73,13 @@ export default {
     *remove({ ids, callback }, { call, put }) {
       const res = yield call(removeProducts, { ids });
       if (res.rescode >> 0 !== 10000) {
-        alert(res.msg.split(':')[1]);        
+        alert('提示：' + res.msg.split(':')[1]);        
         return;
-      } else if (callback) callback(res);
+      };
       const response = yield call(queryProducts);
+      // console.log('服务器目录列表', response);
       yield put({
-        type: 'remove',
+        type: 'save',
         payload: response.data,
       });
     },

@@ -1,10 +1,20 @@
 @import "~antd/lib/style/themes/default.less";
 
+.order-detail{
+  color:red;
+  :global{
+    [class|=title]{
+      font-weight: bold !important;
+    }
+  }
+}
+
 .title {
   color: @heading-color;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 16px;
+  color: #666;
 }
 
 .extra-good-info{

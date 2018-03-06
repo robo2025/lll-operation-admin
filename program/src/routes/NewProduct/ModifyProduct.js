@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 17:22:42
+ * @Last Modified time: 2018-03-06 11:11:52
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -105,6 +105,7 @@ export default class ModifyProduct extends Component {
             category_id_4: detail.category.children.children.children.id, // 四级目录
           },
           otherAttrsFiled: [...detail.other_attrs, ...this.state.otherAttrsFiled],
+          otherAttrs: detail.other_attrs,
         });
       },
     });
@@ -345,11 +346,31 @@ export default class ModifyProduct extends Component {
       />,
     };
 
+     // 其他属性列
+     const attrClomns = [{
+      title: '属性名',
+      dataIndex: 'attr_name',
+      key: 'attr_name',
+    }, {
+      title: '属性值',
+      dataIndex: 'attr_value',
+      key: 'attr_value',
+      render: (text, record) => (
+      <Input 
+        defaultValue={text}      
+        onChange={(e) => { this.handleAddProductOtherAttr(record.id, { attr_name: record.attr_name, attr_value: e.target.value }); }}
+      />
+      ),
+    }, {
+      title: '操作',
+      render: (text, record) => (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
+    }];
+
 
     console.log('产品修改页面state', this.state);
     return (
       <PageHeaderLayout title="修改产品信息">
-        <Card bordered={false} loading={loading}>
+        <Card bordered={false} loading={loading} className={styles['modify-product']}>
           {/* 参照数据Modal */}
           <Modal
             width="60%"
@@ -391,7 +412,16 @@ export default class ModifyProduct extends Component {
             title="产品其他属性"
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}
           />
-          <Form style={{ width: 700, maxWidth: '70%' }} >
+          <div style={{ width: 700, maxWidth: '70%' }}>
+            <Table
+                className="attr-table"
+                bordered
+                pagination={false}
+                columns={attrClomns}
+                dataSource={otherAttrsFiled}
+            />
+          </div>
+         {/*  <Form style={{ width: 700, maxWidth: '70%' }} >
             { otherAttrsFiled.length <= 0 ? <p style={{ textIndent: 16 }}>无</p> : null}
             {
               otherAttrsFiled.map((val, idx) => (
@@ -443,7 +473,7 @@ export default class ModifyProduct extends Component {
                 </FormItem>
               ))
             }
-          </Form>
+          </Form> */}
           <div className={styles['section-header']}>
             <h2>操作日志</h2>
           </div>

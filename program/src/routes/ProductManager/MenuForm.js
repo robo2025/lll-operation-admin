@@ -219,7 +219,7 @@ export default class MenuForm extends React.Component {
 
     return (
       <div>
-        <Button type="primary" icon="plus" onClick={() => { this.showModal('visible'); }}>新增一级类目</Button>
+        <Button type="primary" icon="plus" onClick={() => { this.showModal('visible'); }} style={{ marginBottom: 15 }}>新增一级类目</Button>
         {/* 新建类目弹窗 */}
         <Modal
           title="新增类目"
