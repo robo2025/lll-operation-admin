@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Card, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import MenuForm from './MenuForm';
+import DradMenuForm from './MenuForm';
 
 
 import styles from './product-manager.less';
@@ -80,7 +80,7 @@ class MenuManager extends React.Component {
     return (
       <PageHeaderLayout title="产品目录管理">
         <Card title="目录管理" className={styles.card} bordered={false} loading={loading}>
-          <MenuForm
+          <DradMenuForm
             data={catalogList}
             addMenu={this.addMenu}
             removeCatalog={this.removeCatalog}

@@ -1,5 +1,9 @@
 import React from 'react';
 import moment from 'moment';
+import _ from 'lodash';
+import { DragDropContext, DragSource, DropTarget } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import update from 'immutability-helper';
 import { Table, Button, Input, Popconfirm, Divider, Modal, Form, Radio, Breadcrumb } from 'antd';
 import styles from './menu-manager.less';
 
@@ -16,8 +20,132 @@ const EditableCell = ({ editable, value, onChange }) => (
   </div>
 );
 
+// -------------------------------------
+function dragDirection(
+  dragIndex,
+  hoverIndex,
+  initialClientOffset,
+  clientOffset,
+  sourceClientOffset,
+) {
+  const hoverMiddleY = (initialClientOffset.y - sourceClientOffset.y) / 2;
+  const hoverClientY = clientOffset.y - sourceClientOffset.y;
+  if (dragIndex < hoverIndex && hoverClientY > hoverMiddleY) {
+    return 'downward';
+  }
+  if (dragIndex > hoverIndex && hoverClientY < hoverMiddleY) {
+    return 'upward';
+  }
+}
 
-export default class MenuForm extends React.Component {
+let BodyRow = (props) => {
+  const {
+    isOver,
+    connectDragSource,
+    connectDropTarget,
+    moveRow,
+    dragRow,
+    clientOffset,
+    sourceClientOffset,
+    initialClientOffset,
+    ...restProps
+  } = props;
+  const style = { ...restProps.style, cursor: 'move' };
+
+  let className = restProps.className;
+  if (isOver && initialClientOffset) {
+    const direction = dragDirection(
+      dragRow.index,
+      restProps.index,
+      initialClientOffset,
+      clientOffset,
+      sourceClientOffset
+    );
+    if (direction === 'downward') {
+      className += ' drop-over-downward';
+    }
+    if (direction === 'upward') {
+      className += ' drop-over-upward';
+    }
+  }
+
+  return connectDragSource(
+    connectDropTarget(
+      <tr
+        {...restProps}
+        className={className}
+        style={style}
+      />
+    )
+  );
+};
+
+const rowSource = {
+  beginDrag(props) {
+    return {
+      index: props.index,
+    };
+  },
+};
+
+const rowTarget = {
+  drop(props, monitor) {
+    const dragIndex = monitor.getItem().index;
+    const hoverIndex = props.index;
+
+    // Don't replace items with themselves
+    if (dragIndex === hoverIndex) {
+      return;
+    }
+
+    // Time to actually perform the action
+    props.moveRow(dragIndex, hoverIndex);
+
+    // Note: we're mutating the monitor item here!
+    // Generally it's better to avoid mutations,
+    // but it's good here for the sake of performance
+    // to avoid expensive index searches.
+    monitor.getItem().index = hoverIndex;
+  },
+};
+
+BodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  isOver: monitor.isOver(),
+  sourceClientOffset: monitor.getSourceClientOffset(),
+}))(
+  DragSource('row', rowSource, (connect, monitor) => ({
+    connectDragSource: connect.dragSource(),
+    dragRow: monitor.getItem(),
+    clientOffset: monitor.getClientOffset(),
+    initialClientOffset: monitor.getInitialClientOffset(),
+  }))(BodyRow)
+);
+// -------------------------------------
+
+function getStanrdCatalog(data) {
+  data.forEach((val) => {
+    // const newChildren = _.cloneDeep(val.children);
+    // val.lyChildren = newChildren;
+    // if (val.children && val.children.length >= 0) {
+    //   getStanrdCatalog(val.children);
+    // }
+    const test = _.transform(val, (result, value, key) => {
+      if (key === 'children') {
+        result.lyChildren = value;
+      } else {
+        result[key] = value;
+      }
+    }, {});
+    val.lyChildren = test.lyChildren;
+    delete val.children;
+    if (val.children || val.lyChildren) {
+      getStanrdCatalog(val.children || val.lyChildren);
+    }
+  });
+}
+
+class MenuForm extends React.Component {
   constructor(props) {
     super(props);
     this.showModal = this.showModal.bind(this);
@@ -30,8 +158,8 @@ export default class MenuForm extends React.Component {
       isShowModifyModal: false,
       catalogName: {},
       isActive: { value: true },
-      breadData: [{ level: 0, id: 0, category_name: '根目录' }],
-      currCatalogData: this.props.data,
+      breadData: [{ level: 0, id: 0, category_name: '根目录:' }],
+      currCatalogData: getStanrdCatalog(this.props.data),
     };
     this.columns = [{
       title: '类目级别',
@@ -119,28 +247,34 @@ export default class MenuForm extends React.Component {
 
   // 类目点击
   handleCatelogItemClick = (record) => {
-    console.log('当前点击record', record, record.children);
+    console.log('当前点击record', record, record.lyChildren);
     if (record.id === 0) {
       this.setState({ currCatalogData: this.props.data });
     } else {
-      this.setState({ currCatalogData: record.children });
+      this.setState({ currCatalogData: record.lyChildren });
     }
     const { breadData } = this.state;
-    const lastBreadDataLevel = breadData[breadData.length - 1].level;
-    if (record.level === lastBreadDataLevel) {
-      breadData.pop();
-      const newBreadData = [
-        ...breadData,
-        record,
-      ];
-      this.setState({ breadData: newBreadData });
-    } else if (record.level > lastBreadDataLevel) {
-      const newBreadData = [
-        ...breadData,
-        record,
-      ];
-      this.setState({ breadData: newBreadData });
+    const recordLevel = record.level; // 目录的层级
+    breadData[recordLevel] = record;
+    for (let i = recordLevel + 1; i < breadData.length; i++) {
+      breadData[i] = null;
     }
+    this.setState({ breadData });
+    // const lastBreadDataLevel = breadData[breadData.length - 1].level;
+    // if (record.level === lastBreadDataLevel) {
+    //   breadData.pop();
+    //   const newBreadData = [
+    //     ...breadData,
+    //     record,
+    //   ];
+    //   this.setState({ breadData: newBreadData });
+    // } else if (record.level > lastBreadDataLevel) {
+    //   const newBreadData = [
+    //     ...breadData,
+    //     record,
+    //   ];
+    //   this.setState({ breadData: newBreadData });
+    // }
   }
 
   // 面包屑被点击
@@ -238,6 +372,26 @@ export default class MenuForm extends React.Component {
     // console.log('校验', this.state);
   }
 
+  components = {
+    body: {
+      row: BodyRow,
+    },
+  }
+
+  moveRow = (dragIndex, hoverIndex) => {
+    alert(dragIndex + ',' + hoverIndex);
+    const data = this.state.currCatalogData;
+    const dragRow = data[dragIndex];
+
+    this.setState(
+      update(this.state, {
+        currCatalogData: {
+          $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
+        },
+      }),
+    );
+  }
+
   renderColumns(text, record, column) {
     return (
       <EditableCell
@@ -247,7 +401,7 @@ export default class MenuForm extends React.Component {
       />
     );
   }
-
+  
 
   render() {
     const formLayout = 'horizontal';
@@ -265,8 +419,7 @@ export default class MenuForm extends React.Component {
     //   delete val.children;
     // });
 
-    // console.log('当前类目:', this.state.currCatalogData, this.state);
-    
+    console.log('当前类目:', this.state);
 
     return (
       <div className={styles['catelog-wrap']}>
@@ -366,22 +519,32 @@ export default class MenuForm extends React.Component {
         </Modal>
 
         <Breadcrumb>
-          {this.state.breadData.map((val, idx) => (
-            <Breadcrumb.Item
-              key={idx}
-            >
-              <a onClick={() => { this.handleCatelogItemClick(val); }}>{val.category_name}</a>
-            </Breadcrumb.Item>
-          ))}
+          {this.state.breadData.map((val, idx) => {
+            return val ?
+              (
+                <Breadcrumb.Item
+                  key={idx}
+                >
+                  <a onClick={() => { this.handleCatelogItemClick(val); }}>{val.category_name}</a>
+                </Breadcrumb.Item>
+              ) : null;
+          })
+          }
         </Breadcrumb>
         <Table
           columns={this.columns}
           dataSource={this.state.currCatalogData}
+          components={this.components}
           rowKey={record => (record.id)}
-          onExpand={() => { console.log('you need expand me?'); }}
-          expandRowByClick={false}
+          onRow={(record, index) => ({
+            index,
+            moveRow: this.moveRow,
+          })}
         />
       </div>
     );
   }
 }
+
+const DradMenuForm = DragDropContext(HTML5Backend)(MenuForm);
+export default DradMenuForm;
