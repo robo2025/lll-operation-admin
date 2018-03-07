@@ -37,6 +37,7 @@ class MenuManager extends React.Component {
       name,
       isActive: isActive + 0,
       desc,
+      error: (res) => { message.error(res.split(':')[1]); },            
     });
   }
 
