@@ -409,12 +409,21 @@ export default class GoodsMananger extends Component {
       </Menu>
     );
 
-    console.log('商品列表', good);
+    // 导出数据Modal标题
+    const exportCom = (
+      <h4>
+        导出数据
+        <Checkbox 
+        style={{ marginLeft: 20 }} 
+        onChange={this.onCheckAllChange} 
+        checked={this.state.isCheckAll}
+        >
+        全选
+        </Checkbox>
+      </h4>
+    );
 
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
+    console.log('商品列表', good);
 
     return (
       <PageHeaderLayout title="商品管理">
@@ -432,7 +441,7 @@ export default class GoodsMananger extends Component {
             <Modal
               visible={isShowExportModal}
               width="600px"
-              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }} onChange={this.onCheckAllChange} checked={this.state.isCheckAll}>全选</Checkbox></h4>}
+              title={exportCom}
               onCancel={this.handleCancel}
               onOk={this.handleOk}
             >

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 13:44:59
+ * @Last Modified time: 2018-03-07 13:57:53
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -259,17 +259,6 @@ export default class NewProduct extends Component {
   }
 
   render() {
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 3 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 21 },
-      },
-    };
-
     // 其他属性列
     const attrClomns = [{
       title: '属性名',
@@ -282,12 +271,17 @@ export default class NewProduct extends Component {
       render: (text, record) => (
       <Input 
         defaultValue={text}      
-        onChange={(e) => { this.handleAddProductOtherAttr(record.id, { attr_name: record.attr_name, attr_value: e.target.value }); }}
+        onChange={(e) => { 
+          this.handleAddProductOtherAttr(record.id, 
+            { attr_name: record.attr_name, attr_value: e.target.value }
+          ); 
+        }}
       />
       ),
     }, {
       title: '操作',
-      render: (text, record) => (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
+      render: (text, record) => 
+      (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
     }];
 
     const buttonGrop = (

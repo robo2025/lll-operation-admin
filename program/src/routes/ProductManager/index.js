@@ -431,10 +431,19 @@ export default class ProductManager extends Component {
     const { selectedRows, modalVisible, isShowExportModal } = this.state;
     const data = product.list;
 
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
+    // 导出数据modal标题
+    const exportCom = (
+        <h4>
+          导出数据
+          <Checkbox 
+          style={{ marginLeft: 20 }} 
+          onChange={this.onCheckAllChange} 
+          checked={this.state.isCheckAll}
+          >
+          全选
+          </Checkbox>
+        </h4>
+    );
 
     console.log('product', this.state);
 
@@ -465,7 +474,7 @@ export default class ProductManager extends Component {
             <Modal
               visible={isShowExportModal}
               width="600px"
-              title={<h4>导出数据<Checkbox style={{ marginLeft: 20 }} onChange={this.onCheckAllChange} checked={this.state.isCheckAll}>全选</Checkbox></h4>}
+              title={exportCom}
               onCancel={this.handleCancel}
               onOk={this.handleOk}
             >

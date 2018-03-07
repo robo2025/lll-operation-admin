@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 13:45:04
+ * @Last Modified time: 2018-03-07 13:57:01
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -359,12 +359,17 @@ export default class ModifyProduct extends Component {
       render: (text, record) => (
         <Input
           defaultValue={text}
-          onChange={(e) => { this.handleAddProductOtherAttr(record.id, { attr_name: record.attr_name, attr_value: e.target.value }); }}
+          onChange={(e) => { 
+            this.handleAddProductOtherAttr(record.id, 
+              { attr_name: record.attr_name, attr_value: e.target.value }
+            ); 
+          }}
         />
       ),
     }, {
       title: '操作',
-      render: (text, record) => (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
+      render: (text, record) => 
+      (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
     }];
 
 
@@ -450,7 +455,9 @@ export default class ModifyProduct extends Component {
                         action={UPLOAD_URL}
                         listType="picture"
                         beforeUpload={(currFile) => { this.beforeUpload('cad_url', currFile); }}
-                        onChange={({ fileList }) => { this.handleUploaderChange(idx + 1, fileList); }}
+                        onChange={({ fileList }) => 
+                          { this.handleUploaderChange(idx + 1, fileList); }
+                        }
                         data={
                           {
                             token: upload.upload_token,

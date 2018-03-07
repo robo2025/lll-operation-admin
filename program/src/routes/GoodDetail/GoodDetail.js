@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 13:43:10
+ * @Last Modified time: 2018-03-07 14:02:34
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -82,7 +82,14 @@ class GoodDetail extends Component {
       goodId: this.state.args.goodId,
       success: (res) => {
         console.log('回调函数', res);
-        const { shelf_life, sales_unit, stock, min_buy, audit_status, audit_desc, shipping_fee_type } = res.data;
+        const {
+          shelf_life,
+          sales_unit,
+          stock,
+          min_buy,
+          audit_status,
+          audit_desc,
+          shipping_fee_type } = res.data;
         // 获取供应商信息
         this.getSupplierInfo(res.data.supplier_id);
         this.setState({
