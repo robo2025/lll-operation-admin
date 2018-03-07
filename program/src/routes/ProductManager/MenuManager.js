@@ -78,6 +78,17 @@ class MenuManager extends React.Component {
     });
   }
 
+  // 类目排序
+  sortCatalogLevel = (level, data) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'catalog/sortCatalogLevel',
+      level,
+      data,
+      error: (res) => { message.error(res.split(':')[1]); },      
+    });
+  }
+
   render() {
     const { catalog, loading } = this.props;
     const catalogList = catalog.list;
@@ -90,6 +101,7 @@ class MenuManager extends React.Component {
             removeCatalog={this.removeCatalog}
             modifyStatus={this.modifyCatalogStatus}
             modifyInfo={this.modifyCatalog}
+            sortCatalog={this.sortCatalogLevel}
           />
         </Card>
       </PageHeaderLayout>

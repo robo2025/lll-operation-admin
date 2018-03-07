@@ -1,4 +1,4 @@
-import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog, queryCatalogLevel } from '../services/catalog';
+import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog, queryCatalogLevel, sortCatalog } from '../services/catalog';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
 
@@ -82,6 +82,18 @@ export default {
         payload: response.data,
       });
     },
+    *sortCatalogLevel({ level, data, success, error }, { call, put }) {
+      const res = yield call(sortCatalog, { level, data });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); }
+
+      const response = yield call(queryCatalog);
+      yield put({
+        type: 'save',
+        payload: response.data,
+      });
+    },   
   },
 
   reducers: {

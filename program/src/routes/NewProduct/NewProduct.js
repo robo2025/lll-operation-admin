@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 13:57:53
+ * @Last Modified time: 2018-03-07 14:15:17
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -300,7 +300,7 @@ export default class NewProduct extends Component {
         <Card bordered={false} loading={loading} className={styles['new-product-wrap']}>
           {/* 参照数据Modal */}
           <Modal
-            width="60%"
+            width="80%"
             visible={isShowModal}
             title="关联参照数据"
             okText=""

@@ -105,3 +105,24 @@ export async function removeCatalog({ categoryId }) {
     },
   });
 }
+
+
+/**
+ * 修改目录排序号
+ *
+ * @param {string} level 目录级别
+ * @param {object} data  排序号 （按升序排序）
+*/
+export async function sortCatalog({ level, data }) {
+  const acess_token = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/product_categories/level_sort`, {
+    method: 'patch',
+    headers: {
+      Authorization: acess_token,
+    },
+    data: {
+      level, 
+      data,
+    },
+  });
+}

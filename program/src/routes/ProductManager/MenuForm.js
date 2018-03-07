@@ -434,6 +434,7 @@ class MenuForm extends React.Component {
       // 提交排序结果
       this.setState({ isSort: false });
       console.log('排序结果', pid, level, sortResult, currCatalogData);
+      this.props.sortCatalog(level, sortResult);
     } else {
       Modal.error({
         title: '错误',
