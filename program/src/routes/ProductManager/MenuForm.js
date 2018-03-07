@@ -4,12 +4,13 @@ import _ from 'lodash';
 import { DragDropContext, DragSource, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
-import { Table, Button, Input, Popconfirm, Divider, Modal, Form, Radio, Breadcrumb } from 'antd';
+import { Table, Input, Popconfirm, Divider, Modal, Form, Radio, Breadcrumb, Button } from 'antd';
 import styles from './menu-manager.less';
 
 const FormItem = Form.Item;
 const mapStatus = ['禁用', '启用'];
 const mapLevel = ['一级类目', '二级类目', '三级类目', '四级类目'];
+const { confirm } = Modal;
 
 const EditableCell = ({ editable, value, onChange }) => (
   <div>
@@ -158,8 +159,9 @@ class MenuForm extends React.Component {
       isShowModifyModal: false,
       catalogName: {},
       isActive: { value: true },
-      breadData: [{ level: 0, id: 0, category_name: '根目录:' }],
+      breadData: [{ level: 0, id: 0, category_name: '根目录' }],
       currCatalogData: getStanrdCatalog(this.props.data),
+      isSort: false,
     };
     this.columns = [{
       title: '类目级别',
@@ -201,8 +203,8 @@ class MenuForm extends React.Component {
         return record.level < 4 ?
           (
             <span>
-              <a onClick={() => { this.showModal('isShowAddChildModal', record); }}>新增子类</a>
-              <Divider type="vertical" />
+              {/* <a onClick={() => { this.showModal('isShowAddChildModal', record); }}>新增子类</a> */}
+              {/* <Divider type="vertical" /> */}
               <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
@@ -219,8 +221,8 @@ class MenuForm extends React.Component {
             </span>
           ) : (
             <span>
-              <a disabled>新增子类</a>
-              <Divider type="vertical" />
+              {/* <a disabled>新增子类</a> */}
+              {/* <Divider type="vertical" /> */}
               <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
@@ -248,6 +250,10 @@ class MenuForm extends React.Component {
   // 类目点击
   handleCatelogItemClick = (record) => {
     console.log('当前点击record', record, record.lyChildren);
+    if (this.state.isSort) {
+      this.showSortConfirm();
+      return;
+    }
     if (record.id === 0) {
       this.setState({ currCatalogData: this.props.data });
     } else {
@@ -277,9 +283,22 @@ class MenuForm extends React.Component {
     // }
   }
 
-  // 面包屑被点击
-  handleBreadClick = (record) => {
-
+  // 是否取消排序
+  showSortConfirm = () => {
+    const that = this;
+    confirm({
+      title: '温馨提示',
+      content: '您当前还有排序没有保存，是否取消排序？',
+      cancelText: '取消当前排序',
+      okText: '继续排序',
+      onOk() {
+        // this.setState({ isSort: false });
+        console.log('继续排序');
+      },
+      onCancel() {
+        that.setState({ isSort: false });
+      },
+    });
   }
 
   // 是否展示Modal，key:state对应的key
@@ -299,12 +318,15 @@ class MenuForm extends React.Component {
   // Modal事件：点击确定后关闭
   handleOk = (key) => {
     const { addMenu, modifyInfo } = this.props;
-    if (key === 'visible') { // 添加以及目录
-      const { catalogName, isActive } = this.state;
+    if (key === 'visible') { // 添加目录
+      const { catalogName, isActive, breadData } = this.state;
       if (!catalogName || !catalogName.value) { // 如果类目名称为空
         alert('请完善类目名称');
       } else { // 类目名称不为空
-        addMenu(0, catalogName.value, isActive.value + 0, '');
+        // addMenu(0, catalogName.value, isActive.value + 0, '');
+        const validBreadData = _.compact(breadData);
+        console.log('当前新建目录ID', validBreadData[validBreadData.length - 1].id);
+        addMenu(validBreadData[validBreadData.length - 1].id, catalogName.value, isActive.value + 0, '');
         this.hideModal(key);
       }
     } else if (key === 'isShowAddChildModal') { // 添加子级目录
@@ -378,11 +400,11 @@ class MenuForm extends React.Component {
     },
   }
 
+  // 移动行
   moveRow = (dragIndex, hoverIndex) => {
-    alert(dragIndex + ',' + hoverIndex);
+    // alert(dragIndex + ',' + hoverIndex);
     const data = this.state.currCatalogData;
     const dragRow = data[dragIndex];
-
     this.setState(
       update(this.state, {
         currCatalogData: {
@@ -390,6 +412,34 @@ class MenuForm extends React.Component {
         },
       }),
     );
+    this.setState({ isSort: true });
+  }
+
+  // 取消排序
+  handleCancelSort = () => {
+    this.setState({ isSort: false });
+  }
+
+  // 确定排序
+  handleSubmitSort = () => {
+    const { currCatalogData } = this.state;
+    const { pid, level } = currCatalogData[0] ? currCatalogData[0] : [{ pid: -1, level: -1 }];
+    const sortResult = currCatalogData.map((val, idx) => (
+      {
+        sort: idx,
+        id: val.id,
+      }
+    ));
+    if (pid >= 0) {
+      // 提交排序结果
+      this.setState({ isSort: false });
+      console.log('排序结果', pid, level, sortResult, currCatalogData);
+    } else {
+      Modal.error({
+        title: '错误',
+        content: '当前无排序结果',
+      });
+    }
   }
 
   renderColumns(text, record, column) {
@@ -401,7 +451,7 @@ class MenuForm extends React.Component {
       />
     );
   }
-  
+
 
   render() {
     const formLayout = 'horizontal';
@@ -411,7 +461,7 @@ class MenuForm extends React.Component {
     } : null;
 
     const { data } = this.props; // 表单数据
-    const { catalogName, currCatalog } = this.state;
+    const { catalogName, currCatalog, isSort, breadData } = this.state;
 
     // const dataTemp = JSON.stringify(data);
     // const data2 = JSON.parse(dataTemp);
@@ -419,11 +469,20 @@ class MenuForm extends React.Component {
     //   delete val.children;
     // });
 
-    console.log('当前类目:', this.state);
-
+    const breadDataLength = _.compact(breadData).length;// 当前面包屑有效数据长度
+    console.log('当前类目:', this.state, breadDataLength);
+    
     return (
       <div className={styles['catelog-wrap']}>
-        <Button type="primary" icon="plus" onClick={() => { this.showModal('visible'); }} style={{ marginBottom: 15 }}>新增一级类目</Button>
+        <Button
+          type="primary"
+          icon="plus"
+          disabled={breadDataLength > 4}
+          onClick={() => { this.showModal('visible'); }}
+          style={{ marginBottom: 15 }}
+        >
+          新增类目
+        </Button>
         {/* 新建类目弹窗 */}
         <Modal
           title="新增类目"
@@ -433,7 +492,7 @@ class MenuForm extends React.Component {
         >
           <Form onSubmit={this.handleSubmit} layout="horizontal">
             <FormItem
-              label="一级类目名称"
+              label="类目名称"
               {...formItemLayout}
               required
               validateStatus={catalogName.validateStatus}
@@ -518,7 +577,9 @@ class MenuForm extends React.Component {
           </Form>
         </Modal>
 
-        <Breadcrumb>
+        <Breadcrumb
+          separator=">"
+        >
           {this.state.breadData.map((val, idx) => {
             return val ?
               (
@@ -532,6 +593,7 @@ class MenuForm extends React.Component {
           }
         </Breadcrumb>
         <Table
+          pagination={false}
           columns={this.columns}
           dataSource={this.state.currCatalogData}
           components={this.components}
@@ -541,10 +603,17 @@ class MenuForm extends React.Component {
             moveRow: this.moveRow,
           })}
         />
+        <div
+          style={{ marginTop: 30, marginBottom: 30, display: 'flex', justifyContent: 'flex-end' }}
+          className={isSort ? 'show' : 'hidden'}
+        >
+          <Button style={{ marginRight: 20 }} onClick={this.handleCancelSort}>取消排序</Button>
+          <Button type="primary" onClick={this.handleSubmitSort}>保存排序</Button>
+        </div>
       </div>
     );
   }
 }
 
-const DradMenuForm = DragDropContext(HTML5Backend)(MenuForm);
-export default DradMenuForm;
+const DragMenuForm = DragDropContext(HTML5Backend)(MenuForm);
+export default DragMenuForm;

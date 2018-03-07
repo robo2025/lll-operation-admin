@@ -1,4 +1,5 @@
 import { queryGoods, queryGoodDetail, modifyGoodStatus, modifyGoodInfo, addGood, queryOperationLog, exportGood } from '../services/good';
+import { SUCCESS_STATUS } from '../constant/config.js';
 
 export default {
   namespace: 'good',
@@ -10,68 +11,82 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(queryGoods);
+    *fetch({ success, error }, { call, put }) {
+      const res = yield call(queryGoods);
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       // console.log('服务器目录列表', response);
       yield put({
         type: 'save',
-        payload: response.data,
+        payload: res.data,
       });
     },
-    *fetchDetail({ goodId, callback }, { call, put }) {
-      const response = yield call(queryGoodDetail, { goodId });
-      if (response.rescode >> 0 === 10000) {
-        if (callback) callback(response.data);
-      }
+    *fetchDetail({ goodId, success, error }, { call, put }) {
+      const res = yield call(queryGoodDetail, { goodId });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       yield put({
         type: 'saveDetail',
-        payload: response.data,
+        payload: res.data,
       });
     },
-    *add({ data, callback }, { call, put }) {
-      yield call(addGood, { data });
+    *add({ data, success, error }, { call, put }) {
+      const res = yield call(addGood, { data });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryGoods);
       yield put({
         type: 'saveOne',
         payload: response.data,
       });
-      if (callback) callback();
     },
-    *modifyInfo({ goodId, data, callback }, { call, put }) {
+    *modifyInfo({ goodId, data, success, error }, { call, put }) {
       const res = yield call(modifyGoodInfo, { goodId, data });
-      if (callback) callback(res);
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryGoods);
       yield put({
         type: 'modify',
         payload: response.data,
       });
     },
-    *modifyGoodStatus({ goodId, goodStatus, callback }, { call, put }) {
+    *modifyGoodStatus({ goodId, goodStatus, success, error }, { call, put }) {
       const res = yield call(modifyGoodStatus, { goodId, goodStatus });
-      if (res.rescode >> 0 === 10000) {
-        if (callback) callback(res);
-      }
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryGoods);
       yield put({
         type: 'modify',
         payload: response.data,
       });
     },
-    *queryLogs({ module, goodId }, { call, put }) {
+    *queryLogs({ module, goodId, success, error }, { call, put }) {
       const res = yield call(queryOperationLog, { module, goodId });
-      console.log('操作日志', res);
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       yield put({
         type: 'logs',
         payload: res.data,
       });
     },
-    *queryExport({ fields, callback }, { call, put }) {
+    *queryExport({ fields, success, error }, { call, put }) {
       const res = yield call(exportGood, { fields });
-      console.log('导出数据服务器返回数据：', res);
-      if (res.rescode >> 0 === 10000) {
-        alert('导出成功');
-        if (callback) callback(res.data);
-      }
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+      
       yield put({
         type: 'export',
         payload: res.data,

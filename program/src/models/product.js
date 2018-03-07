@@ -1,4 +1,5 @@
 import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail, querySupplyInfo, queryOperationLog, exportProduct } from '../services/product';
+import { SUCCESS_STATUS } from '../constant/config.js';
 
 export default {
   namespace: 'product',
@@ -12,70 +13,71 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
+    *fetch({ success, error }, { call, put }) {
       const response = yield call(queryProducts);
+      if (response.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(response.data);
+      } else if (typeof error === 'function') { error(response); return; }
+      
       // console.log('服务器目录列表', response);
       yield put({
         type: 'save',
         payload: response.data,
       });
     },
-    *fetchDetail({ productId, callback }, { call, put }) {
+    *fetchDetail({ productId, success, error }, { call, put }) {
       const response = yield call(queryProductDetail, { productId });
-      if (response.rescode >> 0 === 10000) {
-        if (callback) callback(response.data);
-      }
-      console.log('产品详情:', response);
+      if (response.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(response.data);
+      } else if (typeof error === 'function') { error(response); return; }
+
       yield put({
         type: 'saveDetail',
         payload: response.data,
       });
     },
-    *add({ data, callback }, { call, put }) {
+    *add({ data, success, error }, { call, put }) {
       const res = yield call(addProduct, { data });
-      if (res.rescode >> 0 === 10000) {
-        if (callback) callback(res);
-      } else {
-        alert(res.msg);
-        return;                      
-      };
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryProducts);
-      
       yield put({
         type: 'saveOne',
         payload: response.data,
       });
     },
-    *modifyInfo({ prdId, data, callback }, { call, put }) {
+    *modifyInfo({ prdId, data, success, error }, { call, put }) {
       const res = yield call(modifyProduct, { prdId, data });
-      if (res.rescode >> 0 === 10000) {
-        if (callback) callback(res);
-      } else {
-        alert(res.msg);
-        return;                      
-      };
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryProducts);
       yield put({
         type: 'modify',
         payload: response.data,
       });
-      if (callback) callback();
     },
-    *modifyStatus({ categoryId, isActive, callback }, { call, put }) {
-      yield call(modifyProduct, { categoryId, isActive });
+    *modifyStatus({ categoryId, isActive, success, error }, { call, put }) {
+      const res = yield call(modifyProduct, { categoryId, isActive });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryProducts);
       yield put({
         type: 'modify',
         payload: response.data,
       });
-      if (callback) callback();
     },
-    *remove({ ids, callback }, { call, put }) {
+    *remove({ ids, success, error }, { call, put }) {
       const res = yield call(removeProducts, { ids });
-      if (res.rescode >> 0 !== 10000) {
-        alert('提示：' + res.msg.split(':')[1]);        
-        return;
-      };
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryProducts);
       // console.log('服务器目录列表', response);
       yield put({
@@ -83,28 +85,34 @@ export default {
         payload: response.data,
       });
     },
-    *querySupplyInfo({ productId }, { call, put }) {
+    *querySupplyInfo({ productId, success, error }, { call, put }) {
       const res = yield call(querySupplyInfo, { productId });
-      console.log('供货信息models', res);
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); return; }
+
       yield put({
         type: 'supplyInfo',
         payload: res.data,
       });
     },
-    *queryLogs({ module, productId }, { call, put }) {
+    *queryLogs({ module, productId, success, error }, { call, put }) {
       const res = yield call(queryOperationLog, { module, productId });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); return; }
+
       yield put({
         type: 'logs',
         payload: res.data,
       });
     },
-    *queryExport({ fields, callback }, { call, put }) {
+    *queryExport({ fields, success, error }, { call, put }) {
       const res = yield call(exportProduct, { fields });
-      console.log('导出数据服务器返回数据：', res);
-      if (res.rescode >> 0 === 10000) {
-        alert('导出成功');
-        if (callback) callback(res.data);
-      }
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); return; }
+      
       yield put({
         type: 'export',
         payload: res.data,

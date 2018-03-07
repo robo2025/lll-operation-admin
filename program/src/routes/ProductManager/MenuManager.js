@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Card, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import DradMenuForm from './MenuForm';
+import DragMenuForm from './MenuForm';
 
 
 import styles from './product-manager.less';
@@ -46,9 +46,10 @@ class MenuManager extends React.Component {
     dispatch({
       type: 'catalog/removeOne',
       categoryId: id,
-      callback: (msg) => {
-        message.success(msg, 2.5);
+      success: (res) => {
+        message.success(res.msg);
       },
+      error: (res) => { message.error(res.split(':')[1]); },      
     });
   }
 
@@ -59,6 +60,7 @@ class MenuManager extends React.Component {
       type: 'catalog/modifyStatus',
       categoryId: id,
       isActive: status,
+      error: (res) => { message.error(res.split(':')[1]); },      
     });
   }
 
@@ -71,6 +73,7 @@ class MenuManager extends React.Component {
       name,
       isActive,
       desc,
+      error: (res) => { message.error(res.split(':')[1]); },      
     });
   }
 
@@ -80,7 +83,7 @@ class MenuManager extends React.Component {
     return (
       <PageHeaderLayout title="产品目录管理">
         <Card title="目录管理" className={styles.card} bordered={false} loading={loading}>
-          <DradMenuForm
+          <DragMenuForm
             data={catalogList}
             addMenu={this.addMenu}
             removeCatalog={this.removeCatalog}

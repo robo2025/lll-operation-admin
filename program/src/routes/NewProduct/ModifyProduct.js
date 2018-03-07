@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-06 11:11:52
+ * @Last Modified time: 2018-03-07 13:45:04
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -80,7 +80,7 @@ export default class ModifyProduct extends Component {
       otherAttrs: [],
       operationkey: 'tab1',
       newFiled: {}, // 用户自定义的其他属性   
-      file: { uid: '', name: '' },   
+      file: { uid: '', name: '' },
     };
   }
 
@@ -95,7 +95,7 @@ export default class ModifyProduct extends Component {
     dispatch({
       type: 'product/fetchDetail',
       productId: args.prdId || args.origin_prdId,
-      callback: (detail) => {
+      success: (detail) => {
         this.setState({
           fields: {
             ...detail,
@@ -257,8 +257,8 @@ export default class ModifyProduct extends Component {
     });
   }
 
-   // 其他属性图片上传前处理：验证文件类型
-   beforeUpload = (key, file) => {
+  // 其他属性图片上传前处理：验证文件类型
+  beforeUpload = (key, file) => {
     this.setState({ file });
     // console.log('before', file);
     if (checkFile(file.name, FILE_TYPES)) {
@@ -304,13 +304,14 @@ export default class ModifyProduct extends Component {
         type: 'product/modifyInfo',
         prdId: this.state.args.prdId,
         data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
-        callback: () => { this.props.history.push('/product/list'); },
+        success: () => { this.props.history.push('/product/list'); },
       });
     } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
       dispatch({
         type: 'product/add',
         data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
-        callback: () => { this.props.history.push('/product/list'); },        
+        success: () => { this.props.history.push('/product/list'); },
+        error: (res) => { message.error(res.split(':')[1]); },
       });
     }
   }
@@ -346,8 +347,8 @@ export default class ModifyProduct extends Component {
       />,
     };
 
-     // 其他属性列
-     const attrClomns = [{
+    // 其他属性列
+    const attrClomns = [{
       title: '属性名',
       dataIndex: 'attr_name',
       key: 'attr_name',
@@ -356,10 +357,10 @@ export default class ModifyProduct extends Component {
       dataIndex: 'attr_value',
       key: 'attr_value',
       render: (text, record) => (
-      <Input 
-        defaultValue={text}      
-        onChange={(e) => { this.handleAddProductOtherAttr(record.id, { attr_name: record.attr_name, attr_value: e.target.value }); }}
-      />
+        <Input
+          defaultValue={text}
+          onChange={(e) => { this.handleAddProductOtherAttr(record.id, { attr_name: record.attr_name, attr_value: e.target.value }); }}
+        />
       ),
     }, {
       title: '操作',
@@ -414,14 +415,14 @@ export default class ModifyProduct extends Component {
           />
           <div style={{ width: 700, maxWidth: '70%' }}>
             <Table
-                className="attr-table"
-                bordered
-                pagination={false}
-                columns={attrClomns}
-                dataSource={otherAttrsFiled}
+              className="attr-table"
+              bordered
+              pagination={false}
+              columns={attrClomns}
+              dataSource={otherAttrsFiled}
             />
           </div>
-         {/*  <Form style={{ width: 700, maxWidth: '70%' }} >
+          {/*  <Form style={{ width: 700, maxWidth: '70%' }} >
             { otherAttrsFiled.length <= 0 ? <p style={{ textIndent: 16 }}>无</p> : null}
             {
               otherAttrsFiled.map((val, idx) => (

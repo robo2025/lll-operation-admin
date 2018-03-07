@@ -84,10 +84,11 @@ export default class GoodsMananger extends Component {
     dispatch({
       type: 'good/queryExport',
       fields: this.state.exportFields,
-      callback: (res) => {
+      success: (res) => {
         console.log('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
         window.open('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
       },
+      error: (res) => { message.error(res.msg.split(':')[1]); },      
     });
   }
 
@@ -99,7 +100,8 @@ export default class GoodsMananger extends Component {
       type: 'good/modifyGoodStatus',
       goodId,
       goodStatus: status,
-      callback: () => { alert('下架成功'); },
+      success: () => { message.success('下架成功'); },
+      error: (res) => { message.error(res.msg.split(':')[1]); },
     });
   }
 

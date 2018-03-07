@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 16:35:10
+ * @Last Modified time: 2018-03-07 13:43:10
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -80,11 +80,11 @@ class GoodDetail extends Component {
     dispatch({
       type: 'good/fetchDetail',
       goodId: this.state.args.goodId,
-      callback: (res) => {
-        console.log('毁掉函数', res);
-        const { shelf_life, sales_unit, stock, min_buy, audit_status, audit_desc, shipping_fee_type } = res;
+      success: (res) => {
+        console.log('回调函数', res);
+        const { shelf_life, sales_unit, stock, min_buy, audit_status, audit_desc, shipping_fee_type } = res.data;
         // 获取供应商信息
-        this.getSupplierInfo(res.supplier_id);
+        this.getSupplierInfo(res.data.supplier_id);
         this.setState({
           fields: {
             shelf_life, // 质保期
@@ -172,7 +172,8 @@ class GoodDetail extends Component {
         type: 'good/modifyInfo',
         goodId: this.state.args.goodId,
         data,
-        callback: () => { history.push('/goods/list'); },
+        success: () => { history.push('/goods/list'); },
+        error: (res) => { message.error(res.split(':')[1]); },
       });
     }
   }
@@ -190,6 +191,7 @@ class GoodDetail extends Component {
         loading={loading}
         dataSource={good.logs}
         columns={columns}
+        rowKey={(record) => { return record.id; }}
       />,
     };
     return (

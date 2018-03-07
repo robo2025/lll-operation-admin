@@ -2,11 +2,11 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-06 10:31:20
+ * @Last Modified time: 2018-03-07 13:44:59
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Form, Input, Modal, Row, Col, Table, message } from 'antd';
+import { Card, Button, Form, Input, Modal, Table, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
@@ -15,8 +15,6 @@ import AddAttrForm from '../../components/Form//AddAttrForm';
 import { checkFile } from '../../utils/tools';
 import styles from './newproduct.less';
 
-const FormItem = Form.Item;
-const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 
 @connect(({ loading, product, catalog, upload }) => ({
@@ -255,7 +253,8 @@ export default class NewProduct extends Component {
     dispatch({
       type: 'product/add',
       data: { ...fields, other_attrs: otherAttrs, paf_url: [] },
-      callback: () => { history.push('/product/list'); },
+      success: () => { history.push('/product/list'); },
+      error: (res) => { message.error(res.split(':')[1]); },
     });
   }
 

@@ -86,7 +86,7 @@ export default class ProductManager extends Component {
     dispatch({
       type: 'product/queryExport',
       fields: this.state.exportFields,
-      callback: (res) => { 
+      success: (res) => { 
         console.log('http://139.199.96.235:9005/api/product_reports?filename=' + res.filename);
         window.open('http://139.199.96.235:9005/api/product_reports?filename=' + res.filename);
        },
@@ -107,6 +107,7 @@ export default class ProductManager extends Component {
     dispatch({
       type: 'product/remove',
       ids,
+      error: (res) => { message.error(res.split(':')[1]); },      
     });
   }
 

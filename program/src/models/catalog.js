@@ -1,5 +1,6 @@
 import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog, queryCatalogLevel } from '../services/catalog';
-import { message } from 'antd';
+import { SUCCESS_STATUS } from '../constant/config.js';
+
 
 export default {
   namespace: 'catalog',
@@ -10,57 +11,71 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(queryCatalog);
-      // console.log('服务器目录列表', response);
+    *fetch({ success, error }, { call, put }) {
+      const res = yield call(queryCatalog);
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       yield put({
         type: 'save',
-        payload: response.data,
+        payload: res.data,
       });
     },
-    *fetchLevel(_, { call, put }) {
-      const response = yield call(queryCatalogLevel);
+    *fetchLevel({ success, error }, { call, put }) {
+      const res = yield call(queryCatalogLevel);
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
       // console.log('服务器目录列表', response);
+
       yield put({
         type: 'saveLevel',
-        payload: response.data,
+        payload: res.data,
       });
     },
-    *add({ pid, name, isActive, desc, callback }, { call, put }) {
-      yield call(addCatalog, { pid, name, isActive, desc });
+    *add({ pid, name, isActive, desc, success, error }, { call, put }) {
+      const res = yield call(addCatalog, { pid, name, isActive, desc });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryCatalog);
       yield put({
         type: 'saveOne',
         payload: response.data,
       });
-      if (callback) callback();
     },
-    *modifyInfo({ categoryId, name, isActive, desc, callback }, { call, put }) {
+    *modifyInfo({ categoryId, name, isActive, desc, success, error }, { call, put }) {
       const res = yield call(modifyCatalog, { categoryId, name, isActive, desc });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryCatalog);
       yield put({
         type: 'modify',
         payload: response.data,
       });
-      if (callback) callback();
     },
-    *modifyStatus({ categoryId, isActive, callback }, { call, put }) {
-      yield call(modifyCatalogStatus, { categoryId, isActive });
+    *modifyStatus({ categoryId, isActive, success, error }, { call, put }) {
+      const res = yield call(modifyCatalogStatus, { categoryId, isActive });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryCatalog);
       yield put({
         type: 'modify',
         payload: response.data,
       });
-      if (callback) callback();
     },
-    *removeOne({ categoryId, callback }, { call, put }) {
+    *removeOne({ categoryId, success, error }, { call, put }) {
       const res = yield call(removeCatalog, { categoryId });
-      if (res.rescode >> 0 === 10000) {
-        if (callback) callback(res.msg);
-      } else {
-        message.error(res.msg);
-        return;
-      }
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
       const response = yield call(queryCatalog);
       yield put({
         type: 'remove',
