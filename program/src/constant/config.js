@@ -33,7 +33,7 @@ const myHost = `${window.location.protocol}//${window.location.host}`;
 export const NEXT_URL = `${myHost}/#/test`;
 
 // 前端首页URL
-export const HOME_PAGE = `${myHost}/#/goods/list`;
+export const HOME_PAGE = `${myHost}/#/product/list`;
 
 // 前端验证URL
 export const VERIFY_PAGE = `${myHost}/#/test`;
