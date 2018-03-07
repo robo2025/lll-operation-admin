@@ -21,6 +21,7 @@ const EditableCell = ({ editable, value, onChange }) => (
   </div>
 );
 
+
 // -------------------------------------
 function dragDirection(
   dragIndex,
@@ -146,12 +147,59 @@ function getStanrdCatalog(data) {
   });
 }
 
+// let idx = 0;
+// const arr2 = [52, 60];
+// function getChildCataLog(cataArr) {
+//   const newArr = _.find(cataArr, (o) => {
+//     return o.id === arr2[idx];
+//   });
+//   idx += 1;
+//   console.log(1, newArr);
+//   if (idx < 2) {
+//     getChildCataLog(newArr.lyChildren);
+//   }
+//   return newArr;
+// }
+
+
 class MenuForm extends React.Component {
   constructor(props) {
     super(props);
+    console.log('构造函数----------------------------------', this.props);
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.customValidate = this.customValidate.bind(this);
+
+    const breadDataStr = window.sessionStorage.getItem('breadData');
+    getStanrdCatalog(this.props.data);
+    let breadDataJson = breadDataStr ? JSON.parse(breadDataStr) : [{ level: 0, id: 0, category_name: '根目录' }];
+    breadDataJson = _.compact(breadDataJson);
+    console.log('---', this.props.data, breadDataJson);
+    let idx = 1;
+    // const arr2 = [52, 60];
+
+    let currLyChildren = [];
+    function getChildCataLog(cataArr) {
+      if (breadDataJson.length === 1) {
+        return cataArr;
+      }
+      const newArr = _.find(cataArr, (o) => {
+        return o.id === breadDataJson[idx].id;
+      });
+      idx += 1;
+      console.log('测试', newArr);
+      currLyChildren = newArr;
+      if (idx < breadDataJson.length) {
+        getChildCataLog(newArr.lyChildren);
+      }
+      return newArr;
+    }
+    if (this.props.data.length > 0) {
+      getChildCataLog(this.props.data);
+      console.log('currLyChildren', currLyChildren);
+    }
+
+    console.log('要展示类目数组', currLyChildren.lyChildren);
     this.state = {
       visible: false,
       currCatalog: {}, // 当前要被新增的类目
@@ -159,8 +207,8 @@ class MenuForm extends React.Component {
       isShowModifyModal: false,
       catalogName: {},
       isActive: { value: true },
-      breadData: [{ level: 0, id: 0, category_name: '根目录' }],
-      currCatalogData: getStanrdCatalog(this.props.data),
+      breadData: breadDataStr ? breadDataJson : [{ level: 0, id: 0, category_name: '根目录' }],
+      currCatalogData: breadDataJson.length > 1 ? currLyChildren.lyChildren : this.props.data,
       isSort: false,
     };
     this.columns = [{
@@ -175,8 +223,8 @@ class MenuForm extends React.Component {
       render: (text, record) => (<a onClick={() => { this.handleCatelogItemClick(record); }}>{text}</a>),
     }, {
       title: '类目ID',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'cno',
+      key: 'cno',
     }, {
       title: '状态',
       dataIndex: 'is_active',
@@ -196,7 +244,7 @@ class MenuForm extends React.Component {
       key: 'created_time',
       render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
     }, {
-      title: 'Action',
+      title: '操作',
       dataIndex: '',
       key: 'x',
       render: (text, record) => {
@@ -208,14 +256,14 @@ class MenuForm extends React.Component {
               <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
-                <a>删除</a>
+                <a disabled={record.lyChildren.length >= 1}>删除</a>
               </Popconfirm>
               <Divider type="vertical" />
               {
                 record.is_active === 0 ?
                   <a onClick={() => this.changeCatalogStatus(record.id, 1)}>启用</a>
                   :
-                  <a onClick={() => this.changeCatalogStatus(record.id, 0)}>禁用</a>
+                  <a onClick={() => this.changeCatalogStatus(record.id, 0)} style={{ color: '#E21918' }}>禁用</a>
               }
 
             </span>
@@ -243,7 +291,7 @@ class MenuForm extends React.Component {
 
 
   componentDidMount() {
-    this.setState({ currCatalogData: this.props.data });
+    // this.setState({ currCatalogData: getStanrdCatalog(this.props.data) });
   }
 
 
@@ -266,6 +314,7 @@ class MenuForm extends React.Component {
       breadData[i] = null;
     }
     this.setState({ breadData });
+    window.sessionStorage.setItem('breadData', JSON.stringify(breadData));
     // const lastBreadDataLevel = breadData[breadData.length - 1].level;
     // if (record.level === lastBreadDataLevel) {
     //   breadData.pop();
@@ -282,6 +331,7 @@ class MenuForm extends React.Component {
     //   this.setState({ breadData: newBreadData });
     // }
   }
+  
 
   // 是否取消排序
   showSortConfirm = () => {

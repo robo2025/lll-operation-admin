@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 14:15:17
+ * @Last Modified time: 2018-03-07 17:57:26
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -12,7 +12,7 @@ import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-import { checkFile } from '../../utils/tools';
+import { checkFile, handleServerMsg } from '../../utils/tools';
 import styles from './newproduct.less';
 
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
@@ -254,7 +254,7 @@ export default class NewProduct extends Component {
       type: 'product/add',
       data: { ...fields, other_attrs: otherAttrs, paf_url: [] },
       success: () => { history.push('/product/list'); },
-      error: (res) => { message.error(res.split(':')[1]); },
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
   }
 

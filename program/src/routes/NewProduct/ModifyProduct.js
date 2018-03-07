@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 13:57:01
+ * @Last Modified time: 2018-03-07 17:56:47
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -13,7 +13,7 @@ import ModifyProductForm from '../../components/Form/ModifyProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-import { queryString, checkFile, getFileSuffix } from '../../utils/tools';
+import { queryString, checkFile, handleServerMsg } from '../../utils/tools';
 
 import styles from './modify-product.less';
 
@@ -311,7 +311,7 @@ export default class ModifyProduct extends Component {
         type: 'product/add',
         data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
         success: () => { this.props.history.push('/product/list'); },
-        error: (res) => { message.error(res.split(':')[1]); },
+        error: (res) => { message.error(handleServerMsg(res.msg)); },
       });
     }
   }

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 14:02:34
+ * @Last Modified time: 2018-03-07 17:55:24
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -11,7 +11,7 @@ import { Card, Table, Button, Radio, Input, Tooltip, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import GoodInfo from '../../components/Form//GoodInfo';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
-import { queryString } from '../../utils/tools';
+import { queryString, handleServerMsg } from '../../utils/tools';
 import styles from './good-detail.less';
 
 const RadioGroup = Radio.Group;
@@ -180,7 +180,7 @@ class GoodDetail extends Component {
         goodId: this.state.args.goodId,
         data,
         success: () => { history.push('/goods/list'); },
-        error: (res) => { message.error(res.split(':')[1]); },
+        error: (res) => { message.error(handleServerMsg(res.msg)); },
       });
     }
   }

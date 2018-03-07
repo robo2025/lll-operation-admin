@@ -4,6 +4,7 @@ import { Row, Col, Card, Form, Input, Select, Icon, Button, Menu, DatePicker, me
 import ProductTable from '../../components/StandardTable/ProductTable';
 import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { handleServerMsg } from '../../utils/tools';
 import styles from './product-manager.less';
 
 const FormItem = Form.Item;
@@ -107,7 +108,7 @@ export default class ProductManager extends Component {
     dispatch({
       type: 'product/remove',
       ids,
-      error: (res) => { message.error(res.split(':')[1]); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },      
     });
   }
 

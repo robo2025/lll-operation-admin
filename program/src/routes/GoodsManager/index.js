@@ -4,6 +4,7 @@ import { Row, Col, Card, Form, Input, Checkbox, Select, Icon, Button, Menu, Date
 import GoodsTable from '../../components/StandardTable/GoodsTable';
 import GoodCheckboxGroup from '../../components/Checkbox/GoodCheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { handleServerMsg } from '../../utils/tools';
 import styles from './index.less';
 
 const FormItem = Form.Item;
@@ -88,7 +89,7 @@ export default class GoodsMananger extends Component {
         console.log('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
         window.open('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
       },
-      error: (res) => { message.error(res.msg.split(':')[1]); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },      
     });
   }
 
@@ -101,7 +102,7 @@ export default class GoodsMananger extends Component {
       goodId,
       goodStatus: status,
       success: () => { message.success('下架成功'); },
-      error: (res) => { message.error(res.msg.split(':')[1]); },
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
   }
 

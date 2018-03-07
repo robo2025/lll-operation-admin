@@ -127,3 +127,14 @@ export function replaceObjFromArr(obj, arr, key) {
   });
   return isExist ? newArr : [...newArr, obj];
 }
+
+
+// 处理服务器错误信息
+export function handleServerMsg(str) {
+  const strArr = str.split(':');
+  if (strArr.length === 2) {
+    return strArr[1];
+  } else {
+    return strArr[0];
+  }
+}

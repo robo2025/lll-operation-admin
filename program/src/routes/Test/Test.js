@@ -2,7 +2,9 @@ import React from 'react';
 import { connect } from 'dva';
 import { verifyLogin } from '../../utils/tools';
 
-@connect()
+@connect((state) => {
+  return { ...state };
+})
 class Test extends React.Component {
   componentDidMount() {
     console.log('测试页面加载好了!');
@@ -14,6 +16,7 @@ class Test extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <div>跳转中...</div>
     );

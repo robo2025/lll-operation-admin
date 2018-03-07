@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Card, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DragMenuForm from './MenuForm';
-
+import { handleServerMsg } from '../../utils/tools';
 
 import styles from './product-manager.less';
 
@@ -37,7 +37,7 @@ class MenuManager extends React.Component {
       name,
       isActive: isActive + 0,
       desc,
-      error: (res) => { message.error(res.split(':')[1]); },            
+      error: (res) => { message.error(handleServerMsg(res.msg)); },            
     });
   }
 
@@ -50,7 +50,7 @@ class MenuManager extends React.Component {
       success: (res) => {
         message.success(res.msg);
       },
-      error: (res) => { message.error(res.split(':')[1]); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },      
     });
   }
 
@@ -61,7 +61,7 @@ class MenuManager extends React.Component {
       type: 'catalog/modifyStatus',
       categoryId: id,
       isActive: status,
-      error: (res) => { message.error(res.split(':')[1]); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },      
     });
   }
 
@@ -74,7 +74,7 @@ class MenuManager extends React.Component {
       name,
       isActive,
       desc,
-      error: (res) => { message.error(res.split(':')[1]); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },      
     });
   }
 
@@ -85,7 +85,7 @@ class MenuManager extends React.Component {
       type: 'catalog/sortCatalogLevel',
       level,
       data,
-      error: (res) => { message.error(res.split(':')[1]); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },      
     });
   }
 
