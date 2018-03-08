@@ -2,12 +2,12 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-08 14:59:11
+ * @Last Modified time: 2018-03-08 15:11:00
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import OrderTable from '../../components/CustomTable/OrderTable';
+import ExceptionOrdersTable from '../../components/CustomTable/ExceptionOrdersTable';
 import ReminderContent from '../../components/ModalContent/ReminderContent';
 import CancelOrderContent from '../../components/ModalContent/CancelOrderContent';
 import DelayOrderContent from '../../components/ModalContent/DelayOrderConten';
@@ -299,7 +299,7 @@ export default class ExceptionOrderList extends Component {
         </Card>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <OrderTable
+            <ExceptionOrdersTable
               onHandleOrderClick={this.handleModalToggle}
             />
             {/* 催货Modal */}
@@ -320,7 +320,6 @@ export default class ExceptionOrderList extends Component {
             >
               <CancelOrderContent
                 onChange={this.handleModalContentChange}
-
               />
             </Modal>
             {/* 收货延迟Modal */}
