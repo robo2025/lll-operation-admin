@@ -74,14 +74,14 @@ export default class OrderList extends Component {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="客户订单编号">
               {getFieldDecorator('order_id')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="支付状态">
               {getFieldDecorator('pay_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -92,7 +92,7 @@ export default class OrderList extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="订单状态">
               {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -116,7 +116,7 @@ export default class OrderList extends Component {
           <span style={{ float: 'right', marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">查询</Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+            <a style={{ marginLeft: 8 }} onClick={this.toggleForm} className="unfold">
               展开 <Icon type="down" />
             </a>
           </span>
@@ -130,14 +130,14 @@ export default class OrderList extends Component {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="客户订单编号">
               {getFieldDecorator('order_id')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="支付状态">
               {getFieldDecorator('pay_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -148,7 +148,7 @@ export default class OrderList extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="订单状态">
               {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -169,21 +169,21 @@ export default class OrderList extends Component {
           </Col>
         </Row>
         <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="供应商公司名称">
               {getFieldDecorator('suppier_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="客户公司名称">
               {getFieldDecorator('custome_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col xll={4} md={8} sm={24}>
             <FormItem label="下单时间">
               {getFieldDecorator('create_time')(
                 <RangePicker onChange={this.onChange} />
@@ -195,7 +195,7 @@ export default class OrderList extends Component {
           <span style={{ float: 'right', marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">查询</Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+            <a style={{ marginLeft: 8 }} onClick={this.toggleForm} className="unfold">
               收起 <Icon type="up" />
             </a>
           </span>
@@ -212,11 +212,13 @@ export default class OrderList extends Component {
     const { isShowModal1, isShowModal2, isShowModal3 } = this.state;
     return (
       <PageHeaderLayout title="订单列表">
-        <Card bordered={false}>
-          <div className={styles.tableList}>
+        <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
             <div className={styles.tableListForm}>
               {this.renderForm()}
             </div>
+        </Card>
+        <Card bordered={false}>
+          <div className={styles.tableList}>
             <OrderTable
               onHandleOrderClick={this.handleModalToggle}
             />
