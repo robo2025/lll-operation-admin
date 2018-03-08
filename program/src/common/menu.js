@@ -4,11 +4,11 @@ const menuData = [{
   path: 'product',
   children: [
     {
-      name: '1. 产品类目管理',
+      name: '产品类目管理',
       path: 'menu',
     },
     {
-      name: '2.  产品列表',
+      name: '产品列表',
       path: 'list',
     },
   ],
@@ -19,7 +19,7 @@ const menuData = [{
   path: 'goods',
   children: [
     {
-      name: '1. 供应商商品列表',
+      name: '供应商商品列表',
       path: 'list',
     },
   ],
@@ -29,11 +29,15 @@ const menuData = [{
   icon: 'bars',
   children: [
     {
-      name: '1. 订单列表',
+      name: '客户订单列表',
       path: 'list',
     },
     {
-      name: '2. 订单详情',
+      name: '异常订单列表',
+      path: 'exception-list',
+    },
+    {
+      name: '订单详情',
       path: 'detail',
     },
   ],

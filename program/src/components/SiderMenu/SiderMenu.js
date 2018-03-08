@@ -69,7 +69,7 @@ export default class SiderMenu extends PureComponent {
     if (!menusData) {
       return [];
     }
-    return menusData.map((item) => {
+    return menusData.map((item, idx) => {
       if (!item.name) {
         return null;
       }
@@ -113,7 +113,7 @@ export default class SiderMenu extends PureComponent {
                   replace={itemPath === this.props.location.pathname}
                   onClick={this.props.isMobile ? () => { this.props.onCollapse(true); } : undefined}
                 >
-                  {icon}<span>{item.name}</span>
+                  {icon}<span>{idx + 1}.&nbsp;{item.name}</span>
                 </Link>
               )
             }
