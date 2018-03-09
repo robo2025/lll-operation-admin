@@ -58,7 +58,7 @@ axios.interceptors.response.use((response) => {
    * */
   if ((response.data.rescode >> 0) === 30001) {
     // 没有权限
-    alert('非管理员账号，没有此系统权限');
+    alert('非管理员账号,没有此系统权限a');
     jumpToLogin();
     return;
   }
@@ -80,7 +80,6 @@ axios.interceptors.response.use((response) => {
     description: codeMessage[response.status],
   });
   console.log('服务器错误:', error.response);
-  return;
 
   return Promise.reject(error);
 });
