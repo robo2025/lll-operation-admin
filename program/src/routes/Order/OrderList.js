@@ -10,7 +10,6 @@ import styles from './order-list.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
-const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 
 @connect(({ orders, loading }) => ({
@@ -40,6 +39,29 @@ export default class OrderList extends Component {
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+  }
+
+  // 处理表单搜索
+  handleSearch = (e) => {
+    e.preventDefault();
+    e.preventDefault();
+
+    const { dispatch, form } = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const values = {
+        ...fieldsValue,
+        start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
+        end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
+      };
+
+      console.log('搜索字段', values);
+      dispatch({
+        type: 'orders/fetchSearch',
+        data: values,
+      });
+    });
   }
 
   // 是否展开查询条件表单
@@ -89,7 +111,7 @@ export default class OrderList extends Component {
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="客户订单编号">
-              {getFieldDecorator('order_id')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -145,7 +167,7 @@ export default class OrderList extends Component {
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="客户订单编号">
-              {getFieldDecorator('order_id')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -184,14 +206,14 @@ export default class OrderList extends Component {
         <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="供应商公司名称">
-              {getFieldDecorator('suppier_name')(
+              {getFieldDecorator('supplier_id')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="客户公司名称">
-              {getFieldDecorator('custome_name')(
+              {getFieldDecorator('guest_id')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -199,7 +221,7 @@ export default class OrderList extends Component {
           <Col xll={4} md={8} sm={24}>
             <FormItem label="下单时间">
               {getFieldDecorator('create_time')(
-                <RangePicker onChange={this.onChange} />
+                <RangePicker format="YYYY-MM-DD" onChange={this.onChange} />
               )}
             </FormItem>
           </Col>

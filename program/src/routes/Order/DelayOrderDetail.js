@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-12 11:46:06
+ * @Last Modified time: 2018-03-12 13:57:38
  */
 
 import React, { Component } from 'react';
@@ -159,6 +159,7 @@ const actionColumns = [{
   title: '耗时',
   dataIndex: 'time_consuming',
   key: 'time_consuming',
+  render: text => (<span>{text >> 0}s</span>),
 }];
 
 

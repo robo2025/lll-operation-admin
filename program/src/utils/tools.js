@@ -138,3 +138,22 @@ export function handleServerMsg(str) {
     return strArr[0];
   }
 }
+
+
+// 将以秒为单位的时间转换成人性化的字符串
+export function transformSecondsToHuman(seconds) {
+  const data = {
+    h: '', // 时
+    m: '', // 分
+    s: '', // 秒
+    str: '',
+  };
+  if (seconds < 60) {
+    data.h = 0;
+    data.m = 0;
+    data.s = seconds;
+    data.str = seconds + 's';
+  } else if (seconds > 216000) {
+    data.h = seconds / 360;
+  }
+}

@@ -140,8 +140,8 @@ handleOrderClick = ({ key }) => {
         key: 'is_deal',
         render: text => (
           <span>
-            <Badge status={PROGRESS_STATUS[text - 1]} />
-            {mapDealStatus[text - 1]}
+            <Badge status={PROGRESS_STATUS[text]} />
+            {mapDealStatus[text]}
           </span>
         ),
       },

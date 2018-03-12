@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-12 09:29:23
+ * @Last Modified time: 2018-03-12 15:00:36
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal } from 'antd';
@@ -44,6 +44,29 @@ export default class ExceptionOrderList extends Component {
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+  }
+
+   // 处理表单搜索
+   handleSearch = (e) => {
+    e.preventDefault();
+    e.preventDefault();
+
+    const { dispatch, form } = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const values = {
+        ...fieldsValue,
+        start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
+        end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
+      };
+
+      console.log('搜索字段', values);
+      dispatch({
+        type: 'orders/fetchSearch',
+        data: values,
+      });
+    });
   }
 
   // 是否展开查询条件表单
@@ -108,7 +131,7 @@ export default class ExceptionOrderList extends Component {
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="客户订单编号">
-              {getFieldDecorator('order_id')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -145,7 +168,7 @@ export default class ExceptionOrderList extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="处理状态标签">
-              {getFieldDecorator('order_status')(
+              {getFieldDecorator('deal_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">待接单</Option>
@@ -183,7 +206,7 @@ export default class ExceptionOrderList extends Component {
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="客户订单编号">
-              {getFieldDecorator('order_id')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -220,7 +243,7 @@ export default class ExceptionOrderList extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="处理状态标签">
-              {getFieldDecorator('order_status')(
+              {getFieldDecorator('deal_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">待接单</Option>
@@ -248,14 +271,14 @@ export default class ExceptionOrderList extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="客户公司名称">
-              {getFieldDecorator('custome_name')(
+              {getFieldDecorator('guest_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="责任方">
-              {getFieldDecorator('order_status')(
+              {getFieldDecorator('res_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">供应商</Option>
@@ -267,7 +290,7 @@ export default class ExceptionOrderList extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="是否发货">
-              {getFieldDecorator('order_status')(
+              {getFieldDecorator('is_delivery')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">是</Option>
@@ -281,7 +304,7 @@ export default class ExceptionOrderList extends Component {
          
           <Col xll={4} md={6} sm={24}>
             <FormItem label="是否接单">
-              {getFieldDecorator('order_status')(
+              {getFieldDecorator('is_taking')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">是</Option>
