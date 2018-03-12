@@ -2,14 +2,15 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-08 15:11:00
+ * @Last Modified time: 2018-03-12 09:29:23
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal } from 'antd';
+import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ExceptionOrdersTable from '../../components/CustomTable/ExceptionOrdersTable';
-import ReminderContent from '../../components/ModalContent/ReminderContent';
-import CancelOrderContent from '../../components/ModalContent/CancelOrderContent';
+import PushContent from '../../components/ModalContent/PushContent';
+import RefundContent from '../../components/ModalContent/RefundContent';
 import DelayOrderContent from '../../components/ModalContent/DelayOrderConten';
 import styles from './order-list.less';
 
@@ -17,6 +18,10 @@ const { Option } = Select;
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
 
+@connect(({ orders, loading }) => ({
+  orders,
+  loading: loading.models.orders,
+}))
 @Form.create()
 export default class ExceptionOrderList extends Component {
   constructor(props) {
@@ -27,6 +32,13 @@ export default class ExceptionOrderList extends Component {
       isShowModal2: false, // 订单取消Modal
       isShowModal3: false, // 收货延迟Modal
     };
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'orders/fetchExptionOrders',
+    });
   }
 
   handleFormReset = () => {
@@ -53,6 +65,10 @@ export default class ExceptionOrderList extends Component {
    */
   handleModalToggle = (modalKey, orderId) => {
     console.log('toggleModal', modalKey, orderId);
+    if (modalKey >> 0 === 3) {
+      this.warning();
+      return;
+    }
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = true;
     this.setState({ ...modalTempJson, orderId });
@@ -72,6 +88,17 @@ export default class ExceptionOrderList extends Component {
   // modal内容改变时处理
   handleModalContentChange = (content) => {
     console.log('modal conten change:', content);
+  }
+
+// 驳回订单警告
+  warning = () => {
+    Modal.confirm({
+      width: 500,
+      title: '该无货订单驳回后系统将状态回置为之前状态',
+      content: '您还要继续吗？',
+      okText: '继续',
+      cancelText: '取消',
+    });
   }
 
   renderSimpleForm() {
@@ -290,6 +317,10 @@ export default class ExceptionOrderList extends Component {
 
   render() {
     const { isShowModal1, isShowModal2, isShowModal3 } = this.state;
+    const { orders, loading } = this.props;
+
+    console.log('异常订单列表', this.props);
+
     return (
       <PageHeaderLayout title="异常订单列表">
         <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -297,35 +328,37 @@ export default class ExceptionOrderList extends Component {
               {this.renderForm()}
             </div>
         </Card>
-        <Card bordered={false}>
+        <Card bordered={false} className={styles['order-list-wrap']}>
           <div className={styles.tableList}>
             <ExceptionOrdersTable
               onHandleOrderClick={this.handleModalToggle}
+              data={orders.exceptionList}
+              loading={loading}
             />
             {/* 催货Modal */}
             <Modal
               visible={isShowModal1}
-              title="催单操作"
+              title={<div>推送操作<small className="modal-tips">请确认相关说明内容后在推送至客户</small></div>}
               onCancel={() => { this.handleModalHidden(1); }}
             >
-              <ReminderContent
+              <PushContent
                 onChange={this.handleModalContentChange}
               />
             </Modal>
             {/* 订单取消Modal */}
             <Modal
               visible={isShowModal2}
-              title="取消订单"
+              title={<div>同意并退款<small className="modal-tips error">该操作确定后无法改回并自动生成退款单，请慎重操作！</small></div>}
               onCancel={() => { this.handleModalHidden(2); }}
             >
-              <CancelOrderContent
+              <RefundContent
                 onChange={this.handleModalContentChange}
               />
             </Modal>
             {/* 收货延迟Modal */}
             <Modal
               visible={isShowModal3}
-              title="收货延迟"
+              title="无货驳回"
               onCancel={() => { this.handleModalHidden(3); }}
             >
               <DelayOrderContent

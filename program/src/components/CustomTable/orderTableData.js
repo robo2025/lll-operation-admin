@@ -24,7 +24,8 @@ for (let i = 0; i < 100; i++) {
     max_delivery_time: 7,
     pay_status: '已支付',
     commission: Math.random() * 50 >> 0,
-    add_time: 1519975092.263431,
+    add_time: 1518875092.263431 + (Math.random() * 1000000),
+    progress: Math.random() * 2 >> 0,
   });
 }
 

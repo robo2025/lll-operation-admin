@@ -36,10 +36,6 @@ const menuData = [{
       name: '异常订单列表',
       path: 'exception-list',
     },
-    {
-      name: '订单详情',
-      path: 'detail',
-    },
   ],
 }];
 

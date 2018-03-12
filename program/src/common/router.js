@@ -53,7 +53,7 @@ export const getRouterData = (app) => {
     '/goods/list': {
       component: dynamicWrapper(app, ['rule', 'good'], () => import('../routes/GoodsManager')),
     },
-    '/:goods/list/detail': {
+    '/goods/:list/detail': {
       component: dynamicWrapper(app, ['rule', 'user', 'good'], () => import('../routes/GoodDetail/GoodDetail')),
       name: '商品详情页',
     },
@@ -72,16 +72,23 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['rule', 'catalog'], () => import('../routes/ProductManager/MenuManager')),
     },
     '/orders/list': {
-      component: dynamicWrapper(app, ['rule', 'catalog'], () => import('../routes/Order/OrderList')),
+      component: dynamicWrapper(app, ['order', 'catalog'], () => import('../routes/Order/OrderList')),
     },
     '/orders/exception-list': {
-      component: dynamicWrapper(app, ['rule', 'catalog'], () => import('../routes/Order/ExceptionOrderList')),
+      component: dynamicWrapper(app, ['order', 'catalog'], () => import('../routes/Order/ExceptionOrderList')),
     },
-    '/:orders/detail': {
-      component: dynamicWrapper(app, ['rule', 'catalog'], () => import('../routes/Order/OrderDetail')),
+    '/orders/:list/detail': {
+      component: dynamicWrapper(app, ['order', 'catalog'], () => import('../routes/Order/OrderDetail')),
       name: '订单详情',
     },
-
+    '/orders/:exception-list/sold-out-order': {
+      component: dynamicWrapper(app, ['order', 'catalog'], () => import('../routes/Order/SoldOutOrderDetail')),
+      name: '订单详情',
+    },
+    '/orders/:exception-list/delay-order': {
+      component: dynamicWrapper(app, ['order', 'catalog'], () => import('../routes/Order/DelayOrderDetail')),
+      name: '订单详情',
+    },
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());

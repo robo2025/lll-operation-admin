@@ -1,8 +1,17 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
-import { Table, Divider, Dropdown, Menu, Icon } from 'antd';
+import { Table, Divider, Dropdown, Menu, Icon, Badge } from 'antd';
 import styles from './order-table.less';
 import OrderTableData from './orderTableData'; // 假数据
+
+const PROGRESS_STATUS = ['error', 'success'];
+const PROGRESS_TEXT = ['未处理', '已处理'];
+// 订单状态
+const mapOrderStatus = ['全部', '待支付', '已取消', '已接单', '待发货', '已发货', '已确认收货', '已完成', '申请延期', '确认延期', '退款', '退货', '作废', '无货'];
+// 责任方
+const mapOrderResponsible = ['客户', '供应商', '平台'];
+const mapExceptionStatus = ['无货', '延期发货'];// 异常状态标签
+const mapDealStatus = ['未处理', '已处理'];
 
 export default class ExceptionOrdersTable extends React.Component {
   state = {
@@ -10,7 +19,6 @@ export default class ExceptionOrdersTable extends React.Component {
     totalCallNo: 0,
     isShowModal: false,
   };
-
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
     const totalCallNo = selectedRows.reduce((sum, val) => {
@@ -54,7 +62,7 @@ handleOrderClick = ({ key }) => {
         title: '客户订单编号',
         dataIndex: 'order_sn',
         key: 'order_sn',
-        width: 120,
+        width: 200,
         fixed: 'left',
       },
       {
@@ -76,6 +84,7 @@ handleOrderClick = ({ key }) => {
         title: '最大发货日期',
         dataIndex: 'max_delivery_time',
         key: 'max_delivery_time-1',
+        render: text => (<span>{text}天</span>),
       },
       {
         title: '交易总金额(元)',
@@ -86,7 +95,8 @@ handleOrderClick = ({ key }) => {
         title: '下单时间',
         dataIndex: 'add_time',
         key: 'add_time',
-        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,        
+        width: 180,
+        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,        
       },
       {
         title: '佣金(元)',
@@ -95,40 +105,53 @@ handleOrderClick = ({ key }) => {
       },
       {
         title: '是否接单',
-        dataIndex: 'sfjd',
-        key: 'sfjd',
+        dataIndex: 'is_taking',
+        key: 'is_taking',
+        render: text => (<span>{text ? '是' : '否'}</span>),
       },
       {
         title: '是否发货',
-        dataIndex: 'sffh',
-        key: 'sffh',
+        dataIndex: 'is_delivery',
+        key: 'is_delivery',
+        render: text => (<span>{text ? '是' : '否'}</span>),
       },
       {
         title: '订单状态',
         dataIndex: 'order_status',
         key: 'order_status',
+        width: 150,        
+        render: text => (<span>{mapOrderStatus[text]}</span>),
       },
       {
         title: '责任方',
-        dataIndex: 'commission',
-        key: 'commission',
+        dataIndex: 'responsible_party',
+        key: 'responsible_party',
+        render: text => (<span>{mapOrderResponsible[text + 1]}</span>),
       },
       {
         title: '异常状态标签',
-        dataIndex: 'commission',
-        key: 'commission',
+        dataIndex: 'abnormal_tag',
+        key: 'abnormal_tag',
+        render: text => (<span>{mapExceptionStatus[text - 1]}</span>),
       },
       {
         title: '处理状态',
-        dataIndex: 'commission',
-        key: 'commission',
+        dataIndex: 'is_deal',
+        key: 'is_deal',
+        render: text => (
+          <span>
+            <Badge status={PROGRESS_STATUS[text - 1]} />
+            {mapDealStatus[text - 1]}
+          </span>
+        ),
       },
       {
         title: '异常提交时间',
-        dataIndex: 'add_time',
-        key: 'add_time',
+        dataIndex: 'abnormal_add_time',
+        key: 'abnormal_add_time',
+        width: 180,
         sorter: true,
-        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
       },
       {
         title: '操作',
@@ -148,7 +171,12 @@ handleOrderClick = ({ key }) => {
               </a>
             </Dropdown>
             <Divider type="vertical" />
-            <a href={'#/orders/detail?orderId=' + record.id}>查看</a>
+            {record.abnormal_tag === 1
+            ?
+            (<a href={'#/orders/exception-list/sold-out-order?orderId=' + record.id}>查看</a>)
+            :
+            (<a href={'#/orders/exception-list/delay-order?orderId=' + record.id}>查看</a>)
+            }
           </Fragment>
         ),
         width: 150,
@@ -168,17 +196,18 @@ handleOrderClick = ({ key }) => {
         disabled: record.disabled,
       }),
     };
+    
 
     return (
       <div className={styles.standardTable}>
         <Table
           loading={loading}
-          rowKey={record => record.id}
-          dataSource={OrderTableData}
+          rowKey="id"
+          dataSource={data}
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 1800 }}
+          scroll={{ x: 2000 }}
         />
       </div>
     );

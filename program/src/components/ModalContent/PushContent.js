@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:05:56 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-09 13:45:10
+ * @Last Modified time: 2018-03-09 13:46:06
  */
 import React, { PureComponent } from 'react';
 import { Row, Col, Checkbox, Select, Input } from 'antd';
@@ -18,7 +18,7 @@ const plainOptions = [
   { label: '邮件', value: 'c' },
 ];
 // 催单弹出层内容 
-export default class ReminderContent extends PureComponent {
+export default class PushContent extends PureComponent {
   state = {
     remindTypes: [],
     receiver: 'supplier',
@@ -62,7 +62,7 @@ export default class ReminderContent extends PureComponent {
           <Col span={12}>供应商公司名称：长沙DEF公司</Col>
         </Row>
         <Row>
-          <Col span={5}>催单方式：</Col>
+          <Col span={5}>推送方式：</Col>
           <Col span={15}>
             <CheckboxGroup
               options={plainOptions}
@@ -84,7 +84,7 @@ export default class ReminderContent extends PureComponent {
           </Select>
         </Row>
         <Row>
-          <Col span={5}>催单描述：</Col>
+          <Col span={5}>无货说明：</Col>
           <Col span={12}>
             <TextArea
               value={desc}

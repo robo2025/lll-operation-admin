@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'dva';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import OrderTable from '../../components/CustomTable/OrderTable';
@@ -12,6 +13,10 @@ const FormItem = Form.Item;
 const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 
+@connect(({ orders, loading }) => ({
+  orders,
+  loading: loading.models.orders,
+}))
 @Form.create()
 export default class OrderList extends Component {
   constructor(props) {
@@ -22,6 +27,14 @@ export default class OrderList extends Component {
       isShowModal2: false, // 订单取消Modal
       isShowModal3: false, // 收货延迟Modal
     };
+  }
+
+  componentDidMount() {
+    console.log('我渲染好了', this.props);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'orders/fetch',
+    });
   }
 
   handleFormReset = () => {
@@ -210,17 +223,22 @@ export default class OrderList extends Component {
 
   render() {
     const { isShowModal1, isShowModal2, isShowModal3 } = this.state;
+    const { orders, loading } = this.props;
+    console.log(this.props.orders);
+
     return (
       <PageHeaderLayout title="订单列表">
         <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
-            <div className={styles.tableListForm}>
-              {this.renderForm()}
-            </div>
+          <div className={styles.tableListForm}>
+            {this.renderForm()}
+          </div>
         </Card>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <OrderTable
               onHandleOrderClick={this.handleModalToggle}
+              data={orders.list}
+              loading={loading}
             />
             {/* 催货Modal */}
             <Modal

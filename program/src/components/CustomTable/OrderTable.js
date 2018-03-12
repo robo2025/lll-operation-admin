@@ -4,13 +4,17 @@ import { Table, Divider, Dropdown, Menu, Icon } from 'antd';
 import styles from './order-table.less';
 import OrderTableData from './orderTableData'; // 假数据
 
+// 订单状态
+const mapOrderStatus = ['全部', '已取消', '已接单', '待发货', '已发货', '已确认收货', '已完成', '申请延期', '确认延期', '退款', '退货', '作废'];
+// 支付状态
+const mapPayStatus = ['全部', '未支付', '已支付'];
+
 export default class OrderTable extends React.Component {
   state = {
     selectedRowKeys: [],
     totalCallNo: 0,
     isShowModal: false,
   };
-
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
     const totalCallNo = selectedRows.reduce((sum, val) => {
@@ -54,47 +58,55 @@ handleOrderClick = ({ key }) => {
         title: '客户订单编号',
         dataIndex: 'order_sn',
         key: 'order_sn',
-        width: 120,
+        width: 200,
         fixed: 'left',
       },
       {
         title: '供应商公司名称',
         dataIndex: 'supplier_name',
         key: 'supplier_name',
-        width: 130,
+        width: 150,
         fixed: 'left',
       },
       {
         title: '客户公司名称',
         dataIndex: 'guest_name',
         align: 'guest_name',
-        width: 130,
+        width: 150,
         fixed: 'left',
         render: val => `${val}`,
       },
       {
         title: '最大发货日期',
         dataIndex: 'max_delivery_time',
-        key: 'max_delivery_time-1',
+        key: 'max_delivery_time',
+        width: 150,
+        render: text => (<span>{text}天</span>),
       },
       {
         title: '交易总金额(元)',
         dataIndex: 'total_money',
+        width: 150,        
         key: 'total_money',
       },
       {
         title: '支付状态',
         dataIndex: 'pay_status',
         key: 'pay_status',
+        width: 150,
+        render: text => (<span>{mapPayStatus[text]}</span>),
       },
       {
         title: '订单状态',
         dataIndex: 'order_status',
         key: 'order_status',
+        width: 150,        
+        render: text => (<span>{mapOrderStatus[text]}</span>),
       },
       {
         title: '佣金(元)',
         dataIndex: 'commission',
+        width: 150,        
         key: 'commission',
       },
       {
@@ -122,7 +134,7 @@ handleOrderClick = ({ key }) => {
               </a>
             </Dropdown>
             <Divider type="vertical" />
-            <a href={'#/orders/detail?orderId=' + record.id}>查看</a>
+            <a href={'#/orders/list/detail?orderId=' + record.id}>查看</a>
           </Fragment>
         ),
         width: 150,
@@ -148,7 +160,7 @@ handleOrderClick = ({ key }) => {
         <Table
           loading={loading}
           rowKey={record => record.id}
-          dataSource={OrderTableData}
+          dataSource={data}
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}

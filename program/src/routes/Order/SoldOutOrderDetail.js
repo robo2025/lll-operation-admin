@@ -1,3 +1,10 @@
+/*
+ * @Author: lll 
+ * @Date: 2018-03-09 14:56:55 
+ * @Last Modified by: lll
+ * @Last Modified time: 2018-03-12 11:53:55
+ */
+
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
@@ -7,7 +14,6 @@ import DescriptionList from '../../components/DescriptionList';
 import { queryString, handleServerMsg } from '../../utils/tools';
 
 import styles from './OrderDetail.less';
-import order from '../../models/order';
 
 const { Description } = DescriptionList;
 const goodsData = [];// 订单商品数据
@@ -34,7 +40,7 @@ const goodsColumns = [{
   title: '发货日',
   dataIndex: 'max_delivery_time',
   key: 'max_delivery_time',
-  render: text => (<span>{text}天</span>),
+  render: text => (<span>{text}天</span>),  
 }, {
   title: '单价',
   dataIndex: 'univalent',
@@ -46,7 +52,7 @@ const goodsColumns = [{
 }, {
   title: '商品售出单价',
   key: 'sold_price',
-  render: text => (<span>{text.univalent - text.price_discount}</span>),
+  render: text => (<span>{text.univalent - text.price_discount}</span>),  
 }, {
   title: '数量',
   dataIndex: 'number',
@@ -112,7 +118,6 @@ for (let i = 0; i < 3; i++) { // 生成订单商品假数据
     id: i + 1,
     goodName: '压轧滚珠丝杠　轴径28·32、螺距6·10·32 标准螺帽' + i,
     type: '测试' + i,
-    type: '测试' + i,
     brand: '欧姆龙',
     num: 5,
     delivery: '2017-12-7 11:45:30',
@@ -122,7 +127,6 @@ for (let i = 0; i < 3; i++) { // 生成订单商品假数据
     delivery_id: 'HYWL12345789',
   });
 }
-// 操作日志tab
 const operationTabList = [{
   key: 'tab1',
   tab: '订单操作记录',
@@ -130,7 +134,6 @@ const operationTabList = [{
   key: 'tab2',
   tab: '异常操作记录',
 }];
-// 操作日志列
 const actionColumns = [{
   title: '操作记录',
   dataIndex: 'record',
@@ -151,32 +154,26 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),  
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
   key: 'time_consuming',
-}];
-const actionLogs = [{
-  id: 1,
-  desc: '提交订单',
-  operater: 'admin',
-  detail: '未支付',
-  progress: '已支付',
-  create_time: '2017-10-12 12:56:30',
-  time: 5,
+  render: text => (<span>{text >> 0}秒</span>),
 }];
 
+
+// 无货订单详情页
 @connect(({ orders, loading }) => ({
   orders,
   loading: loading.models.orders,
 }))
-export default class OrderDetail extends Component {
+export default class SoldOutOrderDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
       operationkey: 'tab1',
-      args: queryString.parse(window.location.href),
+      args: queryString.parse(window.location.href),      
     };
   }
 
@@ -217,28 +214,6 @@ export default class OrderDetail extends Component {
     const exceptionAction = operation.filter((val) => {
       return val.is_abnormal;
     });
-    const contentList = {
-      tab1: <Table
-        pagination={{
-          defaultPageSize: 6,
-          pageSize: 6,
-        }}
-        loading={false}
-        dataSource={operation}
-        columns={actionColumns}
-        rowKey="add_time"
-      />,
-      tab2: <Table
-        pagination={{
-          defaultPageSize: 5,
-          pageSize: 5,
-        }}
-        loading={false}
-        dataSource={exceptionAction}
-        columns={actionColumns}
-        rowKey="add_time"
-      />,
-    };
 
     // 计算商品数量，商品总金额，佣金，优惠抵扣，实付总金额
     let goodsTotal = 0;
@@ -255,17 +230,62 @@ export default class OrderDetail extends Component {
     });
 
 
-    // console.log('订单详情', order_info);
+    const contentList = {
+      tab1: <Table
+        pagination={{
+          defaultPageSize: 6,
+          pageSize: 6,
+        }}
+        loading={false}
+        dataSource={operation}
+        columns={actionColumns}
+        rowKey="id"
+      />,
+      tab2: <Table
+        pagination={{
+          defaultPageSize: 5,
+          pageSize: 5,
+        }}
+        loading={false}
+        dataSource={exceptionAction}
+        columns={actionColumns}
+        rowKey="id"        
+      />,
+    };
+   
+    console.log('商品明细', orderGoodsList);
     return (
-      <PageHeaderLayout title="订单详情">
+      <PageHeaderLayout title="无货订单详情">
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
           <DescriptionList size="large" title="订单信息" style={{ marginBottom: 32 }}>
             <Description term="客户订单编号">{order_info.order_sn}</Description>
             <Description term="支付状态">{mapPayStatus[order_info.pay_status]}</Description>
             <Description term="订单状态">{mapOrderStatus[order_info.order_status]}</Description>
-            <Description term="母订单编号">13214321432</Description>
+            <Description term="母订单编号">3214321432</Description>
             <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
           </DescriptionList>
+          <Divider style={{ marginBottom: 32 }} />
+           <div className={styles.title}>无货商品明细</div>
+          <Table
+            style={{ marginBottom: 24 }}
+            pagination={false}
+            loading={false}
+            dataSource={orderGoodsList}
+            columns={goodsColumns}
+            rowKey="abc"
+          />
+          <div className={styles['extra-good-info']}>
+            <Row gutter={8} justify="end" align="end" type="flex">
+              <Col span={14}>总计</Col>
+              <Col span={10} pull={2} style={{ textAlign: 'right' }}>
+                  <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
+                  <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
+              </Col>
+            </Row>
+            <Row>
+              <b>无货说明：</b><span style={{ fontWeight: 500 }}>这两件商品因本身公司备货不足，一时无法供应客户订单商品要求，抱歉！</span>
+            </Row>
+          </div>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>
             <Description term="用户姓名">{guest_info.receiver}</Description>
@@ -290,7 +310,7 @@ export default class OrderDetail extends Component {
             <Description term="公司名称">菜鸟仓储</Description>
             <Description term="收货地址">{supplier_info.address}</Description>
           </DescriptionList>
-          <Divider style={{ marginBottom: 32 }} />
+          <Divider style={{ marginBottom: 32 }} />          
           <div className={styles.title}>订单商品明细</div>
           <Table
             style={{ marginBottom: 24 }}
@@ -298,57 +318,47 @@ export default class OrderDetail extends Component {
             loading={false}
             dataSource={orderGoodsList}
             columns={goodsColumns}
-            rowKey="abc"
+            rowKey="id"
           />
           <div className={styles['extra-good-info']}>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14}>总计</Col>
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                <span style={{ marginRight: 45 }}>商品件数：{orderGoodsList.length}</span>
-                <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
+                  <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
+                  <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                <span style={{ marginRight: 45 }}>&nbsp;</span>
-                <span>运费金额：<span className="number">￥0.00</span></span>
+                  <span style={{ marginRight: 45 }}>&nbsp;</span>
+                  <span>运费金额：<span className="number">￥0.00</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                <span style={{ marginRight: 45 }}>&nbsp;</span>
-                <span>佣金：<span className="number">￥{commission}</span></span>
+                  <span style={{ marginRight: 45 }}>&nbsp;</span>
+                  <span>佣金：<span className="number">￥{commission}</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                {/* <span style={{ marginRight: 45, fontWeight: 'normal' }}>优惠券（YHQ20180103111256）满10元减0元</span> */}
-                <span>优惠抵扣：<span className="number">￥-0.00</span></span>
+                  {/* <span style={{ marginRight: 45, fontWeight: 'normal' }}>优惠券（YHQ20180103111256）满10元减1元</span> */}
+                  <span>优惠抵扣：<span className="number">￥-0.00</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                <span style={{ marginRight: 45 }}>&nbsp;</span>
-                <span>实付总金额：<span style={{ color: '#E6382F' }} className="number">￥{money}</span></span>
+                  <span style={{ marginRight: 45 }}>&nbsp;</span>
+                  <span>实付总金额：<span style={{ color: '#E6382F' }} className="number">￥{money}</span></span>
               </Col>
             </Row>
           </div>
-          <Divider style={{ marginBottom: 32 }} />
-          <div className={styles.title}>发货记录</div>
-          <Table
-            style={{ marginBottom: 24 }}
-            pagination={false}
-            loading={false}
-            dataSource={[]}
-            columns={logisticsColumns}
-            rowKey="id"
-          />
           {/* <Divider style={{ marginBottom: 32 }} />           */}
-          <div className={styles.title}>操作日志记录</div>
+          <div className={styles.title}>操作日志记录</div>    
           <Card
             className={styles.tabsCard}
             bordered={false}
@@ -356,7 +366,7 @@ export default class OrderDetail extends Component {
             onTabChange={this.onOperationTabChange}
           >
             {contentList[this.state.operationkey]}
-          </Card>
+          </Card>      
         </Card>
       </PageHeaderLayout>
     );
