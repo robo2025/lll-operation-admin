@@ -47,19 +47,19 @@ export async function queryOrderDetail({ orderId }) {
  * 
  */
 export async function querySearchResults({ 
-  guest_order_sn, pay_status, order_status, supplier_id, guest_id, start_time, end_time,
+  guest_order_sn, pay_status, order_status, supplier_name, guest_company_name, start_time, end_time,
  }) {
   const guestOrderSN = guest_order_sn || '';
   const orderStatus = order_status || '';
   const payStatus = pay_status || '';
-  const supplierId = supplier_id || '';
-  const guestID = guest_id || '';
+  const supplierName = supplier_name || '';
+  const guestCompanyName = guest_company_name || '';
   const startTime = start_time || '';
   const endTime = end_time || '';
 
   const accessToken = Cookies.get('access_token');
   return lyRequest(`${ORDER_SYS_URL}/order?
-  guest_order_sn=${guestOrderSN}&pay_status=${payStatus}&order_status=${orderStatus}&supplier_id=${supplierId}&guest_id=${guestID}&start_time=${startTime}&end_time=${endTime}`, {
+  guest_order_sn=${guestOrderSN}&pay_status=${payStatus}&order_status=${orderStatus}&supplier_name=${supplierName}&guest_company_name=${guestCompanyName}&start_time=${startTime}&end_time=${endTime}`, {
     headers: {
       Authorization: accessToken,
     },

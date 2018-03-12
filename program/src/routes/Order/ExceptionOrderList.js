@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-12 15:00:36
+ * @Last Modified time: 2018-03-12 16:44:19
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal } from 'antd';
@@ -271,7 +271,7 @@ export default class ExceptionOrderList extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="客户公司名称">
-              {getFieldDecorator('guest_name')(
+              {getFieldDecorator(' guest_company_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>

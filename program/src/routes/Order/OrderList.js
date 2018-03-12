@@ -206,14 +206,14 @@ export default class OrderList extends Component {
         <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="供应商公司名称">
-              {getFieldDecorator('supplier_id')(
+              {getFieldDecorator('supplier_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="客户公司名称">
-              {getFieldDecorator('guest_id')(
+              {getFieldDecorator('guest_company_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
