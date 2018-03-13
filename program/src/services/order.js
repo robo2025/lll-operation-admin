@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 
-const ORDER_SYS_URL = 'http://192.168.4.6:8008/v1/chief';
+const ORDER_SYS_URL = 'http://13.250.57.253:8000/v1/chief';
 
 // ------------------ 请求订单信息---------------------
 
@@ -17,6 +17,7 @@ export async function queryOrders() {
   });
 }
 
+
 /**
  * 获取服务器异常订单列表
  */
@@ -28,6 +29,7 @@ export async function queryExceptionOrders() {
     },
   });
 }
+
 
 /**
  * 获取服务器订单详情
