@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-06 10:42:49
+ * @Last Modified time: 2018-03-16 16:10:05
  */
 import React, { PureComponent } from 'react';
 import 'braft-editor/dist/braft.css';
@@ -334,7 +334,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span> 5%</span>
+                <span> 0.0%</span>
               </FormItem>
             </Col>
           </Row>

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-06 17:23:38
+ * @Last Modified time: 2018-03-16 16:10:13
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -165,7 +165,7 @@ class GoodsTable extends PureComponent {
       {
         title: '佣金比率',
         dataIndex: 'commission',
-        render: () => <span>0.5%</span>,
+        render: () => <span>0.0%</span>,
       },
       {
         title: '商品提交时间',
