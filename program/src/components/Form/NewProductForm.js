@@ -206,7 +206,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('english_name', {
-                rules: [{ required: true }],                
+                rules: [{ required: false }],                
               })(
                 <Input />
               )}
