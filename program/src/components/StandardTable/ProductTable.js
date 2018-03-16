@@ -108,40 +108,45 @@ class ProductTable extends React.Component {
         dataIndex: 'partnumber',
         align: 'partnumber',
         render: val => `${val}`,
+        width: 150,
       },
       {
         title: '一级类目',
         dataIndex: 'category',
         render: val => (val.category_name),
+        width: 100,
         key: 'menu-1',
       },
       {
         title: '二级类目',
         dataIndex: 'category',
         render: val => (val.children.category_name),
+        width: 100,        
         key: 'menu-2',
       },
       {
         title: '三级类目',
         dataIndex: 'category',
         render: val => (val.children.children.category_name),
+        width: 150,        
         key: 'menu-3',
       },
       {
         title: '四级类目',
         dataIndex: 'category',
         render: val => (val.children.children.children.category_name),
+        width: 150,
         key: 'menu-4',
       },
       {
         title: '品牌',
         dataIndex: 'brand_name',
-
+        width: 100,
       },
       {
         title: '已有商品条数',
         dataIndex: 'goods_count',
-
+        width: 110,
       },
       {
         title: '创建人',
@@ -202,7 +207,7 @@ class ProductTable extends React.Component {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 1800 }}
+          scroll={{ x: 2000 }}
         />
         {/* 供货信息 */}
         <Modal

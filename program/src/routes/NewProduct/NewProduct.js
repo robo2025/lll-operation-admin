@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 17:57:26
+ * @Last Modified time: 2018-03-16 15:51:05
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -46,11 +46,7 @@ export default class NewProduct extends Component {
         other_attrs: [],
       },
       newFiled: {}, // 用户自定义的其他属性
-      otherAttrsFiled: [{
-        id: 0,
-        attr_name: '参数一',
-        attr_value: '',
-      }],
+      otherAttrsFiled: [],
       otherAttrs: [],
       file: { uid: '', name: '' },
       isPicture: true,
@@ -80,17 +76,18 @@ export default class NewProduct extends Component {
   onOk() {
     this.setState({ isShowModal: false });
     const { newFiled, otherAttrsFiled, otherAttrs } = this.state;
+    const len = otherAttrsFiled.length - 100;
     if (newFiled.attr_name && newFiled.attr_value) {
       this.setState({ isShowAttrMOdal: false }); // 隐藏添加属性弹窗
       this.setState({
         otherAttrsFiled: [
           ...otherAttrsFiled,
-          { attr_name: newFiled.attr_name.value, attr_value: newFiled.attr_value.value },
+          { id: len - 100, attr_name: newFiled.attr_name.value, attr_value: newFiled.attr_value.value },
         ],
         otherAttrs: [
           ...otherAttrs,
           {
-            id: otherAttrsFiled.length - 100,
+            id: len - 100,
             attr_name: newFiled.attr_name.value,
             attr_value: newFiled.attr_value.value,
           },
@@ -247,15 +244,15 @@ export default class NewProduct extends Component {
    * 
    */
   handleSubmitProduct() {
-    const { fields, otherAttrs } = this.state;
-    console.log('提交产品信息', { ...fields, other_attrs: otherAttrs });
+    const { fields, otherAttrs, otherAttrsFiled } = this.state;
+    console.log('提交产品信息', { ...fields, other_attrs: otherAttrsFiled });
     const { dispatch, history } = this.props;
-    dispatch({
-      type: 'product/add',
-      data: { ...fields, other_attrs: otherAttrs, paf_url: [] },
-      success: () => { history.push('/product/list'); },
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
-    });
+    // dispatch({
+    //   type: 'product/add',
+    //   data: { ...fields, other_attrs: otherAttrsFiled, paf_url: [] },
+    //   success: () => { history.push('/product/list'); },
+    //   error: (res) => { message.error(handleServerMsg(res.msg)); },
+    // });
   }
 
   render() {
@@ -348,6 +345,9 @@ export default class NewProduct extends Component {
               pagination={false}
               columns={attrClomns}
               dataSource={otherAttrsFiled}
+              locale={{
+                emptyText: '请点击上面按钮添加新属性',                
+              }}
             />
           </div>
           <div className={styles['submit-btn-wrap']}>
