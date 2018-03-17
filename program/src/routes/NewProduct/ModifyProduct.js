@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 17:56:47
+ * @Last Modified time: 2018-03-17 13:33:01
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -140,17 +140,18 @@ export default class ModifyProduct extends Component {
     this.setState({ isShowModal: false });
     this.setState({ isShowModal: false });
     const { newFiled, otherAttrsFiled, otherAttrs } = this.state;
+    const len = otherAttrsFiled.length;    
     if (newFiled.attr_name && newFiled.attr_value) {
       this.setState({ isShowAttrMOdal: false }); // 隐藏添加属性弹窗
       this.setState({
         otherAttrsFiled: [
           ...otherAttrsFiled,
-          { attr_name: newFiled.attr_name.value, attr_value: newFiled.attr_value.value },
+          { id: len - 100, attr_name: newFiled.attr_name.value, attr_value: newFiled.attr_value.value },
         ],
         otherAttrs: [
           ...otherAttrs,
           {
-            id: otherAttrsFiled.length - 100,
+            id: len - 100,
             attr_name: newFiled.attr_name.value,
             attr_value: newFiled.attr_value.value,
           },
@@ -288,6 +289,23 @@ export default class ModifyProduct extends Component {
     });
   }
 
+    /**
+   * 删除产品其他属性项目
+   * 
+   * @param {string} id 属性id
+   * 
+   */
+  handleDeleteOtherAttrFiled(id) {
+    const { otherAttrsFiled } = this.state;
+    const newOtherAttrsFiled = otherAttrsFiled.filter((val, idx) => {
+      return val.id !== id;
+    });
+    this.setState({
+      otherAttrsFiled: newOtherAttrsFiled,
+    });
+    console.log('删除属性ID', id, newOtherAttrsFiled);    
+  }
+
 
   /**
    * 提交产品信息
@@ -295,21 +313,21 @@ export default class ModifyProduct extends Component {
    */
   handleSubmitProduct() {
     const argsKey = Object.keys(this.state.args);
-    const { fields, otherAttrs } = this.state;
-    console.log('产品信息', { ...fields, other_attrs: otherAttrs }, Object.keys(this.state.args));
+    const { fields, otherAttrsFiled } = this.state;
+    console.log('产品信息', { ...fields, other_attrs: otherAttrsFiled }, Object.keys(this.state.args));
     const { dispatch } = this.props;
 
     if (argsKey.includes('prdId')) { // 如果是修改产品
       dispatch({
         type: 'product/modifyInfo',
         prdId: this.state.args.prdId,
-        data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
+        data: { ...fields, other_attrs: otherAttrsFiled, pdf_url: ['没有'] },
         success: () => { this.props.history.push('/product/list'); },
       });
     } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
       dispatch({
         type: 'product/add',
-        data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
+        data: { ...fields, other_attrs: otherAttrsFiled, pdf_url: ['没有'] },
         success: () => { this.props.history.push('/product/list'); },
         error: (res) => { message.error(handleServerMsg(res.msg)); },
       });

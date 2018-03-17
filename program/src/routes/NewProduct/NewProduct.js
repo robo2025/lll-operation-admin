@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-16 15:51:05
+ * @Last Modified time: 2018-03-17 13:28:54
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -159,7 +159,7 @@ export default class NewProduct extends Component {
   handleAddOtherAttrFiled(fileds) {
     const { newFiled } = this.state;
     this.setState({
-      newFiled: { ...newFiled, ...fileds },
+      newFiled: { id: newFiled.length - 100, ...newFiled, ...fileds },
     });
   }
 
