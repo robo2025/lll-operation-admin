@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-17 13:28:54
+ * @Last Modified time: 2018-03-19 19:39:53
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -247,12 +247,12 @@ export default class NewProduct extends Component {
     const { fields, otherAttrs, otherAttrsFiled } = this.state;
     console.log('提交产品信息', { ...fields, other_attrs: otherAttrsFiled });
     const { dispatch, history } = this.props;
-    // dispatch({
-    //   type: 'product/add',
-    //   data: { ...fields, other_attrs: otherAttrsFiled, paf_url: [] },
-    //   success: () => { history.push('/product/list'); },
-    //   error: (res) => { message.error(handleServerMsg(res.msg)); },
-    // });
+    dispatch({
+      type: 'product/add',
+      data: { ...fields, other_attrs: otherAttrsFiled, paf_url: [] },
+      success: () => { history.push('/product/list'); },
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
+    });
   }
 
   render() {

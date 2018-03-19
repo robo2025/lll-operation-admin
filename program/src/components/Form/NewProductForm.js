@@ -375,13 +375,13 @@ class ProductForm extends Component {
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
           <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
-            <TabPane tab="*商品概述" key="1">
+            <TabPane tab="*产品概述" key="1">
               <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
                 token={uploadToken}                                                
               />
             </TabPane>
-            <TabPane tab="*商品详情" key="2">
+            <TabPane tab="*产品详情" key="2">
               <RichEditor
                 onChange={(html) => { this.handleChange('description', html); }}
                 token={uploadToken}                                                
