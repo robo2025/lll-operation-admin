@@ -12,7 +12,7 @@ export const API_URL = 'http://api-product.robo2025.com/api/admin';
 export const UPLOAD_URL = 'http://api-common-service.robo2025.com';
 
 // 用户管理系统API URL
-export const USERS_URL = 'http://api-user.robo2025.com';
+export const USERS_URL = 'http://api-user.robo2025.com/api';
 
 // 验证登录接口URL
 export const LOGIN_URL = `${URL}/server/authorize`;
