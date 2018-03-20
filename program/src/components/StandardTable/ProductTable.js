@@ -101,7 +101,6 @@ class ProductTable extends React.Component {
         title: '产品名称',
         dataIndex: 'product_name',
         key: 'product_name',
-        fixed: 'left',
       },
       {
         title: '型号',

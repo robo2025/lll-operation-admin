@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
-import { checkFile, getFileSuffix } from '../../utils/tools';
+import { checkFile, getFileSuffix, removeObjFromArr } from '../../utils/tools';
 import styles from './product-info.less';
 
 const FormItem = Form.Item;
@@ -17,6 +17,15 @@ function getStanrdCatalog(data) {
     }
   });
 }
+const mapImageType = {// 图片类型：正面、反面、侧面、包装图
+  a: '1',
+  b: '2',
+  c: '3',
+  d4: '4',
+  d5: '5',
+  d6: '6',
+};
+
 
 @Form.create({
   onValuesChange(props, values) {
@@ -102,7 +111,10 @@ class ProductForm extends Component {
       tempJson[key] = fileList;
       this.setState(tempJson);
       // console.log('状态改变', fileList);
-      const that = this;
+      if (fileList.length === 0) {
+        this.setState({ pics: removeObjFromArr({ img_type: mapImageType[key] }, pics, 'img_type') });
+        onAttrChange({ pics: removeObjFromArr({ img_type: mapImageType[key] }, pics, 'img_type') });
+      }
       // 上传成功，则将图片放入state里的pics数组内
       fileList.map((file) => {
         if (file.status === 'done') {
@@ -151,7 +163,6 @@ class ProductForm extends Component {
     );
 
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构    
-    // console.log('目录', uploadToken);
 
     return (
       <div className={styles['product-info-wrap']} >

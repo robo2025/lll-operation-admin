@@ -12,9 +12,9 @@ const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   a: '1',
   b: '2',
   c: '3',
-  d1: '4',
-  d2: '5',
-  d3: '6',
+  d4: '4',
+  d5: '5',
+  d6: '6',
 };
 
 // 将服务器目录转换成需求目录
@@ -148,7 +148,7 @@ class ProductForm extends Component {
       const tempJson = {};
       tempJson[key] = fileList;
       this.setState(tempJson);
-      console.log('状态改变', fileList);
+      console.log('状态改变-----------', key, fileList);
       // 上传成功，则将图片放入state里的pics数组内
       if (fileList.length === 0) {
         this.setState({ pics: removeObjFromArr({ img_type: mapImageType[key] }, pics, 'img_type') });
