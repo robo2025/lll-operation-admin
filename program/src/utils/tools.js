@@ -128,6 +128,16 @@ export function replaceObjFromArr(obj, arr, key) {
   return isExist ? newArr : [...newArr, obj];
 }
 
+// 根据指定的Key删除对象数组中的某一个对象
+export function removeObjFromArr(obj, arr, key) {
+  if (!Array.isArray(arr)) {
+    throw new Error('传参必须是数组');
+  }
+  return arr.filter(val => (
+    obj[key] !== val[key]
+  ));
+}
+
 
 // 处理服务器错误信息
 export function handleServerMsg(str) {

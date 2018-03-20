@@ -387,7 +387,7 @@ class ProductForm extends Component {
                 token={uploadToken}                                                
               />
             </TabPane>
-            <TabPane tab="*常见问题FAQ" key="3" >
+            <TabPane tab="常见问题FAQ" key="3" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
                 token={uploadToken}                

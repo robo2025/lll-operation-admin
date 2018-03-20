@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
 import { Form, Spin, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs, message } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
-import { checkFile, getFileSuffix, replaceObjFromArr } from '../../utils/tools';
+import { checkFile, getFileSuffix, replaceObjFromArr, removeObjFromArr } from '../../utils/tools';
 
 import styles from './product-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
+const mapImageType = {// 图片类型：正面、反面、侧面、包装图
+  a: '1',
+  b: '2',
+  c: '3',
+  d1: '4',
+  d2: '5',
+  d3: '6',
+};
 
 // 将服务器目录转换成需求目录
 function getStanrdCatalog(data) {
@@ -27,7 +35,12 @@ function getPic(key, pics) {
   }
   const pic = pics.filter(val => (val.img_type === key));
   if (pic.length > 0) {
-    return [{ uid: pic[0].id, name: pic[0].img_type, url: pic[0].img_url }];
+    return [{
+      id: pic[0].id,
+      uid: pic[0].id,
+      name: pic[0].img_type,
+      url: pic[0].img_url,
+    }];
   } else {
     return [];
   }
@@ -135,9 +148,12 @@ class ProductForm extends Component {
       const tempJson = {};
       tempJson[key] = fileList;
       this.setState(tempJson);
-      // console.log('状态改变', fileList);
-      const that = this;
+      console.log('状态改变', fileList);
       // 上传成功，则将图片放入state里的pics数组内
+      if (fileList.length === 0) {
+        this.setState({ pics: removeObjFromArr({ img_type: mapImageType[key] }, pics, 'img_type') });
+        onAttrChange({ pics: removeObjFromArr({ img_type: mapImageType[key] }, pics, 'img_type') });
+      }
       fileList.map((file) => {
         if (file.status === 'done') {
           message.success(`${file.name} 文件上传成功`);
@@ -146,14 +162,14 @@ class ProductForm extends Component {
             this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '1', img_url: file.response.key }, pics, 'img_type') });
             onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '1', img_url: file.response.key }] });
           } else if (key === 'b') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '2', img_url: file.response.key }, pics, 'img_type') });            
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '2', img_url: file.response.key }, pics, 'img_type') });
             onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '2', img_url: file.response.key }] });
           } else if (key === 'c') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '3', img_url: file.response.key }, pics, 'img_type') });            
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '3', img_url: file.response.key }, pics, 'img_type') });
             onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '3', img_url: file.response.key }] });
           } else if (key.substr(0, 1) === 'd') {
             const idx = key.substr(1, 1);
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: idx, img_url: file.response.key }, pics, 'img_type') });            
+            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: idx, img_url: file.response.key }, pics, 'img_type') });
             onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: idx, img_url: file.response.key }] });
           }
         } else if (file.status === 'error') {
@@ -222,6 +238,7 @@ class ProductForm extends Component {
     console.log('产品详情图片包装图', getPic('测试', data.pics));
 
 
+    console.log('修改产品表单state', this.state);
     return (
       <div className={styles['product-info-wrap']} >
         {/* 产品主要属性 */}
@@ -243,7 +260,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('product_name', {
-                rules: [{ required: true }],                
+                rules: [{ required: true }],
               })(
                 <Input />
               )}
@@ -254,7 +271,7 @@ class ProductForm extends Component {
               style={{ display: 'none' }}
             >
               {getFieldDecorator('pno', {
-                rules: [{ required: true }],                
+                rules: [{ required: true }],
               })(
                 <Input disabled />
               )}
@@ -264,7 +281,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('partnumber', {
-                rules: [{ required: true }],                
+                rules: [{ required: true }],
               })(
                 <Input />
               )}
@@ -274,7 +291,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('brand_name', {
-                rules: [{ required: true }],                
+                rules: [{ required: true }],
               })(
                 <Input />
               )}
@@ -284,7 +301,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('english_name', {
-                rules: [{ required: false }],                
+                rules: [{ required: false }],
               })(
                 <Input />
               )}
@@ -294,7 +311,7 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('prodution_place', {
-                rules: [{ required: true }],                
+                rules: [{ required: true }],
               })(
                 <Input />
               )}

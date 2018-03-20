@@ -2,6 +2,8 @@ import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 
 const ORDER_SYS_URL = 'http://13.250.57.253:8000/v1/chief';
+const SUPPLIER_SYS_URL = 'http://13.250.57.253:8000/v1/supplier';
+const ORDER_URL = 'http://13.250.57.253:8000/v1/order';
 
 // ------------------ 请求订单信息---------------------
 

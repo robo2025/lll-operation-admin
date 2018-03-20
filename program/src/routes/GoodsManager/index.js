@@ -15,10 +15,9 @@ const { RangePicker } = DatePicker;
 const plainOptions = ['gno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'stock', 'price', 'supplier_name', 'min_buy', 'audit_status', 'publish_status', 'created_time'];// 所有选项
 
 
-@connect(({ rule, loading, good }) => ({
-  rule,
+@connect(({ loading, good }) => ({
   good,
-  loading: loading.models.rule,
+  loading: loading.models.good,
 }))
 @Form.create()
 export default class GoodsMananger extends Component {

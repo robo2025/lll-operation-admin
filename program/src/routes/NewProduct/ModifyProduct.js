@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-17 13:33:01
+ * @Last Modified time: 2018-03-20 10:33:04
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -323,6 +323,7 @@ export default class ModifyProduct extends Component {
         prdId: this.state.args.prdId,
         data: { ...fields, other_attrs: otherAttrsFiled, pdf_url: ['没有'] },
         success: () => { this.props.history.push('/product/list'); },
+        error: (res) => { message.error(handleServerMsg(res.msg)); },
       });
     } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
       dispatch({
