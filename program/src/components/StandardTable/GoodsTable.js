@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-20 14:08:10
+ * @Last Modified time: 2018-03-20 14:30:56
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -13,6 +13,7 @@ const AuditStatusMap = ['processing', 'success', 'error'];// 审核状态
 const auditStatus = ['待审核', '已通过', '未通过'];
 const GoodsStatusMap = ['default', 'success'];// 上下架状态
 const status = ['下架中', '已上架'];
+
 class GoodsTable extends PureComponent {
   state = {
     selectedRowKeys: [],

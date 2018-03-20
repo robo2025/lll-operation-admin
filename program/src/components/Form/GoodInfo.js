@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-16 16:10:05
+ * @Last Modified time: 2018-03-20 15:30:16
  */
 import React, { PureComponent } from 'react';
 import 'braft-editor/dist/braft.css';
@@ -15,6 +15,19 @@ import styles from './good-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+const mapImageType = ['正面', '反面', '侧面', '包装图一', '包装图二', '包装图三'];
+
+// 其他属性列
+const attrClomns = [{
+  title: '属性名',
+  dataIndex: 'attr_name',
+  key: 'attr_name',
+}, {
+  title: '属性值',
+  dataIndex: 'attr_value',
+  key: 'attr_value',
+}];
+
 
 @Form.create({
   mapPropsToFields(props) {
@@ -52,8 +65,14 @@ class GoodInfo extends React.Component {
 
   render() {
     const formItemLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 18 },
+      labelCol: {
+        md: { span: 4 },
+        xxl: { span: 3 },
+      },
+      wrapperCol: {
+        md: { span: 18 },
+        xxl: { span: 15 },
+      },
     };
 
     const columns = [{
@@ -193,22 +212,22 @@ class GoodInfo extends React.Component {
             <Row gutter={24}>
               <Col span={10}>
                 <FormItem
-                  label="库存"
-                  labelCol={{ span: 10 }}
-                  wrapperCol={{ span: 12 }}
+                  label="库存："
+                  labelCol={{ md: { span: 10 }, xxl: { span: 7 } }}
+                  wrapperCol={{ md: { span: 12 }, xxl: { span: 10 } }}
                 >
                   {getFieldDecorator('stock', {
                     rules: [{ required: true, message: '请输入库存量' }],
                   })(
-                    <Input />
+                    <Input style={{ position: 'relative', left: 2 }} />
                   )}
                 </FormItem>
               </Col>
               <Col span={12}>
                 <FormItem
                   label="最低采购量"
-                  labelCol={{ span: 14 }}
-                  wrapperCol={{ span: 10 }}
+                  labelCol={{ md: { span: 14 }, xxl: { span: 8 } }}
+                  wrapperCol={{ md: { span: 10 }, xxl: { span: 8 } }}
                 >
                   {
                     getFieldDecorator('min_buy', {
@@ -283,9 +302,10 @@ class GoodInfo extends React.Component {
                     <img
                       className="good-pics"
                       src={val.img_url}
-                      alt={val.img_type}
-                      title={val.img_type}
+                      alt={mapImageType[val.img_type - 1]}
+                      title={mapImageType[val.img_type - 1]}
                     />
+                    <p style={{ textAlign: 'center' }}>{mapImageType[val.img_type - 1]}</p>
                   </Col>
                 ))
               }
@@ -295,7 +315,10 @@ class GoodInfo extends React.Component {
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
-          <Tabs defaultActiveKey="2" onChange={(key) => { console.log(key); }}>
+          <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
+            <TabPane tab="商品概述" key="1">
+              <RichEditorShow content={data.product.summary} />
+            </TabPane>
             <TabPane tab="商品详情" key="2">
               <RichEditorShow content={data.product.description} />
             </TabPane>
@@ -305,25 +328,18 @@ class GoodInfo extends React.Component {
           </Tabs>
         </div>
         <SectionHeader title="产品其他属性" />
-        <div className="other-attrs">
-          {
-            product.other_attrs < 1 ? <Row gutter={8}><Col span={8} offset={1}>无</Col></Row> : null
-          }
-          {
-            product.other_attrs.map((val, idx) => (
-              <Row gutter={24} key={idx}>
-                <Col span={3} style={{ textAlign: 'left' }}>
-                  <FormItem
-                    label={val.attr_name}
-                    labelCol={{ span: 5 }}
-                    wrapperCol={{ span: 10 }}
-                  >
-                    <span>{val.attr_value}</span>
-                  </FormItem>
-                </Col>
-              </Row>
-            ))
-          }
+        <div className="other-attrs" style={{ width: 680 }}>
+          <Table
+            className="attr-table"
+            bordered
+            size="small"
+            pagination={false}
+            columns={attrClomns}
+            dataSource={product.other_attrs}
+            locale={{
+              emptyText: '该产品无其它属性',
+            }}
+          />
         </div>
         <SectionHeader title="佣金比率" />
         <div className="other-attrs">

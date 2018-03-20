@@ -184,8 +184,8 @@ class ProductForm extends Component {
 
   render() {
     const formItemLayout = {
-      labelCol: { span: 3 },
-      wrapperCol: { span: 12 },
+      labelCol: { md: { span: 4 }, xxl: { span: 3 } },
+      wrapperCol: { md: { span: 16 }, xxl: { span: 12 } },
     };
     const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
     const { getFieldDecorator } = this.props.form;
@@ -321,8 +321,7 @@ class ProductForm extends Component {
             <Col span={24}>
               <FormItem
                 label="CAD图"
-                labelCol={{ span: 3 }}
-                wrapperCol={{ span: 12 }}
+                {...formItemLayout}
               >
                 <Upload
                   name="file"
@@ -347,7 +346,7 @@ class ProductForm extends Component {
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} >
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal >
-        <div style={{ float: 'left', width: 360 }}>
+        <div style={{ float: 'left', width: 360, position: 'relative', top: -30 }}>
           <h3>产品图片</h3>
           <Row gutter={24}>
             <Col span={8}>
