@@ -45,7 +45,7 @@ class ProductTable extends React.Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    this.props.onChange(pagination, filters, sorter);
+    // this.props.onChange(pagination, filters, sorter);
   }
 
   cleanSelectedKeys = () => {
