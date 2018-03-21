@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-19 19:39:53
+ * @Last Modified time: 2018-03-21 16:11:16
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -290,7 +290,7 @@ export default class NewProduct extends Component {
     const { isShowModal, isShowAttrMOdal, otherAttrsFiled, file } = this.state;
     const { product, loading, catalog, upload } = this.props;
 
-    console.log('newproduct state', this.state);
+    console.log('新建产品state', this.state);
 
     return (
       <PageHeaderLayout title="新建产品信息">
@@ -327,6 +327,7 @@ export default class NewProduct extends Component {
             extra={buttonGrop}
           />
           <NewProductForm
+            data={this.state.fields}          
             onChange={this.handleFormChange}
             catalog={catalog.level}
             loading={loading}

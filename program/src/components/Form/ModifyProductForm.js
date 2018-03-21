@@ -5,9 +5,11 @@ import { checkFile, getFileSuffix, replaceObjFromArr, removeObjFromArr } from '.
 
 import styles from './product-info.less';
 
+
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
+const CAD_TYPES = ['doc', 'docx', 'pdf', 'dwt', 'dxf', 'dxb'];// 支持的CAD文件格式
+const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
 const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   a: '1',
   b: '2',
@@ -16,6 +18,8 @@ const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   d5: '5',
   d6: '6',
 };
+const FILE_CDN = '//imgcdn.robo2025.com/';
+
 
 // 将服务器目录转换成需求目录
 function getStanrdCatalog(data) {
@@ -39,8 +43,23 @@ function getPic(key, pics) {
       id: pic[0].id,
       uid: pic[0].id,
       name: pic[0].img_type,
-      url: pic[0].img_url,
+      url: /\/\//.test(pic[0].img_url) ? pic[0].img_url : FILE_CDN + pic[0].img_url,
     }];
+  } else {
+    return [];
+  }
+}
+
+// 将服务器数据拼凑成upload组件接受格式
+function getCAD(cads) {
+  if (cads) {
+    return cads.map((val, idx) => ({
+      uid: idx,
+      name: 'CAD图',
+      status: 'complete',
+      reponse: '200', // custom error message to show
+      url: val,
+    }));
   } else {
     return [];
   }
@@ -67,28 +86,40 @@ class ProductForm extends Component {
   constructor(props) {
     super(props);
     this.beforeUpload = this.beforeUpload.bind(this);
-    this.handleUploaderChange = this.handleUploaderChange.bind(this);
     this.pics = props.data.pics ? props.data.pics : [];
-    console.log('gouzaohanshu', this.pics);
+    console.log('构造函数', this.pics);
     this.state = {
       previewVisible: false,
       previewImage: '',
-      isPicture: true,
-      isCad: true,
       file: { uid: '', name: '' },
-      pics: this.pics, // 产品图片集合
-      cad_url: [], // 产品cad文件集合
-      a: getPic('1', this.pics),
-      b: getPic('2', this.pics),
-      c: getPic('3', this.pics),
-      d4: getPic('4', this.pics),
-      d5: getPic('5', this.pics),
-      d6: getPic('6', this.pics),
+      pics: [], // 产品图片集合
+      cadUrl: [], // 产品cad文件集合
+      a: [],
+      b: [],
+      c: [],
+      d4: [],
+      d5: [],
+      d6: [],
     };
   }
 
   componentWillReceiveProps(nextProps) {
     console.log('will reiceve', nextProps);
+    const { pics, cad_url } = nextProps.data;
+    if (pics) {
+      this.setState({
+        pics,
+        cad_url: cad_url || [],
+        cadUrl: getCAD(cad_url),
+        a: getPic('1', pics),
+        b: getPic('2', pics),
+        c: getPic('3', pics),
+        d4: getPic('4', pics),
+        d5: getPic('5', pics),
+        d6: getPic('6', pics),
+
+      });
+    }
   }
 
 
@@ -110,45 +141,58 @@ class ProductForm extends Component {
   beforeUpload(key, file) {
     this.setState({ file });
     // console.log('before', file);
-    if (checkFile(file.name, ['cad'])) {
-      this.setState({ isCad: true });
-    } else if (checkFile(file.name, FILE_TYPES)) {
-      this.setState({ isPicture: true });
-    }
-    if (key === 'cad_url') {
-      if (!checkFile(file.name, ['cad', 'dwt', 'dwg', 'dws', 'dxf'])) {
+    if (key === 'cadUrl') {
+      if (!checkFile(file.name, CAD_TYPES)) {
         message.error(`${file.name} 暂不支持上传`);
-        this.setState({ isCad: false });
         return false;
       }
     } else if (!checkFile(file.name, FILE_TYPES)) {
       message.error(`${file.name} 暂不支持上传`);
-      this.setState({ isPicture: false });
       return false;
     }
   }
 
   // cad和图片上传时处理
-  handleUploaderChange(key, fileList) {
-    console.log('文件上传', key, fileList);
-    const { pics, cad_url } = this.state;
+  handleUploaderChange = (key, fileList) => {
+    console.log('文件上传列表：', key, fileList);
+    const { pics, cad_url, cadUrl } = this.state;
     const { onAttrChange } = this.props;
     // 如果上传的是cad文件
-    if (key === 'cad_url' && this.state.isCad) {
+    if (key === 'cadUrl') {
+      const tempJson = {};
+      tempJson[key] = fileList;
+      this.setState(tempJson);
       fileList.slice(-1).forEach((file) => {
+        console.log('CAD文件：', file);
         if (file.status === 'done') {
-          this.setState({ cad_url: [...cad_url, file.response.key] });
+          this.setState({
+            cadUrl: [
+              ...cadUrl,
+              { 
+                uid: cadUrl.length - 100, 
+                name: file.response.key, 
+                status: 'done',
+                reponse: '200', // custom error message to show
+                url: FILE_CDN + file.response.key,
+              },
+            ],
+          });
           onAttrChange({ cad_url: [...cad_url, file.response.key] });
+        } else if (file.status === 'complete') {
+          this.setState({
+            cadUrl: fileList,
+          });
+          onAttrChange({ cad_url: fileList.map(val => (val.url)) });
         }
       });
       return;
     }
     // 如果上传的是图片
-    if (this.state.isPicture) {
+    if (key !== 'cadUrl') {
+      console.log('图片状态改变-----------', key, fileList);
       const tempJson = {};
       tempJson[key] = fileList;
       this.setState(tempJson);
-      console.log('状态改变-----------', key, fileList);
       // 上传成功，则将图片放入state里的pics数组内
       if (fileList.length === 0) {
         this.setState({ pics: removeObjFromArr({ img_type: mapImageType[key] }, pics, 'img_type') });
@@ -177,7 +221,7 @@ class ProductForm extends Component {
         }
         return file;
       });
-    } else if (this.state.isCad) {
+    } else if (key === 'cad_url') {
       console.log('cad fileList', fileList);
     }
   }
@@ -190,14 +234,14 @@ class ProductForm extends Component {
     const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
     const { getFieldDecorator } = this.props.form;
     const { data, catalog, loading, uploadToken } = this.props;
-    const { category, cad_url } = data;
+    const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cad_url, cadUrl } = this.state;
+    const { category } = data;
     const slectedCatagory = category ? [
       category.id,
       category.children.id,
       category.children.children.id,
       category.children.children.children.id,
     ] : [];
-    const { previewVisible, previewImage, a, b, c, d4, d5, d6, file } = this.state;
 
     const uploadButton = (
       <div>
@@ -205,38 +249,9 @@ class ProductForm extends Component {
         <div className="ant-upload-text">上传</div>
       </div>
     );
-    let uploaders = [];
-    if (data.pics) {
-      uploaders = data.pics.map(val => (
-        <Col span={8} key={val.id}>
-          <Upload
-            action="//jsonplaceholder.typicode.com/posts/"
-            listType="picture-card"
-            fileList={[{
-              uid: -1,
-              name: '测试',
-              url: val.img_url,
-            }]}
-            onPreview={this.handlePreview}
-            onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
-          />
-          <p className="upload-pic-desc">{val.img_type}</p>
-        </Col>
-      ));
-    } else {
-      return <Spin spinning={loading || true} />;
-    }
+
 
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构
-    const cadFileList = cad_url ? cad_url.map((val, idx) => ({
-      uid: idx,
-      name: 'cad图',
-      status: 'done',
-      reponse: '200', // custom error message to show
-      url: val,
-    })) : [];
-    console.log('产品详情图片包装图', getPic('测试', data.pics));
-
 
     console.log('修改产品表单state', this.state);
     return (
@@ -326,13 +341,13 @@ class ProductForm extends Component {
                 <Upload
                   name="file"
                   action={UPLOAD_URL}
-                  defaultFileList={cadFileList}
-                  beforeUpload={(currFile) => { this.beforeUpload('cad_url', currFile); }}
-                  onChange={({ fileList }) => { this.handleUploaderChange('cad_url', fileList); }}
+                  fileList={cadUrl}
+                  beforeUpload={currFile => (this.beforeUpload('cadUrl', currFile))}
+                  onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
                   data={
                     {
                       token: uploadToken,
-                      key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
+                      key: `product/attachment/cad/${file.uid}.${getFileSuffix(file.name)}`,
                     }
                   }
                 >
@@ -354,9 +369,9 @@ class ProductForm extends Component {
                 name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
-                defaultFileList={a}
+                fileList={a}
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                beforeUpload={currFile => (this.beforeUpload('a', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('a', fileList); }}
                 data={
                   {
@@ -374,9 +389,9 @@ class ProductForm extends Component {
                 name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
-                defaultFileList={b}
+                fileList={b}
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                beforeUpload={currFile => (this.beforeUpload('b', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
                 data={
                   {
@@ -394,9 +409,9 @@ class ProductForm extends Component {
                 name="file"
                 action={UPLOAD_URL}
                 listType="picture-card"
+                fileList={c}
+                beforeUpload={currFile => (this.beforeUpload('c', currFile))}
                 onPreview={this.handlePreview}
-                defaultFileList={c}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
                 onChange={({ fileList }) => { this.handleUploaderChange('c', fileList); }}
                 data={
                   {
@@ -416,7 +431,7 @@ class ProductForm extends Component {
                 listType="picture-card"
                 defaultFileList={d4}
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                beforeUpload={currFile => (this.beforeUpload('d4', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('d4', fileList); }}
                 data={
                   {
@@ -436,7 +451,7 @@ class ProductForm extends Component {
                 listType="picture-card"
                 defaultFileList={d5}
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                beforeUpload={currFile => (this.beforeUpload('a', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('d5', fileList); }}
                 data={
                   {
@@ -456,7 +471,7 @@ class ProductForm extends Component {
                 listType="picture-card"
                 defaultFileList={d6}
                 onPreview={this.handlePreview}
-                beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
+                beforeUpload={currFile => (this.beforeUpload('a', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('d6', fileList); }}
                 data={
                   {
