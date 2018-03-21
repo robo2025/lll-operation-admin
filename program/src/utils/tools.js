@@ -12,7 +12,6 @@ export function verifyLogin() {
     const access_token = paramas.access_token.split('#/')[0];
     console.log('token:', access_token);
     Cookies.set('access_token', access_token, { expires: 7 });
-    window.location.href = HOME_PAGE;
   } else {
     console.log('不存在token');
     window.location.href = `${LOGIN_URL}?next=${VERIFY_PAGE}`;
