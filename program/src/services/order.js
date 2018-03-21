@@ -45,6 +45,55 @@ export async function queryOrderDetail({ orderId }) {
   });
 }
 
+/**
+ * 取消订单接口
+ */
+export async function queryCancelOrder({ orderId, data }) {
+  const accessToken = Cookies.get('access_token');
+  return lyRequest(`${ORDER_SYS_URL}/order/${orderId}`, {
+    method: 'delete',
+    headers: {
+      Authorization: accessToken,
+    },
+    data: {
+      ...data,
+    },
+  });
+}
+
+/**
+ * 无货驳回接口
+ * 
+ */
+export async function queryNoGoodReject({ orderId, data }) {
+  const accessToken = Cookies.get('access_token');
+  return lyRequest(`${ORDER_SYS_URL}/order/${orderId}`, {
+    method: 'put',
+    headers: {
+      Authorization: accessToken,
+    },
+    data: {
+      data,
+    },
+  });
+}
+
+/**
+ * 同意并退款接口
+ */
+export async function queryAgree({ orderId, data }) {
+  const accessToken = Cookies.get('access_token');
+  return lyRequest(`${ORDER_SYS_URL}/order/${orderId}`, {
+    method: 'put',
+    headers: {
+      Authorization: accessToken,
+    },
+    data: {
+      data,
+    },
+  });
+}
+
 
 /**
  * 搜索接口

@@ -5,7 +5,10 @@ import styles from './order-table.less';
 import OrderTableData from './orderTableData'; // 假数据
 
 // 订单状态
-const mapOrderStatus = ['全部', '已取消', '已接单', '待发货', '已发货', '已确认收货', '已完成', '申请延期', '确认延期', '退款', '退货', '作废'];
+const mapOrderStatus = ['待支付', '已取消', '待接单', '待发货', '已发货,配送中',
+  '已完成', '', '申请延期中', '', '退款中',
+  '退货中', '作废', '无货', '退款完成', '退货完成',
+  '订单流转结束'];
 // 支付状态
 const mapPayStatus = ['全部', '未支付', '已支付'];
 
@@ -29,7 +32,7 @@ export default class OrderTable extends React.Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    this.props.onChange(pagination, filters, sorter);
+    // this.props.onChange(pagination, filters, sorter);
   }
 
   cleanSelectedKeys = () => {
@@ -37,7 +40,7 @@ export default class OrderTable extends React.Component {
   }
 
   // 订单处理点击：催货、订单取消、收货延期
-handleOrderClick = ({ key }) => {
+handleOrderClick = (key) => {
   const [modalKey, orderKey] = key.split('-');
   this.props.onHandleOrderClick(modalKey, orderKey);
 }
@@ -101,7 +104,7 @@ handleOrderClick = ({ key }) => {
         dataIndex: 'order_status',
         key: 'order_status',
         width: 150,        
-        render: text => (<span>{mapOrderStatus[text]}</span>),
+        render: text => (<span>{mapOrderStatus[text - 1]}</span>),
       },
       {
         title: '佣金(元)',
@@ -120,7 +123,7 @@ handleOrderClick = ({ key }) => {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            <Dropdown 
+            {/* <Dropdown 
             overlay={(
               <Menu onClick={(key) => { this.handleOrderClick(key); }}>
                 <Menu.Item key={`1-${text.id}`}>催单</Menu.Item>
@@ -132,7 +135,8 @@ handleOrderClick = ({ key }) => {
               <a className="ant-dropdown-link">
                 订单处理<Icon type="down" />
               </a>
-            </Dropdown>
+            </Dropdown> */}
+            <a onClick={() => { this.handleOrderClick(`2-${text.id}`); }} disabled={![1, 3].includes(text.order_status)}>订单取消</a>
             <Divider type="vertical" />
             <a href={'#/orders/list/detail?orderId=' + record.id}>查看</a>
           </Fragment>

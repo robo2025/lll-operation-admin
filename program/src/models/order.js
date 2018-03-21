@@ -1,4 +1,10 @@
-import { queryOrders, queryExceptionOrders, queryOrderDetail, querySearchResults } from '../services/order';
+import {
+  queryOrders,
+  queryExceptionOrders,
+  queryOrderDetail,
+  querySearchResults,
+  queryCancelOrder,
+} from '../services/order';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
 export default {
@@ -42,6 +48,18 @@ export default {
       yield put({
         type: 'saveDetail',
         payload: res.data,
+      });
+    },
+    *fetchCancel({ orderId, data, success, error }, { call, put }) {
+      const res = yield call(queryCancelOrder, { orderId, data });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
+      const response = yield call(queryOrders);      
+      yield put({
+        type: 'save',
+        payload: response.data,
       });
     },
     *fetchSearch({ data, success, error }, { call, put }) {

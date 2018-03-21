@@ -148,6 +148,15 @@ export function handleServerMsg(str) {
   }
 }
 
+// 处理服务器错误信息
+export function handleServerMsgObj(obj) {
+  if (typeof obj === 'object') {
+    const objKeys = Object.keys(obj);
+    return obj[objKeys[0]];
+  } else if (typeof obj === 'string') {
+    return handleServerMsg(obj);
+  }
+}
 
 // 将以秒为单位的时间转换成人性化的字符串
 export function transformSecondsToHuman(seconds) {

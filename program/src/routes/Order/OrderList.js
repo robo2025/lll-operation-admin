@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal } from 'antd';
+import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import OrderTable from '../../components/CustomTable/OrderTable';
 import ReminderContent from '../../components/ModalContent/ReminderContent';
 import CancelOrderContent from '../../components/ModalContent/CancelOrderContent';
 import DelayOrderContent from '../../components/ModalContent/DelayOrderConten';
+import { handleServerMsgObj } from '../../utils/tools';
 import styles from './order-list.less';
 
 const { Option } = Select;
@@ -25,6 +26,10 @@ export default class OrderList extends Component {
       isShowModal1: false, // 催货Modal
       isShowModal2: false, // 订单取消Modal
       isShowModal3: false, // 收货延迟Modal
+      cancelOrderData: {// 取消订单的数据结构
+        responsible_party: '1',
+        cancel_desc: '',
+      },
     };
   }
 
@@ -89,7 +94,7 @@ export default class OrderList extends Component {
   }
 
   /**
-   * 处理Modal的隐藏
+   * 取消：Modal的隐藏
    * @param {string} modalKey Modal的key
    * @param {string} orderId  订单ID
    */
@@ -99,9 +104,40 @@ export default class OrderList extends Component {
     this.setState({ ...modalTempJson });
   }
 
-  // modal内容改变时处理
-  handleModalContentChange = (content) => {
-    console.log('modal conten change:', content);
+  /**
+   * 确定：Modal关闭,提交表单
+   */
+  handleModalConfirm = (modalKey) => {
+    const { orderId, cancelOrderData } = this.state;
+    console.log('确定取消订单', modalKey, orderId, cancelOrderData);
+    const modalTempJson = {};
+    modalTempJson['isShowModal' + modalKey] = false;
+   
+    if (modalKey === 2) { // 取消订单
+      if (cancelOrderData.cancel_desc) {
+        this.setState({ ...modalTempJson });
+        this.dispatchCancelOrder();
+      }
+    }
+  }
+
+  // 取消订单Modal内容改变时处理
+  handleCancelOrderContentChange = (content) => {
+    console.log('取消订单Modal:', content);
+    this.setState({ cancelOrderData: content });
+  }
+
+  // dispatch:取消订单
+  dispatchCancelOrder = () => {
+    const { orderId, cancelOrderData } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'orders/fetchCancel',
+      orderId,
+      data: cancelOrderData,
+      success: () => { message.success('取消订单成功'); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
   }
 
   renderSimpleForm() {
@@ -244,7 +280,7 @@ export default class OrderList extends Component {
   }
 
   render() {
-    const { isShowModal1, isShowModal2, isShowModal3 } = this.state;
+    const { isShowModal1, isShowModal2, isShowModal3, cancelOrderData } = this.state;
     const { orders, loading } = this.props;
     console.log(this.props.orders);
 
@@ -277,10 +313,11 @@ export default class OrderList extends Component {
               visible={isShowModal2}
               title="取消订单"
               onCancel={() => { this.handleModalHidden(2); }}
+              onOk={() => { this.handleModalConfirm(2); }}
             >
               <CancelOrderContent
-                onChange={this.handleModalContentChange}
-
+                data={cancelOrderData}
+                onChange={this.handleCancelOrderContentChange}
               />
             </Modal>
             {/* 收货延迟Modal */}

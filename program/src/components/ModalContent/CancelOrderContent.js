@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-05 14:02:30
+ * @Last Modified time: 2018-03-21 17:59:35
  */
 
 import React, { PureComponent } from 'react';
@@ -15,29 +15,32 @@ const { TextArea } = Input;
 
 // 取消订单弹出层内容 
 export default class ReminderContent extends PureComponent {
-  state = {
-    responsibleParty: 'supplier',
-    desc: '',
-  }
-
    // 处理下拉列表改变
    handleSelectChange = (key, value) => {
+     const { data, onChange } = this.props;
     const tempJson = {};
     tempJson[key] = value;
-    this.setState(tempJson);
-    console.log(key, value);
+    onChange({
+      ...data,
+      ...tempJson,
+    });
   }
 
   // 处理输入框改变
   handleTextChange = (key, text) => {
+    const { data, onChange } = this.props;    
     const tempJson = {};
     tempJson[key] = text;
-    this.setState(tempJson);
-    console.log(text);
+    onChange({
+      ...data,
+      ...tempJson,
+    });
   }
+  
 
   render() {
-    const { responsibleParty, desc } = this.state;
+    const { data } = this.props;
+    
     return (
       <div className={styles['modal-content']}>
         <Row>
@@ -53,22 +56,21 @@ export default class ReminderContent extends PureComponent {
         <Row>
           <Col span={5}>责任方：</Col>
           <Select
-            value={responsibleParty}
+            value={data.responsible_party}
             style={{ width: 120 }}
-            allowClear
-            onChange={(e) => { this.handleSelectChange('responsibleParty', e); }}
+            onChange={(e) => { this.handleSelectChange('responsible_party', e); }}
           >
-            <Option value="supplier">供应商</Option>
-            <Option value="guest">客户</Option>
-            <Option value="platform">平台</Option>
+            <Option value="2">供应商</Option>
+            <Option value="1">客户</Option>
+            <Option value="3">平台</Option>
           </Select>
         </Row>
         <Row>
-          <Col span={5}>取消说明：</Col>
+          <Col span={5}>*取消说明：</Col>
           <Col span={12}>
             <TextArea
-              value={desc}
-              onChange={(e) => { this.handleTextChange('desc', e.target.value); }}
+              value={data.cancel_desc}
+              onChange={(e) => { this.handleTextChange('cancel_desc', e.target.value); }}
             />
           </Col>
         </Row>
