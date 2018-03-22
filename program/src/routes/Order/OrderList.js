@@ -140,6 +140,36 @@ export default class OrderList extends Component {
     });
   }
 
+  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues } = this.state;
+    const params = {
+      currentPage: pagination.current,
+      pageSize: pagination.pageSize,
+      offset: (pagination.current - 1) * (pagination.pageSize),
+    };
+    dispatch({
+      type: 'orders/fetch',      
+      offset: params.offset,
+      limit: params.pageSize,
+    });
+    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
+    //   const newObj = { ...obj };
+    //   newObj[key] = getValue(filtersArg[key]);
+    //   return newObj;
+    // }, {});
+
+    // const params = {
+    //   currentPage: pagination.current,
+    //   pageSize: pagination.pageSize,
+    //   ...formValues,
+    //   ...filters,
+    // };
+    // if (sorter.field) {
+    //   params.sorter = `${sorter.field}_${sorter.order}`;
+    // }
+  }
+
   renderSimpleForm() {
     const { getFieldDecorator } = this.props.form;
     return (
@@ -282,7 +312,8 @@ export default class OrderList extends Component {
   render() {
     const { isShowModal1, isShowModal2, isShowModal3, cancelOrderData } = this.state;
     const { orders, loading } = this.props;
-    console.log(this.props.orders);
+    const { total, list } = orders;
+    console.log('订单列表------', orders);
 
     return (
       <PageHeaderLayout title="订单列表">
@@ -295,8 +326,10 @@ export default class OrderList extends Component {
           <div className={styles.tableList}>
             <OrderTable
               onHandleOrderClick={this.handleModalToggle}
-              data={orders.list}
+              data={list}
               loading={loading}
+              onChange={this.handleStandardTableChange}
+              total={total}
             />
             {/* 催货Modal */}
             <Modal

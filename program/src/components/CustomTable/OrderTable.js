@@ -32,7 +32,7 @@ export default class OrderTable extends React.Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    // this.props.onChange(pagination, filters, sorter);
+    this.props.onChange(pagination, filters, sorter);
   }
 
   cleanSelectedKeys = () => {
@@ -47,7 +47,7 @@ handleOrderClick = (key) => {
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
-    const { data, loading } = this.props;
+    const { data, loading, total } = this.props;
 
     const columns = [
       {
@@ -149,6 +149,7 @@ handleOrderClick = (key) => {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
+      total,
     };
 
     const rowSelection = {

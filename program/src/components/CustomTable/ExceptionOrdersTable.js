@@ -7,7 +7,10 @@ import OrderTableData from './orderTableData'; // 假数据
 const PROGRESS_STATUS = ['error', 'success'];
 const PROGRESS_TEXT = ['未处理', '已处理'];
 // 订单状态
-const mapOrderStatus = ['全部', '待支付', '已取消', '已接单', '待发货', '已发货', '已确认收货', '已完成', '申请延期', '确认延期', '退款', '退货', '作废', '无货'];
+const mapOrderStatus = ['待支付', '已取消', '待接单', '待发货', '已发货,配送中',
+  '已完成', '', '申请延期中', '', '退款中',
+  '退货中', '作废', '无货', '退款完成', '退货完成',
+  '订单流转结束'];
 // 责任方
 const mapOrderResponsible = ['客户', '供应商', '平台'];
 const mapExceptionStatus = ['无货', '延期发货'];// 异常状态标签
@@ -41,14 +44,57 @@ export default class ExceptionOrdersTable extends React.Component {
   }
 
   // 订单处理点击：催货、订单取消、收货延期
-handleOrderClick = ({ key }) => {
-  const [modalKey, orderKey] = key.split('-');
-  this.props.onHandleOrderClick(modalKey, orderKey);
+handleOrderClick = ({ modalKey, orderId, data }) => {
+  this.props.onHandleOrderClick(modalKey, orderId, data);
 }
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
-    const { data, loading } = this.props;
+    const { data, loading, total } = this.props;
+    
+    const Actions = ({ code, text, onClick }) => {
+      if (code === 13) { // 无货
+        return (
+          <Dropdown 
+            disabled={text.is_deal}
+            overlay={(
+              <Menu 
+                onClick={({ key }) => { onClick({ modalKey: key, orderId: text.id, data: text }); }}
+              >
+                {/* <Menu.Item key={`1-${text.id}`}>修改并推送</Menu.Item> */}
+                <Menu.Item key="2">同意并退款</Menu.Item>
+                <Menu.Item key="3">无货驳回</Menu.Item>
+              </Menu>
+            )}
+          >
+              <a className="ant-dropdown-link">
+                处理<Icon type="down" />
+              </a>
+          </Dropdown>
+        );
+      } else if (code === 8) { // 申请延期
+        return (
+          <Dropdown 
+            disabled={text.is_deal}
+            overlay={(
+              <Menu 
+                onClick={({ key }) => { onClick({ modalKey: key, orderId: text.id, data: text }); }}
+              >
+                {/* <Menu.Item key={`1-${text.id}`}>修改并推送</Menu.Item> */}
+                <Menu.Item key="4">同意延期</Menu.Item>
+                <Menu.Item key="5">驳回延期</Menu.Item>
+              </Menu>
+            )}
+          >
+              <a className="ant-dropdown-link">
+                处理<Icon type="down" />
+              </a>
+          </Dropdown>
+        );
+      } else {
+        return (<span style={{ display: 'inline-block', width: 40 }} />);
+      }
+    };
 
     const columns = [
       {
@@ -60,8 +106,8 @@ handleOrderClick = ({ key }) => {
       },
       {
         title: '客户订单编号',
-        dataIndex: 'order_sn',
-        key: 'order_sn',
+        dataIndex: 'son_order_sn',
+        key: 'son_order_sn',
         width: 200,
         fixed: 'left',
       },
@@ -116,17 +162,17 @@ handleOrderClick = ({ key }) => {
         render: text => (<span>{text ? '是' : '否'}</span>),
       },
       {
+        title: '责任方',
+        dataIndex: 'responsible_party',
+        key: 'responsible_party',
+        render: text => (<span>{mapOrderResponsible[text - 1]}</span>),
+      },
+      {
         title: '订单状态',
         dataIndex: 'order_status',
         key: 'order_status',
         width: 150,        
-        render: text => (<span>{mapOrderStatus[text]}</span>),
-      },
-      {
-        title: '责任方',
-        dataIndex: 'responsible_party',
-        key: 'responsible_party',
-        render: text => (<span>{mapOrderResponsible[text + 1]}</span>),
+        render: text => (<span>{mapOrderStatus[text - 1]}</span>),
       },
       {
         title: '异常状态标签',
@@ -157,19 +203,10 @@ handleOrderClick = ({ key }) => {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            <Dropdown 
-            overlay={(
-              <Menu onClick={(key) => { this.handleOrderClick(key); }}>
-                {/* <Menu.Item key={`1-${text.id}`}>修改并推送</Menu.Item> */}
-                <Menu.Item key={`2-${text.id}`}>同意并退款</Menu.Item>
-                <Menu.Item key={`3-${text.id}`}>无货驳回</Menu.Item>
-              </Menu>
-            )}
-            >
-              <a className="ant-dropdown-link">
-                处理<Icon type="down" />
-              </a>
-            </Dropdown>
+            {
+              Actions({ code: text.order_status, text, onClick: this.handleOrderClick })
+            }
+            
             <Divider type="vertical" />
             {record.abnormal_tag === 1
             ?
@@ -187,6 +224,7 @@ handleOrderClick = ({ key }) => {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
+      total,
     };
 
     const rowSelection = {
