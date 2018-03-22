@@ -7,9 +7,9 @@ import { API_URL } from '../constant/config';
  *  获取服务器商品列表
  *
 */
-export async function queryGoods() {
+export async function queryGoods({ offset = 0, limit = 10 }) {
   const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/goods`, {
+  return lyRequest(`${API_URL}/goods?offset=${offset}&limit=${limit}`, {
     headers: {
       Authorization: acess_token,
     },

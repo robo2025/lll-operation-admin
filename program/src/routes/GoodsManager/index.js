@@ -108,22 +108,32 @@ export default class GoodsMananger extends Component {
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
+      offset: (pagination.current - 1) * (pagination.pageSize),
     };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
+    dispatch({
+      type: 'good/fetch',
+      offset: params.offset,
+      limit: params.pageSize,
+    });
+
+    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
+    //   const newObj = { ...obj };
+    //   newObj[key] = getValue(filtersArg[key]);
+    //   return newObj;
+    // }, {});
+
+    // const params = {
+    //   currentPage: pagination.current,
+    //   pageSize: pagination.pageSize,
+    //   ...formValues,
+    //   ...filters,
+    // };
+    // if (sorter.field) {
+    //   params.sorter = `${sorter.field}_${sorter.order}`;
+    // }
   }
 
   handleFormReset = () => {
@@ -402,6 +412,7 @@ export default class GoodsMananger extends Component {
     const { loading, good } = this.props;
     const { selectedRows, modalVisible, isShowExportModal } = this.state;
     const data = good.list;
+    const { total } = good;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
@@ -455,6 +466,7 @@ export default class GoodsMananger extends Component {
               selectedRows={selectedRows}
               loading={loading}
               data={data}
+              total={total}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
               onPublish={this.handlePublishGood}
