@@ -126,27 +126,32 @@ export default class ProductManager extends Component {
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
+    console.log('产品table改变--：', pagination, filtersArg, sorter);
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
+      offset: (pagination.current - 1) * (pagination.pageSize),
     };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
     dispatch({
-      type: 'rule/fetch',
-      payload: params,
+      type: 'product/fetch',
+      offset: params.offset,
+      limit: params.pageSize,
     });
+    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
+    //   const newObj = { ...obj };
+    //   newObj[key] = getValue(filtersArg[key]);
+    //   return newObj;
+    // }, {});
+
+    // const params = {
+    //   currentPage: pagination.current,
+    //   pageSize: pagination.pageSize,
+    //   ...formValues,
+    //   ...filters,
+    // };
+    // if (sorter.field) {
+    //   params.sorter = `${sorter.field}_${sorter.order}`;
+    // }
   }
 
   handleFormReset = () => {
@@ -431,6 +436,7 @@ export default class ProductManager extends Component {
     const { loading, product } = this.props;
     const { selectedRows, modalVisible, isShowExportModal } = this.state;
     const data = product.list;
+    const { total } = product;
 
     // 导出数据modal标题
     const exportCom = (
@@ -489,6 +495,7 @@ export default class ProductManager extends Component {
               selectedRows={selectedRows}
               loading={loading}
               data={data}
+              total={total}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
               editProduct={this.editProduct}

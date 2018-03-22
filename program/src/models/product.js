@@ -9,20 +9,21 @@ export default {
     detail: {},
     logs: [],
     supplierList: [],
+    total: 0,
     export: '',
   },
 
   effects: {
-    *fetch({ success, error }, { call, put }) {
-      const response = yield call(queryProducts);
+    *fetch({ offset, limit, success, error }, { call, put }) {
+      const response = yield call(queryProducts, { offset, limit });
       if (response.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(response.data);
       } else if (typeof error === 'function') { error(response); return; }
-      
-      // console.log('服务器目录列表', response);
+      const { headers } = response;
       yield put({
         type: 'save',
         payload: response.data,
+        headers,
       });
     },
     *fetchDetail({ productId, success, error }, { call, put }) {
@@ -30,7 +31,6 @@ export default {
       if (response.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(response.data);
       } else if (typeof error === 'function') { error(response); return; }
-
       yield put({
         type: 'saveDetail',
         payload: response.data,
@@ -125,6 +125,7 @@ export default {
       return {
         ...state,
         list: action.payload,
+        total: action.headers['x-content-total'] >> 0,
       };
     },
     saveDetail(state, action) {

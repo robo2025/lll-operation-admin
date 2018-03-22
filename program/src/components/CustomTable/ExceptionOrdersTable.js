@@ -160,7 +160,7 @@ handleOrderClick = ({ key }) => {
             <Dropdown 
             overlay={(
               <Menu onClick={(key) => { this.handleOrderClick(key); }}>
-                <Menu.Item key={`1-${text.id}`}>修改并推送</Menu.Item>
+                {/* <Menu.Item key={`1-${text.id}`}>修改并推送</Menu.Item> */}
                 <Menu.Item key={`2-${text.id}`}>同意并退款</Menu.Item>
                 <Menu.Item key={`3-${text.id}`}>无货驳回</Menu.Item>
               </Menu>

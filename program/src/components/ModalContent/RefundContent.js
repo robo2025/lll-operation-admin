@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-09 13:49:27
+ * @Last Modified time: 2018-03-22 09:19:27
  */
 
 import React, { PureComponent } from 'react';
@@ -13,7 +13,7 @@ import styles from './modal-content.less';
 const { Option } = Select;
 const { TextArea } = Input;
 
-// 取消订单弹出层内容 
+// 同意并退款弹出层内容 
 export default class RefundContent extends PureComponent {
   state = {
     responsibleParty: 'supplier',

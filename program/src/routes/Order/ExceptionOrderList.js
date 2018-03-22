@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-12 16:44:19
+ * @Last Modified time: 2018-03-22 09:20:41
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal } from 'antd';
@@ -28,9 +28,9 @@ export default class ExceptionOrderList extends Component {
     super(props);
     this.state = {
       expandForm: false,
-      isShowModal1: false, // 催货Modal
-      isShowModal2: false, // 订单取消Modal
-      isShowModal3: false, // 收货延迟Modal
+      isShowModal1: false, // 推送Modal
+      isShowModal2: false, // 延期并退款Modal
+      isShowModal3: false, // 延期驳回Modal
     };
   }
 
@@ -358,7 +358,7 @@ export default class ExceptionOrderList extends Component {
               data={orders.exceptionList}
               loading={loading}
             />
-            {/* 催货Modal */}
+            {/* 推送Modal */}
             <Modal
               visible={isShowModal1}
               title={<div>推送操作<small className="modal-tips">请确认相关说明内容后在推送至客户</small></div>}
@@ -368,7 +368,7 @@ export default class ExceptionOrderList extends Component {
                 onChange={this.handleModalContentChange}
               />
             </Modal>
-            {/* 订单取消Modal */}
+            {/* 同意延期并退款Modal */}
             <Modal
               visible={isShowModal2}
               title={<div>同意并退款<small className="modal-tips error">该操作确定后无法改回并自动生成退款单，请慎重操作！</small></div>}
@@ -378,7 +378,7 @@ export default class ExceptionOrderList extends Component {
                 onChange={this.handleModalContentChange}
               />
             </Modal>
-            {/* 收货延迟Modal */}
+            {/* 无货驳回Modal */}
             <Modal
               visible={isShowModal3}
               title="无货驳回"

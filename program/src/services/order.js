@@ -10,9 +10,9 @@ const ORDER_URL = 'http://192.168.4.9:8009/v1/order';
 /**
  *  获取服务器客户订单列表
 */
-export async function queryOrders() {
+export async function queryOrders({ offset = 0, limit = 15 }) {
   const accessToken = Cookies.get('access_token');
-  return lyRequest(`${ORDER_SYS_URL}/order`, {
+  return lyRequest(`${ORDER_SYS_URL}/order?offset=${offset}&limit=${limit}`, {
     headers: {
       Authorization: accessToken,
     },

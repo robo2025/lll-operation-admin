@@ -5,6 +5,7 @@ import {
   querySearchResults,
   queryCancelOrder,
   queryNoGoodReject,
+  queryAgree,
 } from '../services/order';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
@@ -15,10 +16,12 @@ export default {
     list: [],
     exceptionList: [],
     detail: {},
+    offset: 0,
+    limit: 15,
   },
 
   effects: {
-    *fetch({ success, error }, { call, put }) {
+    *fetch({ offset, limit, success, error }, { call, put }) {
       const res = yield call(queryOrders);
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
@@ -65,6 +68,18 @@ export default {
     },
     *fetchNoGoodReject({ orderId, data, success, error }, { call, put }) {
       const res = yield call(queryCancelOrder, { orderId, data });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); return; }
+
+      const response = yield call(queryExceptionOrders);      
+      yield put({
+        type: 'saveException',
+        payload: response.data,
+      });
+    },
+    *fetchAgreeReturns({ orderId, data, success, error }, { call, put }) {
+      const res = yield call(queryAgree, { orderId, data });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }

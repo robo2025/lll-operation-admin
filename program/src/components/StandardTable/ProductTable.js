@@ -45,7 +45,7 @@ class ProductTable extends React.Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    // this.props.onChange(pagination, filters, sorter);
+    this.props.onChange(pagination, filters, sorter);
   }
 
   cleanSelectedKeys = () => {
@@ -60,7 +60,7 @@ class ProductTable extends React.Component {
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
-    const { data, loading } = this.props;
+    const { data, loading, total } = this.props;
 
     const audit_status = ['待审核', '审核通过', '审核不通过'];
     const status = ['下架中', '已上架'];
@@ -175,6 +175,8 @@ class ProductTable extends React.Component {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
+      defaultPageSize: 10,
+      total,
     };
 
     const rowSelection = {
