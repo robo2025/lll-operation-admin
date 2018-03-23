@@ -2,10 +2,8 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { Table, Divider, Dropdown, Menu, Icon, Badge } from 'antd';
 import styles from './order-table.less';
-import OrderTableData from './orderTableData'; // 假数据
 
 const PROGRESS_STATUS = ['error', 'success'];
-const PROGRESS_TEXT = ['未处理', '已处理'];
 // 订单状态
 const mapOrderStatus = ['待支付', '已取消', '待接单', '待发货', '已发货,配送中',
   '已完成', '', '申请延期中', '', '退款中',
