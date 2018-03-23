@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-12 11:53:55
+ * @Last Modified time: 2018-03-23 09:44:48
  */
 
 import React, { Component } from 'react';
@@ -290,7 +290,7 @@ export default class SoldOutOrderDetail extends Component {
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>
             <Description term="用户姓名">{guest_info.receiver}</Description>
             <Description term="联系电话">{guest_info.mobile}</Description>
-            <Description term="公司名称">菜鸟仓储</Description>
+            <Description term="公司名称">{guest_info.company_name}</Description>
             <Description term="收货地址">{guest_info.address}</Description>
             <Description term="备注">{guest_info.remarks}</Description>
           </DescriptionList>
@@ -298,7 +298,7 @@ export default class SoldOutOrderDetail extends Component {
           <DescriptionList size="large" title="开票信息" style={{ marginBottom: 32 }}>
             <Description term="公司全称">{receipt_info.title}</Description>
             <Description term="公司账户">{receipt_info.account}</Description>
-            <Description term="税务编号">菜鸟仓储</Description>
+            <Description term="税务编号">{receipt_info.tax_number}</Description>
             <Description term="公司电话">{receipt_info.telephone}</Description>
             <Description term="开户银行">{receipt_info.bank}</Description>
             <Description term="公司地址">{receipt_info.company_address}</Description>
@@ -307,7 +307,7 @@ export default class SoldOutOrderDetail extends Component {
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
             <Description term="联系人">{supplier_info.linkman}</Description>
             <Description term="联系电话">{supplier_info.mobile}</Description>
-            <Description term="公司名称">菜鸟仓储</Description>
+            <Description term="公司名称">{supplier_info.company_name}</Description>
             <Description term="收货地址">{supplier_info.address}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />          

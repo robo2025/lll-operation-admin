@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-12 13:57:38
+ * @Last Modified time: 2018-03-23 09:50:17
  */
 
 import React, { Component } from 'react';
@@ -40,7 +40,7 @@ const goodsColumns = [{
   title: '发货日',
   dataIndex: 'max_delivery_time',
   key: 'max_delivery_time',
-  render: text => (<span>{text}天</span>),  
+  render: text => (<span>{text}天</span>),
 }, {
   title: '单价',
   dataIndex: 'univalent',
@@ -52,7 +52,7 @@ const goodsColumns = [{
 }, {
   title: '商品售出单价',
   key: 'sold_price',
-  render: text => (<span>{text.univalent - text.price_discount}</span>),  
+  render: text => (<span>{text.univalent - text.price_discount}</span>),
 }, {
   title: '数量',
   dataIndex: 'number',
@@ -154,7 +154,7 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),  
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
@@ -173,7 +173,7 @@ export default class DelayOrderDetail extends Component {
     super(props);
     this.state = {
       operationkey: 'tab1',
-      args: queryString.parse(window.location.href),            
+      args: queryString.parse(window.location.href),
     };
   }
 
@@ -248,7 +248,7 @@ export default class DelayOrderDetail extends Component {
         loading={false}
         dataSource={exceptionAction}
         columns={actionColumns}
-        rowKey="id"        
+        rowKey="id"
       />,
     };
     return (
@@ -262,7 +262,7 @@ export default class DelayOrderDetail extends Component {
             <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
-           <div className={styles.title}>延期商品明细</div>
+          <div className={styles.title}>延期商品明细</div>
           <Table
             style={{ marginBottom: 24 }}
             pagination={false}
@@ -275,8 +275,8 @@ export default class DelayOrderDetail extends Component {
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14}>总计</Col>
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
-                  <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
+                <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
+                <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
               </Col>
             </Row>
             <Row>
@@ -290,7 +290,7 @@ export default class DelayOrderDetail extends Component {
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>
             <Description term="用户姓名">{guest_info.receiver}</Description>
             <Description term="联系电话">{guest_info.mobile}</Description>
-            <Description term="公司名称">菜鸟仓储</Description>
+            <Description term="公司名称">{guest_info.company_name}</Description>
             <Description term="收货地址">{guest_info.address}</Description>
             <Description term="备注">{guest_info.remarks}</Description>
           </DescriptionList>
@@ -298,7 +298,7 @@ export default class DelayOrderDetail extends Component {
           <DescriptionList size="large" title="开票信息" style={{ marginBottom: 32 }}>
             <Description term="公司全称">{receipt_info.title}</Description>
             <Description term="公司账户">{receipt_info.account}</Description>
-            <Description term="税务编号">菜鸟仓储</Description>
+            <Description term="税务编号">{receipt_info.tax_number}</Description>
             <Description term="公司电话">{receipt_info.telephone}</Description>
             <Description term="开户银行">{receipt_info.bank}</Description>
             <Description term="公司地址">{receipt_info.company_address}</Description>
@@ -307,10 +307,10 @@ export default class DelayOrderDetail extends Component {
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
             <Description term="联系人">{supplier_info.linkman}</Description>
             <Description term="联系电话">{supplier_info.mobile}</Description>
-            <Description term="公司名称">菜鸟仓储</Description>
+            <Description term="公司名称">{supplier_info.company_name}</Description>
             <Description term="收货地址">{supplier_info.address}</Description>
           </DescriptionList>
-          <Divider style={{ marginBottom: 32 }} />          
+          <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>订单商品明细</div>
           <Table
             style={{ marginBottom: 24 }}
@@ -324,41 +324,45 @@ export default class DelayOrderDetail extends Component {
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14}>总计</Col>
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
-                  <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
+                <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
+                <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>&nbsp;</span>
-                  <span>运费金额：<span className="number">￥0.00</span></span>
+                <span style={{ marginRight: 45 }}>&nbsp;</span>
+                <span>运费金额：<span className="number">￥0.00</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>&nbsp;</span>
-                  <span>佣金：<span className="number">￥{commission}</span></span>
+                <span style={{ marginRight: 45 }}>&nbsp;</span>
+                <span>佣金：<span className="number">￥{commission}</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  {/* <span style={{ marginRight: 45, fontWeight: 'normal' }}>优惠券（YHQ20180103111256）满10元减1元</span> */}
-                  <span>优惠抵扣：<span className="number">￥-0.00</span></span>
+                {/* <span
+                  style={{ marginRight: 45, fontWeight: 'normal' }}
+                >
+                  优惠券（YHQ20180103111256）满10元减1元
+                </span> */}
+                <span>优惠抵扣：<span className="number">￥-0.00</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>&nbsp;</span>
-                  <span>实付总金额：<span style={{ color: '#E6382F' }} className="number">￥{money}</span></span>
+                <span style={{ marginRight: 45 }}>&nbsp;</span>
+                <span>实付总金额：<span style={{ color: '#E6382F' }} className="number">￥{money}</span></span>
               </Col>
             </Row>
           </div>
           {/* <Divider style={{ marginBottom: 32 }} />           */}
-          <div className={styles.title}>操作日志记录</div>    
+          <div className={styles.title}>操作日志记录</div>
           <Card
             className={styles.tabsCard}
             bordered={false}
@@ -366,7 +370,7 @@ export default class DelayOrderDetail extends Component {
             onTabChange={this.onOperationTabChange}
           >
             {contentList[this.state.operationkey]}
-          </Card>      
+          </Card>
         </Card>
       </PageHeaderLayout>
     );
