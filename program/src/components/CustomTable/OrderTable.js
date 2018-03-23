@@ -59,8 +59,8 @@ handleOrderClick = (key) => {
       },
       {
         title: '客户订单编号',
-        dataIndex: 'order_sn',
-        key: 'order_sn',
+        dataIndex: 'son_order_sn',
+        key: 'son_order_sn',
         width: 200,
         fixed: 'left',
       },

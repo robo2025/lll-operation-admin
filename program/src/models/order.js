@@ -66,10 +66,12 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryOrders);
+      const response = yield call(queryOrders, {});
+      const { headers } = response;      
       yield put({
         type: 'save',
         payload: response.data,
+        headers,
       });
     },
     *fetchAgreeNoGood({ orderId, data, success, error }, { call, put }) {
@@ -78,10 +80,12 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders);
+      const response = yield call(queryExceptionOrders, {});
+      const { headers } = response;      
       yield put({
         type: 'saveException',
         payload: response.data,
+        headers,
       });
     },
     *fetchRejectNoGood({ orderId, data, success, error }, { call, put }) {
@@ -90,10 +94,12 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders);
+      const response = yield call(queryExceptionOrders, {});
+      const { headers } = response;            
       yield put({
         type: 'saveException',
         payload: response.data,
+        headers,
       });
     },
     *fetchAgreeDelay({ orderId, data, success, error }, { call, put }) {
@@ -102,10 +108,12 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders);
+      const response = yield call(queryExceptionOrders, {});
+      const { headers } = response;            
       yield put({
         type: 'saveException',
         payload: response.data,
+        headers,
       });
     },
     *fetchRejectDelay({ orderId, data, success, error }, { call, put }) {
@@ -114,10 +122,12 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders);
+      const response = yield call(queryExceptionOrders, {});
+      const { headers } = response;            
       yield put({
         type: 'saveException',
         payload: response.data,
+        headers,
       });
     },
     *fetchSearch({ data, success, error }, { call, put }) {

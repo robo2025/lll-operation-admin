@@ -52,13 +52,13 @@ export default {
       const res = yield call(modifyGoodInfo, { goodId, data });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
-      } else if (typeof error === 'function') { error(res); return; }
-
-      const response = yield call(queryGoods);
-      yield put({
-        type: 'modify',
-        payload: response.data,
-      });
+      } else if (typeof error === 'function') { error(res); }
+      
+      // const response = yield call(queryGoods);
+      // yield put({
+      //   type: 'modify',
+      //   payload: response.data,
+      // });
     },
     *modifyGoodStatus({ goodId, goodStatus, success, error }, { call, put }) {
       const res = yield call(modifyGoodStatus, { goodId, goodStatus });
