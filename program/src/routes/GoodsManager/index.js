@@ -106,7 +106,6 @@ export default class GoodsMananger extends Component {
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    alert('分页改变了');
     const { dispatch } = this.props;
     const { formValues } = this.state;
     const params = {
