@@ -46,7 +46,7 @@ export function login() {
 }
 
 
-// 纯跳转到首页，不带next参数
+// 纯跳转到登录页面
 export function jumpToLogin() {
   // window.location.href = `${LOGIN_URL}?next=${encodeURIComponent(VERIFY_PAGE)}`;  
   // window.location.href = URL;
