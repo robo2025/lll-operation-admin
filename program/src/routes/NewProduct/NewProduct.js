@@ -2,11 +2,11 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-21 16:11:16
+ * @Last Modified time: 2018-03-26 13:41:29
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Form, Input, Modal, Table, message } from 'antd';
+import { Card, Button, Input, Modal, Table, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
@@ -21,7 +21,7 @@ const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
   product,
   catalog,
   upload,
-  loading: loading.models.catalog,
+  loading,
 }))
 export default class NewProduct extends Component {
   constructor(props) {
@@ -57,6 +57,8 @@ export default class NewProduct extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'product/fetch',
+      offset:0,
+      limit:8
     });
     // 请求目录列表
     dispatch({
@@ -82,7 +84,11 @@ export default class NewProduct extends Component {
       this.setState({
         otherAttrsFiled: [
           ...otherAttrsFiled,
-          { id: len - 100, attr_name: newFiled.attr_name.value, attr_value: newFiled.attr_value.value },
+          { id: 
+            len - 100, 
+            attr_name: newFiled.attr_name.value, 
+            attr_value: newFiled.attr_value.value, 
+          },
         ],
         otherAttrs: [
           ...otherAttrs,
@@ -239,6 +245,22 @@ export default class NewProduct extends Component {
     });
   }
 
+  // 当产品列表改变时：分页
+  handleProductTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+    console.log('产品table改变--：', pagination, filtersArg, sorter);
+    const params = {
+      currentPage: pagination.current,
+      pageSize: pagination.pageSize,
+      offset: (pagination.current - 1) * (pagination.pageSize),
+    };
+    dispatch({
+      type: 'product/fetch',
+      offset: params.offset,
+      limit: params.pageSize,
+    });
+  }
+
   /**
    * 提交新产品信息
    * 
@@ -256,6 +278,10 @@ export default class NewProduct extends Component {
   }
 
   render() {
+    const { isShowModal, isShowAttrMOdal, otherAttrsFiled, file } = this.state;
+    const { product, loading, catalog, upload } = this.props;
+    const {total} = product;
+
     // 其他属性列
     const attrClomns = [{
       title: '属性名',
@@ -287,14 +313,11 @@ export default class NewProduct extends Component {
         <Button style={{ marginLeft: 20 }}>一键清除数据</Button>
       </div>);
 
-    const { isShowModal, isShowAttrMOdal, otherAttrsFiled, file } = this.state;
-    const { product, loading, catalog, upload } = this.props;
-
     console.log('新建产品state', this.state);
 
     return (
       <PageHeaderLayout title="新建产品信息">
-        <Card bordered={false} loading={loading} className={styles['new-product-wrap']}>
+        <Card bordered={false} loading={loading.models.catalog} className={styles['new-product-wrap']}>
           {/* 参照数据Modal */}
           <Modal
             width="80%"
@@ -308,6 +331,9 @@ export default class NewProduct extends Component {
             <ProductList
               data={product.list}
               onAssociate={this.handleAssociate}
+              onChange={this.handleProductTableChange}
+              total={total}
+              loading={loading.models.product}
             />
           </Modal>
           {/* 添加其它属性Modal */}

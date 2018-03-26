@@ -19,6 +19,7 @@ export default {
       if (response.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(response.data);
       } else if (typeof error === 'function') { error(response); return; }
+      
       const { headers } = response;
       yield put({
         type: 'save',

@@ -23,8 +23,17 @@ class ProductList extends React.Component {
         dataIndex: 'pics',
         width: 150,
         render: val => val.map((item, idx) => {
-            if(idx<3){
-              return <img alt="缩略图" width={20} height={20} style={{ display: 'inline',marginRight:5 }} key={`key${idx}`} src={item.img_url} />;
+            if (idx < 3) {
+            return (
+              <img 
+                alt="缩略图" 
+                width={20}
+                height={20} 
+                style={{ display: 'inline', marginRight: 5 }} 
+                key={`key${idx}`} 
+                src={item.img_url} 
+               />
+              );
             }
           }
         ),
@@ -77,14 +86,31 @@ class ProductList extends React.Component {
       },
     ];
   }
+
+  handleTableChange = (pagination, filters, sorter) => {
+    this.props.onChange(pagination, filters, sorter);
+  }
+
   render() {
-    const dataSource = this.props.data;
+    const {data,total,loading} = this.props;
+
+    const paginationProps = {
+      showSizeChanger: true,
+      showQuickJumper: true,
+      defaultPageSize: 8,
+      pageSizeOptions:[8,16,24,32,40],
+      total,
+    };
+
     return (
       <div>
         <Table
+          loading={loading}
           columns={this.columns}
-          dataSource={dataSource}
+          dataSource={data}
           rowKey={record => (`${record.pno}-${record.id}`)}
+          pagination={paginationProps}
+          onChange={this.handleTableChange}
         />
       </div>
     );
