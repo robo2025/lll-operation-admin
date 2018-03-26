@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-22 18:26:25
+ * @Last Modified time: 2018-03-26 10:11:03
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
@@ -54,8 +54,8 @@ export default class ExceptionOrderList extends Component {
         is_pass: 1,
         status: 2,
       },
-      rejectDelayOrderData: {
-        responsible_party: 2,
+      rejectDelayOrderData: { // 驳回延期数据
+        responsible_party: '2',
         desc: '',
         is_pass: 0,
         status: 2,
@@ -182,7 +182,10 @@ export default class ExceptionOrderList extends Component {
 
   // 同意并退款Modal改变时处理
   handleRefundModalContenChange = (content) => {
-    this.setState({ refundOrderData: content });
+    const { refundOrderData } = this.state;
+    this.setState({ 
+      refundOrderData: { ...refundOrderData, ...content }, 
+    });
   }
 
   // 同意延期Modal改变时处理
@@ -199,7 +202,10 @@ export default class ExceptionOrderList extends Component {
 
   // 无货驳回Modal改变时处理
   handleRejectModalContentChange = (content) => {
-    this.setState({ rejectOrderData: content });
+    const { rejectOrderData } = this.state;
+    this.setState({
+       rejectOrderData: { ...rejectOrderData, ...content },
+     });
   }
 
   // dispatch:同意并退款
@@ -489,8 +495,6 @@ export default class ExceptionOrderList extends Component {
       isShowModal2,
       isShowModal3,
       isShowModal4,
-      refundOrderData,
-      rejectOrderData,
       isShowModal5,
       data,
     } = this.state;
@@ -525,7 +529,7 @@ export default class ExceptionOrderList extends Component {
                 onChange={this.handleModalContentChange}
               />
             </Modal>
-            {/* 同意延期并退款Modal */}
+            {/* 无货同意并退款Modal */}
             <Modal
               visible={isShowModal2}
               title={<div>同意并退款<small className="modal-tips error">该操作确定后无法改回并自动生成退款单，请慎重操作！</small></div>}
@@ -534,7 +538,7 @@ export default class ExceptionOrderList extends Component {
 
             >
               <RefundContent
-                data={refundOrderData}
+                data={data}
                 onChange={this.handleRefundModalContenChange}
               />
             </Modal>
@@ -546,7 +550,7 @@ export default class ExceptionOrderList extends Component {
               onOk={() => { this.handleModalConfirm(3); }}
             >
               <RejectContent
-                data={rejectOrderData}
+                data={data}
                 onChange={this.handleRejectModalContentChange}
               />
             </Modal>

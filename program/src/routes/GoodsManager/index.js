@@ -85,10 +85,9 @@ export default class GoodsMananger extends Component {
       type: 'good/queryExport',
       fields: this.state.exportFields,
       success: (res) => {
-        console.log('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
         window.open('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
       },
-      error: (res) => { message.error(handleServerMsg(res.msg)); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
   }
 
@@ -424,12 +423,12 @@ export default class GoodsMananger extends Component {
     const exportCom = (
       <h4>
         导出数据
-        <Checkbox 
-        style={{ marginLeft: 20 }} 
-        onChange={this.onCheckAllChange} 
-        checked={this.state.isCheckAll}
+        <Checkbox
+          style={{ marginLeft: 20 }}
+          onChange={this.onCheckAllChange}
+          checked={this.state.isCheckAll}
         >
-        全选
+          全选
         </Checkbox>
       </h4>
     );

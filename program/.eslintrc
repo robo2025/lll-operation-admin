@@ -44,6 +44,9 @@
     "no-bitwise": [0],
     "no-cond-assign": [0],
     "import/no-unresolved": [0],
+    "no-unused-vars": "warn",
+    "no-trailing-spaces":"off",
+    "prefer-template":"off",
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
       "objects": "always-multiline",
