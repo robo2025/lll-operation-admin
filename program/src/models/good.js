@@ -42,7 +42,7 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryGoods);
+      const response = yield call(queryGoods, {});
       yield put({
         type: 'saveOne',
         payload: response.data,
@@ -54,11 +54,11 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); }
       
-      // const response = yield call(queryGoods);
-      // yield put({
-      //   type: 'modify',
-      //   payload: response.data,
-      // });
+      const response = yield call(queryGoods, {});
+      yield put({
+        type: 'modify',
+        payload: response.data,
+      });
     },
     *modifyGoodStatus({ goodId, goodStatus, success, error }, { call, put }) {
       const res = yield call(modifyGoodStatus, { goodId, goodStatus });
@@ -66,7 +66,7 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryGoods);
+      const response = yield call(queryGoods, {});
       yield put({
         type: 'modify',
         payload: response.data,

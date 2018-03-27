@@ -43,9 +43,9 @@ export default {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryProducts);
+      const response = yield call(queryProducts, {});
       yield put({
-        type: 'saveOne',
+        type: 'save',
         payload: response.data,
       });
     },
@@ -55,10 +55,12 @@ export default {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryProducts);
+      const response = yield call(queryProducts, {});
+      const { headers } = response;      
       yield put({
-        type: 'modify',
+        type: 'save',
         payload: response.data,
+        headers,
       });
     },
     *modifyStatus({ categoryId, isActive, success, error }, { call, put }) {
@@ -67,10 +69,12 @@ export default {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryProducts);
+      const response = yield call(queryProducts, {});
+      const { headers } = response;      
       yield put({
-        type: 'modify',
+        type: 'save',
         payload: response.data,
+        headers,
       });
     },
     *remove({ ids, success, error }, { call, put }) {
@@ -79,11 +83,13 @@ export default {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryProducts);
+      const response = yield call(queryProducts, {});
+      const { headers } = response;      
       // console.log('服务器目录列表', response);
       yield put({
         type: 'save',
         payload: response.data,
+        headers,
       });
     },
     *querySupplyInfo({ productId, success, error }, { call, put }) {

@@ -137,6 +137,13 @@ class ProductForm extends Component {
     this.props.onAttrChange(tempJson);
   }
 
+
+  // 处理目录改变
+  handleMenuChange = (values) => {
+    console.log('目录改变了:', values);
+    this.props.onAttrChange({ selectedCatalog: values });
+  }
+
   // 图片上传前处理：验证文件类型
   beforeUpload(key, file) {
     this.setState({ file });
@@ -267,7 +274,7 @@ class ProductForm extends Component {
                 defaultValue={slectedCatagory}
                 options={catalog}
                 placeholder="请您选择类目"
-                onChange={(values) => { console.log('您选择的是', values); }}
+                onChange={(values) => { this.handleMenuChange(values); }}
               />
             </FormItem>
             <FormItem

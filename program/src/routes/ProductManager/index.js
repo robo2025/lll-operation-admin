@@ -137,21 +137,6 @@ export default class ProductManager extends Component {
       offset: params.offset,
       limit: params.pageSize,
     });
-    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
-    //   const newObj = { ...obj };
-    //   newObj[key] = getValue(filtersArg[key]);
-    //   return newObj;
-    // }, {});
-
-    // const params = {
-    //   currentPage: pagination.current,
-    //   pageSize: pagination.pageSize,
-    //   ...formValues,
-    //   ...filters,
-    // };
-    // if (sorter.field) {
-    //   params.sorter = `${sorter.field}_${sorter.order}`;
-    // }
   }
 
   handleFormReset = () => {

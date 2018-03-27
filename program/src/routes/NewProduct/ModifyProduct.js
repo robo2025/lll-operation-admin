@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-20 10:33:04
+ * @Last Modified time: 2018-03-27 21:01:46
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -186,6 +186,19 @@ export default class ModifyProduct extends Component {
  * 
  */
   handleProductAttr(obj) {
+    const { fields } = this.state;
+    if (obj.selectedCatalog) {
+      this.setState({
+        fields: {
+          ...fields,
+          category_id_1: obj.selectedCatalog[0], // 一级目录
+          category_id_2: obj.selectedCatalog[1], // 二级目录
+          category_id_3: obj.selectedCatalog[2], // 三级目录
+          category_id_4: obj.selectedCatalog[3], // 四级目录
+        },
+      });
+      return;
+    }
     this.setState({
       fields: { ...this.state.fields, ...obj },
     });
@@ -194,8 +207,21 @@ export default class ModifyProduct extends Component {
 
   // 当表单输入框被修改事件
   handleFormChange = (changedFields) => {
+    const { fields } = this.state;    
+    if (changedFields.selectedCatalog) {
+      this.setState({
+        fields: {
+          ...fields,
+          category_id_1: changedFields.selectedCatalog[0], // 一级目录
+          category_id_2: changedFields.selectedCatalog[1], // 二级目录
+          category_id_3: changedFields.selectedCatalog[2], // 三级目录
+          category_id_4: changedFields.selectedCatalog[3], // 四级目录
+        },
+      });
+      return;
+    }
     this.setState({
-      fields: { ...this.state.fields, ...changedFields },
+      fields: { ...fields, ...changedFields },
     });
   }
 
@@ -313,7 +339,10 @@ export default class ModifyProduct extends Component {
    */
   handleSubmitProduct() {
     const argsKey = Object.keys(this.state.args);
-    const { fields, otherAttrsFiled } = this.state;
+    const { 
+      fields,
+      otherAttrsFiled,
+     } = this.state;
     console.log('产品信息', { ...fields, other_attrs: otherAttrsFiled }, Object.keys(this.state.args));
     const { dispatch } = this.props;
 
@@ -321,7 +350,11 @@ export default class ModifyProduct extends Component {
       dispatch({
         type: 'product/modifyInfo',
         prdId: this.state.args.prdId,
-        data: { ...fields, other_attrs: otherAttrsFiled, pdf_url: ['没有'] },
+        data: { 
+          ...fields, 
+          other_attrs: otherAttrsFiled,
+          pdf_url: ['没有'], 
+        },
         success: () => { this.props.history.push('/product/list'); },
         error: (res) => { message.error(handleServerMsg(res.msg)); },
       });

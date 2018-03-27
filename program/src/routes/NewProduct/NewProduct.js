@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-26 13:41:29
+ * @Last Modified time: 2018-03-27 21:10:46
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -57,8 +57,8 @@ export default class NewProduct extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'product/fetch',
-      offset:0,
-      limit:8
+      offset: 0,
+      limit: 8,
     });
     // 请求目录列表
     dispatch({
@@ -84,10 +84,11 @@ export default class NewProduct extends Component {
       this.setState({
         otherAttrsFiled: [
           ...otherAttrsFiled,
-          { id: 
-            len - 100, 
-            attr_name: newFiled.attr_name.value, 
-            attr_value: newFiled.attr_value.value, 
+          {
+            id:
+              len - 100,
+            attr_name: newFiled.attr_name.value,
+            attr_value: newFiled.attr_value.value,
           },
         ],
         otherAttrs: [
@@ -183,7 +184,7 @@ export default class NewProduct extends Component {
     this.setState({
       otherAttrsFiled: newOtherAttrsFiled,
     });
-    console.log('删除属性ID', id, newOtherAttrsFiled);    
+    console.log('删除属性ID', id, newOtherAttrsFiled);
   }
 
   /**
@@ -280,7 +281,7 @@ export default class NewProduct extends Component {
   render() {
     const { isShowModal, isShowAttrMOdal, otherAttrsFiled, file } = this.state;
     const { product, loading, catalog, upload } = this.props;
-    const {total} = product;
+    const { total } = product;
 
     // 其他属性列
     const attrClomns = [{
@@ -292,19 +293,19 @@ export default class NewProduct extends Component {
       dataIndex: 'attr_value',
       key: 'attr_value',
       render: (text, record) => (
-      <Input 
-        defaultValue={text}      
-        onChange={(e) => { 
-          this.handleAddProductOtherAttr(record.id, 
-            { attr_name: record.attr_name, attr_value: e.target.value }
-          ); 
-        }}
-      />
+        <Input
+          defaultValue={text}
+          onChange={(e) => {
+            this.handleAddProductOtherAttr(record.id,
+              { attr_name: record.attr_name, attr_value: e.target.value }
+            );
+          }}
+        />
       ),
     }, {
       title: '操作',
-      render: (text, record) => 
-      (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
+      render: (text, record) =>
+        (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
     }];
 
     const buttonGrop = (
@@ -353,7 +354,7 @@ export default class NewProduct extends Component {
             extra={buttonGrop}
           />
           <NewProductForm
-            data={this.state.fields}          
+            data={this.state.fields}
             onChange={this.handleFormChange}
             catalog={catalog.level}
             loading={loading}
@@ -373,7 +374,7 @@ export default class NewProduct extends Component {
               columns={attrClomns}
               dataSource={otherAttrsFiled}
               locale={{
-                emptyText: '请点击上面按钮添加新属性',                
+                emptyText: '请点击上面按钮添加新属性',
               }}
             />
           </div>
