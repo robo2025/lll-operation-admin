@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
-import { Form, Row, Col, Input, Icon } from 'antd';
-import styles from './add-attr-form.less';
+import { Form, Row, Col, Input } from 'antd';
 
 const FormItem = Form.Item;
 
-const formItemLayout = {
-  labelCol: { span: 3 },
-  wrapperCol: { span: 12 },
-};
 
 // 添加商品属性表单
 @Form.create({
@@ -55,17 +50,6 @@ class AddAttrForm extends Component {
               }
             </FormItem>
           </Col>
-         {/*  <Col span={6}>
-            <FormItem
-              wrapperCol={{ span: 24 }}
-            >
-              <span className={styles['attr-btns']}>
-                <Icon type="delete" style={{ fontSize: 26, color: '#08c' }} />
-                <Icon type="plus-circle-o" style={{ fontSize: 26, color: '#08c' }} />
-                <Icon type="camera" style={{ fontSize: 26, color: '#08c' }} />
-              </span>
-            </FormItem>
-          </Col> */}
         </Row>
       </Form>
     );

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-27 21:01:46
+ * @Last Modified time: 2018-03-28 11:35:16
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -17,7 +17,6 @@ import { queryString, checkFile, handleServerMsg } from '../../utils/tools';
 
 import styles from './modify-product.less';
 
-const FormItem = Form.Item;
 const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 const actionFlag = ['新增', '修改', '删除']; // 操作类型 (1:新增 2:修改 3:删除)
@@ -76,7 +75,6 @@ export default class ModifyProduct extends Component {
       isShowAttrMOdal: false,
       args: queryString.parse(this.props.location.search),
       fields: { ...this.props.product.detail, pdf_url: [] },
-      otherAttrsFiled: [],
       otherAttrs: [],
       operationkey: 'tab1',
       newFiled: {}, // 用户自定义的其他属性   
@@ -104,7 +102,6 @@ export default class ModifyProduct extends Component {
             category_id_3: detail.category.children.children.id, // 三级目录
             category_id_4: detail.category.children.children.children.id, // 四级目录
           },
-          otherAttrsFiled: [...detail.other_attrs, ...this.state.otherAttrsFiled],
           otherAttrs: detail.other_attrs,
         });
       },
@@ -139,15 +136,11 @@ export default class ModifyProduct extends Component {
   onOk() {
     this.setState({ isShowModal: false });
     this.setState({ isShowModal: false });
-    const { newFiled, otherAttrsFiled, otherAttrs } = this.state;
-    const len = otherAttrsFiled.length;    
+    const { newFiled, otherAttrs } = this.state;
+    const len = otherAttrs.length;
     if (newFiled.attr_name && newFiled.attr_value) {
       this.setState({ isShowAttrMOdal: false }); // 隐藏添加属性弹窗
       this.setState({
-        otherAttrsFiled: [
-          ...otherAttrsFiled,
-          { id: len - 100, attr_name: newFiled.attr_name.value, attr_value: newFiled.attr_value.value },
-        ],
         otherAttrs: [
           ...otherAttrs,
           {
@@ -207,7 +200,7 @@ export default class ModifyProduct extends Component {
 
   // 当表单输入框被修改事件
   handleFormChange = (changedFields) => {
-    const { fields } = this.state;    
+    const { fields } = this.state;
     if (changedFields.selectedCatalog) {
       this.setState({
         fields: {
@@ -315,21 +308,21 @@ export default class ModifyProduct extends Component {
     });
   }
 
-    /**
-   * 删除产品其他属性项目
-   * 
-   * @param {string} id 属性id
-   * 
-   */
+  /**
+ * 删除产品其他属性项目
+ * 
+ * @param {string} id 属性id
+ * 
+ */
   handleDeleteOtherAttrFiled(id) {
-    const { otherAttrsFiled } = this.state;
-    const newOtherAttrsFiled = otherAttrsFiled.filter((val, idx) => {
+    const { otherAttrs } = this.state;
+    const newOtherAttrsFiled = otherAttrs.filter((val, idx) => {
       return val.id !== id;
     });
     this.setState({
-      otherAttrsFiled: newOtherAttrsFiled,
+      otherAttrs: newOtherAttrsFiled,
     });
-    console.log('删除属性ID', id, newOtherAttrsFiled);    
+    console.log('删除属性ID', id, newOtherAttrsFiled);
   }
 
 
@@ -339,21 +332,22 @@ export default class ModifyProduct extends Component {
    */
   handleSubmitProduct() {
     const argsKey = Object.keys(this.state.args);
-    const { 
+    const {
+      args,
       fields,
-      otherAttrsFiled,
-     } = this.state;
-    console.log('产品信息', { ...fields, other_attrs: otherAttrsFiled }, Object.keys(this.state.args));
+      otherAttrs,
+    } = this.state;
+    console.log('产品信息', { ...fields, other_attrs: otherAttrs }, Object.keys(args));
     const { dispatch } = this.props;
 
     if (argsKey.includes('prdId')) { // 如果是修改产品
       dispatch({
         type: 'product/modifyInfo',
         prdId: this.state.args.prdId,
-        data: { 
-          ...fields, 
-          other_attrs: otherAttrsFiled,
-          pdf_url: ['没有'], 
+        data: {
+          ...fields,
+          other_attrs: otherAttrs,
+          pdf_url: ['没有'],
         },
         success: () => { this.props.history.push('/product/list'); },
         error: (res) => { message.error(handleServerMsg(res.msg)); },
@@ -361,7 +355,7 @@ export default class ModifyProduct extends Component {
     } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
       dispatch({
         type: 'product/add',
-        data: { ...fields, other_attrs: otherAttrsFiled, pdf_url: ['没有'] },
+        data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
         success: () => { this.props.history.push('/product/list'); },
         error: (res) => { message.error(handleServerMsg(res.msg)); },
       });
@@ -369,7 +363,7 @@ export default class ModifyProduct extends Component {
   }
 
   render() {
-    const { isShowModal, isShowAttrMOdal, otherAttrsFiled, file } = this.state;
+    const { isShowModal, isShowAttrMOdal, otherAttrs, file } = this.state;
     const { product, loading, catalog, upload } = this.props;
     const buttonGrop = (
       <div style={{ display: 'inline-block', marginLeft: 20 }}>
@@ -410,22 +404,22 @@ export default class ModifyProduct extends Component {
       key: 'attr_value',
       render: (text, record) => (
         <Input
-          defaultValue={text}
-          onChange={(e) => { 
-            this.handleAddProductOtherAttr(record.id, 
+          value={text}
+          onChange={(e) => {
+            this.handleAddProductOtherAttr(record.id,
               { attr_name: record.attr_name, attr_value: e.target.value }
-            ); 
+            );
           }}
         />
       ),
     }, {
       title: '操作',
-      render: (text, record) => 
-      (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
+      render: (text, record) =>
+        (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
     }];
 
 
-    console.log('产品修改页面state', this.state);
+    console.log('产品修改页面state：', otherAttrs);
     return (
       <PageHeaderLayout title="修改产品信息">
         <Card bordered={false} loading={loading} className={styles['modify-product']}>
@@ -452,7 +446,9 @@ export default class ModifyProduct extends Component {
             onCancel={this.onCancel}
             onOk={this.onOk}
           >
-            <AddAttrForm onFieldsChange={this.handleAddOtherAttrFiled} />
+            <AddAttrForm
+              onFieldsChange={this.handleAddOtherAttrFiled}
+            />
           </Modal>
           <SectionHeader
             title="产品基础信息"
@@ -472,68 +468,14 @@ export default class ModifyProduct extends Component {
           />
           <div style={{ width: 700, maxWidth: '70%' }}>
             <Table
-              className="attr-table"
               bordered
+              className="attr-table"
               pagination={false}
               columns={attrClomns}
-              dataSource={otherAttrsFiled}
+              dataSource={otherAttrs}
+
             />
           </div>
-          {/*  <Form style={{ width: 700, maxWidth: '70%' }} >
-            { otherAttrsFiled.length <= 0 ? <p style={{ textIndent: 16 }}>无</p> : null}
-            {
-              otherAttrsFiled.map((val, idx) => (
-                <FormItem
-                  label={val.attr_name}
-                  key={'otherAttr' + idx}
-                  {...formItemLayout}
-                >
-                  <Row gutter={12}>
-                    <Col span={6}>
-                      <Input
-                        defaultValue={val.attr_value}
-                        onChange={(e) => {
-                          this.handleAddProductOtherAttr(idx - 100, {
-                            attr_name: val.attr_name,
-                            attr_value: e.target.value,
-                          });
-                        }
-                        }
-                      />
-                    </Col>
-                    <Col span={4}>
-                      <Upload
-                        name="file"
-                        action={UPLOAD_URL}
-                        listType="picture"
-                        beforeUpload={(currFile) => { this.beforeUpload('cad_url', currFile); }}
-                        onChange={({ fileList }) => 
-                          { this.handleUploaderChange(idx + 1, fileList); }
-                        }
-                        data={
-                          {
-                            token: upload.upload_token,
-                            key: `product/images/attribute/${file.uid}.${getFileSuffix(file.name)}`,
-                          }
-                        }
-                      >
-                        <Button icon="upload">上传图片</Button>
-                      </Upload>
-                    </Col>
-                    <Col span={4}>
-                      <span>{val.img_url}</span>
-                    </Col>
-                    <Col span={5}>
-                      <span>
-                        <a>删除</a>|
-                        <a>查看</a>
-                      </span>
-                    </Col>
-                  </Row>
-                </FormItem>
-              ))
-            }
-          </Form> */}
           <div className={styles['section-header']}>
             <h2>操作日志</h2>
           </div>

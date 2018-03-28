@@ -87,7 +87,6 @@ class ProductForm extends Component {
     super(props);
     this.beforeUpload = this.beforeUpload.bind(this);
     this.pics = props.data.pics ? props.data.pics : [];
-    console.log('构造函数', this.pics);
     this.state = {
       previewVisible: false,
       previewImage: '',
@@ -175,9 +174,9 @@ class ProductForm extends Component {
           this.setState({
             cadUrl: [
               ...cadUrl,
-              { 
-                uid: cadUrl.length - 100, 
-                name: file.response.key, 
+              {
+                uid: cadUrl.length - 100,
+                name: file.response.key,
                 status: 'done',
                 reponse: '200', // custom error message to show
                 url: FILE_CDN + file.response.key,
@@ -221,7 +220,9 @@ class ProductForm extends Component {
           } else if (key.substr(0, 1) === 'd') {
             const idx = key.substr(1, 1);
             this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: idx, img_url: file.response.key }, pics, 'img_type') });
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: idx, img_url: file.response.key }] });
+            onAttrChange({
+              pics: [...pics, { id: pics.length - 100, img_type: idx, img_url: file.response.key }],
+            });
           }
         } else if (file.status === 'error') {
           message.error(`${file.name} 文件上传失败`);
@@ -492,34 +493,6 @@ class ProductForm extends Component {
               <p className="upload-pic-desc">包装图3</p>
             </Col>
           </Row>
-          {/* <Row gutter={24}>
-            
-            {
-              (data.pics && data.pics.length < 6) ?
-                (
-                  <Col span={8} >
-                    <Upload
-                       name="file"
-                       action={UPLOAD_URL}
-                       listType="picture-card"
-                       onPreview={this.handlePreview}
-                       beforeUpload={(currFile) => { this.beforeUpload('a', currFile); }}
-                       onChange={({ fileList }) => { this.handleUploaderChange('a', fileList); }}
-                       data={
-                         {
-                           token: uploadToken,
-                           key: `/product/${file.uid}.${getFileSuffix(file.name)}`,
-                         }
-                       }
-                    >
-                      {uploadButton}
-                    </Upload>
-                    <p className="upload-pic-desc">图片</p>
-                  </Col>
-                )
-                : null
-            }
-          </Row> */}
         </div>
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
