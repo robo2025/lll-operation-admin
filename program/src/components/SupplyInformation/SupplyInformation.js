@@ -63,7 +63,7 @@ export default class SupplyInformation extends Component {
             <Col span={7} offset={1}>产品名称：{currProduct[0].product_name}</Col>
             <Col span={8}>型号：{currProduct[0].partnumber}</Col>
             <Col span={8}>品牌：{currProduct[0].brand_name}</Col>
-            <Col span={7} offset={1}>产品ID：{currProduct[0].id}</Col>
+            <Col span={7} offset={1}>产品ID：{currProduct[0].pno}</Col>
             <Col span={8}>所属分类：
               {`
               ${currProduct[0].category.category_name}-${currProduct[0].category.children.category_name}

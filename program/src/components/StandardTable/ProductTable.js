@@ -74,7 +74,7 @@ class ProductTable extends React.Component {
         fixed: 'left',
       },
       {
-        title: 'ID编号',
+        title: '产品ID',
         dataIndex: 'pno',
         key: 'pno',
         width: 110,
