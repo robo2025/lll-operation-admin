@@ -59,11 +59,8 @@ class ProductTable extends React.Component {
   }
 
   render() {
-    const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
+    const { selectedRowKeys, isShowModal } = this.state;
     const { data, loading, total } = this.props;
-
-    const audit_status = ['待审核', '审核通过', '审核不通过'];
-    const status = ['下架中', '已上架'];
 
     const columns = [
       {
@@ -162,12 +159,14 @@ class ProductTable extends React.Component {
         title: '操作',
         render: (text, record) => (
           <Fragment>
+            <a href={'#/product/list/detail?prdId=' + record.id}>查看</a>
+            <Divider type="vertical" />            
             <a onClick={() => { this.props.editProduct(record.id); }}>修改</a>
             <Divider type="vertical" />
             <a onClick={() => { this.handleSupplyInfoBtnClick(record.id); }}>供货信息</a>
           </Fragment>
         ),
-        width: 135,
+        width: 180,
         fixed: 'right',
       },
     ];
@@ -208,7 +207,7 @@ class ProductTable extends React.Component {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 2000 }}
+          scroll={{ x: 2300 }}
         />
         {/* 供货信息 */}
         <Modal

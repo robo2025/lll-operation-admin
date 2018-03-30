@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-30 11:52:07
+ * @Last Modified time: 2018-03-30 13:38:13
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -474,7 +474,6 @@ export default class ModifyProduct extends Component {
               pagination={false}
               columns={attrClomns}
               dataSource={otherAttrs}
-
             />
           </div>
           <div className={styles['section-header']}>
