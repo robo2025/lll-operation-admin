@@ -56,13 +56,9 @@ export const queryString = {
 
 
 // 验证文件类型
-export function checkFile(filename, filelist) {
-  const postfix = filename.split('.')[1];
-  for (let i = 0, fileLen = filelist.length; i < fileLen; i++) {
-    if (postfix === filelist[i]) {
-      return true;
-    }
-  }
+export function checkFile(filename) {
+  console.log('验证文件名：：：', filename, /(\.jpg|\.png|\.gif|\.bmp\.webp)$/.test(filename));
+  return /(\.jpg|\.png|\.gif|\.bmp|\.webp)$/.test(filename);
 }
 
 

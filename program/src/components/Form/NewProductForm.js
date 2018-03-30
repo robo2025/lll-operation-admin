@@ -332,7 +332,7 @@ class ProductForm extends Component {
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal >
         <div style={{ float: 'left', maxWidth: 360 }}>
-          <h3>商品图片</h3>
+          <h3>产品图片</h3>
           <Row gutter={24}>
             <Col span={8}>
               <Upload
