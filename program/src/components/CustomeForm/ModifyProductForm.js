@@ -223,58 +223,37 @@ export default class NewGoodForm extends Component {
               label="产品ID"
               {...formItemLayout}
             >
-              {getFieldDecorator('pno', {
-                initialValue: data ? data.pno : '',
-              })(
-                <Input disabled />
-              )}
+              <span>{data.pno}</span>
             </FormItem>
             <FormItem
               label="所属分类"
               {...formItemLayout}
             >
-              <Input value={slectedCatagory.join('-')} disabled />
+              <span>{slectedCatagory.join('-')}</span>
             </FormItem>
             <FormItem
               label="型号"
               {...formItemLayout}
             >
-              {getFieldDecorator('partnumber', {
-                initialValue: data.partnumber ? data.partnumber : '',
-              })(
-                <Input disabled />
-              )}
+              <span>{data.partnumber}</span>
             </FormItem>
             <FormItem
               label="品牌"
               {...formItemLayout}
             >
-              {getFieldDecorator('brand_name', {
-                initialValue: data.brand_name ? data.brand_name : '',
-              })(
-                <Input disabled />
-              )}
+              <span>{data.brand_name}</span>
             </FormItem>
             <FormItem
               label="品牌英文名"
               {...formItemLayout}
             >
-              {getFieldDecorator('english_name', {
-                initialValue: data.english_name ? data.english_name : '',
-
-              })(
-                <Input disabled />
-              )}
+              <span>{data.english_name}</span>
             </FormItem>
             <FormItem
               label="产地"
               {...formItemLayout}
             >
-              {getFieldDecorator('prodution_place', {
-                initialValue: data.prodution_place ? data.prodution_place : '',
-              })(
-                <Input />
-              )}
+                <span>{data.prodution_place}</span>
             </FormItem>
           </Form>
         </div >
