@@ -6,7 +6,7 @@ import { getFileSuffix } from '../../utils/tools';
 import styles from './rich-editor.less';
 
 const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
-const IMG_SERVER = 'http://imgcdn.robo2025.com/'; ;
+const IMG_SERVER = '//imgcdn.robo2025.com/'; ;
 export default class RichEditor extends React.Component {
   state = {
     htmlContent: '',
