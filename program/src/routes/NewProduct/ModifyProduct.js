@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-28 11:35:16
+ * @Last Modified time: 2018-03-30 11:52:07
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -364,6 +364,7 @@ export default class ModifyProduct extends Component {
 
   render() {
     const { isShowModal, isShowAttrMOdal, otherAttrs, file } = this.state;
+    const argsKey = Object.keys(this.state.args);    
     const { product, loading, catalog, upload } = this.props;
     const buttonGrop = (
       <div style={{ display: 'inline-block', marginLeft: 20 }}>
@@ -421,7 +422,7 @@ export default class ModifyProduct extends Component {
 
     console.log('产品修改页面state：', otherAttrs);
     return (
-      <PageHeaderLayout title="修改产品信息">
+      <PageHeaderLayout title={argsKey.includes('prdId') ? '修改产品信息' : '新建产品信息'}>
         <Card bordered={false} loading={loading} className={styles['modify-product']}>
           {/* 参照数据Modal */}
           <Modal
