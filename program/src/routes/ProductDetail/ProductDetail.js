@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import { Card, Table, Button } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
@@ -8,6 +9,7 @@ import { queryString } from '../../utils/tools';
 
 import styles from './ProductDetail.less';
 
+const actionFlag = ['新增', '修改', '删除']; // 操作类型 (1:新增 2:修改 3:删除)
 // 其他属性列
 const attrClomns = [{
   title: '属性名',
@@ -17,6 +19,35 @@ const attrClomns = [{
   title: '属性值',
   dataIndex: 'attr_value',
   key: 'attr_value',
+}];
+const operationTabList = [{
+  key: 'tab1',
+  tab: '',
+}];
+// 操作记录列
+const columns = [{
+  title: '操作类型',
+  dataIndex: 'action_flag',
+  key: 'action_flag',
+  render: val => <span>{actionFlag[val - 1]}</span>,
+}, {
+  title: '操作员',
+  dataIndex: 'username',
+  key: 'username',
+}, {
+  title: '执行结果',
+  dataIndex: 'status',
+  key: 'status',
+  render: () => (<span>成功</span>),
+}, {
+  title: '操作时间',
+  dataIndex: 'action_time',
+  key: 'action_time',
+  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+}, {
+  title: '说明',
+  dataIndex: 'change_message',
+  key: 'change_message',
 }];
 
 
@@ -30,6 +61,7 @@ export default class GoodDetail extends Component {
     this.state = {
       isShowModal: false,
       isShowAttrMOdal: false,
+      operationkey: 'tab1',
       args: queryString.parse(window.location.href),
       fields: {
         pics: [],
@@ -46,6 +78,12 @@ export default class GoodDetail extends Component {
     // 获取商品详情
     dispatch({
       type: 'product/fetchDetail',
+      productId: args.prdId,
+    });
+    // 获取产品日志
+    dispatch({
+      type: 'product/queryLogs',
+      module: 'product',
       productId: args.prdId,
     });
   }
@@ -110,8 +148,7 @@ export default class GoodDetail extends Component {
     const { isShowModal, isShowAttrMOdal, otherAttrsFiled } = this.state;
     const { product, loading } = this.props;
 
-
-    console.log('产品详情页state:', this.state);
+    console.log('产品详情页:', product);
 
     return (
       <PageHeaderLayout title="产品详情" >
@@ -120,7 +157,7 @@ export default class GoodDetail extends Component {
             title="产品基础信息"
           />
           <ModifyProductForm
-            loading={loading.models.good}
+            loading={loading.models.product}
             data={product.detail}
             onChange={this.handleFormChange}
           />
@@ -139,6 +176,23 @@ export default class GoodDetail extends Component {
               }}
             />
           </div>
+          <div className={styles['section-header']}>
+            <h2>操作日志</h2>
+          </div>
+          <Card
+            className={styles.tabsCard}
+            bordered={false}
+          >
+            <Table
+              pagination={{
+                defaultPageSize: 6,
+                pageSize: 6,
+              }}
+              loading={loading.models.product}
+              dataSource={product.logs}
+              columns={columns}
+            />
+          </Card>
           <div className={styles['submit-btn-wrap']}>
             <Button type="primary" onClick={() => { this.props.history.push('/product/list'); }}>返回列表</Button>
           </div>

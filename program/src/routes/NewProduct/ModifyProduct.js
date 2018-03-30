@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-30 13:38:13
+ * @Last Modified time: 2018-03-30 16:12:01
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -120,7 +120,6 @@ export default class ModifyProduct extends Component {
       module: 'product',
       productId: args.prdId,
     });
-    console.log('参数', args);
   }
 
   onOperationTabChange = (key) => {
