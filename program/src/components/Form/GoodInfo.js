@@ -2,13 +2,12 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-20 15:30:16
+ * @Last Modified time: 2018-04-03 15:59:14
  */
-import React, { PureComponent } from 'react';
+import React from 'react';
 import 'braft-editor/dist/braft.css';
-import { Form, Input, Row, Col, Upload, Icon, Table, Tabs, Spin } from 'antd';
+import { Form, Row, Col, Table, Tabs, Spin } from 'antd';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
-import RichEditor from '../../components/RichEditor/RichEditor';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
 
 import styles from './good-info.less';
@@ -99,12 +98,6 @@ class GoodInfo extends React.Component {
     const categoryStr = category ?
       `${category.category_name}-${category.children.category_name}-${category.children.children.category_name}-${category.children.children.children.category_name}`
       : '';
-    // const uploadButton = (
-    //   <div>
-    //     <Icon type="plus" />
-    //     <div className="ant-upload-text">上传</div>
-    //   </div>
-    // );
     console.log('product', data.product.description);
     return (
       <div className={styles['good-info-wrap']}>
@@ -119,7 +112,7 @@ class GoodInfo extends React.Component {
               {getFieldDecorator('cate', {
                 initialValue: categoryStr,
               })(
-                <Input disabled />
+                <span>{categoryStr}</span>
               )}
             </FormItem>
             <FormItem
@@ -129,7 +122,7 @@ class GoodInfo extends React.Component {
               {getFieldDecorator('pno', {
                 initialValue: product.pno,
               })(
-                <Input disabled />
+                <span>{product.pno}</span>
               )}
             </FormItem>
             <FormItem
@@ -139,7 +132,7 @@ class GoodInfo extends React.Component {
               {getFieldDecorator('product_name', {
                 initialValue: product.product_name,
               })(
-                <Input disabled />
+                <span className="title" title={product.product_name}>{product.product_name}</span>
               )}
             </FormItem>
             <FormItem
@@ -148,7 +141,7 @@ class GoodInfo extends React.Component {
             >
               {getFieldDecorator('gno', {
               })(
-                <Input disabled />
+                <span>{data.gno}</span>
               )}
             </FormItem>
             <FormItem
@@ -158,7 +151,7 @@ class GoodInfo extends React.Component {
               {getFieldDecorator('partnumber', {
                 initialValue: product.partnumber,
               })(
-                <Input disabled />
+                <span>{product.partnumber}</span>
               )}
             </FormItem>
             <FormItem
@@ -168,7 +161,7 @@ class GoodInfo extends React.Component {
               {getFieldDecorator('band', {
                 initialValue: product.brand_name,
               })(
-                <Input disabled />
+                <span>{product.brand_name}</span>
               )}
             </FormItem>
             <FormItem
@@ -178,7 +171,7 @@ class GoodInfo extends React.Component {
               {getFieldDecorator('en_name', {
                 initialValue: product.english_name,
               })(
-                <Input disabled />
+                <span>{product.english_name}</span>
               )}
             </FormItem>
             <FormItem
@@ -188,7 +181,7 @@ class GoodInfo extends React.Component {
               {getFieldDecorator('prodution_place', {
                 initialValue: product.prodution_place,
               })(
-                <Input disabled />
+               <span>{product.prodution_place}</span>
               )}
             </FormItem>
             <FormItem
@@ -197,7 +190,7 @@ class GoodInfo extends React.Component {
             >
               {getFieldDecorator('shelf_life', {
               })(
-                <Input />
+                <span>{data.shelf_life}</span>
               )}
             </FormItem>
             <FormItem
@@ -206,34 +199,35 @@ class GoodInfo extends React.Component {
             >
               {getFieldDecorator('sales_unit', {
               })(
-                <Input />
+                <span>{data.sales_unit}</span>
               )}
             </FormItem>
             <Row gutter={24}>
-              <Col span={10}>
+              <Col span={12}>
                 <FormItem
                   label="库存："
-                  labelCol={{ md: { span: 10 }, xxl: { span: 7 } }}
+                  labelCol={{ md: { span: 8 }, xxl: { span: 6 } }}
                   wrapperCol={{ md: { span: 12 }, xxl: { span: 10 } }}
                 >
                   {getFieldDecorator('stock', {
-                    rules: [{ required: true, message: '请输入库存量' }],
+                    rules: [{ required: false, message: '请输入库存量' }],
                   })(
-                    <Input style={{ position: 'relative', left: 2 }} />
+                    <span>{data.stock}</span>
+                    // <Input style={{ position: 'relative', left: 2 }} />
                   )}
                 </FormItem>
               </Col>
               <Col span={12}>
                 <FormItem
                   label="最低采购量"
-                  labelCol={{ md: { span: 14 }, xxl: { span: 8 } }}
+                  labelCol={{ md: { span: 14 }, xxl: { span: 6 } }}
                   wrapperCol={{ md: { span: 10 }, xxl: { span: 8 } }}
                 >
                   {
                     getFieldDecorator('min_buy', {
                       rules: [{ required: true, message: '请输入最低采购量' }],
                     })(
-                      <Input />
+                      <span>{data.min_buy}</span>
                     )
                   }
                 </FormItem>
@@ -256,11 +250,11 @@ class GoodInfo extends React.Component {
                   <Row gutter={24} key={idx}>
                     <Col span={12}>
                       <FormItem
+                        labelCol={{ md: { span: 8 }, xxl: { span: 6 } }}
                         label={idx === 0 ? 'CAD图' : ''}
-                        labelCol={{ span: 8 }}
                         wrapperCol={(idx === 0) ? { span: 15 } : { span: 15, offset: 9 }}
                       >
-                        <span>{val.split('/').slice(-1)[0]}</span>
+                        <span className="title" title={val.split('/').slice(-1)[0]}>{val.split('/').slice(-1)[0]}</span>
                       </FormItem>
                     </Col>
                     <Col span={12}>

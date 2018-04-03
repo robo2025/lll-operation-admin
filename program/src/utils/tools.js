@@ -55,10 +55,15 @@ export const queryString = {
 };
 
 
-// 验证文件类型
-export function checkFile(filename) {
-  console.log('验证文件名：：：', filename, /(\.jpg|\.png|\.gif|\.bmp\.webp)$/.test(filename));
-  return /(\.jpg|\.png|\.gif|\.bmp|\.webp)$/.test(filename);
+/**
+ * 验证文件后缀是否符合要求
+ * @param {string} fileName 文件名
+ * @param {array} fileNameArr 包含文件名的数组
+ */
+export function checkFile(fileName, fileNameArr) {
+  const partter = '(\\.' + fileNameArr.join('|\\.') + ')$';
+  console.log('验证文件名:', partter);
+  return new RegExp(partter, 'i').test(fileName);
 }
 
 

@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-07 17:55:24
+ * @Last Modified time: 2018-04-03 13:52:30
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -221,26 +221,8 @@ class GoodDetail extends Component {
         >
           {contentList[this.state.operationkey]}
 
-          <div className={styles['submit-btn-wrap']}>
-            <div className="left">
-              审批意见：
-              <RadioGroup onChange={this.handleRadioChange} value={audit_status}>
-                <Radio value={1}>通过</Radio>
-                <Radio value={2}>不通过</Radio>
-              </RadioGroup>
-              <Tooltip title="审批意见不能为空" visible={audit_status === 2} autoAdjustOverflow={false}>
-                <Input
-                  placeholder="未通过说明"
-                  className={audit_status === 2 ? 'show-inline' : 'hide'}
-                  onChange={e => this.handleAuditDesc(e)}
-                />
-              </Tooltip>
-            </div>
-            <div className="right">
-              <Button onClick={() => { this.props.history.push('/goods/list'); }}>返回列表</Button>
-              <Button type="primary" onClick={this.handleSubmit}>提交</Button>
-            </div>
-
+          <div className={styles['back-btn-wrap']}>
+            <Button onClick={() => { this.props.history.push('/goods/list'); }}>返回列表</Button>
           </div>
         </Card>
       </PageHeaderLayout>

@@ -5,6 +5,7 @@ import ProductTable from '../../components/StandardTable/ProductTable';
 import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { handleServerMsg } from '../../utils/tools';
+import { API_URL } from '../../constant/config';
 import styles from './product-manager.less';
 
 const FormItem = Form.Item;
@@ -88,8 +89,8 @@ export default class ProductManager extends Component {
       type: 'product/queryExport',
       fields: this.state.exportFields,
       success: (res) => { 
-        console.log('http://139.199.96.235:9005/api/product_reports?filename=' + res.filename);
-        window.open('http://139.199.96.235:9005/api/product_reports?filename=' + res.filename);
+        console.log(`${API_URL}/product_reports?filename=${res.filename}`);
+        window.open(`${API_URL}/product_reports?filename=${res.filename}`);
        },
     });
   }

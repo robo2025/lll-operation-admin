@@ -6,7 +6,7 @@ import styles from './product-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
+const IMAGE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
 const CAD_TYPES = ['doc', 'docx', 'pdf', 'dwt', 'dxf', 'dxb'];// 支持的CAD文件格式
 function getStanrdCatalog(data) {
   data.forEach((val) => {
@@ -47,7 +47,7 @@ function getCAD(cads) {
   if (cads) {
     return cads.map((val, idx) => ({
       uid: idx,
-      name: 'CAD图',
+      name: val,
       status: 'complete',
       reponse: '200', // custom error message to show
       url: val,
@@ -69,8 +69,6 @@ class ProductForm extends Component {
     this.state = {
       previewVisible: false,
       previewImage: '',
-      isPicture: true,
-      isCad: true,
       file: { uid: '', name: '' },
       pics: [], // 产品图片集合
       cad_url: [], // 产品cad文件集合
@@ -127,7 +125,7 @@ class ProductForm extends Component {
         message.error(`${file.name} 暂不支持上传`);
         return false;
       }
-    } else if (!checkFile(file.name, FILE_TYPES)) {
+    } else if (!checkFile(file.name, IMAGE_TYPES)) {
       message.error(`${file.name} 暂不支持上传`);
       return false;
     }
@@ -149,9 +147,9 @@ class ProductForm extends Component {
           this.setState({
             cadUrl: [
               ...cadUrl,
-              { 
-                uid: cadUrl.length - 100, 
-                name: file.response.key, 
+              {
+                uid: cadUrl.length - 100,
+                name: file.name,
                 status: 'done',
                 reponse: '200', // custom error message to show
                 url: FILE_CDN + file.response.key,
@@ -160,10 +158,24 @@ class ProductForm extends Component {
           });
           onAttrChange({ cad_url: [...cad_url, file.response.key] });
         } else if (file.status === 'complete') {
+          const completeCADS = fileList.filter(val => val.status === 'complete');
           this.setState({
-            cadUrl: fileList,
+            cadUrl: completeCADS,
           });
-          onAttrChange({ cad_url: fileList.map(val => (val.url)) });
+          onAttrChange({ cad_url: completeCADS.map(val => (val.url)) });
+        } else if (!file.status || file.status === 'error') {
+          this.setState({
+            cadUrl: [
+              ...cadUrl,
+              {
+                uid: cadUrl.length - 100,
+                name: file.name,
+                status: 'error',
+                reponse: '不支持的文件类型', // custom error message to show
+                url: '',
+              },
+            ],
+          });
         }
       });
       return;
@@ -212,7 +224,7 @@ class ProductForm extends Component {
   }
 
   render() {
-    console.log('state:', this.state);
+    console.log('new product state:', this.state);
     const formItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 15 },
@@ -221,7 +233,7 @@ class ProductForm extends Component {
     const { getFieldDecorator } = this.props.form;
     const { catalog, uploadToken } = this.props;
     const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
-    const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cad_url, cadUrl } = this.state;
+    const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cadUrl } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -241,7 +253,10 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('category', {
-                rules: [{ required: true }],
+                rules: [{
+                  required: true,
+                  message: '请选择分类！',
+                }],
               })(
                 <Cascader
                   options={catalog}
@@ -254,7 +269,10 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('product_name', {
-                rules: [{ required: true }],
+                rules: [{
+                  required: true,
+                  message: '请填写产品名称',
+                }],
               })(
                 <Input />
               )}
@@ -264,7 +282,10 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('partnumber', {
-                rules: [{ required: true }],
+                rules: [{
+                  required: true,
+                  message: '请填写产品型号',
+                }],
               })(
                 <Input />
               )}
@@ -274,7 +295,10 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('brand_name', {
-                rules: [{ required: true }],
+                rules: [{
+                  required: true,
+                  message: '请填写产品品牌',
+                }],
               })(
                 <Input />
               )}
@@ -284,7 +308,10 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('english_name', {
-                rules: [{ required: false }],
+                rules: [{
+                  required: false,
+                  message: '请填写产品英文名',
+                }],
               })(
                 <Input />
               )}
@@ -294,7 +321,11 @@ class ProductForm extends Component {
               {...formItemLayout}
             >
               {getFieldDecorator('prodution_place', {
-                rules: [{ required: true }],
+                rules: [{
+                  required: true,
+                  message: '请完善产品产地',
+
+                }],
               })(
                 <Input />
               )}
@@ -331,8 +362,11 @@ class ProductForm extends Component {
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} >
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal >
-        <div style={{ float: 'left', maxWidth: 360 }}>
-          <h3>产品图片</h3>
+        <div style={{ float: 'left', maxWidth: 360, position: 'relative', top: -60 }}>
+          <div style={{ marginBottom: 20 }}>
+            <h3>产品图片</h3>
+            <small>暂时支持格式：JPG/PNG/GIF/BMG/JPGE,文件大小请保持在100KB以内；</small>
+          </div>
           <Row gutter={24}>
             <Col span={8}>
               <Upload
@@ -360,7 +394,7 @@ class ProductForm extends Component {
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                fileList={b}                
+                fileList={b}
                 beforeUpload={currFile => (this.beforeUpload('b', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
                 data={
@@ -380,7 +414,7 @@ class ProductForm extends Component {
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                fileList={c}                                
+                fileList={c}
                 beforeUpload={currFile => (this.beforeUpload('c', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('c', fileList); }}
                 data={
@@ -440,7 +474,7 @@ class ProductForm extends Component {
                 action={UPLOAD_URL}
                 listType="picture-card"
                 onPreview={this.handlePreview}
-                fileList={d6}                
+                fileList={d6}
                 beforeUpload={currFile => (this.beforeUpload('d6', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('d6', fileList); }}
                 data={

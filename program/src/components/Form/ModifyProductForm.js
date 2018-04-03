@@ -176,7 +176,7 @@ class ProductForm extends Component {
               ...cadUrl,
               {
                 uid: cadUrl.length - 100,
-                name: file.response.key,
+                name: file.name,
                 status: 'done',
                 reponse: '200', // custom error message to show
                 url: FILE_CDN + file.response.key,
@@ -185,10 +185,24 @@ class ProductForm extends Component {
           });
           onAttrChange({ cad_url: [...cad_url, file.response.key] });
         } else if (file.status === 'complete') {
+          const completeCADS = fileList.filter(val => val.status === 'complete');
           this.setState({
-            cadUrl: fileList,
+            cadUrl: completeCADS,
           });
-          onAttrChange({ cad_url: fileList.map(val => (val.url)) });
+          onAttrChange({ cad_url: completeCADS.map(val => (val.url)) });
+        } else if (!file.status || file.status === 'error') {
+          this.setState({
+            cadUrl: [
+              ...cadUrl,
+              {
+                uid: cadUrl.length - 100,
+                name: file.name,
+                status: 'error',
+                reponse: '不支持的文件类型', // custom error message to show
+                url: '',
+              },
+            ],
+          });
         }
       });
       return;
@@ -369,8 +383,11 @@ class ProductForm extends Component {
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} >
           <img alt="example" style={{ width: '100%' }} src={previewImage} />
         </Modal >
-        <div style={{ float: 'left', width: 360, position: 'relative', top: -30 }}>
-          <h3>产品图片</h3>
+        <div style={{ float: 'left', width: 360, position: 'relative', top: -60 }}>
+          <div style={{ marginBottom: 20 }}>
+            <h3>产品图片</h3>
+            <small>暂时支持格式：JPG/PNG/GIF/BMG/JPGE,文件大小请保持在100KB以内；</small>
+          </div>
           <Row gutter={24}>
             <Col span={8}>
               <Upload

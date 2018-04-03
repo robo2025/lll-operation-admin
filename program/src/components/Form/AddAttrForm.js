@@ -9,6 +9,10 @@ const FormItem = Form.Item;
   onFieldsChange: (props, fileds) => { props.onFieldsChange(fileds); },
 })
 class AddAttrForm extends Component {
+  componentDidMount() {
+    this.props.handleValidate(this.props.form);
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
@@ -24,7 +28,7 @@ class AddAttrForm extends Component {
                 getFieldDecorator('attr_name', {
                   rules: [{
                     required: true,
-                    message: '属性名称必须填写',
+                    message: '请输入属性名称',
                   }],
                 })(
                   <Input />
@@ -42,7 +46,7 @@ class AddAttrForm extends Component {
                 getFieldDecorator('attr_value', {
                   rules: [{
                     required: true,
-                    message: '数值名称必须填写',
+                    message: '请输入数值数据',
                   }],
                 })(
                   <Input />

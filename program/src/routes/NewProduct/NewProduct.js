@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-27 21:10:46
+ * @Last Modified time: 2018-04-03 11:01:55
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -79,29 +79,34 @@ export default class NewProduct extends Component {
     this.setState({ isShowModal: false });
     const { newFiled, otherAttrsFiled, otherAttrs } = this.state;
     const len = otherAttrsFiled.length - 100;
-    if (newFiled.attr_name && newFiled.attr_value) {
-      this.setState({ isShowAttrMOdal: false }); // 隐藏添加属性弹窗
-      this.setState({
-        otherAttrsFiled: [
-          ...otherAttrsFiled,
-          {
-            id:
-              len - 100,
-            attr_name: newFiled.attr_name.value,
-            attr_value: newFiled.attr_value.value,
-          },
-        ],
-        otherAttrs: [
-          ...otherAttrs,
-          {
-            id: len - 100,
-            attr_name: newFiled.attr_name.value,
-            attr_value: newFiled.attr_value.value,
-          },
-        ],
-      });
-      console.log('提交新属性', newFiled);
-    }
+    this.formObj.validateFields((error, values) => {
+      if (error) {
+        console.log('校验出错', error);
+        return false;
+      } else {
+        console.log('校验通过，提交新属性', values);
+        this.setState({
+          isShowAttrMOdal: false, // 隐藏添加属性弹窗    
+          otherAttrsFiled: [
+            ...otherAttrsFiled,
+            {
+              id: len - 100,
+              attr_name: newFiled.attr_name.value,
+              attr_value: newFiled.attr_value.value,
+            },
+          ],
+          otherAttrs: [
+            ...otherAttrs,
+            {
+              id: len - 100,
+              attr_name: newFiled.attr_name.value,
+              attr_value: newFiled.attr_value.value,
+            },
+          ],
+        });
+      }
+      this.formObj.resetFields();
+    });
   }
 
   showModal() {
@@ -262,6 +267,13 @@ export default class NewProduct extends Component {
     });
   }
 
+  // 校验表单：传入的是this.props.form对象
+  validateForm = (formObj) => {
+    console.log('我被调用了');
+    // 将子组件的this.props.form传给父组件，方便后面校验
+    this.formObj = formObj;
+  }
+
   /**
    * 提交新产品信息
    * 
@@ -347,6 +359,7 @@ export default class NewProduct extends Component {
           >
             <AddAttrForm
               onFieldsChange={this.handleAddOtherAttrFiled}
+              handleValidate={this.validateForm}
             />
           </Modal>
           <SectionHeader
