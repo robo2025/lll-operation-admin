@@ -14,8 +14,8 @@ export default {
   },
 
   effects: {
-    *fetch({ offset, limit, success, error }, { call, put }) {
-      const response = yield call(queryProducts, { offset, limit });
+    *fetch({ offset, limit, success, error, params }, { call, put }) {
+      const response = yield call(queryProducts, { offset, limit, params });
       if (response.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(response.data);
       } else if (typeof error === 'function') { error(response); return; }

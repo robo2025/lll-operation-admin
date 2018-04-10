@@ -192,18 +192,37 @@ export default class GoodsMananger extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
+      const createTime = {};
+      if (fieldsValue.create_time) {
+        createTime.created_start = fieldsValue.create_time[0].format('YYYY-MM-DD');
+        createTime.created_end = fieldsValue.create_time[1].format('YYYY-MM-DD');
+      }
       const values = {
         ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+        ...createTime,
       };
 
+      const {
+        gno,
+        partnumber,
+        brand_name,
+        created_start,
+        created_end,
+      }
+        = values;
       this.setState({
         formValues: values,
       });
 
       dispatch({
-        type: 'rule/fetch',
-        payload: values,
+        type: 'good/fetch',
+        params: {
+          gno,
+          partnumber,
+          brand_name,
+          created_start,
+          created_end,
+        },
       });
     });
   }
@@ -236,14 +255,14 @@ export default class GoodsMananger extends Component {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xxl={4} md={6} sm={24}>
             <FormItem label="商品ID编号">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('gno')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xxl={4} md={6} sm={24}>
             <FormItem label="审核状态">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('audit_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">待审核</Option>
                   <Option value="1">审核通过</Option>
@@ -254,7 +273,7 @@ export default class GoodsMananger extends Component {
           </Col>
           <Col xxl={4} md={6} sm={24}>
             <FormItem label="上限架状态">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('publish_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">下架中</Option>
@@ -265,14 +284,14 @@ export default class GoodsMananger extends Component {
           </Col>
           <Col xxl={4} md={6} sm={24}>
             <FormItem label="佣金比率">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('yj')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xxl={5} md={8} sm={24}>
             <FormItem label="价格">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('price')(
                 <InputGroup>
                   <Input style={{ width: 80, textAlign: 'center' }} placeholder="最低价" />
                   <Input style={{ width: 30, borderLeft: 0, pointerEvents: 'none', backgroundColor: '#fff' }} placeholder="~" disabled />
@@ -303,14 +322,14 @@ export default class GoodsMananger extends Component {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="商品ID编号">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('gno')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="审核状态">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('audit_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">待审核</Option>
                   <Option value="1">审核通过</Option>
@@ -321,7 +340,7 @@ export default class GoodsMananger extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="上限架状态">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('publish_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
                   <Option value="1">下架中</Option>
@@ -332,14 +351,14 @@ export default class GoodsMananger extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="佣金比率">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('yj')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="价格">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('price')(
                 <InputGroup>
                   <Input style={{ width: 80, textAlign: 'center' }} placeholder="最低价" />
                   <Input style={{ width: 30, borderLeft: 0, pointerEvents: 'none', backgroundColor: '#fff' }} placeholder="~" disabled />
@@ -352,28 +371,28 @@ export default class GoodsMananger extends Component {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="商品名称">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('good_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="型号">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('partnumber')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="品牌">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('brand_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="所属类目">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('catagory')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">未知</Option>
                   <Option value="1">未知</Option>
@@ -383,8 +402,8 @@ export default class GoodsMananger extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={10} sm={24}>
-            <FormItem label="产品提交日期">
-              {getFieldDecorator('no')(
+            <FormItem label="商品提交日期">
+              {getFieldDecorator('create_time')(
                 <RangePicker onChange={this.onDatepickerChange} />
               )}
             </FormItem>
