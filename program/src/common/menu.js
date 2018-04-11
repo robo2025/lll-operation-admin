@@ -37,6 +37,16 @@ const menuData = [{
       path: 'exception-list',
     },
   ],
+}, {
+  name: '退货管理',
+  path: 'returns',
+  icon: 'bars',
+  children: [
+    {
+      name: '退货单列表',
+      path: 'list',
+    },
+  ],
 }];
 
 function formatter(data, parentPath = '') {

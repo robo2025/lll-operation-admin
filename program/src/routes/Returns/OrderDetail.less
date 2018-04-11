@@ -1,0 +1,79 @@
+@import "~antd/lib/style/themes/default.less";
+
+.order-detail{
+  :global{
+    [class|=title]{
+      font-weight: bold !important;
+    }
+    .ant-card-wider-padding{
+      .ant-card-head {
+        padding: 0 0;
+      }
+    }
+    .ant-card-contain-tabs{
+      .ant-card-body{
+        padding: 0;
+      }
+    }
+  }
+}
+
+.title {
+  color: @heading-color;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #666;
+}
+
+.extra-good-info{
+  font-weight: 600;
+  :global{
+    .ant-row-flex{
+      margin-bottom:8px;
+    }
+    .number{
+      display: inline-block;
+      width: 55px;
+    }
+    .money{
+      color: rgba(255, 0, 0, 0.847058823529412);
+    }
+  }
+}
+
+// 提交条
+.submit-btn-wrap{
+  width: 100%;
+  display: flex;
+  margin-top:25px;
+  justify-content: space-between;
+  :global{
+    .left{
+      width: 70%;
+      input{
+        width: 50%;
+        max-width: 380px;
+      }
+    }
+  }
+  button{
+    margin: 5px 12px;
+  }
+}
+:global{
+  .show-inline{
+    display: inline-block;
+  }
+  .hide{
+    display: none;
+  }
+}
+
+// 返回按钮
+.back-btn-wrap{
+  width: 100%;
+  display: flex;
+  margin-top:25px;
+  justify-content: center;
+}
