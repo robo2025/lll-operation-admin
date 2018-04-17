@@ -60,7 +60,7 @@ class ProductTable extends React.Component {
 
   render() {
     const { selectedRowKeys, isShowModal } = this.state;
-    const { data, loading, total } = this.props;
+    const { data, loading, total, isShowAlert } = this.props;
 
     const columns = [
       {
@@ -117,14 +117,14 @@ class ProductTable extends React.Component {
         title: '二级类目',
         dataIndex: 'category',
         render: val => (val.children.category_name),
-        width: 100,        
+        width: 100,
         key: 'menu-2',
       },
       {
         title: '三级类目',
         dataIndex: 'category',
         render: val => (val.children.children.category_name),
-        width: 150,        
+        width: 150,
         key: 'menu-3',
       },
       {
@@ -160,7 +160,7 @@ class ProductTable extends React.Component {
         render: (text, record) => (
           <Fragment>
             <a href={'#/product/list/detail?prdId=' + record.id}>查看</a>
-            <Divider type="vertical" />            
+            <Divider type="vertical" />
             <a onClick={() => { this.props.editProduct(record.id); }}>修改</a>
             <Divider type="vertical" />
             <a onClick={() => { this.handleSupplyInfoBtnClick(record.id); }}>供货信息</a>
@@ -189,15 +189,22 @@ class ProductTable extends React.Component {
     return (
       <div className={styles.standardTable}>
         <div className={styles.tableAlert}>
-          <Alert
-            message={(
-              <div>
-                已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项
-              </div>
-            )}
-            type="info"
-            showIcon
-          />
+          {
+            isShowAlert ?
+              (
+                <Alert
+                  message={(
+                    <div>
+                      已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项
+                    </div>
+                  )}
+                  type="info"
+                  showIcon
+                />
+              )
+              :
+              null
+          }
         </div>
         <Table
           loading={loading}

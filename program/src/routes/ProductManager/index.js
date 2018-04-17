@@ -259,42 +259,23 @@ export default class ProductManager extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="审核状态">
-              {getFieldDecorator('audit_status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">待审核</Option>
-                  <Option value="1">审核通过</Option>
-                  <Option value="2">审核不通过</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="上限架状态">
-              {getFieldDecorator('publish_status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">下架中</Option>
-                  <Option value="2">已上架</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="供应商名称">
-              {getFieldDecorator('supplier_name')(
+            <FormItem label="产品名称">
+              {getFieldDecorator('product_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col xll={4} md={8} sm={24}>
-            <FormItem label="价格">
-              {getFieldDecorator('price')(
-                <InputGroup>
-                  <Input style={{ width: 80, textAlign: 'center' }} placeholder="最低价" />
-                  <Input style={{ width: 30, borderLeft: 0, pointerEvents: 'none', backgroundColor: '#fff' }} placeholder="~" disabled />
-                  <Input style={{ width: 80, textAlign: 'center', borderLeft: 0 }} placeholder="最高价" />
-                </InputGroup>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="型号">
+              {getFieldDecorator('partnumber')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="品牌">
+              {getFieldDecorator('brand_name')(
+                <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
@@ -319,48 +300,29 @@ export default class ProductManager extends Component {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="产品ID编号">
-              {getFieldDecorator('no')(
+              {getFieldDecorator('pno')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="审核状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">待审核</Option>
-                  <Option value="1">审核通过</Option>
-                  <Option value="2">审核不通过</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="上限架状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">下架中</Option>
-                  <Option value="2">已上架</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="供应商名称">
-              {getFieldDecorator('no')(
+            <FormItem label="产品名称">
+              {getFieldDecorator('product_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col xll={4} md={8} sm={24}>
-            <FormItem label="价格">
-              {getFieldDecorator('no')(
-                <InputGroup>
-                  <Input style={{ width: 80, textAlign: 'center' }} placeholder="最低价" />
-                  <Input style={{ width: 30, borderLeft: 0, pointerEvents: 'none', backgroundColor: '#fff' }} placeholder="~" disabled />
-                  <Input style={{ width: 80, textAlign: 'center', borderLeft: 0 }} placeholder="最高价" />
-                </InputGroup>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="型号">
+              {getFieldDecorator('partnumber')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="品牌">
+              {getFieldDecorator('brand_name')(
+                <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
@@ -498,6 +460,7 @@ export default class ProductManager extends Component {
               onChange={this.handleStandardTableChange}
               editProduct={this.editProduct}
               querySupplyInfo={this.querySupplyInfo}
+              isShowAlert={selectedRows.length > 0}
             />
           </div>
         </Card>

@@ -5,6 +5,7 @@ import { Card, Table, Divider, Row, Col, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { queryString, handleServerMsg } from '../../utils/tools';
+import { ORDER_STATUS, PAY_STATUS, ACTION_STATUS } from '../../constant/statusList';
 
 import styles from './OrderDetail.less';
 import order from '../../models/order';
@@ -12,8 +13,6 @@ import order from '../../models/order';
 const { Description } = DescriptionList;
 const goodsData = [];// 订单商品数据
 const logisticsData = [];
-// 订单状态
-const mapOrderStatus = ['全部', '待支付', '已取消', '已接单', '待发货', '已发货', '已确认收货', '已完成', '申请延期', '确认延期', '退款', '退货', '作废', '无货'];
 // 支付状态
 const mapPayStatus = ['全部', '未支付', '已支付'];
 
@@ -135,6 +134,7 @@ const actionColumns = [{
   title: '操作记录',
   dataIndex: 'record',
   key: 'record',
+  render: text => (<span>{ACTION_STATUS[text]}</span>),
 }, {
   title: '操作员',
   dataIndex: 'guest_id',
@@ -156,6 +156,7 @@ const actionColumns = [{
   title: '耗时',
   dataIndex: 'time_consuming',
   key: 'time_consuming',
+  render: text => (<span>{text}s</span>),
 }];
 const actionLogs = [{
   id: 1,
@@ -260,17 +261,18 @@ export default class OrderDetail extends Component {
       <PageHeaderLayout title="订单详情">
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
           <DescriptionList size="large" title="订单信息" style={{ marginBottom: 32 }}>
-            <Description term="客户订单编号">{order_info.order_sn}</Description>
+            <Description term="客户订单编号">{order_info.son_order_sn}</Description>
             <Description term="支付状态">{mapPayStatus[order_info.pay_status]}</Description>
-            <Description term="订单状态">{mapOrderStatus[order_info.order_status]}</Description>
-            <Description term="母订单编号">13214321432</Description>
+            <Description term="订单状态">{ORDER_STATUS[order_info.order_status]}</Description>
+            <Description term="母订单编号">{order_info.order_sn}</Description>
+            <Description term="佣金服务费">{commission}元</Description>
             <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>
             <Description term="用户姓名">{guest_info.receiver}</Description>
             <Description term="联系电话">{guest_info.mobile}</Description>
-            <Description term="公司名称">菜鸟仓储</Description>
+            <Description term="公司名称">{guest_info.company_name}</Description>
             <Description term="收货地址">{guest_info.address}</Description>
             <Description term="备注">{guest_info.remarks}</Description>
           </DescriptionList>
@@ -278,7 +280,7 @@ export default class OrderDetail extends Component {
           <DescriptionList size="large" title="开票信息" style={{ marginBottom: 32 }}>
             <Description term="公司全称">{receipt_info.title}</Description>
             <Description term="公司账户">{receipt_info.account}</Description>
-            <Description term="税务编号">菜鸟仓储</Description>
+            <Description term="税务编号">{receipt_info.tax_number}</Description>
             <Description term="公司电话">{receipt_info.telephone}</Description>
             <Description term="开户银行">{receipt_info.bank}</Description>
             <Description term="公司地址">{receipt_info.company_address}</Description>
@@ -287,7 +289,7 @@ export default class OrderDetail extends Component {
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
             <Description term="联系人">{supplier_info.linkman}</Description>
             <Description term="联系电话">{supplier_info.mobile}</Description>
-            <Description term="公司名称">菜鸟仓储</Description>
+            <Description term="公司名称">{supplier_info.company_name}</Description>
             <Description term="收货地址">{supplier_info.address}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
@@ -319,14 +321,14 @@ export default class OrderDetail extends Component {
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
                 <span style={{ marginRight: 45 }}>&nbsp;</span>
-                <span>佣金：<span className="number">￥{commission}</span></span>
+                <span>佣金服务费：<span className="number">￥{commission}</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
                 {/* <span style={{ marginRight: 45, fontWeight: 'normal' }}>优惠券（YHQ20180103111256）满10元减0元</span> */}
-                <span>优惠抵扣：<span className="number">￥-0.00</span></span>
+                {/* <span>优惠抵扣：<span className="number">￥-0.00</span></span> */}
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">

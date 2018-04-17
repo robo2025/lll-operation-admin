@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-26 10:11:03
+ * @Last Modified time: 2018-04-17 13:56:54
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
@@ -183,8 +183,8 @@ export default class ExceptionOrderList extends Component {
   // 同意并退款Modal改变时处理
   handleRefundModalContenChange = (content) => {
     const { refundOrderData } = this.state;
-    this.setState({ 
-      refundOrderData: { ...refundOrderData, ...content }, 
+    this.setState({
+      refundOrderData: { ...refundOrderData, ...content },
     });
   }
 
@@ -204,8 +204,8 @@ export default class ExceptionOrderList extends Component {
   handleRejectModalContentChange = (content) => {
     const { rejectOrderData } = this.state;
     this.setState({
-       rejectOrderData: { ...rejectOrderData, ...content },
-     });
+      rejectOrderData: { ...rejectOrderData, ...content },
+    });
   }
 
   // dispatch:同意并退款
@@ -269,7 +269,7 @@ export default class ExceptionOrderList extends Component {
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
     dispatch({
-      type: 'orders/fetchExptionOrders',      
+      type: 'orders/fetchExptionOrders',
       offset: params.offset,
       limit: params.pageSize,
     });
@@ -300,19 +300,11 @@ export default class ExceptionOrderList extends Component {
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="异常状态标签">
-              {getFieldDecorator('order_status')(
+              {getFieldDecorator('abnormal_type')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">待接单</Option>
-                  <Option value="2">已接单</Option>
-                  <Option value="3">已部分发货</Option>
-                  <Option value="4">已全部发货</Option>
-                  <Option value="5">已完成</Option>
-                  <Option value="6">已确认收货</Option>
-                  <Option value="7">已全部发货</Option>
-                  <Option value="8">上架申请延期</Option>
-                  <Option value="9">客户允许延期</Option>
-                  <Option value="10">客户已取消</Option>
+                  <Option value="0">正常</Option>
+                  <Option value="1">无货</Option>
+                  <Option value="2">延期</Option>
                 </Select>
               )}
             </FormItem>
@@ -322,16 +314,8 @@ export default class ExceptionOrderList extends Component {
               {getFieldDecorator('deal_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
-                  <Option value="1">待接单</Option>
-                  <Option value="2">已接单</Option>
-                  <Option value="3">已部分发货</Option>
-                  <Option value="4">已全部发货</Option>
-                  <Option value="5">已完成</Option>
-                  <Option value="6">已确认收货</Option>
-                  <Option value="7">已全部发货</Option>
-                  <Option value="8">上架申请延期</Option>
-                  <Option value="9">客户允许延期</Option>
-                  <Option value="10">客户已取消</Option>
+                  <Option value="1">已处理</Option>
+                  <Option value="2">未处理</Option>
                 </Select>
               )}
             </FormItem>
@@ -374,20 +358,12 @@ export default class ExceptionOrderList extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="订单状态">
+            <FormItem label="异常状态标签">
               {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">待接单</Option>
-                  <Option value="2">已接单</Option>
-                  <Option value="3">已部分发货</Option>
-                  <Option value="4">已全部发货</Option>
-                  <Option value="5">已完成</Option>
-                  <Option value="6">已确认收货</Option>
-                  <Option value="7">已全部发货</Option>
-                  <Option value="8">上架申请延期</Option>
-                  <Option value="9">客户允许延期</Option>
-                  <Option value="10">客户已取消</Option>
+                  <Option value="0">正常</Option>
+                  <Option value="1">无货</Option>
+                  <Option value="2">延期</Option>
                 </Select>
               )}
             </FormItem>
@@ -397,16 +373,8 @@ export default class ExceptionOrderList extends Component {
               {getFieldDecorator('deal_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
-                  <Option value="1">待接单</Option>
-                  <Option value="2">已接单</Option>
-                  <Option value="3">已部分发货</Option>
-                  <Option value="4">已全部发货</Option>
-                  <Option value="5">已完成</Option>
-                  <Option value="6">已确认收货</Option>
-                  <Option value="7">已全部发货</Option>
-                  <Option value="8">上架申请延期</Option>
-                  <Option value="9">客户允许延期</Option>
-                  <Option value="10">客户已取消</Option>
+                  <Option value="1">已处理</Option>
+                  <Option value="2">未处理</Option>
                 </Select>
               )}
             </FormItem>

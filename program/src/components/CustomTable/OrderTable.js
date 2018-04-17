@@ -65,6 +65,13 @@ handleOrderClick = (key) => {
         fixed: 'left',
       },
       {
+        title: '母订单编号',
+        dataIndex: 'order_sn',
+        key: 'order_sn',
+        width: 200,
+        fixed: 'left',
+      },
+      {
         title: '供应商公司名称',
         dataIndex: 'supplier_name',
         key: 'supplier_name',

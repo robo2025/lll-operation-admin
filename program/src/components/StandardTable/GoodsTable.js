@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-11 15:12:53
+ * @Last Modified time: 2018-04-17 16:38:50
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -58,7 +58,7 @@ class GoodsTable extends PureComponent {
       {
         title: '商品ID编号',
         dataIndex: 'gno',
-        width: 120,
+        width: 130,
         fixed: 'left',
       },
       {
