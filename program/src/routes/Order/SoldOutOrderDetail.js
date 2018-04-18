@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-23 09:44:48
+ * @Last Modified time: 2018-04-18 11:16:52
  */
 
 import React, { Component } from 'react';
@@ -40,7 +40,7 @@ const goodsColumns = [{
   title: '发货日',
   dataIndex: 'max_delivery_time',
   key: 'max_delivery_time',
-  render: text => (<span>{text}天</span>),  
+  render: text => (<span>{text}天</span>),
 }, {
   title: '单价',
   dataIndex: 'univalent',
@@ -52,7 +52,7 @@ const goodsColumns = [{
 }, {
   title: '商品售出单价',
   key: 'sold_price',
-  render: text => (<span>{text.univalent - text.price_discount}</span>),  
+  render: text => (<span>{text.univalent - text.price_discount}</span>),
 }, {
   title: '数量',
   dataIndex: 'number',
@@ -154,7 +154,7 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),  
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
@@ -173,7 +173,7 @@ export default class SoldOutOrderDetail extends Component {
     super(props);
     this.state = {
       operationkey: 'tab1',
-      args: queryString.parse(window.location.href),      
+      args: queryString.parse(window.location.href),
     };
   }
 
@@ -249,10 +249,10 @@ export default class SoldOutOrderDetail extends Component {
         loading={false}
         dataSource={exceptionAction}
         columns={actionColumns}
-        rowKey="id"        
+        rowKey="id"
       />,
     };
-   
+
     console.log('商品明细', orderGoodsList);
     return (
       <PageHeaderLayout title="无货订单详情">
@@ -265,7 +265,7 @@ export default class SoldOutOrderDetail extends Component {
             <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
-           <div className={styles.title}>无货商品明细</div>
+          <div className={styles.title}>无货商品明细</div>
           <Table
             style={{ marginBottom: 24 }}
             pagination={false}
@@ -278,12 +278,12 @@ export default class SoldOutOrderDetail extends Component {
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14}>总计</Col>
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
-                  <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
+                <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
+                <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
               </Col>
             </Row>
             <Row>
-              <b>无货说明：</b><span style={{ fontWeight: 500 }}>这两件商品因本身公司备货不足，一时无法供应客户订单商品要求，抱歉！</span>
+              <b>无货说明：</b><span style={{ fontWeight: 500 }}>{order_info.remarks}</span>
             </Row>
           </div>
           <Divider style={{ marginBottom: 32 }} />
@@ -310,7 +310,7 @@ export default class SoldOutOrderDetail extends Component {
             <Description term="公司名称">{supplier_info.company_name}</Description>
             <Description term="收货地址">{supplier_info.address}</Description>
           </DescriptionList>
-          <Divider style={{ marginBottom: 32 }} />          
+          <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>订单商品明细</div>
           <Table
             style={{ marginBottom: 24 }}
@@ -324,41 +324,41 @@ export default class SoldOutOrderDetail extends Component {
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14}>总计</Col>
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
-                  <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
+                <span style={{ marginRight: 45 }}>商品件数：{goodsTotal}</span>
+                <span>商品总金额：<span className="number">￥{goodAmount}</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>&nbsp;</span>
-                  <span>运费金额：<span className="number">￥0.00</span></span>
+                <span style={{ marginRight: 45 }}>&nbsp;</span>
+                <span>运费金额：<span className="number">￥0.00</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>&nbsp;</span>
-                  <span>佣金：<span className="number">￥{commission}</span></span>
+                <span style={{ marginRight: 45 }}>&nbsp;</span>
+                <span>佣金：<span className="number">￥{commission}</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  {/* <span style={{ marginRight: 45, fontWeight: 'normal' }}>优惠券（YHQ20180103111256）满10元减1元</span> */}
-                  <span>优惠抵扣：<span className="number">￥-0.00</span></span>
+                {/* <span style={{ marginRight: 45, fontWeight: 'normal' }}>优惠券（YHQ20180103111256）满10元减1元</span> */}
+                <span>优惠抵扣：<span className="number">￥-0.00</span></span>
               </Col>
             </Row>
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                  <span style={{ marginRight: 45 }}>&nbsp;</span>
-                  <span>实付总金额：<span style={{ color: '#E6382F' }} className="number">￥{money}</span></span>
+                <span style={{ marginRight: 45 }}>&nbsp;</span>
+                <span>实付总金额：<span style={{ color: '#E6382F' }} className="number">￥{money}</span></span>
               </Col>
             </Row>
           </div>
           {/* <Divider style={{ marginBottom: 32 }} />           */}
-          <div className={styles.title}>操作日志记录</div>    
+          <div className={styles.title}>操作日志记录</div>
           <Card
             className={styles.tabsCard}
             bordered={false}
@@ -366,7 +366,7 @@ export default class SoldOutOrderDetail extends Component {
             onTabChange={this.onOperationTabChange}
           >
             {contentList[this.state.operationkey]}
-          </Card>      
+          </Card>
         </Card>
       </PageHeaderLayout>
     );
