@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Input, Table, Checkbox } from 'antd';
+import { Input, Table, Checkbox, Button } from 'antd';
+import styles from './FilterContent.less';
 
 const { Search } = Input;
 const columns = [{
@@ -45,20 +46,35 @@ const fakeData = [{
 }];
 
 export default class FilterContent extends Component {
-  render() {
+  showTotal = () => {
     return (
-      <div className="filter-wrap">
-        <div style={{ marginBottom: 20 }}>
-          参数项目名称：
-          <Search
-            placeholder="请输入你要搜索的参数"
-            onSearch={value => console.log(value)}
-            style={{ width: 200 }}
-          />
+      <span className="total-text">
+        查询到30条数据
+      </span>
+    );
+  }
+
+  render() {
+    const paginationProps = {
+      showTotal: this.showTotal,
+    };
+    return (
+      <div className={styles['filter-wrap']}>
+        <div className="tools">
+          <div>
+            参数项目名称：
+            <Search
+              placeholder="请输入你要搜索的参数"
+              onSearch={value => console.log(value)}
+              style={{ width: 200 }}
+            />
+          </div>
+          <Button type="primary">刷新</Button>
         </div>
         <Table
           dataSource={fakeData}
           columns={columns}
+          pagination={paginationProps}
         />
       </div>
     );
