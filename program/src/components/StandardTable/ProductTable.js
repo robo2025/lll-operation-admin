@@ -11,7 +11,6 @@ const GoodsStatusMap = ['default', 'success'];// 商品状态
 class ProductTable extends React.Component {
   state = {
     selectedRowKeys: [],
-    totalCallNo: 0,
     isShowModal: false,
     productId: '',
   };
@@ -21,7 +20,6 @@ class ProductTable extends React.Component {
     if (nextProps.selectedRows.length === 0) {
       this.setState({
         selectedRowKeys: [],
-        totalCallNo: 0,
       });
     }
   }
@@ -41,7 +39,7 @@ class ProductTable extends React.Component {
       this.props.onSelectRow(selectedRows);
     }
 
-    this.setState({ selectedRowKeys, totalCallNo });
+    this.setState({ selectedRowKeys });
   }
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -60,7 +58,7 @@ class ProductTable extends React.Component {
 
   render() {
     const { selectedRowKeys, isShowModal } = this.state;
-    const { data, loading, total, isShowAlert } = this.props;
+    const { data, loading, total, isShowAlert, defaultPage } = this.props;
 
     const columns = [
       {
@@ -174,7 +172,7 @@ class ProductTable extends React.Component {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      defaultPageSize: 10,
+      defaultCurrent: defaultPage - 0 || 1,
       total,
     };
 

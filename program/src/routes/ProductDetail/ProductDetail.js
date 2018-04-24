@@ -194,7 +194,7 @@ export default class GoodDetail extends Component {
             />
           </Card>
           <div className={styles['submit-btn-wrap']}>
-            <Button type="primary" onClick={() => { this.props.history.push('/product/list'); }}>返回列表</Button>
+            <Button type="primary" onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
           </div>
         </Card>
       </PageHeaderLayout>

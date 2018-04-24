@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Icon, Button, DatePicker, message, Modal, Checkbox } from 'antd';
 import ProductTable from '../../components/StandardTable/ProductTable';
 import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import { handleServerMsg } from '../../utils/tools';
-import { API_URL } from '../../constant/config';
+import { handleServerMsg, queryString } from '../../utils/tools';
+import { API_URL, PAGE_SIZE } from '../../constant/config';
 import styles from './product-manager.less';
 
 const FormItem = Form.Item;
@@ -40,14 +39,18 @@ export default class ProductManager extends Component {
       isShowExportModal: false,
       exportFields: [], // 导出产品字段
       isCheckAll: false,
+      args: queryString.parse(location.hash),
     };
   }
 
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { args } = this.state;
     dispatch({
       type: 'product/fetch',
+      offset: (args.page - 1) * PAGE_SIZE,
+      limit: PAGE_SIZE,      
     });
   }
 
@@ -126,14 +129,21 @@ export default class ProductManager extends Component {
 
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
+    const { dispatch, history } = this.props;
     const { formValues } = this.state;
-    console.log('产品table改变--：', pagination, filtersArg, sorter);
+   
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
+    
+    // 分页：将页数提取到url上
+    history.push({
+      pathname: '/product/list',
+      search: `?page=${params.currentPage}`,
+    });
+
     dispatch({
       type: 'product/fetch',
       offset: params.offset,
@@ -394,7 +404,7 @@ export default class ProductManager extends Component {
 
   render() {
     const { loading, product } = this.props;
-    const { selectedRows, modalVisible, isShowExportModal } = this.state;
+    const { selectedRows, args, isShowExportModal } = this.state;
     const data = product.list;
     const { total } = product;
 
@@ -402,17 +412,15 @@ export default class ProductManager extends Component {
     const exportCom = (
       <h4>
         导出数据
-          <Checkbox
+        <Checkbox
           style={{ marginLeft: 20 }}
           onChange={this.onCheckAllChange}
           checked={this.state.isCheckAll}
-          >
+        >
           全选
-          </Checkbox>
+        </Checkbox>
       </h4>
     );
-
-    console.log('product', this.state);
 
     return (
       <PageHeaderLayout title="产品管理">
@@ -461,6 +469,7 @@ export default class ProductManager extends Component {
               editProduct={this.editProduct}
               querySupplyInfo={this.querySupplyInfo}
               isShowAlert={selectedRows.length > 0}
+              defaultPage={args.page}
             />
           </div>
         </Card>

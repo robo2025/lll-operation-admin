@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-30 16:12:01
+ * @Last Modified time: 2018-04-24 15:33:16
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -292,7 +292,6 @@ export default class ModifyProduct extends Component {
 
   // 其他属性图片上传时处理
   handleUploaderChange = (key, fileList) => {
-    console.log('文件上传', key, fileList);
     const { isPicture } = this.state;
     if (!isPicture) { return; }
     // 上传成功，则将图片放入state里的pics数组内
@@ -321,9 +320,7 @@ export default class ModifyProduct extends Component {
     this.setState({
       otherAttrs: newOtherAttrsFiled,
     });
-    console.log('删除属性ID', id, newOtherAttrsFiled);
   }
-
 
   /**
    * 提交产品信息
@@ -336,7 +333,6 @@ export default class ModifyProduct extends Component {
       fields,
       otherAttrs,
     } = this.state;
-    console.log('产品信息', { ...fields, other_attrs: otherAttrs }, Object.keys(args));
     const { dispatch } = this.props;
 
     if (argsKey.includes('prdId')) { // 如果是修改产品
@@ -348,21 +344,21 @@ export default class ModifyProduct extends Component {
           other_attrs: otherAttrs,
           pdf_url: ['没有'],
         },
-        success: () => { this.props.history.push('/product/list'); },
+        success: () => { this.props.history.goBack(); },
         error: (res) => { message.error(handleServerMsg(res.msg)); },
       });
     } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
       dispatch({
         type: 'product/add',
         data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
-        success: () => { this.props.history.push('/product/list'); },
+        success: () => { this.props.history.goBack(); },
         error: (res) => { message.error(handleServerMsg(res.msg)); },
       });
     }
   }
 
   render() {
-    const { isShowModal, isShowAttrMOdal, otherAttrs, file } = this.state;
+    const { isShowModal, isShowAttrMOdal, otherAttrs } = this.state;
     const argsKey = Object.keys(this.state.args);    
     const { product, loading, catalog, upload } = this.props;
     const buttonGrop = (
@@ -488,7 +484,7 @@ export default class ModifyProduct extends Component {
           </Card>
 
           <div className={styles['submit-btn-wrap']}>
-            <Button onClick={() => { this.props.history.push('/product/list'); }}>取消</Button>
+            <Button onClick={() => { this.props.history.goBack(); }}>取消</Button>
             <Button type="primary" onClick={this.handleSubmitProduct}>提交</Button>
           </div>
         </Card>
