@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-18 11:16:52
+ * @Last Modified time: 2018-04-18 11:55:11
  */
 
 import React, { Component } from 'react';
@@ -345,7 +345,11 @@ export default class SoldOutOrderDetail extends Component {
             <Row gutter={8} justify="end" align="end" type="flex">
               <Col span={14} />
               <Col span={10} pull={2} style={{ textAlign: 'right' }}>
-                {/* <span style={{ marginRight: 45, fontWeight: 'normal' }}>优惠券（YHQ20180103111256）满10元减1元</span> */}
+                {/* <span
+                  style={{ marginRight: 45, fontWeight: 'normal' }}
+                >
+                  优惠券（YHQ20180103111256）满10元减1元
+                </span> */}
                 <span>优惠抵扣：<span className="number">￥-0.00</span></span>
               </Col>
             </Row>
