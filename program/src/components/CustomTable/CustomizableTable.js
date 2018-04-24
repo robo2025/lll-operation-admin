@@ -31,10 +31,10 @@ export default class CustomizableTable extends React.Component {
   }
 
   // 订单处理点击：催货、订单取消、收货延期
-handleOrderClick = (key) => {
-  const [modalKey, orderKey] = key.split('-');
-  this.props.onHandleOrderClick(modalKey, orderKey);
-}
+  handleOrderClick = (key) => {
+    const [modalKey, orderKey] = key.split('-');
+    this.props.onHandleOrderClick(modalKey, orderKey);
+  }
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;

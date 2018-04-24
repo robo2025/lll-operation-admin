@@ -174,7 +174,6 @@ class MenuForm extends React.Component {
     getStanrdCatalog(this.props.data);
     let breadDataJson = breadDataStr ? JSON.parse(breadDataStr) : [{ level: 0, id: 0, category_name: '根目录' }];
     breadDataJson = _.compact(breadDataJson);
-    console.log('---', this.props.data, breadDataJson);
     let idx = 1;
     // const arr2 = [52, 60];
 
@@ -187,7 +186,6 @@ class MenuForm extends React.Component {
         return o.id === breadDataJson[idx].id;
       });
       idx += 1;
-      console.log('测试', newArr);
       currLyChildren = newArr;
       if (idx < breadDataJson.length) {
         getChildCataLog(newArr.lyChildren);
@@ -196,10 +194,8 @@ class MenuForm extends React.Component {
     }
     if (this.props.data.length > 0) {
       getChildCataLog(this.props.data);
-      console.log('currLyChildren', currLyChildren);
     }
 
-    console.log('要展示类目数组', currLyChildren.lyChildren);
     this.state = {
       visible: false,
       currCatalog: {}, // 当前要被新增的类目
@@ -265,7 +261,6 @@ class MenuForm extends React.Component {
                   :
                   <a onClick={() => this.changeCatalogStatus(record.id, 0)} style={{ color: '#E21918' }}>禁用</a>
               }
-
             </span>
           ) : (
             <span>
@@ -283,6 +278,8 @@ class MenuForm extends React.Component {
                   :
                   <a onClick={() => this.changeCatalogStatus(record.id, 0)}>禁用</a>
               }
+              <Divider type="vertical" />              
+              <a onClick={() => { this.onFilterClick(record); }}>筛选项设置</a>                      
             </span>
           );
       },
@@ -294,6 +291,9 @@ class MenuForm extends React.Component {
     // this.setState({ currCatalogData: getStanrdCatalog(this.props.data) });
   }
 
+  onFilterClick = (record) => {
+    this.props.onFilterClick(record);
+  }
 
   // 类目点击
   handleCatelogItemClick = (record) => {
@@ -405,7 +405,7 @@ class MenuForm extends React.Component {
 
 
   // 类目提交
-  handleSubmit() {
+  handleSubmit = () => {
     console.log('提交信息');
   }
 
@@ -511,7 +511,7 @@ class MenuForm extends React.Component {
       wrapperCol: { span: 12 },
     } : null;
 
-    const { data } = this.props; // 表单数据
+    const { data, onFilterClick } = this.props; // 表单数据
     const { catalogName, currCatalog, isSort, breadData } = this.state;
 
     // const dataTemp = JSON.stringify(data);
@@ -521,7 +521,6 @@ class MenuForm extends React.Component {
     // });
 
     const breadDataLength = _.compact(breadData).length;// 当前面包屑有效数据长度
-    console.log('当前类目:', this.state, breadDataLength);
     
     return (
       <div className={styles['catelog-wrap']}>

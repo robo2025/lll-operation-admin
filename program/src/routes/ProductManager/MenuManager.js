@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Card, message } from 'antd';
+import { Card, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import FilterContent from '../../components/ModalContent/FilterContent';
 import DragMenuForm from './MenuForm';
 import { handleServerMsg } from '../../utils/tools';
 
@@ -20,6 +21,9 @@ class MenuManager extends React.Component {
     this.removeCatalog = this.removeCatalog.bind(this);
     this.modifyCatalogStatus = this.modifyCatalogStatus.bind(this);
     this.modifyCatalog = this.modifyCatalog.bind(this);
+    this.state = {
+      visible: false,
+    };
   }
   componentDidMount() {
     const { dispatch } = this.props;
@@ -37,7 +41,7 @@ class MenuManager extends React.Component {
       name,
       isActive: isActive + 0,
       desc,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },            
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
   }
 
@@ -50,7 +54,7 @@ class MenuManager extends React.Component {
       success: (res) => {
         message.success(res.msg);
       },
-      error: (res) => { message.error(handleServerMsg(res.msg)); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
   }
 
@@ -61,7 +65,7 @@ class MenuManager extends React.Component {
       type: 'catalog/modifyStatus',
       categoryId: id,
       isActive: status,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
   }
 
@@ -74,7 +78,7 @@ class MenuManager extends React.Component {
       name,
       isActive,
       desc,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
   }
 
@@ -85,12 +89,29 @@ class MenuManager extends React.Component {
       type: 'catalog/sortCatalogLevel',
       level,
       data,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },      
+      error: (res) => { message.error(handleServerMsg(res.msg)); },
+    });
+  }
+
+  // 是否展示Modal
+  showModal = (record) => {
+    this.setState({ visible: true, currCatalog: record });
+  }
+
+  handleOk = () => {
+    this.setState({
+      visible: false,
+    });
+  }
+  handleCancel = () => {
+    this.setState({
+      visible: false,
     });
   }
 
   render() {
     const { catalog, loading } = this.props;
+    const { visible } = this.state;
     const catalogList = catalog.list;
     return (
       <PageHeaderLayout title="产品目录管理">
@@ -102,8 +123,19 @@ class MenuManager extends React.Component {
             modifyStatus={this.modifyCatalogStatus}
             modifyInfo={this.modifyCatalog}
             sortCatalog={this.sortCatalogLevel}
+            onFilterClick={this.showModal}
           />
         </Card>
+        <Modal
+          visible={visible}
+          width={800}
+          confirmLoading={false}
+          title="筛选条件项设置"         
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+        >
+          <FilterContent />
+        </Modal>
       </PageHeaderLayout>
     );
   }
