@@ -4,8 +4,12 @@ const menuData = [{
   path: 'product',
   children: [
     {
-      name: '产品类目管理',
+      name: '产品类目列表',
       path: 'menu',
+    },
+    {
+      name: '产品型号列表',
+      path: 'type',
     },
     {
       name: '产品列表',
@@ -45,6 +49,38 @@ const menuData = [{
     {
       name: '退货单列表',
       path: 'list',
+    },
+  ],
+}, {
+  name: '品牌管理',
+  path: 'brand',
+  icon: 'bars',
+  children: [
+    {
+      name: '新增品牌',
+      path: 'add',
+    },
+    {
+      name: '编辑品牌',
+      path: 'edit',
+    },
+    {
+      name: '查看品牌',
+      path: 'view',
+    },
+  ],
+}, {
+  name: '导入导出管理',
+  path: 'import-export',
+  icon: 'bars',
+  children: [
+    {
+      name: '导入列表',
+      path: 'import-list',
+    },
+    {
+      name: '导出列表',
+      path: 'export-list',
     },
   ],
 }];
