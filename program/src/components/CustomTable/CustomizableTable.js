@@ -1,26 +1,15 @@
-import React from 'react';
-import { Table } from 'antd';
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Table, Alert } from 'antd';
 import styles from './order-table.less';
 
 
 export default class CustomizableTable extends React.Component {
-  state = {
-    selectedRowKeys: [],
-    totalCallNo: 0,
-    isShowModal: false,
-  };
-
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
-    const totalCallNo = selectedRows.reduce((sum, val) => {
-      return sum + parseFloat(val.callNo, 10);
-    }, 0);
-
     if (this.props.onSelectRow) {
       this.props.onSelectRow(selectedRows);
     }
-
-    this.setState({ selectedRowKeys, totalCallNo });
-  }
+  };
 
   handleTableChange = (pagination, filters, sorter) => {
     this.props.onChange(pagination, filters, sorter);
@@ -30,42 +19,47 @@ export default class CustomizableTable extends React.Component {
     this.handleRowSelectChange([], []);
   }
 
-  // 订单处理点击：催货、订单取消、收货延期
-  handleOrderClick = (key) => {
-    const [modalKey, orderKey] = key.split('-');
-    this.props.onHandleOrderClick(modalKey, orderKey);
-  }
-
   render() {
-    const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
-    const { data, columns, loading, total } = this.props;
-
+    const { data, columns, loading, total, rowSelection, scroll } = this.props;
+    const { selectedRowKeys } = rowSelection;
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
       total,
     };
 
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.handleRowSelectChange,
-      getCheckboxProps: record => ({
-        disabled: record.disabled,
-      }),
-    };
-
     return (
       <div className={styles.standardTable}>
+        <div className={styles.tableAlert}>
+          <Alert
+            message={
+              <Fragment>
+                已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
+                <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>
+                  清空
+                </a>
+              </Fragment>
+            }
+            type="info"
+            showIcon
+          />
+        </div>
         <Table
           loading={loading}
-          rowKey={record => record.id}
+          rowKey={record => (record.gno ? record.gno : record.idx)}
+          rowSelection={rowSelection}
           dataSource={data}
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 1800 }}
+          scroll={scroll || { x: 1800 }}
         />
       </div>
     );
   }
 }
+
+CustomizableTable.propTypes = {
+  data: PropTypes.array.isRequired,
+  columns: PropTypes.array.isRequired,
+};

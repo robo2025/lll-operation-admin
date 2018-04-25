@@ -452,8 +452,6 @@ export default class GoodsMananger extends Component {
       </h4>
     );
 
-    console.log('商品列表', good);
-
     return (
       <PageHeaderLayout title="商品管理">
         <Card bordered={false} className={styles['search-wrap']} title="搜索条件">

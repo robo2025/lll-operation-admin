@@ -11,7 +11,6 @@ import styles from './product-manager.less';
 const FormItem = Form.Item;
 const { Option } = Select;
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
-const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
 

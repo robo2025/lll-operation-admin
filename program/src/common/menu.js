@@ -57,6 +57,10 @@ const menuData = [{
   icon: 'bars',
   children: [
     {
+      name: '品牌列表',
+      path: 'list',
+    },
+    {
       name: '新增品牌',
       path: 'add',
     },
