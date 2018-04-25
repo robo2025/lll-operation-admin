@@ -3,10 +3,11 @@ import React from 'react';
 import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/braft.css';
 import { getFileSuffix } from '../../utils/tools';
+import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
 import styles from './rich-editor.less';
 
-const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
-const IMG_SERVER = '//imgcdn.robo2025.com/'; ;
+const UPLOAD_URL = QINIU_SERVER; // 文件上传地址
+const IMG_SERVER = FILE_SERVER; 
 export default class RichEditor extends React.Component {
   state = {
     htmlContent: '',

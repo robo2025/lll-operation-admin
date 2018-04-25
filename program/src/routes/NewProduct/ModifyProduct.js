@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-24 15:33:16
+ * @Last Modified time: 2018-04-25 11:26:54
  */
 import React, { Component } from 'react';
 import moment from 'moment';
@@ -14,10 +14,8 @@ import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
 import { queryString, checkFile, handleServerMsg } from '../../utils/tools';
-
 import styles from './modify-product.less';
 
-const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 const actionFlag = ['新增', '修改', '删除']; // 操作类型 (1:新增 2:修改 3:删除)
 const operationTabList = [{
