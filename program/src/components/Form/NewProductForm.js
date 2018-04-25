@@ -18,7 +18,7 @@ function getStanrdCatalog(data) {
     }
   });
 }
-const FILE_CDN = FILE_CDN;
+const FILE_CDN = FILE_SERVER;
 const UPLOAD_URL = QINIU_SERVER;
 const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   a: '1',
