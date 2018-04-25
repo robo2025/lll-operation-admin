@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
 import { checkFile, getFileSuffix, removeObjFromArr, replaceObjFromArr } from '../../utils/tools';
+import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
 import styles from './product-info.less';
 
+const FILE_CDN = FILE_SERVER;
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const IMAGE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
@@ -17,7 +19,6 @@ function getStanrdCatalog(data) {
     }
   });
 }
-const FILE_CDN = '//imgcdn.robo2025.com/';
 const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   a: '1',
   b: '2',
@@ -224,7 +225,6 @@ class ProductForm extends Component {
   }
 
   render() {
-    console.log('new product state:', this.state);
     const formItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 15 },
@@ -232,7 +232,6 @@ class ProductForm extends Component {
 
     const { getFieldDecorator } = this.props.form;
     const { catalog, uploadToken } = this.props;
-    const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
     const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cadUrl } = this.state;
     const uploadButton = (
       <div>
@@ -339,7 +338,7 @@ class ProductForm extends Component {
                 >
                   <Upload
                     name="file"
-                    action={UPLOAD_URL}
+                    action={QINIU_SERVER}
                     fileList={cadUrl}
                     beforeUpload={currFile => (this.beforeUpload('cadUrl', currFile))}
                     onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
@@ -371,7 +370,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={a}
@@ -391,7 +390,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={b}
@@ -411,7 +410,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={c}
@@ -431,7 +430,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={d4}
@@ -451,7 +450,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={d5}
@@ -471,7 +470,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={d6}
