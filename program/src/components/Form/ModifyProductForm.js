@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form, Spin, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs, message } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
 import { checkFile, getFileSuffix, replaceObjFromArr, removeObjFromArr } from '../../utils/tools';
-
+import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
 import styles from './product-info.less';
 
 
@@ -18,7 +18,8 @@ const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   d5: '5',
   d6: '6',
 };
-const FILE_CDN = '//imgcdn.robo2025.com/';
+const FILE_CDN = FILE_SERVER;
+const UPLOAD_URL = QINIU_SERVER;
 
 
 // 将服务器目录转换成需求目录
@@ -253,7 +254,6 @@ class ProductForm extends Component {
       labelCol: { md: { span: 4 }, xxl: { span: 3 } },
       wrapperCol: { md: { span: 16 }, xxl: { span: 12 } },
     };
-    const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
     const { getFieldDecorator } = this.props.form;
     const { data, catalog, loading, uploadToken } = this.props;
     const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cad_url, cadUrl } = this.state;

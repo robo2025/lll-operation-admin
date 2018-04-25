@@ -40,6 +40,9 @@ export const HOME_PAGE = `${myHost}/#/product/list`;
 // 前端验证URL
 export const VERIFY_PAGE = `${myHost}/#/test`;
 
+// 七牛云上传地址
+export const QINIU_SERVER = '//upload.qiniup.com';
+
 // 文件服务器URL
 export const FILE_SERVER = '//imgcdn.robo2025.com/';
 

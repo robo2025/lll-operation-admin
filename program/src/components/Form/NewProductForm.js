@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
 import { checkFile, getFileSuffix, removeObjFromArr, replaceObjFromArr } from '../../utils/tools';
+import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
 import styles from './product-info.less';
 
 const FormItem = Form.Item;
@@ -17,7 +18,8 @@ function getStanrdCatalog(data) {
     }
   });
 }
-const FILE_CDN = '//imgcdn.robo2025.com/';
+const FILE_CDN = FILE_CDN;
+const UPLOAD_URL = QINIU_SERVER;
 const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   a: '1',
   b: '2',
@@ -232,7 +234,6 @@ class ProductForm extends Component {
 
     const { getFieldDecorator } = this.props.form;
     const { catalog, uploadToken } = this.props;
-    const UPLOAD_URL = '//up.qiniu.com'; // 文件上传地址
     const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cadUrl } = this.state;
     const uploadButton = (
       <div>

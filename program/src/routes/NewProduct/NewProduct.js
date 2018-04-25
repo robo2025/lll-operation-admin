@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-03 11:01:55
+ * @Last Modified time: 2018-04-25 10:55:12
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -13,6 +13,7 @@ import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
 import { checkFile, handleServerMsg } from '../../utils/tools';
+
 import styles from './newproduct.less';
 
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
