@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-03 11:01:55
+ * @Last Modified time: 2018-04-26 14:57:59
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -10,12 +10,32 @@ import { Card, Button, Input, Modal, Table, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
-import ProductList from '../../components/CustomTable/ProductList';
 import AddAttrForm from '../../components/Form//AddAttrForm';
 import { checkFile, handleServerMsg } from '../../utils/tools';
 import styles from './newproduct.less';
 
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
+const FAKE_BRANDS = [{ // 品牌信息
+  id: 'b0001',
+  name: '固高',
+  englishName: 'GUGAO',
+  place: '日本',
+}, {
+  id: 'b0002',
+  name: '川崎',
+  englishName: 'CHUANQI',
+  place: '日本',
+}, {
+  id: 'b0003',
+  name: '松下',
+  englishName: 'SONGXIA',
+  place: '日本',
+}, {
+  id: 'b0004',
+  name: '欧姆龙',
+  englishName: 'OUMULONG',
+  place: '美国',
+}];
 
 @connect(({ loading, product, catalog, upload }) => ({
   product,
@@ -129,7 +149,7 @@ export default class NewProduct extends Component {
 
   // 当表单被修改事件
   handleFormChange = (changedFields) => {
-    console.log('handleFormChange', Object.keys(changedFields));
+    console.log('handleFormChange', changedFields);
     if (Object.keys(changedFields)[0] === 'category') {
       const categoryIdsArr = changedFields.category;
       const [category_id_1, category_id_2, category_id_3, category_id_4] = categoryIdsArr;
@@ -140,6 +160,13 @@ export default class NewProduct extends Component {
           category_id_2,
           category_id_3,
           category_id_4,
+        },
+      });
+    } else if (changedFields.brand_name) {
+      this.setState({
+        fields: { 
+          ...this.state.fields,
+          ...FAKE_BRANDS.find(val => val.id === changedFields.brand_name), 
         },
       });
     } else {
@@ -320,40 +347,16 @@ export default class NewProduct extends Component {
         (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
     }];
 
-    const buttonGrop = (
-      <div style={{ display: 'inline-block', marginLeft: 20 }}>
-        <Button type="primary" onClick={this.showModal}>关联产品数据模板</Button>
-        <Button style={{ marginLeft: 20 }}>一键清除数据</Button>
-      </div>);
-
-    console.log('新建产品state', this.state);
+    console.log('state', this.state);
 
     return (
       <PageHeaderLayout title="新建产品信息">
         <Card bordered={false} loading={loading.models.catalog} className={styles['new-product-wrap']}>
-          {/* 参照数据Modal */}
-          <Modal
-            width="80%"
-            visible={isShowModal}
-            title="关联参照数据"
-            okText=""
-            cancelText=""
-            onCancel={this.onCancel}
-            onOk={this.onOk}
-          >
-            <ProductList
-              data={product.list}
-              onAssociate={this.handleAssociate}
-              onChange={this.handleProductTableChange}
-              total={total}
-              loading={loading.models.product}
-            />
-          </Modal>
           {/* 添加其它属性Modal */}
           <Modal
             width="650px"
             visible={isShowAttrMOdal}
-            title="添加属性项"
+            title="新建参数项"
             onCancel={this.onCancel}
             onOk={this.onOk}
           >
@@ -364,10 +367,10 @@ export default class NewProduct extends Component {
           </Modal>
           <SectionHeader
             title="产品基础信息"
-            extra={buttonGrop}
           />
           <NewProductForm
             data={this.state.fields}
+            brands={FAKE_BRANDS}
             onChange={this.handleFormChange}
             catalog={catalog.level}
             loading={loading}
@@ -376,8 +379,8 @@ export default class NewProduct extends Component {
           />
           {/* 产品其他属性 */}
           <SectionHeader
-            title="产品其他属性"
-            extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>添加其他属性项</Button>}
+            title="产品规格参数项"
+            extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>新建参数项</Button>}
           />
           <div style={{ width: 700, maxWidth: '70%' }}>
             <Table

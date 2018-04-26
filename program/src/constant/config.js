@@ -6,7 +6,8 @@
 export const URL = 'https://login.robo2025.com';
 
 // 网站内容接口URL
-export const API_URL = '//api-product.robo2025.com/api/admin';
+export const API_URL = 'https://testapi.robo2025.com/scm/operation';
+// 140.143.56.14:9005/operation
 
 // 上传文件获取token URL
 export const UPLOAD_URL = '//api-common-service.robo2025.com';

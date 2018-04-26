@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
+import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs, Select } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
 import { checkFile, getFileSuffix, removeObjFromArr, replaceObjFromArr } from '../../utils/tools';
 import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
@@ -7,6 +7,7 @@ import styles from './product-info.less';
 
 const FILE_CDN = FILE_SERVER;
 const FormItem = Form.Item;
+const { Option } = Select;
 const { TabPane } = Tabs;
 const IMAGE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
 const CAD_TYPES = ['doc', 'docx', 'pdf', 'dwt', 'dxf', 'dxb'];// 支持的CAD文件格式
@@ -84,7 +85,6 @@ class ProductForm extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('will reiceve', nextProps);
     const { pics, cad_url } = nextProps.data;
     if (pics) {
       this.setState({
@@ -231,7 +231,7 @@ class ProductForm extends Component {
     };
 
     const { getFieldDecorator } = this.props.form;
-    const { catalog, uploadToken } = this.props;
+    const { data, catalog, uploadToken, brands } = this.props;
     const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cadUrl } = this.state;
     const uploadButton = (
       <div>
@@ -239,8 +239,9 @@ class ProductForm extends Component {
         <div className="ant-upload-text">上传</div>
       </div>
     );
-
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构    
+
+    console.log('props data', data);
 
     return (
       <div className={styles['product-info-wrap']} >
@@ -248,7 +249,7 @@ class ProductForm extends Component {
         <div style={{ float: 'left', width: '50%' }}>
           <Form layout="horizontal">
             <FormItem
-              label="所属分类"
+              label="所属类目"
               {...formItemLayout}
             >
               {getFieldDecorator('category', {
@@ -264,32 +265,6 @@ class ProductForm extends Component {
               )}
             </FormItem>
             <FormItem
-              label="产品名称"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('product_name', {
-                rules: [{
-                  required: true,
-                  message: '请填写产品名称',
-                }],
-              })(
-                <Input />
-              )}
-            </FormItem>
-            <FormItem
-              label="型号"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('partnumber', {
-                rules: [{
-                  required: true,
-                  message: '请填写产品型号',
-                }],
-              })(
-                <Input />
-              )}
-            </FormItem>
-            <FormItem
               label="品牌"
               {...formItemLayout}
             >
@@ -299,31 +274,54 @@ class ProductForm extends Component {
                   message: '请填写产品品牌',
                 }],
               })(
-                <Input />
+                <Select
+                  showSearch
+                  placeholder="请选择一个品牌"
+                >
+                  {
+                    brands.map(val => (
+                      <Option value={val.id}>{val.name}</Option>
+                    ))
+                  }
+                </Select>
               )}
             </FormItem>
             <FormItem
               label="英文名"
               {...formItemLayout}
             >
-              {getFieldDecorator('english_name', {
+              {getFieldDecorator('englishName', {
                 rules: [{
                   required: false,
                   message: '请填写产品英文名',
                 }],
+                initialValue: data.englishName || '',
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem
+              label="产地1"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('place', {
+                rules: [{
+                  required: true,
+                  message: '请完善产品产地',
+                }],
+                initialValue: data.place || '',
               })(
                 <Input />
               )}
             </FormItem>
             <FormItem
-              label="产地"
+              label="产品名称"
               {...formItemLayout}
             >
-              {getFieldDecorator('prodution_place', {
+              {getFieldDecorator('product_name', {
                 rules: [{
                   required: true,
-                  message: '请完善产品产地',
-
+                  message: '请填写产品名称',
                 }],
               })(
                 <Input />
@@ -505,7 +503,19 @@ class ProductForm extends Component {
                 token={uploadToken}
               />
             </TabPane>
-            <TabPane tab="常见问题FAQ" key="3" >
+            <TabPane tab="学堂" key="3">
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}
+              />
+            </TabPane>
+            <TabPane tab="视频详解" key="4">
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}
+              />
+            </TabPane>
+            <TabPane tab="常见问题FAQ" key="5" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
                 token={uploadToken}

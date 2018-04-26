@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Row, Col, Input } from 'antd';
+import { Form, Row, Col, Input, Checkbox } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -18,17 +18,17 @@ class AddAttrForm extends Component {
     return (
       <Form>
         <Row gutter={24}>
-          <Col span={9} offset={2}>
+          <Col span={9} offset={1}>
             <FormItem
-              label="属性名称"
-              labelCol={{ span: 9 }}
-              wrapperCol={{ span: 15 }}
+              label="参数项名称"
+              labelCol={{ span: 10 }}
+              wrapperCol={{ span: 14 }}
             >
               {
-                getFieldDecorator('attr_name', {
+                getFieldDecorator('spec_name', {
                   rules: [{
                     required: true,
-                    message: '请输入属性名称',
+                    message: '请输入',
                   }],
                 })(
                   <Input />
@@ -38,18 +38,56 @@ class AddAttrForm extends Component {
           </Col>
           <Col span={9}>
             <FormItem
-              label="数值"
+              label="单位"
               labelCol={{ span: 9 }}
               wrapperCol={{ span: 15 }}
             >
               {
-                getFieldDecorator('attr_value', {
+                getFieldDecorator('spec_unit', {
                   rules: [{
-                    required: true,
-                    message: '请输入数值数据',
+                    required: false,
+                    message: '请输入',
                   }],
                 })(
                   <Input />
+                )
+              }
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={5} offset={5}>
+            <FormItem
+              label=""
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 23 }}
+            >
+              {
+                getFieldDecorator('is_require', {
+                  rules: [{
+                    required: false,
+                    message: '请输入',
+                  }],
+                })(
+                  <Checkbox>必填项</Checkbox>
+                )
+              }
+            </FormItem>
+          </Col>
+          <Col span={5}>
+            <FormItem
+              label=""
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 23 }}
+            >
+              {
+                getFieldDecorator('is_search', {
+                  rules: [{
+                    required: false,
+                    message: '请输入',
+                  }],
+                })(
+                  <Checkbox>筛选条件项</Checkbox>
                 )
               }
             </FormItem>

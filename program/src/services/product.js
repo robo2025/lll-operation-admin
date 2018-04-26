@@ -9,9 +9,8 @@ import { queryString } from '../utils/tools';
  *
 */
 export async function queryProducts({ params, offset = 0, limit = 10 }) {
-  console.log('剩余参数--', params, queryString.toQueryString(params));
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/products?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`, {
+  return lyRequest(`${API_URL}/products`, {
     headers: {
       Authorization: acessToken,
     },
