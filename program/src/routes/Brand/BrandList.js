@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react';
-import { Card, Row, Col, Form, Input, Button, Icon, Divider, Dropdown } from 'antd';
+import { Card, Row, Col, Form, Input, Button, Icon, Divider } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
+
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -45,13 +46,13 @@ const columns = [{
   key: 'actions',
   render: (text, record) => (
     <Fragment>
-      <a href={`#/goods/list/detail?goodId=${record.id}&audit=1`}>编辑</a>
+      <a href="#/brand/list/modify">编辑</a>
       <Divider type="vertical" />
       <a >
         删除
       </a>
       <Divider type="vertical" />
-      <a href={'#/goods/list/detail?goodId=' + record.id}>查看</a>
+      <a href="#/brand/list/detail">查看</a>
     </Fragment>
   ),
   width: 150,
@@ -139,6 +140,7 @@ export default class BrandList extends Component {
 
   render() {
     const { selectedRowKeys, selectedRows } = this.state;
+    const { history } = this.props;
     const rowSelection = {
       fixed: true,
       selectedRowKeys,
@@ -155,7 +157,7 @@ export default class BrandList extends Component {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon="plus" type="primary" onClick={() => { history.push('/brand/list/new'); }}>
                 新建品牌
               </Button>
               {selectedRows.length > 0 && (

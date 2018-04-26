@@ -103,6 +103,19 @@ export const getRouterData = (app) => {
     '/brand/list': {
       component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandList')),
     },
+    '/brand/:list/new': {
+      component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandNew')),
+      name: '新增品牌',
+    },
+    '/brand/:list/modify': {
+      component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandModify')),
+      name: '编辑品牌',
+    },
+    '/brand/:list/detail': {
+      component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandDetail')),
+      name: '品牌详情',      
+    },
+   
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());

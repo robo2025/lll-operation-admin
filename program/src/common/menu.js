@@ -60,18 +60,6 @@ const menuData = [{
       name: '品牌列表',
       path: 'list',
     },
-    {
-      name: '新增品牌',
-      path: 'add',
-    },
-    {
-      name: '编辑品牌',
-      path: 'edit',
-    },
-    {
-      name: '查看品牌',
-      path: 'view',
-    },
   ],
 }, {
   name: '导入导出管理',
