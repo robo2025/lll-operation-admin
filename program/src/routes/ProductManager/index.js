@@ -10,7 +10,6 @@ import styles from './product-manager.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 const { RangePicker } = DatePicker;
 const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
 
@@ -31,7 +30,6 @@ export default class ProductManager extends Component {
     this.removeProducts = this.removeProducts.bind(this);
     this.querySupplyInfo = this.querySupplyInfo.bind(this);
     this.state = {
-      modalVisible: false,
       expandForm: false,
       selectedRows: [],
       formValues: {},
@@ -49,7 +47,7 @@ export default class ProductManager extends Component {
     dispatch({
       type: 'product/fetch',
       offset: (args.page - 1) * PAGE_SIZE,
-      limit: PAGE_SIZE,      
+      limit: PAGE_SIZE,
     });
   }
 
@@ -130,13 +128,13 @@ export default class ProductManager extends Component {
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch, history } = this.props;
     const { formValues } = this.state;
-   
+
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
-    
+
     // 分页：将页数提取到url上
     history.push({
       pathname: '/product/list',
@@ -227,26 +225,6 @@ export default class ProductManager extends Component {
           created_end,
         },
       });
-    });
-  }
-
-  handleModalVisible = (flag) => {
-    this.setState({
-      modalVisible: !!flag,
-    });
-  }
-
-  handleAdd = (fields) => {
-    this.props.dispatch({
-      type: 'rule/add',
-      payload: {
-        description: fields.desc,
-      },
-    });
-
-    message.success('添加成功');
-    this.setState({
-      modalVisible: false,
     });
   }
 
@@ -438,7 +416,8 @@ export default class ProductManager extends Component {
                   <span>
                     <Button
                       onClick={this.removeProducts}
-                    >删除
+                    >
+                      删除
                     </Button>
                   </span>
                 ) : null

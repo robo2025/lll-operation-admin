@@ -27,8 +27,8 @@ export default {
         headers,
       });
     },
-    *fetchDetail({ productId, success, error }, { call, put }) {
-      const response = yield call(queryProductDetail, { productId });
+    *fetchDetail({ pno, success, error }, { call, put }) {
+      const response = yield call(queryProductDetail, { pno });
       if (response.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(response.data);
       } else if (typeof error === 'function') { error(response); return; }

@@ -281,15 +281,28 @@ class ProductForm extends Component {
         <div style={{ float: 'left', width: '50%' }}>
           <Form layout="horizontal">
             <FormItem
-              label="所属分类"
+              label="所属类目"
               {...formItemLayout}
             >
-              <Cascader
-                defaultValue={slectedCatagory}
-                options={catalog}
-                placeholder="请您选择类目"
-                onChange={(values) => { this.handleMenuChange(values); }}
-              />
+              <span>{slectedCatagory.join('-')}</span>
+            </FormItem>
+            <FormItem
+              label="品牌"
+              {...formItemLayout}
+            >
+              <span>{data.brand ? data.brand.brand_name : ''}</span>
+            </FormItem>
+            <FormItem
+              label="品牌英文名"
+              {...formItemLayout}
+            >
+              <span>{data.brand ? data.brand.english_name : ''}</span>
+            </FormItem>
+            <FormItem
+              label="产地"
+              {...formItemLayout}
+            >
+              <span>{data.brand ? data.brand.registration_place : ''}</span>
             </FormItem>
             <FormItem
               label="产品名称"
@@ -310,46 +323,6 @@ class ProductForm extends Component {
                 rules: [{ required: true }],
               })(
                 <Input disabled />
-              )}
-            </FormItem>
-            <FormItem
-              label="型号"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('partnumber', {
-                rules: [{ required: true }],
-              })(
-                <Input />
-              )}
-            </FormItem>
-            <FormItem
-              label="品牌"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('brand_name', {
-                rules: [{ required: true }],
-              })(
-                <Input />
-              )}
-            </FormItem>
-            <FormItem
-              label="英文名"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('english_name', {
-                rules: [{ required: false }],
-              })(
-                <Input />
-              )}
-            </FormItem>
-            <FormItem
-              label="产地"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('prodution_place', {
-                rules: [{ required: true }],
-              })(
-                <Input />
               )}
             </FormItem>
           </Form>
@@ -528,11 +501,22 @@ class ProductForm extends Component {
                 defaultValue={data.description}
               />
             </TabPane>
-            <TabPane tab="常见问题FAQ" key="3" >
+            <TabPane tab="学堂" key="3">
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}
+              />
+            </TabPane>
+            <TabPane tab="视频详解" key="4">
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}
+              />
+            </TabPane>
+            <TabPane tab="常见问题FAQ" key="5" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
                 token={uploadToken}
-                defaultValue={data.faq}
               />
             </TabPane>
           </Tabs>

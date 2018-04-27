@@ -13,9 +13,30 @@ class AddAttrForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { defaultValue } = this.props;
+    console.log('穿过来要被修改的数据', defaultValue);
     return (
       <Form>
         <Row gutter={24}>
+          <Col span={9} offset={1} style={{ display: 'none' }}>
+            <FormItem
+              label="ID"
+              labelCol={{ span: 10 }}
+              wrapperCol={{ span: 14 }}
+            >
+              {
+                getFieldDecorator('id', {
+                  rules: [{
+                    required: false,
+                    message: '请输入',
+                  }],
+                  initialValue: defaultValue ? defaultValue.id : '',
+                })(
+                  <span />
+                )
+              }
+            </FormItem>
+          </Col>
           <Col span={9} offset={1}>
             <FormItem
               label="参数项名称"
@@ -28,6 +49,7 @@ class AddAttrForm extends Component {
                     required: true,
                     message: '请输入',
                   }],
+                  initialValue: defaultValue ? defaultValue.spec_name : '',
                 })(
                   <Input />
                 )
@@ -46,6 +68,7 @@ class AddAttrForm extends Component {
                     required: false,
                     message: '请输入',
                   }],
+                  initialValue: defaultValue ? defaultValue.spec_unit : '',
                 })(
                   <Input />
                 )
@@ -63,7 +86,7 @@ class AddAttrForm extends Component {
               {
                 getFieldDecorator('is_require', {
                   valuePropName: 'checked',
-                  initialValue: false,
+                  initialValue: defaultValue ? defaultValue.is_require : false,
                 })(
                   <Checkbox>必填项</Checkbox>
                 )
@@ -78,8 +101,8 @@ class AddAttrForm extends Component {
             >
               {
                 getFieldDecorator('is_search', {
-                  valuePropName: 'checked',                  
-                  initialValue: false,                  
+                  valuePropName: 'checked',
+                  initialValue: defaultValue ? defaultValue.is_search : false,
                 })(
                   <Checkbox>筛选条件项</Checkbox>
                 )

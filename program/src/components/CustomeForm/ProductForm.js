@@ -41,20 +41,14 @@ function getPic(key, pics) {
   },
 })
 @Form.create()
-export default class NewGoodForm extends Component {
+export default class ProductForm extends Component {
   constructor(props) {
     super(props);
-    this.beforeUpload = this.beforeUpload.bind(this);
-    this.handleUploaderChange = this.handleUploaderChange.bind(this);
     this.pics = [];
     this.state = {
       previewVisible: false,
       previewImage: '',
-      isPicture: true,
-      isCad: true,
       file: { uid: '', name: '' },
-      pics: this.pics, // 产品图片集合
-      cad_url: [], // 产品cad文件集合
       a: getPic('正面', ['this.pics']),
       b: getPic('反面', ['this.pics']),
       c: getPic('侧面', ['this.pics']),
@@ -83,85 +77,11 @@ export default class NewGoodForm extends Component {
     this.props.onAttrChange(tempJson);
   }
 
-  // 图片上传前处理：验证文件类型
-  beforeUpload(key, file) {
-    this.setState({ file });
-    // console.log('before', file);
-    if (checkFile(file.name, ['cad'])) {
-      this.setState({ isCad: true });
-    } else if (checkFile(file.name, FILE_TYPES)) {
-      this.setState({ isPicture: true });
-    }
-    if (key === 'cad_url') {
-      if (!checkFile(file.name, ['cad', 'dwt', 'dwg', 'dws', 'dxf'])) {
-        message.error(`${file.name} 暂不支持上传`);
-        this.setState({ isCad: false });
-        return false;
-      }
-    } else if (!checkFile(file.name, FILE_TYPES)) {
-      message.error(`${file.name} 暂不支持上传`);
-      this.setState({ isPicture: false });
-      return false;
-    }
-  }
-
-  // cad和图片上传时处理
-  handleUploaderChange(key, fileList) {
-    console.log('文件上传', key, fileList);
-    const { pics, cad_url } = this.state;
-    const { onAttrChange } = this.props;
-    // 如果上传的是cad文件
-    if (key === 'cad_url' && this.state.isCad) {
-      fileList.slice(-1).forEach((file) => {
-        if (file.status === 'done') {
-          this.setState({ cad_url: [...cad_url, file.response.key] });
-          onAttrChange({ cad_url: [...cad_url, file.response.key] });
-        }
-      });
-      return;
-    }
-    // 如果上传的是图片
-    if (this.state.isPicture) {
-      const tempJson = {};
-      tempJson[key] = fileList;
-      this.setState(tempJson);
-      // console.log('状态改变', fileList);
-      const that = this;
-      // 上传成功，则将图片放入state里的pics数组内
-      fileList.map((file) => {
-        if (file.status === 'done') {
-          message.success(`${file.name} 文件上传成功`);
-          // that.setState({ file_url: file.response.key });
-          if (key === 'a') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '正面', img_url: file.response.key }, pics, 'img_type') });
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '正面', img_url: file.response.key }] });
-          } else if (key === 'b') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '反面', img_url: file.response.key }, pics, 'img_type') });
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '反面', img_url: file.response.key }] });
-          } else if (key === 'c') {
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '侧面', img_url: file.response.key }, pics, 'img_type') });
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '侧面', img_url: file.response.key }] });
-          } else if (key.substr(0, 1) === 'd') {
-            const idx = key.substr(1, 1);
-            this.setState({ pics: replaceObjFromArr({ id: pics.length - 100, img_type: '包装图' + idx, img_url: file.response.key }, pics, 'img_type') });
-            onAttrChange({ pics: [...pics, { id: pics.length - 100, img_type: '包装图' + idx, img_url: file.response.key }] });
-          }
-        } else if (file.status === 'error') {
-          message.error(`${file.name} 文件上传失败`);
-        }
-        return file;
-      });
-    } else if (this.state.isCad) {
-      console.log('cad fileList', fileList);
-    }
-  }
-
   render() {
     const formItemLayout = {
       labelCol: { md: { span: 4 }, xxl: { span: 3 } },
       wrapperCol: { span: 18 },
     };
-    const { getFieldDecorator } = this.props.form;
     const { data, loading } = this.props;
     const { category } = data;
     const slectedCatagory = category ? [
@@ -232,28 +152,22 @@ export default class NewGoodForm extends Component {
               <span>{slectedCatagory.join('-')}</span>
             </FormItem>
             <FormItem
-              label="型号"
-              {...formItemLayout}
-            >
-              <span>{data.partnumber}</span>
-            </FormItem>
-            <FormItem
               label="品牌"
               {...formItemLayout}
             >
-              <span>{data.brand_name}</span>
+              <span>{data.brand ? data.brand.brand_name : ''}</span>
             </FormItem>
             <FormItem
               label="品牌英文名"
               {...formItemLayout}
             >
-              <span>{data.english_name}</span>
+              <span>{data.brand ? data.brand.english_name : ''}</span>
             </FormItem>
             <FormItem
               label="产地"
               {...formItemLayout}
             >
-              <span>{data.prodution_place}</span>
+              <span>{data.brand ? data.brand.registration_place : ''}</span>
             </FormItem>
           </Form>
         </div >
@@ -275,14 +189,20 @@ export default class NewGoodForm extends Component {
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
           <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
-            <TabPane tab="商品概述" key="1">
-              <RichEditorShow content={data.summary ? data.summary : ''} />
+            <TabPane tab="产品概述" key="1">
+              <RichEditorShow content={data.summary ? data.summary : '无'} />
             </TabPane>
-            <TabPane tab="商品详情" key="2">
-              <RichEditorShow content={data.description ? data.description : ''} />
+            <TabPane tab="产品详情" key="2">
+              <RichEditorShow content={data.description ? data.description : '无'} />
             </TabPane>
-            <TabPane tab="常见问题FAQ" key="3" >
-              <RichEditorShow content={data.faq ? data.faq : ''} />
+            <TabPane tab="学堂" key="3">
+              <RichEditorShow content={data.course ? data.course : '无'} />
+            </TabPane>
+            <TabPane tab="视频详解" key="4">
+              <RichEditorShow content={data.video ? data.video : '无'} />
+            </TabPane>
+            <TabPane tab="常见问题FAQ" key="5" >
+              <RichEditorShow content={data.faq ? data.faq : '无'} />
             </TabPane>
           </Tabs>
         </div>

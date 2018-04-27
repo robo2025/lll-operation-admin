@@ -61,7 +61,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['product'], () => import('../routes/ProductManager')),
     },
     '/product/:list/new': {
-      component: dynamicWrapper(app, ['product', 'catalog', 'upload'], () => import('../routes/NewProduct/NewProduct')),
+      component: dynamicWrapper(app, ['product', 'catalog', 'brand', 'upload'], () => import('../routes/NewProduct/NewProduct')),
       name: '新建产品信息',
     },
     '/product/:list/detail': {
@@ -104,7 +104,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandList')),
     },
     '/brand/:list/new': {
-      component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandNew')),
+      component: dynamicWrapper(app, ['brand', 'catalog'], () => import('../routes/Brand/BrandNew')),
       name: '新增品牌',
     },
     '/brand/:list/modify': {

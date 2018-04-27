@@ -10,7 +10,7 @@ import { queryString } from '../utils/tools';
 */
 export async function queryProducts({ params, offset = 0, limit = 10 }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/products`, {
+  return lyRequest(`${API_URL}/products?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`, {
     headers: {
       Authorization: acessToken,
     },
@@ -59,11 +59,11 @@ export async function modifyProduct({ prdId, data }) {
 /**
  * 获取产品详情
  *
- * @param {number} productId 产品id
+ * @param {number} pno 产品ID编号
 */
-export async function queryProductDetail({ productId }) {
+export async function queryProductDetail({ pno }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/products/${productId}`, {
+  return lyRequest(`${API_URL}/products/${pno}`, {
     method: 'get',
     headers: {
       Authorization: acessToken,

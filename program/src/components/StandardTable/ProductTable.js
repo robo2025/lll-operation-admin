@@ -99,14 +99,14 @@ class ProductTable extends React.Component {
         dataIndex: 'brand',
         key: 'brand_name',
         width: 100,
-        render: text => (<span>{text.brand_name}</span>),
+        render: text => (<span>{text ? text.brand_name : '' }</span>),
       },
       {
         title: '产地',
         dataIndex: 'brand',
         key: 'registration_place',
         width: 100,
-        render: text => (<span>{text.registration_place}</span>),
+        render: text => (<span>{text ? text.registration_place : ''}</span>),
       },
       {
         title: '一级类目',
@@ -157,11 +157,9 @@ class ProductTable extends React.Component {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            <a href={'#/product/list/detail?prdId=' + record.id}>查看</a>
+            <a href={'#/product/list/detail?pno=' + record.pno}>查看</a>
             <Divider type="vertical" />
-            <a onClick={() => { this.props.editProduct(record.id); }}>修改</a>
-            {/* <Divider type="vertical" /> */}
-            {/* <a onClick={() => { this.handleSupplyInfoBtnClick(record.id); }}>供货信息</a> */}
+            <a href={'#/product/list/modify?pno=' + record.pno}>修改</a>
           </Fragment>
         ),
         width: 120,

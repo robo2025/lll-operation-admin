@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-26 17:51:37
+ * @Last Modified time: 2018-04-27 16:56:41
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -11,63 +11,27 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-import { checkFile, handleServerMsg } from '../../utils/tools';
+import { handleServerMsgObj } from '../../utils/tools';
 import styles from './newproduct.less';
 
-const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
-const FAKE_BRANDS = [{ // 品牌信息
-  id: 'b0001',
-  name: '固高',
-  englishName: 'GUGAO',
-  place: '日本',
-}, {
-  id: 'b0002',
-  name: '川崎',
-  englishName: 'CHUANQI',
-  place: '日本',
-}, {
-  id: 'b0003',
-  name: '松下',
-  englishName: 'SONGXIA',
-  place: '日本',
-}, {
-  id: 'b0004',
-  name: '欧姆龙',
-  englishName: 'OUMULONG',
-  place: '美国',
-}];
 
-@connect(({ loading, product, catalog, upload }) => ({
+@connect(({ loading, product, catalog, upload, brand }) => ({
   product,
   catalog,
   upload,
   loading,
+  brand,
 }))
 export default class NewProduct extends Component {
   constructor(props) {
     super(props);
-    this.showModal = this.showModal.bind(this);
-    this.ShowAttrModal = this.ShowAttrModal.bind(this);
-    this.handleAssociate = this.handleAssociate.bind(this);
-    this.handleFormChange = this.handleFormChange.bind(this);
-    this.handleProductAttr = this.handleProductAttr.bind(this);
-    this.handleSubmitProduct = this.handleSubmitProduct.bind(this);
-    this.handleAddProductOtherAttr = this.handleAddProductOtherAttr.bind(this);
-    this.handleAddOtherAttrFiled = this.handleAddOtherAttrFiled.bind(this);
-    this.handleDeleteOtherAttrFiled = this.handleDeleteOtherAttrFiled.bind(this);
-    this.beforeUpload = this.beforeUpload.bind(this);
-    this.onCancel = this.onCancel.bind(this);
-    this.onOk = this.onOk.bind(this);
     this.state = {
-      isShowModal: false,
       isShowAttrMOdal: false,
       fields: {
         pics: [],
-        other_attrs: [],
+        cad_urls: [],
       },
       specs: [], // 用户自定义的其他属性
-      file: { uid: '', name: '' },
-      isPicture: true,
     };
   }
 
@@ -82,66 +46,70 @@ export default class NewProduct extends Component {
     dispatch({
       type: 'catalog/fetchLevel',
     });
+    // 请求品牌列表
+    dispatch({
+      type: 'brand/fetchAll',
+      success: (res) => { this.setState({ brands: res.data }); },
+    });
     // 获取upload_token
     dispatch({
       type: 'upload/fetch',
     });
   }
 
-  onCancel() {
-    this.setState({ isShowModal: false });
+  onCancel = () => {
     this.setState({ isShowAttrMOdal: false });
   }
 
-  onOk() {
-    this.setState({ isShowModal: false });
+  onOk = () => {
     const { specs } = this.state;
     const len = specs.length - 100;
     this.formObj.validateFields((error, values) => {
-      if (error) {
+      if (error) { // 校验不通过
         console.log('校验出错1', error);
         return false;
-      } else {
-        console.log('校验通过，提交新属性', values);
-        this.setState({
-          isShowAttrMOdal: false, // 隐藏添加属性弹窗    
-          specs: [
-            ...specs,
-            {
-              id: len - 100,
-              spec_name: values.spec_name,
-              spec_unit: values.spec_unit,
-              is_require: values.is_require >> 0,
-              is_search: values.is_search >> 0,
-            },
-          ],
-        });
+      } else { // 校验通过
+        // 判断当前参数项是否存在
+        const isExist = specs.some(val => parseInt(val.id, 10) === parseInt(values.id, 10));
+        if (isExist) {
+          const newSpecs = specs.map((val, idx) => {
+            if (parseInt(val.id, 10) === parseInt(values.id, 10)) {
+              return { ...values, sort: idx };
+            }
+            return { ...val, sort: idx };
+          });
+          this.setState({
+            isShowAttrMOdal: false, // 隐藏添加属性弹窗    
+            specs: { ...newSpecs },
+          });
+        } else {
+          this.setState({
+            isShowAttrMOdal: false,
+            specs: [
+              ...specs,
+              {
+                id: len - 100,
+                spec_name: values.spec_name,
+                spec_unit: values.spec_unit,
+                is_require: values.is_require >> 0,
+                is_search: values.is_search >> 0,
+                sort: specs.length + 1,
+              },
+            ],
+          });
+        }
       }
-      this.formObj.resetFields();
+      this.formObj.resetFields();// 重置表单
     });
   }
 
-  showModal() {
-    this.setState({ isShowModal: true });
-  }
-  ShowAttrModal() {
+  ShowAttrModal = () => {
     this.setState({ isShowAttrMOdal: true });
-  }
-
-  /**
-   * 点击关联后事件
-   * @param {string=} prdId 产品ID
-   *
-   * */
-  handleAssociate(prdId) {
-    const { history } = this.props;
-    history.push(`/product/list/modify?origin_prdId=${prdId}`);
-    this.setState({ isShowModal: false });
   }
 
   // 当表单被修改事件
   handleFormChange = (changedFields) => {
-    console.log('handleFormChange', changedFields);
+    const { brands } = this.state;
     if (Object.keys(changedFields)[0] === 'category') {
       const categoryIdsArr = changedFields.category;
       const [category_id_1, category_id_2, category_id_3, category_id_4] = categoryIdsArr;
@@ -154,11 +122,11 @@ export default class NewProduct extends Component {
           category_id_4,
         },
       });
-    } else if (changedFields.brand_name) {
+    } else if (changedFields.bno) {
       this.setState({
         fields: {
           ...this.state.fields,
-          ...FAKE_BRANDS.find(val => val.id === changedFields.brand_name),
+          ...brands.find(val => val.bno === changedFields.bno),
         },
       });
     } else {
@@ -174,111 +142,58 @@ export default class NewProduct extends Component {
    * @param {object} obj json对象，产品属性key=>value
    * 
    */
-  handleProductAttr(obj) {
+  handleProductAttr = (obj) => {
     this.setState({
       fields: { ...this.state.fields, ...obj },
     });
   }
 
   /**
-   * 添加产品其他属性项目
-   * 
-   * @param {string} key 属性key
-   * @param {string} value 属性value
-   * 
-   */
-  handleAddOtherAttrFiled(fileds) {
-    const { newFiled } = this.state;
-    this.setState({
-      newFiled: { id: newFiled.length - 100, ...newFiled, ...fileds },
-    });
-  }
-
-  /**
    * 编辑产品参数
-   * 
    */
   handleEditOtherAttrFiled = (id) => {
     const { specs } = this.state;
     const newOtherAttrsFiled = specs.find((val) => {
       return val.id === id;
     });
-    console.log('要编辑的记录', id, newOtherAttrsFiled);
+    this.setState({
+      isShowAttrMOdal: true,
+      editSpec: newOtherAttrsFiled, // 将要编辑的项放入state
+    });
+  }
+
+  /**
+   * 修改产品参数某一项
+   * @param {string} id 参数ID
+   * @param {string} key 参数名
+   * @param {string} value 参数值
+   */
+  handleSpecChange = (id, key, value) => {
+    const { specs } = this.state;
+    const newSpecs = specs.map((val) => {
+      if (parseInt(val.id, 10) === parseInt(id, 10)) {
+        const newVal = {
+          ...val,
+          [key]: value,
+        };
+        return newVal;
+      }
+      return val;
+    });
+    this.setState({ specs: newSpecs });
   }
 
   /**
    * 删除产品参数
-   * 
    * @param {string} id 属性id
-   * 
    */
   handleDeleteOtherAttrFiled(id) {
-    const { otherAttrsFiled } = this.state;
-    const newOtherAttrsFiled = otherAttrsFiled.filter((val, idx) => {
-      return val.id !== id;
+    const { specs } = this.state;
+    const newSpecs = specs.filter((val) => {
+      return parseInt(val.id, 10) !== parseInt(id, 10);
     });
     this.setState({
-      otherAttrsFiled: newOtherAttrsFiled,
-    });
-    console.log('删除属性ID', id, newOtherAttrsFiled);
-  }
-
-  /**
-   * 添加产品其他属性内容
-   * 
-   * @param {string} id 其他属性的唯一id
-   * @param {object} obj 其他属性的内容，如{attr_name:'形状'}
-   * 
-   */
-  handleAddProductOtherAttr(id, obj) {
-    const { otherAttrs } = this.state;
-    let isExist = false;
-    const newOtherAttrs = otherAttrs.map((val) => {
-      if (val.id === id) {
-        isExist = true;
-        const newVal = { ...val, ...obj };
-        return newVal;
-      } else {
-        return val;
-      }
-    });
-    if (!isExist) {
-      console.log('不存在', id, otherAttrs);
-      this.setState({ otherAttrs: [...otherAttrs, { id, ...obj }] });
-    } else {
-      this.setState({ otherAttrs: newOtherAttrs });
-      console.log('存在', id, newOtherAttrs);
-    }
-  }
-
-  // 其他属性图片上传前处理：验证文件类型
-  beforeUpload(key, file) {
-    this.setState({ file });
-    // console.log('before', file);
-    if (checkFile(file.name, FILE_TYPES)) {
-      this.setState({ isPicture: true });
-    }
-    if (!checkFile(file.name, FILE_TYPES)) {
-      message.error(`${file.name} 暂不支持上传`);
-      this.setState({ isPicture: false });
-      return false;
-    }
-  }
-
-  // 其他属性图片上传时处理
-  handleUploaderChange(key, fileList) {
-    console.log('文件上传', key, fileList);
-    const { isPicture } = this.state;
-    if (!isPicture) { return; }
-    // 上传成功，则将图片放入state里的pics数组内
-    fileList.map((file) => {
-      if (file.status === 'done') {
-        message.success(`${file.name} 文件上传成功`);
-        this.handleAddProductOtherAttr(key, { img_url: file.response.key });
-      } else if (file.status === 'error') {
-        message.error(`${file.name} 文件上传失败`);
-      }
-      return file;
+      specs: newSpecs,
     });
   }
 
@@ -305,24 +220,24 @@ export default class NewProduct extends Component {
   }
 
   /**
-   * 提交新产品信息
+   * 提交新增产品信息
    * 
    */
-  handleSubmitProduct() {
-    const { fields, otherAttrs, otherAttrsFiled } = this.state;
-    console.log('提交产品信息', { ...fields, other_attrs: otherAttrsFiled });
+  handleSubmitProduct = () => {
+    const { fields, specs } = this.state;
+    console.log('提交产品信息', { ...fields, specs });
     const { dispatch, history } = this.props;
     dispatch({
       type: 'product/add',
-      data: { ...fields, other_attrs: otherAttrsFiled, paf_url: [] },
+      data: { ...fields, specs },
       success: () => { history.push('/product/list'); },
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
   render() {
-    const { isShowModal, isShowAttrMOdal, specs } = this.state;
-    const { product, loading, catalog, upload } = this.props;
+    const { editSpec, isShowAttrMOdal, specs } = this.state;
+    const { product, loading, catalog, brand, upload, history } = this.props;
     const { total } = product;
 
     // 其他属性列
@@ -339,11 +254,8 @@ export default class NewProduct extends Component {
         <InputNumber
           defaultValue={text || idx + 1}
           min={1}
-        // onChange={(e) => {
-        //   this.handleAddProductOtherAttr(record.id,
-        //     { attr_name: record.attr_name, attr_value: e.target.value }
-        //   );
-        // }}
+          onChange={(value) => { this.handleSpecChange(record.id, 'sort', value); }
+          }
         />
       ),
     }, {
@@ -352,36 +264,35 @@ export default class NewProduct extends Component {
       key: 'spec_name',
       render: (text, record) => (<span>{text}{record.spec_unit ? `(${record.spec_unit})` : ''}</span>),
     }, {
-      title: '已被产品关联引用次数',
-      dataIndex: 'product_ass',
-      key: 'product_ass',
-      render: text => (<span>{text || 0}</span>),
-    }, {
-      title: '已被方案引用次数',
-      dataIndex: 'case_ass',
-      key: 'case_ass',
-      render: text => (<span>{text || 0}</span>),
-    }, {
       title: '是否必填',
       dataIndex: 'is_require',
       key: 'is_require',
-      render: text => (<Checkbox checked={text} />),
+      render: (text, record) => (
+        <Checkbox
+          defaultChecked={text}
+          onChange={(e) => { this.handleSpecChange(record.id, 'is_require', e.target.checked >> 0); }}          
+        />
+      ),
     }, {
       title: '是否为筛选条件',
       dataIndex: 'is_search',
       key: 'is_search',
-      render: text => (<Checkbox checked={text} />),
+      render: (text, record) => (
+        <Checkbox
+          defaultChecked={text}
+          onChange={(e) => { this.handleSpecChange(record.id, 'is_search', e.target.checked >> 0); }}          
+        />
+      ),
     }, {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => { this.handleEditOtherAttrFiled(record.id); }}>编辑</a>  
-          <Divider type="vertical" />                  
+          <a onClick={() => { this.handleEditOtherAttrFiled(record.id); }}>编辑</a>
+          <Divider type="vertical" />
           <a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>
         </Fragment>
       ),
     }];
-    console.log('state', this.state);
 
     return (
       <PageHeaderLayout title="新建产品信息">
@@ -395,6 +306,7 @@ export default class NewProduct extends Component {
             onOk={this.onOk}
           >
             <AddAttrForm
+              defaultValue={editSpec}
               handleValidate={this.validateForm}
             />
           </Modal>
@@ -403,14 +315,14 @@ export default class NewProduct extends Component {
           />
           <NewProductForm
             data={this.state.fields}
-            brands={FAKE_BRANDS}
+            brands={brand.all}
             onChange={this.handleFormChange}
             catalog={catalog.level}
             loading={loading}
             onAttrChange={this.handleProductAttr}
             uploadToken={upload.upload_token}
           />
-          {/* 产品其他属性 */}
+          {/* 产品规格参数项 */}
           <SectionHeader
             title="产品规格参数项"
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>新建参数项</Button>}
@@ -429,7 +341,7 @@ export default class NewProduct extends Component {
             />
           </div>
           <div className={styles['submit-btn-wrap']}>
-            <Button>取消</Button>
+            <Button onClick={() => { history.goBack(); }}>取消</Button>
             <Button type="primary" onClick={this.handleSubmitProduct}>提交</Button>
           </div>
         </Card>

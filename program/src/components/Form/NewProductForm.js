@@ -241,7 +241,7 @@ class ProductForm extends Component {
     );
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构    
 
-    console.log('props data', data);
+    console.log('props data', data, brands);
 
     return (
       <div className={styles['product-info-wrap']} >
@@ -268,7 +268,7 @@ class ProductForm extends Component {
               label="品牌"
               {...formItemLayout}
             >
-              {getFieldDecorator('brand_name', {
+              {getFieldDecorator('bno', {
                 rules: [{
                   required: true,
                   message: '请填写产品品牌',
@@ -280,7 +280,7 @@ class ProductForm extends Component {
                 >
                   {
                     brands.map(val => (
-                      <Option value={val.id}>{val.name}</Option>
+                      <Option value={val.bno} key={val.bno}>{val.brand_name}</Option>
                     ))
                   }
                 </Select>
@@ -290,26 +290,26 @@ class ProductForm extends Component {
               label="英文名"
               {...formItemLayout}
             >
-              {getFieldDecorator('englishName', {
+              {getFieldDecorator('english_name', {
                 rules: [{
                   required: false,
                   message: '请填写产品英文名',
                 }],
-                initialValue: data.englishName || '',
+                initialValue: data.english_name || '',
               })(
                 <Input disabled />
               )}
             </FormItem>
             <FormItem
-              label="产地1"
+              label="产地"
               {...formItemLayout}
             >
-              {getFieldDecorator('place', {
+              {getFieldDecorator('registration_place', {
                 rules: [{
                   required: true,
                   message: '请完善产品产地',
                 }],
-                initialValue: data.place || '',
+                initialValue: data.registration_place || '',
               })(
                 <Input />
               )}
