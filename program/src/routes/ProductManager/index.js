@@ -253,15 +253,15 @@ export default class ProductManager extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="型号">
-              {getFieldDecorator('partnumber')(
+            <FormItem label="品牌">
+              {getFieldDecorator('brand_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
+            <FormItem label="产地">
+              {getFieldDecorator('place')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -300,15 +300,15 @@ export default class ProductManager extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="型号">
-              {getFieldDecorator('partnumber')(
+            <FormItem label="品牌">
+              {getFieldDecorator('brand_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
+            <FormItem label="产地">
+              {getFieldDecorator('place')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -316,29 +316,8 @@ export default class ProductManager extends Component {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="产品名称">
-              {getFieldDecorator('product_name')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="型号">
-              {getFieldDecorator('partnumber')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
             <FormItem label="所属类目">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('catalog')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">未知</Option>
                   <Option value="1">未知</Option>
@@ -347,17 +326,18 @@ export default class ProductManager extends Component {
               )}
             </FormItem>
           </Col>
-          <Col xll={4} md={8} sm={24}>
-            <FormItem label="产品提交日期">
-              {getFieldDecorator('create_time')(
-                <RangePicker onChange={this.onChange} />
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="创建人">
+              {getFieldDecorator('creator')(
+                <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="源产品ID">
-              {getFieldDecorator('origin_id')(
-                <Input placeholder="请输入" />
+
+          <Col xll={4} md={8} sm={24}>
+            <FormItem label="创建日期">
+              {getFieldDecorator('create_time')(
+                <RangePicker onChange={this.onChange} />
               )}
             </FormItem>
           </Col>

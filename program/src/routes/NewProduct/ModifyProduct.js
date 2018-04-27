@@ -2,17 +2,16 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-27 17:34:44
+ * @Last Modified time: 2018-04-27 18:22:35
  */
 import React, { Component, Fragment } from 'react';
-import moment from 'moment';
 import { connect } from 'dva';
 import { Card, Button, Checkbox, Modal, Table, InputNumber, Divider, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ModifyProductForm from '../../components/Form/ModifyProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import AddAttrForm from '../../components/Form//AddAttrForm';
-import { queryString, checkFile, handleServerMsg } from '../../utils/tools';
+import { queryString, checkFile, handleServerMsgObj } from '../../utils/tools';
 import styles from './modify-product.less';
 
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
@@ -29,11 +28,9 @@ export default class ModifyProduct extends Component {
     super(props);
     this.state = {
       isShowAttrMOdal: false,
-      args: queryString.parse(this.props.location.search),
+      args: queryString.parse(window.location.href),
       fields: { ...this.props.product.detail, pdf_url: [] },
       specs: [], // 用户自定义的其他属性
-      otherAttrs: [],
-      newFiled: {}, // 用户自定义的其他属性   
     };
   }
 
@@ -124,15 +121,15 @@ export default class ModifyProduct extends Component {
     });
   }
 
-   // 校验表单：传入的是this.props.form对象
-   validateForm = (formObj) => {
-     // 将子组件的this.props.form传给父组件，方便后面校验
-     this.formObj = formObj;
-   }
+  // 校验表单：传入的是this.props.form对象
+  validateForm = (formObj) => {
+    // 将子组件的this.props.form传给父组件，方便后面校验
+    this.formObj = formObj;
+  }
 
-   ShowAttrModal = () => {
-     this.setState({ isShowAttrMOdal: true });
-   }
+  ShowAttrModal = () => {
+    this.setState({ isShowAttrMOdal: true });
+  }
 
   /**
    * 编辑产品参数
@@ -323,34 +320,19 @@ export default class ModifyProduct extends Component {
    * 
    */
   handleSubmitProduct = () => {
-    const argsKey = Object.keys(this.state.args);
     const {
       args,
       fields,
-      otherAttrs,
+      specs,
     } = this.state;
     const { dispatch } = this.props;
-
-    if (argsKey.includes('prdId')) { // 如果是修改产品
-      dispatch({
-        type: 'product/modifyInfo',
-        prdId: this.state.args.prdId,
-        data: {
-          ...fields,
-          other_attrs: otherAttrs,
-          pdf_url: ['没有'],
-        },
-        success: () => { this.props.history.goBack(); },
-        error: (res) => { message.error(handleServerMsg(res.msg)); },
-      });
-    } else if (argsKey.includes('origin_prdId')) { // 如果是添加新产品
-      dispatch({
-        type: 'product/add',
-        data: { ...fields, other_attrs: otherAttrs, pdf_url: ['没有'] },
-        success: () => { this.props.history.goBack(); },
-        error: (res) => { message.error(handleServerMsg(res.msg)); },
-      });
-    }
+    dispatch({
+      type: 'product/modifyInfo',
+      pno: args.pno,
+      data: { ...fields, specs },
+      success: () => { this.props.history.goBack(); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
   }
 
   render() {
@@ -424,8 +406,8 @@ export default class ModifyProduct extends Component {
             onOk={this.onOk}
           >
             <AddAttrForm
-              defaultValue={editSpec}     
-              handleValidate={this.validateForm}                     
+              defaultValue={editSpec}
+              handleValidate={this.validateForm}
             />
           </Modal>
           <SectionHeader

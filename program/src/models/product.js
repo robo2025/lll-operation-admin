@@ -49,8 +49,8 @@ export default {
         payload: response.data,
       });
     },
-    *modifyInfo({ prdId, data, success, error }, { call, put }) {
-      const res = yield call(modifyProduct, { prdId, data });
+    *modifyInfo({ pno, data, success, error }, { call, put }) {
+      const res = yield call(modifyProduct, { pno, data });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
