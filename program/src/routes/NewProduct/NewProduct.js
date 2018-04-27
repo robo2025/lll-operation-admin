@@ -2,11 +2,11 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-26 14:57:59
+ * @Last Modified time: 2018-04-26 17:51:37
  */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Input, Modal, Table, message } from 'antd';
+import { Card, Button, Divider, Modal, Table, message, Checkbox, InputNumber } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import NewProductForm from '../../components/Form/NewProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
@@ -65,9 +65,7 @@ export default class NewProduct extends Component {
         pics: [],
         other_attrs: [],
       },
-      newFiled: {}, // 用户自定义的其他属性
-      otherAttrsFiled: [],
-      otherAttrs: [],
+      specs: [], // 用户自定义的其他属性
       file: { uid: '', name: '' },
       isPicture: true,
     };
@@ -97,30 +95,24 @@ export default class NewProduct extends Component {
 
   onOk() {
     this.setState({ isShowModal: false });
-    const { newFiled, otherAttrsFiled, otherAttrs } = this.state;
-    const len = otherAttrsFiled.length - 100;
+    const { specs } = this.state;
+    const len = specs.length - 100;
     this.formObj.validateFields((error, values) => {
       if (error) {
-        console.log('校验出错', error);
+        console.log('校验出错1', error);
         return false;
       } else {
         console.log('校验通过，提交新属性', values);
         this.setState({
           isShowAttrMOdal: false, // 隐藏添加属性弹窗    
-          otherAttrsFiled: [
-            ...otherAttrsFiled,
+          specs: [
+            ...specs,
             {
               id: len - 100,
-              attr_name: newFiled.attr_name.value,
-              attr_value: newFiled.attr_value.value,
-            },
-          ],
-          otherAttrs: [
-            ...otherAttrs,
-            {
-              id: len - 100,
-              attr_name: newFiled.attr_name.value,
-              attr_value: newFiled.attr_value.value,
+              spec_name: values.spec_name,
+              spec_unit: values.spec_unit,
+              is_require: values.is_require >> 0,
+              is_search: values.is_search >> 0,
             },
           ],
         });
@@ -164,9 +156,9 @@ export default class NewProduct extends Component {
       });
     } else if (changedFields.brand_name) {
       this.setState({
-        fields: { 
+        fields: {
           ...this.state.fields,
-          ...FAKE_BRANDS.find(val => val.id === changedFields.brand_name), 
+          ...FAKE_BRANDS.find(val => val.id === changedFields.brand_name),
         },
       });
     } else {
@@ -203,7 +195,19 @@ export default class NewProduct extends Component {
   }
 
   /**
-   * 删除产品其他属性项目
+   * 编辑产品参数
+   * 
+   */
+  handleEditOtherAttrFiled = (id) => {
+    const { specs } = this.state;
+    const newOtherAttrsFiled = specs.find((val) => {
+      return val.id === id;
+    });
+    console.log('要编辑的记录', id, newOtherAttrsFiled);
+  }
+
+  /**
+   * 删除产品参数
    * 
    * @param {string} id 属性id
    * 
@@ -296,7 +300,6 @@ export default class NewProduct extends Component {
 
   // 校验表单：传入的是this.props.form对象
   validateForm = (formObj) => {
-    console.log('我被调用了');
     // 将子组件的this.props.form传给父组件，方便后面校验
     this.formObj = formObj;
   }
@@ -318,35 +321,66 @@ export default class NewProduct extends Component {
   }
 
   render() {
-    const { isShowModal, isShowAttrMOdal, otherAttrsFiled, file } = this.state;
+    const { isShowModal, isShowAttrMOdal, specs } = this.state;
     const { product, loading, catalog, upload } = this.props;
     const { total } = product;
 
     // 其他属性列
     const attrClomns = [{
-      title: '属性名',
-      dataIndex: 'attr_name',
-      key: 'attr_name',
+      title: '序号',
+      dataIndex: 'idx',
+      key: 'idx',
+      render: (text, record, idx) => (<span>{idx + 1}</span>),
     }, {
-      title: '属性值',
-      dataIndex: 'attr_value',
-      key: 'attr_value',
-      render: (text, record) => (
-        <Input
-          defaultValue={text}
-          onChange={(e) => {
-            this.handleAddProductOtherAttr(record.id,
-              { attr_name: record.attr_name, attr_value: e.target.value }
-            );
-          }}
+      title: '排序',
+      dataIndex: 'sort',
+      key: 'sort',
+      render: (text, record, idx) => (
+        <InputNumber
+          defaultValue={text || idx + 1}
+          min={1}
+        // onChange={(e) => {
+        //   this.handleAddProductOtherAttr(record.id,
+        //     { attr_name: record.attr_name, attr_value: e.target.value }
+        //   );
+        // }}
         />
       ),
     }, {
+      title: '参数项',
+      dataIndex: 'spec_name',
+      key: 'spec_name',
+      render: (text, record) => (<span>{text}{record.spec_unit ? `(${record.spec_unit})` : ''}</span>),
+    }, {
+      title: '已被产品关联引用次数',
+      dataIndex: 'product_ass',
+      key: 'product_ass',
+      render: text => (<span>{text || 0}</span>),
+    }, {
+      title: '已被方案引用次数',
+      dataIndex: 'case_ass',
+      key: 'case_ass',
+      render: text => (<span>{text || 0}</span>),
+    }, {
+      title: '是否必填',
+      dataIndex: 'is_require',
+      key: 'is_require',
+      render: text => (<Checkbox checked={text} />),
+    }, {
+      title: '是否为筛选条件',
+      dataIndex: 'is_search',
+      key: 'is_search',
+      render: text => (<Checkbox checked={text} />),
+    }, {
       title: '操作',
-      render: (text, record) =>
-        (<a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>),
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => { this.handleEditOtherAttrFiled(record.id); }}>编辑</a>  
+          <Divider type="vertical" />                  
+          <a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>
+        </Fragment>
+      ),
     }];
-
     console.log('state', this.state);
 
     return (
@@ -361,7 +395,6 @@ export default class NewProduct extends Component {
             onOk={this.onOk}
           >
             <AddAttrForm
-              onFieldsChange={this.handleAddOtherAttrFiled}
               handleValidate={this.validateForm}
             />
           </Modal>
@@ -382,13 +415,14 @@ export default class NewProduct extends Component {
             title="产品规格参数项"
             extra={<Button style={{ marginLeft: 20 }} icon="plus" onClick={this.ShowAttrModal}>新建参数项</Button>}
           />
-          <div style={{ width: 700, maxWidth: '70%' }}>
+          <div style={{ width: 1000, maxWidth: '70%' }}>
             <Table
               className="attr-table"
               bordered
               pagination={false}
               columns={attrClomns}
-              dataSource={otherAttrsFiled}
+              dataSource={specs}
+              rowKey="id"
               locale={{
                 emptyText: '请点击上面按钮添加新属性',
               }}

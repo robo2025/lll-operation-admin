@@ -5,9 +5,7 @@ const FormItem = Form.Item;
 
 
 // 添加商品属性表单
-@Form.create({
-  onFieldsChange: (props, fileds) => { props.onFieldsChange(fileds); },
-})
+@Form.create()
 class AddAttrForm extends Component {
   componentDidMount() {
     this.props.handleValidate(this.props.form);
@@ -64,10 +62,8 @@ class AddAttrForm extends Component {
             >
               {
                 getFieldDecorator('is_require', {
-                  rules: [{
-                    required: false,
-                    message: '请输入',
-                  }],
+                  valuePropName: 'checked',
+                  initialValue: false,
                 })(
                   <Checkbox>必填项</Checkbox>
                 )
@@ -82,10 +78,8 @@ class AddAttrForm extends Component {
             >
               {
                 getFieldDecorator('is_search', {
-                  rules: [{
-                    required: false,
-                    message: '请输入',
-                  }],
+                  valuePropName: 'checked',                  
+                  initialValue: false,                  
                 })(
                   <Checkbox>筛选条件项</Checkbox>
                 )
