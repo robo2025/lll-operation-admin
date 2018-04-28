@@ -46,10 +46,12 @@ export default {
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
-      const { headers } = res;
+      
+      const response = yield call(queryReturns, { });      
+      const { headers } = response;
       yield put({
-        type: 'saveDetail',
-        payload: res.data,
+        type: 'save',
+        payload: response.data,
         headers,
       });
     },

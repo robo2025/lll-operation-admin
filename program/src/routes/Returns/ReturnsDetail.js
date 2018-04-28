@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Card, Table, Input, Radio, Divider, Row, Col, message, Button, Tooltip } from 'antd';
+import { Card, Table, Divider, Row, Col, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { ACTION_STATUS } from '../../constant/statusList';
@@ -9,11 +9,9 @@ import { queryString, handleServerMsg } from '../../utils/tools';
 import styles from './OrderDetail.less';
 
 const { Description } = DescriptionList;
-const RadioGroup = Radio.Group;
 // 订单状态
 const returnsStatus = ['申请退货中', '退货中', '退货失败', '退货完成'];
 // 处理状态
-const DEAL_STATUS = ['未处理', '已处理'];
 
 // 订单列
 const goodsColumns = [{
@@ -87,14 +85,7 @@ const logisticsColumns = [{
   dataIndex: 'delivery_id',
   key: 'delivery_id',
 }];
-// 操作日志tab
-const operationTabList = [{
-  key: 'tab1',
-  tab: '订单操作记录',
-}, {
-  key: 'tab2',
-  tab: '异常操作记录',
-}];
+
 // 操作日志列
 const actionColumns = [{
   title: '操作记录',
@@ -123,15 +114,7 @@ const actionColumns = [{
   dataIndex: 'time_consuming',
   key: 'time_consuming',
 }];
-const actionLogs = [{
-  id: 1,
-  desc: '提交订单',
-  operater: 'admin',
-  detail: '未支付',
-  progress: '已支付',
-  create_time: '2017-10-12 12:56:30',
-  time: 5,
-}];
+
 
 @connect(({ returns, orders, loading }) => ({
   returns,
@@ -143,8 +126,6 @@ export default class ReturnsDetail extends Component {
     super(props);
     this.state = {
       args: queryString.parse(window.location.href),
-      audit_status: 1, // 审核状态
-      audit_desc: '', // 审批意见
     };
   }
 
@@ -158,46 +139,8 @@ export default class ReturnsDetail extends Component {
     });
   }
 
-  // 处理审批意见的单选框按钮
-  handleRadioChange = (e) => {
-    console.log('radio checked', e.target.value);
-    this.setState({
-      audit_status: e.target.value,
-    });
-  }
-
-  // 处理填写审批意见
-  handleAuditDesc = (e) => {
-    this.setState({
-      audit_desc: e.target.value,
-    });
-  }
-
-  // 提交审核
-  handleSubmit = () => {
-    const { audit_status, audit_desc, args } = this.state;
-    const { dispatch, history } = this.props;
-    const data = {
-      is_pass: audit_status,
-      remarks: audit_desc,
-    };
-    if (audit_status === 0 && !audit_desc) {
-      message.info('审批意见必须填写');
-    } else {
-      console.log('提交审核数据', data);
-      dispatch({
-        type: 'returns/fetchAudit',
-        returnId: this.state.args.orderId,
-        data,
-        success: () => { history.push('/returns/list'); },
-        error: (res) => { message.error(handleServerMsg(res.msg)); },
-      });
-    }
-  }
-
   render() {
     const { returns, loading } = this.props;
-    const { args, audit_status } = this.state;
     const orderDetail = returns.detail;
     const {
       order_info,
@@ -289,37 +232,6 @@ export default class ReturnsDetail extends Component {
               rowKey="add_time"
             />
           </Card>
-          {
-            args.audit ?
-              (
-                <div className={styles['submit-btn-wrap']}>
-                  <div className="left">
-                    审核意见：
-                <RadioGroup onChange={this.handleRadioChange} value={audit_status}>
-                      <Radio value={1}>审核通过</Radio>
-                      <Radio value={0}>审核不通过</Radio>
-                </RadioGroup>
-                    <Tooltip title="审核意见不能为空" visible={audit_status === 0} autoAdjustOverflow={false}>
-                      <Input
-                        placeholder="未通过说明"
-                        className={audit_status === 0 ? 'show-inline' : 'hide'}
-                        onChange={e => this.handleAuditDesc(e)}
-                      />
-                    </Tooltip>
-                  </div>
-                  <div className="right">
-                    <Button onClick={() => { this.props.history.push('/returns/list'); }}>返回列表</Button>
-                    <Button type="primary" onClick={this.handleSubmit}>提交</Button>
-                  </div>
-                </div>
-              )
-              :
-              (
-                <div className={styles['back-btn-wrap']}>
-                  <Button onClick={() => { this.props.history.push('/returns/list'); }}>返回列表</Button>
-                </div>
-              )
-          }
         </Card>
       </PageHeaderLayout>
     );

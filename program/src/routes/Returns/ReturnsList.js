@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message, Divider, Badge } from 'antd';
+import { Card, Button, Row, Col, Form, Input, Select, Icon, Modal, Divider, Badge, Radio, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import { handleServerMsgObj } from '../../utils/tools';
@@ -9,6 +9,8 @@ import styles from './order-list.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
+const { TextArea } = Input;
 // 订单状态
 const returnsStatus = ['申请退货中', '退货中', '退货失败', '退货完成'];
 // 处理状态
@@ -25,11 +27,14 @@ export default class ReturnsList extends Component {
     super(props);
     this.state = {
       expandForm: false,
+      isShowModal: false,
+      auditData: {
+        is_pass: 1,
+      },
     };
   }
 
   componentDidMount() {
-    console.log('我渲染好了', this.props);
     const { dispatch } = this.props;
     dispatch({
       type: 'returns/fetch',
@@ -39,6 +44,61 @@ export default class ReturnsList extends Component {
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+  }
+
+  // 审核按钮被点击
+  handleAuditClick = (returnId) => {
+    this.setState({
+      isShowModal: true,
+      returnId,
+    });
+  }
+
+  // 取消弹出层
+  handleCancelModal = () => {
+    this.setState({
+      isShowModal: false,
+    });
+  }
+
+  // 确定弹出层
+  handleOkModal = () => {
+    const that = this;
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('表单数据', values);
+        this.setState({
+          isShowModal: false,
+        });
+        that.handleAuditSubmit({
+          is_pass: values.is_pass,
+          remarks: values.remarks,
+          responsible_party: values.responsible_party,
+        });
+      } else {
+        console.log('校验出错', err);
+      }
+    });
+  }
+
+  // 审核选择
+  handleAuditRadioChange = (value) => {
+    const { auditData } = this.state;
+    this.setState({
+      auditData: { ...auditData, is_pass: value },
+    });
+  }
+
+  // 提交审核
+  handleAuditSubmit = (data) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'returns/fetchAudit',
+      returnId: this.state.returnId,
+      data,
+      success: () => { message.success('提交成功'); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
   }
 
   // 处理表单搜索
@@ -215,9 +275,20 @@ export default class ReturnsList extends Component {
   }
 
   render() {
+    const { isShowModal, auditData } = this.state;
     const { returns, loading } = this.props;
     const { total, list } = returns;
-
+    const { getFieldDecorator } = this.props.form;
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+      },
+    };
 
     const columns = [
       {
@@ -281,12 +352,12 @@ export default class ReturnsList extends Component {
         key: 'is_deal',
         width: 150,
         render: text => (<span><Badge status={text === 2 ? 'success' : 'default'} />{dealStatus[text - 1]}</span>),
-      }, 
+      },
       {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            <a href={`#/returns/list/detail?orderId=${record.return_id}&audit=1`} >审核</a>
+            <a onClick={() => { this.handleAuditClick(record.return_id); }} >审核</a>
             <Divider type="vertical" />
             <a href={'#/returns/list/detail?orderId=' + record.return_id}>查看</a>
           </Fragment>
@@ -295,6 +366,8 @@ export default class ReturnsList extends Component {
         fixed: 'right',
       },
     ];
+
+    console.log('state', this.state);
 
     return (
       <PageHeaderLayout title="退货单列表">
@@ -315,6 +388,83 @@ export default class ReturnsList extends Component {
             />
           </div>
         </Card>
+        {/* 退货单审核面板 */}
+        <Modal
+          visible={isShowModal}
+          title="审核面板"
+          onCancel={() => { this.handleCancelModal(); }}
+          onOk={() => { this.handleOkModal(); }}
+        >
+          <Form>
+            <Row>
+              <FormItem
+                label="审核选择"
+                {...formItemLayout}
+              >
+                {
+                  getFieldDecorator('is_pass', {
+                    rules: [{
+                      required: true,
+                      message: '',
+                    }],
+                    initialValue: 1,
+                  })(
+                    <RadioGroup onChange={(e) => { this.handleAuditRadioChange(e.target.value); }}>
+                      <Radio value={1}>通过</Radio>
+                      <Radio value={0}>不通过</Radio>
+                    </RadioGroup>
+                  )
+                }
+
+              </FormItem>
+            </Row>
+            <Row>
+              <FormItem
+                label="说明"
+                {...formItemLayout}
+              >
+                {
+                  getFieldDecorator('remarks', {
+                    rules: [{
+                      required: true,
+                      message: '你必须填写审核说明',
+                    }],
+                  })(
+                    <TextArea />
+                  )
+                }
+              </FormItem>
+            </Row>
+            {
+              auditData.is_pass >> 0 === 1 ? (
+                <Row>
+                  <FormItem
+                    label="责任方"
+                    {...formItemLayout}
+                  >
+                    {
+                      getFieldDecorator('responsible_party', {
+                        rules: [{
+                          required: true,
+                          message: '你必须选择一个责任方',
+                        }],
+                        initialValue: '1',
+                      })(
+                        <Select placeholder="请选择" style={{ width: '100%' }}>
+                          <Option value="1">客户</Option>
+                          <Option value="2">供应商</Option>
+                          <Option value="3">平台</Option>
+                        </Select>
+                      )
+                    }
+                  </FormItem>
+                </Row>
+              )
+                : null
+            }
+
+          </Form>
+        </Modal>
       </PageHeaderLayout>
     );
   }
