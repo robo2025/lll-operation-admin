@@ -46,52 +46,6 @@ const goodsColumns = [{
   dataIndex: 'sale_price',
   key: 'sale_price',
 }];
-// 发货记录列
-const logisticsColumns = [{
-  title: '商品名称',
-  dataIndex: 'goodName',
-  key: 'goodName',
-}, {
-  title: '型号',
-  dataIndex: 'type',
-  key: 'type',
-}, {
-  title: '品牌',
-  dataIndex: 'brand',
-  key: 'brand',
-}, {
-  title: '数量',
-  dataIndex: 'count',
-  key: 'count',
-}, {
-  title: '发货日期',
-  dataIndex: 'delivery',
-  key: 'delivery',
-}, {
-  title: '送货人',
-  dataIndex: 'delivery_man',
-  key: 'delivery_man',
-}, {
-  title: '联系号码',
-  dataIndex: 'mobile',
-  key: 'mobile',
-}, {
-  title: '物流公司',
-  dataIndex: 'delivery_company',
-  key: 'delivery_company',
-}, {
-  title: '物流单号',
-  dataIndex: 'delivery_id',
-  key: 'delivery_id',
-}];
-// 操作日志tab
-const operationTabList = [{
-  key: 'tab1',
-  tab: '订单操作记录',
-}, {
-  key: 'tab2',
-  tab: '异常操作记录',
-}];
 // 操作日志列
 const actionColumns = [{
   title: '操作记录',
@@ -119,15 +73,6 @@ const actionColumns = [{
   title: '耗时',
   dataIndex: 'time_consuming',
   key: 'time_consuming',
-}];
-const actionLogs = [{
-  id: 1,
-  desc: '提交订单',
-  operater: 'admin',
-  detail: '未支付',
-  progress: '已支付',
-  create_time: '2017-10-12 12:56:30',
-  time: 5,
 }];
 
 @connect(({ returns, orders, loading }) => ({

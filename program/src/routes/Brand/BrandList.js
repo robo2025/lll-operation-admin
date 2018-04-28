@@ -1,4 +1,6 @@
 import React, { Component, Fragment } from 'react';
+import moment from 'moment';
+import { connect } from 'dva';
 import { Card, Row, Col, Form, Input, Button, Icon, Divider } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
@@ -14,69 +16,69 @@ const columns = [{
   fixed: 'left',
 }, {
   title: '品牌',
-  dataIndex: 'brand',
-  key: 'brand',
+  dataIndex: 'brand_name',
+  key: 'brand_name',
   width: 120,
   fixed: 'left',
 }, {
   title: '英文名',
-  dataIndex: 'en_name',
-  key: 'en_name',
+  dataIndex: 'english_name',
+  key: 'english_name',
   width: 120,
   fixed: 'left',
 }, {
   title: '注册地',
-  dataIndex: 'register',
-  key: 'register',
+  dataIndex: 'registration_place',
+  key: 'registration_place',
 }, {
   title: 'LOGO',
-  dataIndex: 'logo',
-  key: 'logo',
+  dataIndex: 'logo_url',
+  key: 'logo_url',
+  render: text => (<img src={text} alt="logo" width={50} height={50} />),
 }, {
   title: '已关联产品数',
-  dataIndex: 'assc',
-  key: 'assc',
+  dataIndex: 'product_count',
+  key: 'product_count',
 }, {
   title: '创建日期',
-  dataIndex: 'create_time',
-  key: 'create_time',
+  dataIndex: 'created_time',
+  key: 'created_time',
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD hh:mm:ss')}</span>),
 }, {
   title: '操作',
   dataIndex: 'actions',
   key: 'actions',
   render: (text, record) => (
     <Fragment>
-      <a href="#/brand/list/modify">编辑</a>
+      <a href={`#/brand/list/modify?bno=${record.bno}`}>编辑</a>
       <Divider type="vertical" />
-      <a >
+      <a>
         删除
       </a>
       <Divider type="vertical" />
-      <a href="#/brand/list/detail">查看</a>
+      <a href={`#/brand/list/detail?bno=${record.bno}`}>查看</a>
     </Fragment>
   ),
   width: 150,
   fixed: 'right',
 }];
-const fakeData = [];
-for (let i = 0; i < 10; i++) {
-  fakeData.push({
-    idx: i,
-    brand: `固高${i}`,
-    en_name: 'gugao',
-    register: '美国',
-    logo: 'LOGO',
-    assc: Math.random() * 100 * i >> 0,
-    create_time: '2018-4-25',
-  });
-}
 
-
+@connect(({ brand, loading }) => ({
+  brand,
+  loading,
+}))
 @Form.create()
 export default class BrandList extends Component {
   state = {
     selectedRowKeys: [],
     selectedRows: [],
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'brand/fetch',
+    });
   }
 
   onSelectChange = (selectedRowKeys) => {
@@ -140,12 +142,14 @@ export default class BrandList extends Component {
 
   render() {
     const { selectedRowKeys, selectedRows } = this.state;
-    const { history } = this.props;
+    const { history, brand } = this.props;
     const rowSelection = {
       fixed: true,
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
+
+    console.log('品牌信息', brand);
 
     return (
       <PageHeaderLayout title="品牌列表">
@@ -168,7 +172,7 @@ export default class BrandList extends Component {
             </div>
             <CustomizableTable
               rowSelection={rowSelection}
-              data={fakeData}
+              data={brand.list}
               columns={columns}
               scroll={{ x: 800 }}
               onSelectRow={this.handleSelectRows}

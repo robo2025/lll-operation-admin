@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Card, Form, Input } from 'antd';
+import { connect } from 'dva';
+import { Card, Form, Input, Button } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { queryString, handleServerMsg } from '../../utils/tools';
 
 import styles from './style.less';
 
@@ -17,10 +19,33 @@ const formItemLayout = {
   },
 };
 
+@connect(({ brand, loading }) => ({
+  brand,
+  loading,
+}))
 @Form.create()
 export default class BrandModify extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      args: queryString.parse(window.location.href),
+    };
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    const { args } = this.state;
+    // 获取服务器品牌详情
+    dispatch({
+      type: 'brand/fetchDetail',
+      bno: args.bno,
+    });
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { brand } = this.props;
+    const { detail } = brand;
 
     return (
       <PageHeaderLayout title="查看品牌">
@@ -31,9 +56,10 @@ export default class BrandModify extends Component {
               label="品牌ID"
             >
               {
-                getFieldDecorator({
+                getFieldDecorator('bno', {
+                  initialValue: detail.bno,
                 })(
-                  <span>PP123456789</span>
+                  <span>{detail.bno}</span>
                 )
               }
             </FormItem>
@@ -42,11 +68,11 @@ export default class BrandModify extends Component {
               label="品牌"
             >
               {
-                getFieldDecorator('brand', {
+                getFieldDecorator('brand_name', {
                   rules: [{
                     required: true,
                   }],
-                  initialValue: '固高',
+                  initialValue: detail.brand_name,
                 })(
                   <Input />
                 )
@@ -57,11 +83,11 @@ export default class BrandModify extends Component {
               label="英文名(选填)"
             >
               {
-                getFieldDecorator('email', {
+                getFieldDecorator('english_name', {
                   rules: [{
                     required: true,
                   }],
-                  initialValue: 'QUICKQT',
+                  initialValue: detail.english_name,
                 })(
                   <Input />
                 )
@@ -69,14 +95,14 @@ export default class BrandModify extends Component {
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label="英文名(选填)"
+              label="注册地"
             >
               {
-                getFieldDecorator('register', {
+                getFieldDecorator('registration_place', {
                   rules: [{
                     required: true,
                   }],
-                  initialValue: '日本',
+                  initialValue: detail.registration_place,
                 })(
                   <Input />
                 )
@@ -116,17 +142,19 @@ export default class BrandModify extends Component {
                   rules: [{
                     required: true,
                   }],
-                  initialValue: `固高科技(香港)有限公司成立于1999年，总部位于香港科技大学。创立者为自动化和微电子领域的国际知名
-                  专家、学者。具有多年在加利福尼亚大学(UC Berkeley)、麻省理工学院 (MIT)、贝尔实验
-                  室(Bell Lab)等国际一流科研机构进行研发和管理经验，同年，固高科技（深圳）有限公司成立。`,
+                  initialValue: brand.summary,
                 })(
-                  <TextArea 
+                  <TextArea
                     autosize={{ minRows: 8, maxRows: 16 }}
                   />
                 )
               }
               <p />
             </FormItem>
+            <div className={styles['submit-box']}>
+              <Button type="primary" htmlType="submit">提交</Button>
+              <Button onClick={() => { history.goBack(); }}>取消</Button>
+            </div>
           </Form>
         </Card>
       </PageHeaderLayout>

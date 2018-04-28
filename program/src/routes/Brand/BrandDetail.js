@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'dva';
 import { Card, Form } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { queryString, handleServerMsg } from '../../utils/tools';
 
 import styles from './style.less';
 
@@ -16,9 +18,32 @@ const formItemLayout = {
   },
 };
 
+@connect(({ brand, loading }) => ({
+  brand,
+  loading,
+}))
 @Form.create()
 export default class BrandDetail extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      args: queryString.parse(window.location.href),
+    };
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    const { args } = this.state;
+    // 获取服务器品牌详情
+    dispatch({
+      type: 'brand/fetchDetail',
+      bno: args.bno,
+    });
+  }
+
   render() {
+    const { brand } = this.props;
+    const { detail } = brand;
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -29,19 +54,19 @@ export default class BrandDetail extends Component {
               {...formItemLayout}
               label="品牌ID"
             >
-              <span>PP123456789</span>
+              <span>{detail.bno}</span>
             </FormItem>
             <FormItem
               {...formItemLayout}
               label="品牌"
             >
-              <span>固高</span>
+              <span>{detail.brand_name}</span>
             </FormItem>
             <FormItem
               {...formItemLayout}
               label="英文名(选填)"
             >
-              <span>QUICKQT</span>
+              <span>{detail.english_name}</span>
             </FormItem>
             <FormItem
               {...formItemLayout}

@@ -13,7 +13,6 @@ const RadioGroup = Radio.Group;
 // 订单状态
 const returnsStatus = ['申请退货中', '退货中', '退货失败', '退货完成'];
 // 处理状态
-const DEAL_STATUS = ['未处理', '已处理'];
 
 // 订单列
 const goodsColumns = [{
@@ -295,9 +294,9 @@ export default class ReturnsDetail extends Component {
                 <div className={styles['submit-btn-wrap']}>
                   <div className="left">
                     审核意见：
-                <RadioGroup onChange={this.handleRadioChange} value={audit_status}>
-                      <Radio value={1}>审核通过</Radio>
-                      <Radio value={0}>审核不通过</Radio>
+                    <RadioGroup onChange={this.handleRadioChange} value={audit_status}>
+                  <Radio value={1}>审核通过</Radio>
+                  <Radio value={0}>审核不通过</Radio>
                 </RadioGroup>
                     <Tooltip title="审核意见不能为空" visible={audit_status === 0} autoAdjustOverflow={false}>
                       <Input

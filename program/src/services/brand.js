@@ -75,7 +75,7 @@ export async function removeBrand({ bno }) {
 /**
  * 获取品牌详情
  *
- * @param {string} productId 品牌id
+ * @param {string} bno 品牌id
 */
 export async function queryBrandDetail({ bno }) {
   const acessToken = Cookies.get('access_token');

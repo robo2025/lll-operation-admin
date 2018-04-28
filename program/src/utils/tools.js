@@ -75,7 +75,6 @@ export const queryString = {
  */
 export function checkFile(fileName, fileNameArr) {
   const partter = '(\\.' + fileNameArr.join('|\\.') + ')$';
-  console.log('验证文件名:', partter);
   return new RegExp(partter, 'i').test(fileName);
 }
 

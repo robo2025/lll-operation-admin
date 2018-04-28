@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Card, Form, Input, Upload, Modal, Icon, message } from 'antd';
+import { connect } from 'dva';
+import { Card, Form, Input, Upload, Modal, Icon, message, Button } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { QINIU_SERVER } from '../../constant/config';
+import { getFileSuffix, checkFile, handleServerMsgObj } from '../../utils/tools';
 
+import styles from './BrandNew.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -15,30 +19,30 @@ const formItemLayout = {
     sm: { span: 10 },
   },
 };
-function beforeUpload(file) {
-  const isJPG = file.type === 'image/jpeg';
-  if (!isJPG) {
-    message.error('You can only upload JPG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJPG && isLt2M;
-}
 
+
+@connect(({ brand, loading, upload }) => ({
+  brand,
+  upload,
+  loading,
+}))
 @Form.create()
 export default class BrandNew extends Component {
   state = {
     previewVisible: false,
     previewImage: '',
-    fileList: [{
-      uid: -1,
-      name: 'xxx.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    }],
+    file: { uid: '', name: '' },
+    logoUrl: [],
+    certificateUrls: [],
   };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    // 获取upload_token
+    dispatch({
+      type: 'upload/fetch',
+    });
+  }
 
   handleCancel = () => this.setState({ previewVisible: false })
 
@@ -49,12 +53,61 @@ export default class BrandNew extends Component {
     });
   }
 
-  handleChange = ({ fileList }) => this.setState({ fileList })
+  // 文件上传状态改变时处理
+  handleChange = (key, { fileList }) => {
+    this.setState({ [key]: fileList });
+  }
 
+  // 文件上传时处理
+  beforeUpload = (file) => {
+    this.setState({ file });
+    const isRequiredPicType = checkFile(file.name, ['png', 'jpg']);
+    if (!isRequiredPicType) {
+      message.error('不支持非png或jpg格式图片文件');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 1;
+    if (!isLt2M) {
+      message.error('图像不能大于 1MB!');
+    }
+    return isRequiredPicType && isLt2M;
+  }
+
+  // 提交品牌信息
+  handleSubmit = () => {
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        const { logoUrl, certificateUrls } = this.state;
+        // logourl
+        const logoUrlArr = logoUrl.map(val => (val.response.key)); // logo的url数组
+        const certificateUrlArr = certificateUrls.map(val => val.response.key); // 证书的url数组
+        const data = {
+          ...values,
+          logo_url: logoUrlArr[0],
+          certificate_urls: certificateUrlArr,
+        };
+        this.dispatchAddBrand(data);
+      } else {
+        console.log('校验出错', err);
+      }
+    });
+  }
+
+  // 发起新增品牌操作
+  dispatchAddBrand = (data) => {
+    const { dispatch, history } = this.props;
+    dispatch({
+      type: 'brand/add',
+      data,
+      success: () => { message.success('品牌添加成功'); history.goBack(); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { previewVisible, previewImage, fileList } = this.state;
+    const { previewVisible, previewImage, file, certificateUrls, logoUrl } = this.state;
+    const { upload, history } = this.props;
+
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -63,17 +116,18 @@ export default class BrandNew extends Component {
     );
 
     return (
-      <PageHeaderLayout title="查看品牌">
+      <PageHeaderLayout title="新增品牌">
         <Card bordered={false} style={{ marginBottom: 25 }}>
-          <Form>
+          <Form onSubmit={this.handleSubmit}>
             <FormItem
               {...formItemLayout}
               label="品牌名称"
             >
               {
-                getFieldDecorator('brand', {
+                getFieldDecorator('brand_name', {
                   rules: [{
                     required: true,
+                    message: '品牌名称必须填写',
                   }],
                 })(
                   <Input placeholder="请输入品牌名称" />
@@ -85,10 +139,11 @@ export default class BrandNew extends Component {
               label="英文名(选填)"
             >
               {
-                getFieldDecorator('en_name', {
+                getFieldDecorator('english_name', {
                   rules: [{
                     required: false,
                   }],
+                  initialValue: '',
                 })(
                   <Input placeholder="选填" />
                 )
@@ -99,9 +154,10 @@ export default class BrandNew extends Component {
               label="注册地"
             >
               {
-                getFieldDecorator('register', {
+                getFieldDecorator('registration_place', {
                   rules: [{
                     required: true,
+                    message: '注册地必须填写',
                   }],
                 })(
                   <Input placeholder="请填写品牌注册国家" />
@@ -111,53 +167,82 @@ export default class BrandNew extends Component {
             <FormItem
               {...formItemLayout}
               label="LOGO"
+              extra="图片尺寸不大于__px*__px,大小不超过1M，格式PNG/JPG"
             >
-              <div className="pic-box">
-                <Upload
-                  name="avatar"
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  action="//jsonplaceholder.typicode.com/posts/"
-                  beforeUpload={beforeUpload}
-                  onChange={this.handleChange}
-                >
-                  {uploadButton}
-                  {/* {imageUrl ? <img src={imageUrl} alt="" /> : uploadButton} */}
-                </Upload>
-              </div>
+              {
+                getFieldDecorator('logo_url', {
+                  rules: [{
+                    required: true,
+                    message: '您必须上传品牌LOGO',
+                  }],
+                })(
+                  <div className="pic-box">
+                    <Upload
+                      name="file"
+                      listType="picture-card"
+                      className="avatar-uploader"
+                      fileList={logoUrl}
+                      action={QINIU_SERVER}
+                      onPreview={this.handlePreview}
+                      beforeUpload={this.beforeUpload}
+                      onChange={({ ...rest }) => { this.handleChange('logoUrl', rest); }}
+                      data={
+                        {
+                          token: upload.upload_token,
+                          key: `product/images/brand/${file.uid}.${getFileSuffix(file.name)}`,
+                        }
+                      }
+                    >
+                      {logoUrl.length < 1 ? uploadButton : null}
+
+                    </Upload>
+                  </div>
+                )
+              }
+
             </FormItem>
             <FormItem
               {...formItemLayout}
               label="品牌证书"
             >
-              <div className="pic-box">
-                <Upload
-                  action="//jsonplaceholder.typicode.com/posts/"
-                  listType="picture-card"
-                  fileList={fileList}
-                  onPreview={this.handlePreview}
-                  onChange={this.handleChange}
-                >
-                  {fileList.length >= 3 ? null : uploadButton}
-                </Upload>
-                <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                  <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                </Modal>
-              </div>
+              {
+                getFieldDecorator('certificate_urls', {
+
+                })(
+                  <div className="pic-box">
+                    <Upload
+                      name="file"
+                      action={QINIU_SERVER}
+                      listType="picture-card"
+                      fileList={certificateUrls}
+                      onPreview={this.handlePreview}
+                      onChange={({ ...rest }) => { this.handleChange('certificateUrls', rest); }}
+                      data={
+                        {
+                          token: upload.upload_token,
+                          key: `product/images/brand/${file.uid}.${getFileSuffix(file.name)}`,
+                        }
+                      }
+                    >
+                      {certificateUrls.length >= 3 ? null : uploadButton}
+                    </Upload>
+                    <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                      <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
+                  </div>
+                )
+              }
             </FormItem>
             <FormItem
               {...formItemLayout}
               label="品牌介绍"
             >
               {
-                getFieldDecorator('desc', {
+                getFieldDecorator('summary', {
                   rules: [{
-                    required: true,
+                    required: false,
                   }],
-                  initialValue: `固高科技(香港)有限公司成立于1999年，总部位于香港科技大学。创立者为自动化和微电子领域的国际知名
-                  专家、学者。具有多年在加利福尼亚大学(UC Berkeley)、麻省理工学院 (MIT)、贝尔实验
-                  室(Bell Lab)等国际一流科研机构进行研发和管理经验，同年，固高科技（深圳）有限公司成立。`,
+                  initialValue: '',
                 })(
                   <TextArea
                     autosize={{ minRows: 8, maxRows: 16 }}
@@ -166,9 +251,13 @@ export default class BrandNew extends Component {
               }
               <p />
             </FormItem>
+            <div className={styles['submit-box']}>
+              <Button type="primary" htmlType="submit">提交</Button>
+              <Button onClick={() => { history.goBack(); }}>取消</Button>
+            </div>
           </Form>
         </Card>
-      </PageHeaderLayout>
+      </PageHeaderLayout >
     );
   }
 }

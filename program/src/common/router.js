@@ -101,18 +101,18 @@ export const getRouterData = (app) => {
       name: '退货单详情',
     },
     '/brand/list': {
-      component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandList')),
+      component: dynamicWrapper(app, ['brand'], () => import('../routes/Brand/BrandList')),
     },
     '/brand/:list/new': {
-      component: dynamicWrapper(app, ['brand', 'catalog'], () => import('../routes/Brand/BrandNew')),
+      component: dynamicWrapper(app, ['brand', 'upload', 'catalog'], () => import('../routes/Brand/BrandNew')),
       name: '新增品牌',
     },
     '/brand/:list/modify': {
-      component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandModify')),
+      component: dynamicWrapper(app, ['brand', 'upload'], () => import('../routes/Brand/BrandModify')),
       name: '编辑品牌',
     },
     '/brand/:list/detail': {
-      component: dynamicWrapper(app, [], () => import('../routes/Brand/BrandDetail')),
+      component: dynamicWrapper(app, ['brand', 'upload'], () => import('../routes/Brand/BrandDetail')),
       name: '品牌详情',      
     },
    
