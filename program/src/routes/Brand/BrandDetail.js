@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Card, Form } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import { queryString, handleServerMsg } from '../../utils/tools';
+import { queryString } from '../../utils/tools';
 
 import styles from './style.less';
 
@@ -22,7 +22,6 @@ const formItemLayout = {
   brand,
   loading,
 }))
-@Form.create()
 export default class BrandDetail extends Component {
   constructor(props) {
     super(props);
@@ -44,7 +43,6 @@ export default class BrandDetail extends Component {
   render() {
     const { brand } = this.props;
     const { detail } = brand;
-    const { getFieldDecorator } = this.props.form;
 
     return (
       <PageHeaderLayout title="查看品牌">
@@ -74,7 +72,7 @@ export default class BrandDetail extends Component {
             >
               <div className="pic-box">
                 <img
-                  src="https://ss.intsig.net/yemai/vip/camfs/qxb/11111_16d11642e1a8286ae3b3028fa2de13db"
+                  src={detail.logo_url}
                   alt="图片"
                   width={80}
                   height={80}
@@ -86,11 +84,16 @@ export default class BrandDetail extends Component {
               label="品牌证书"
             >
               <div className="pic-box">
-                <img
-                  src="http://img1.maka.im/2013364/128551285456ebb6f6a8a558.26902182.png@0-0-1200-357a_80Q.src"
-                  alt="图片"
-                  width={150}
-                />
+                {
+                  detail.certificate_urls.map(val => (
+                    <img
+                      src={val}
+                      alt="证书图片加载失败"
+                      width={150}
+                    />
+                  ))
+                }
+
               </div>
             </FormItem>
             <FormItem

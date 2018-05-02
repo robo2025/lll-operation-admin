@@ -87,7 +87,7 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(removeBrand, {});
+      const response = yield call(queryBrands, {});
       const { headers } = response;
       // console.log('服务器目录列表', response);
       yield put({

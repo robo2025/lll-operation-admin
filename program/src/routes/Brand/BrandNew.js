@@ -21,7 +21,7 @@ const formItemLayout = {
 };
 
 
-@connect(({ brand, loading, upload }) => ({
+@connect(({ brand, upload, loading }) => ({
   brand,
   upload,
   loading,
@@ -73,7 +73,8 @@ export default class BrandNew extends Component {
   }
 
   // 提交品牌信息
-  handleSubmit = () => {
+  handleSubmit = (e) => {
+    e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const { logoUrl, certificateUrls } = this.state;
@@ -92,7 +93,7 @@ export default class BrandNew extends Component {
     });
   }
 
-  // 发起新增品牌操作
+  // 发起新增品牌调用接口操作
   dispatchAddBrand = (data) => {
     const { dispatch, history } = this.props;
     dispatch({
@@ -199,7 +200,6 @@ export default class BrandNew extends Component {
                   </div>
                 )
               }
-
             </FormItem>
             <FormItem
               {...formItemLayout}

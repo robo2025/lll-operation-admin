@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-22 10:33:10
+ * @Last Modified time: 2018-05-02 11:57:30
  */
 
 import React, { PureComponent } from 'react';
@@ -15,9 +15,9 @@ const { TextArea } = Input;
 
 // 取消订单弹出层内容 
 export default class ReminderContent extends PureComponent {
-   // 处理下拉列表改变
-   handleSelectChange = (key, value) => {
-     const { data, onChange } = this.props;
+  // 处理下拉列表改变
+  handleSelectChange = (key, value) => {
+    const { data, onChange } = this.props;
     const tempJson = {};
     tempJson[key] = value;
     onChange({
@@ -28,7 +28,7 @@ export default class ReminderContent extends PureComponent {
 
   // 处理输入框改变
   handleTextChange = (key, text) => {
-    const { data, onChange } = this.props;    
+    const { data, onChange } = this.props;
     const tempJson = {};
     tempJson[key] = text;
     onChange({
@@ -36,11 +36,11 @@ export default class ReminderContent extends PureComponent {
       ...tempJson,
     });
   }
-  
+
 
   render() {
     const { data } = this.props;
-    
+
     return (
       <div className={styles['modal-content']}>
         <Row>

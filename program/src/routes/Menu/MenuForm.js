@@ -232,8 +232,8 @@ class MenuForm extends React.Component {
       key: 'product_count',
     }, {
       title: '创建人',
-      dataIndex: 'staff_id',
-      key: 'staff_id',
+      dataIndex: 'creator_id',
+      key: 'creator_id',
     }, {
       title: '创建时间',
       dataIndex: 'created_time',
@@ -249,7 +249,7 @@ class MenuForm extends React.Component {
             <span>
               {/* <a onClick={() => { this.showModal('isShowAddChildModal', record); }}>新增子类</a> */}
               {/* <Divider type="vertical" /> */}
-              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
+              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>编辑</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
                 <a disabled={record.lyChildren.length >= 1}>删除</a>
@@ -266,7 +266,7 @@ class MenuForm extends React.Component {
             <span>
               {/* <a disabled>新增子类</a> */}
               {/* <Divider type="vertical" /> */}
-              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>修改</a>
+              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>编辑</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
                 <a>删除</a>
@@ -626,7 +626,6 @@ class MenuForm extends React.Component {
             </FormItem>
           </Form>
         </Modal>
-
         <Breadcrumb
           separator=">"
         >

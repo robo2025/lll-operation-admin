@@ -1,67 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Card, Row, Col, Form, Input, Button, Icon, Divider } from 'antd';
+import { Card, Row, Col, Form, Input, Button, Icon, Divider, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 
 import styles from './style.less';
+import { handleServerMsgObj } from '../../utils/tools';
 
 const FormItem = Form.Item;
-const columns = [{
-  title: '序号',
-  dataIndex: 'idx',
-  key: 'idx',
-  width: 60,
-  fixed: 'left',
-}, {
-  title: '品牌',
-  dataIndex: 'brand_name',
-  key: 'brand_name',
-  width: 120,
-  fixed: 'left',
-}, {
-  title: '英文名',
-  dataIndex: 'english_name',
-  key: 'english_name',
-  width: 120,
-  fixed: 'left',
-}, {
-  title: '注册地',
-  dataIndex: 'registration_place',
-  key: 'registration_place',
-}, {
-  title: 'LOGO',
-  dataIndex: 'logo_url',
-  key: 'logo_url',
-  render: text => (<img src={text} alt="logo" width={50} height={50} />),
-}, {
-  title: '已关联产品数',
-  dataIndex: 'product_count',
-  key: 'product_count',
-}, {
-  title: '创建日期',
-  dataIndex: 'created_time',
-  key: 'created_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD hh:mm:ss')}</span>),
-}, {
-  title: '操作',
-  dataIndex: 'actions',
-  key: 'actions',
-  render: (text, record) => (
-    <Fragment>
-      <a href={`#/brand/list/modify?bno=${record.bno}`}>编辑</a>
-      <Divider type="vertical" />
-      <a>
-        删除
-      </a>
-      <Divider type="vertical" />
-      <a href={`#/brand/list/detail?bno=${record.bno}`}>查看</a>
-    </Fragment>
-  ),
-  width: 150,
-  fixed: 'right',
-}];
 
 @connect(({ brand, loading }) => ({
   brand,
@@ -69,10 +16,68 @@ const columns = [{
 }))
 @Form.create()
 export default class BrandList extends Component {
-  state = {
-    selectedRowKeys: [],
-    selectedRows: [],
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedRowKeys: [],
+      selectedRows: [],
+    };
+    this.columns = [{
+      title: '序号',
+      dataIndex: 'idx',
+      key: 'idx',
+      width: 60,
+      fixed: 'left',
+    }, {
+      title: '品牌',
+      dataIndex: 'brand_name',
+      key: 'brand_name',
+      width: 120,
+      fixed: 'left',
+    }, {
+      title: '英文名',
+      dataIndex: 'english_name',
+      key: 'english_name',
+      width: 120,
+      fixed: 'left',
+    }, {
+      title: '注册地',
+      dataIndex: 'registration_place',
+      key: 'registration_place',
+    }, {
+      title: 'LOGO',
+      dataIndex: 'logo_url',
+      key: 'logo_url',
+      render: text => (<img src={text} alt="logo" width={50} height={50} />),
+    }, {
+      title: '已关联产品数',
+      dataIndex: 'product_count',
+      key: 'product_count',
+    }, {
+      title: '创建日期',
+      dataIndex: 'created_time',
+      key: 'created_time',
+      render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD hh:mm:ss')}</span>),
+    }, {
+      title: '操作',
+      dataIndex: 'actions',
+      key: 'actions',
+      render: (text, record) => (
+        <Fragment>
+          <a href={`#/brand/list/modify?bno=${record.bno}`}>编辑</a>
+          <Divider type="vertical" />
+          <a onClick={() => { this.removeBrand(record.bno); }}>
+            删除
+          </a>
+          <Divider type="vertical" />
+          <a href={`#/brand/list/detail?bno=${record.bno}`}>查看</a>
+        </Fragment>
+      ),
+      width: 150,
+      fixed: 'right',
+    }];
   }
+  
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -91,6 +96,16 @@ export default class BrandList extends Component {
       selectedRows: rows,
     });
   };
+
+  removeBrand = (bno) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'brand/remove',
+      bno,
+      success: () => { message.success('删除成功'); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
+  }
 
   renderSimpleForm() {
     const { getFieldDecorator } = this.props.form;
@@ -139,7 +154,6 @@ export default class BrandList extends Component {
     );
   }
 
-
   render() {
     const { selectedRowKeys, selectedRows } = this.state;
     const { history, brand } = this.props;
@@ -148,8 +162,6 @@ export default class BrandList extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-
-    console.log('品牌信息', brand);
 
     return (
       <PageHeaderLayout title="品牌列表">
@@ -164,7 +176,7 @@ export default class BrandList extends Component {
               <Button icon="plus" type="primary" onClick={() => { history.push('/brand/list/new'); }}>
                 新建品牌
               </Button>
-              {selectedRows.length > 0 && (
+              {selectedRowKeys.length > 0 && (
                 <span>
                   <Button>批量导出</Button>
                 </span>
@@ -173,7 +185,7 @@ export default class BrandList extends Component {
             <CustomizableTable
               rowSelection={rowSelection}
               data={brand.list}
-              columns={columns}
+              columns={this.columns}
               scroll={{ x: 800 }}
               onSelectRow={this.handleSelectRows}
             />

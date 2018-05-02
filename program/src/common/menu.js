@@ -9,7 +9,7 @@ const menuData = [{
     },
     {
       name: '产品型号列表',
-      path: 'type',
+      path: 'model',
     },
     {
       name: '产品列表',

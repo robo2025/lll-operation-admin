@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-26 10:09:36
+ * @Last Modified time: 2018-05-02 11:57:47
  */
 
 import React, { PureComponent } from 'react';
@@ -15,9 +15,9 @@ const { TextArea } = Input;
 
 // 无货驳回弹出层内容 
 export default class RejectContent extends PureComponent {
-   // 处理下拉列表改变
-   handleSelectChange = (key, value) => {
-    const { data, onChange } = this.props;     
+  // 处理下拉列表改变
+  handleSelectChange = (key, value) => {
+    const { data, onChange } = this.props;
     const tempJson = {};
     tempJson[key] = value;
     onChange({
@@ -28,7 +28,7 @@ export default class RejectContent extends PureComponent {
 
   // 处理输入框改变
   handleTextChange = (key, text) => {
-    const { onChange } = this.props;        
+    const { onChange } = this.props;
     const tempJson = {};
     tempJson[key] = text;
     onChange({
@@ -37,7 +37,7 @@ export default class RejectContent extends PureComponent {
   }
 
   render() {
-    const { data } = this.props;    
+    const { data } = this.props;
     console.log('无货驳回modal', data);
     return (
       <div className={styles['modal-content']}>
