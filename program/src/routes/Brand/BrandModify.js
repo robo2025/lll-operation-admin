@@ -82,6 +82,7 @@ export default class BrandModify extends Component {
 
   // 文件上传时处理
   beforeUpload = (file) => {
+    console.log('上传文件', file);
     this.setState({ file });
     const isRequiredPicType = checkFile(file.name, ['png', 'jpg']);
     if (!isRequiredPicType) {
@@ -96,11 +97,7 @@ export default class BrandModify extends Component {
 
   // 文件上传状态改变时处理
   handleChange = (key, { fileList }) => {
-    console.log('---', key, fileList);
-    // this.props.form.setFieldsValue({
-    //   [key]: fileList,
-    // });
-    // this.setState({ [key]: fileList });
+    this.setState({ [key]: fileList });
   }
 
   // 提交品牌修改信息
@@ -228,28 +225,28 @@ export default class BrandModify extends Component {
                     required: true,
                     message: '您必须上传品牌LOGO',
                   }],
-                  valuePropName: 'fileList',
-                  initialValue: logoUrl,
                 })(
-
-                  <Upload
-                    name="file"
-                    listType="picture-card"
-                    className="avatar-uploader"
-                    action={QINIU_SERVER}
-                    // fileList={logoUrl}                    
-                    onPreview={this.handlePreview}
-                    beforeUpload={this.beforeUpload}
-                    onChange={({ ...rest }) => { this.handleChange('logoUrl', rest); }}
-                    data={
-                      {
-                        token: upload.upload_token,
-                        key: `product/images/brand/${file.uid}.${getFileSuffix(file.name)}`,
+                  <div className="pic-box">
+                    <Upload
+                      name="file"
+                      listType="picture-card"
+                      className="avatar-uploader"
+                      action={QINIU_SERVER}
+                      fileList={logoUrl}                   
+                      onPreview={this.handlePreview}
+                      beforeUpload={this.beforeUpload}
+                      onChange={({ ...rest }) => { this.handleChange('logoUrl', rest); }}
+                      data={
+                        {
+                          token: upload.upload_token,
+                          key: `product/images/brand/${file.uid}.${getFileSuffix(file.name)}`,
+                        }
                       }
-                    }
-                  >
-                    {logoUrl.length < 1 ? uploadButton : null}
-                  </Upload>
+                    >
+                      {logoUrl.length < 1 ? uploadButton : null}
+                    </Upload>
+                  </div>
+
                 )
               }
             </FormItem>
@@ -262,26 +259,27 @@ export default class BrandModify extends Component {
                   rules: [{
                     required: false,
                   }],
-                  valuePropName: 'fileList',  
-                  initialValue: certificateUrls,             
                 })(
-                  <Upload
-                    name="file"
-                    action={QINIU_SERVER}
-                    listType="picture-card"
-                    // fileList={certificateUrls}                                     
-                    onRemove={(file1) => { console.log('移除文件', file1); }}
-                    onPreview={this.handlePreview}
-                    onChange={({ ...rest }) => { this.handleChange('certificateUrls', rest); }}
-                    data={
-                      {
-                        token: upload.upload_token,
-                        key: `product/images/brand/${file.uid}.${getFileSuffix(file.name)}`,
+                  <div className="pic-box">
+                    <Upload
+                      name="file"
+                      action={QINIU_SERVER}
+                      listType="picture-card"
+                      fileList={certificateUrls}
+                      beforeUpload={this.beforeUpload}
+                      onRemove={(file1) => { console.log('移除文件', file1); }}
+                      onPreview={this.handlePreview}
+                      onChange={({ ...rest }) => { this.handleChange('certificateUrls', rest); }}
+                      data={
+                        {
+                          token: upload.upload_token,
+                          key: `product/images/brand/${file.uid}.${getFileSuffix(file.name)}`,
+                        }
                       }
-                    }
-                  >
-                    {certificateUrls.length >= 3 ? null : uploadButton}
-                  </Upload>
+                    >
+                      {certificateUrls.length >= 3 ? null : uploadButton}
+                    </Upload>
+                  </div>
                 )
               }
             </FormItem>
@@ -290,11 +288,11 @@ export default class BrandModify extends Component {
               label="品牌介绍"
             >
               {
-                getFieldDecorator('register', {
+                getFieldDecorator('summary', {
                   rules: [{
                     required: false,
                   }],
-                  value: detail.summary,
+                  initialValue: detail.summary,
                 })(
                   <TextArea
                     autosize={{ minRows: 8, maxRows: 16 }}

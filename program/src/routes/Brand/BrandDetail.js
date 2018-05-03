@@ -85,7 +85,7 @@ export default class BrandDetail extends Component {
             >
               <div className="pic-box">
                 {
-                  detail.certificate_urls.map(val => (
+                  detail.certificate_urls && detail.certificate_urls.map(val => (
                     <img
                       src={val}
                       alt="证书图片加载失败"
@@ -101,9 +101,7 @@ export default class BrandDetail extends Component {
               label="品牌介绍"
             >
               <p>
-                固高科技(香港)有限公司成立于1999年，总部位于香港科技大学。创立者为自动化和微电子领域的国际知名
-                专家、学者。具有多年在加利福尼亚大学(UC Berkeley)、麻省理工学院 (MIT)、贝尔实验
-                室(Bell Lab)等国际一流科研机构进行研发和管理经验，同年，固高科技（深圳）有限公司成立。
+                {detail.summary}
               </p>
             </FormItem>
           </Form>

@@ -60,6 +60,7 @@ export default class BrandNew extends Component {
 
   // 文件上传时处理
   beforeUpload = (file) => {
+    console.log('上传文件', file);
     this.setState({ file });
     const isRequiredPicType = checkFile(file.name, ['png', 'jpg']);
     if (!isRequiredPicType) {
@@ -77,6 +78,7 @@ export default class BrandNew extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
+        console.log(values);
         const { logoUrl, certificateUrls } = this.state;
         // logourl
         const logoUrlArr = logoUrl.map(val => (val.response.key)); // logo的url数组
@@ -216,6 +218,7 @@ export default class BrandNew extends Component {
                       listType="picture-card"
                       fileList={certificateUrls}
                       onPreview={this.handlePreview}
+                      beforeUpload={this.beforeUpload}                      
                       onChange={({ ...rest }) => { this.handleChange('certificateUrls', rest); }}
                       data={
                         {
