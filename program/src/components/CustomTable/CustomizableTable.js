@@ -46,7 +46,7 @@ export default class CustomizableTable extends React.Component {
         </div>
         <Table
           loading={loading}
-          rowKey={record => (record.gno ? record.gno : record.created_time)}
+          rowKey={record => (record.id ? record.id : record.created_time)}
           rowSelection={rowSelection}
           dataSource={data}
           columns={columns}

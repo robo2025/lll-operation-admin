@@ -30,14 +30,7 @@ export default class GoodDetail extends Component {
       type: 'product/fetchDetail',
       pno: args.pno,
     });
-    // 获取产品日志
-    dispatch({
-      type: 'product/queryLogs',
-      module: 'product',
-      productId: args.prdId,
-    });
   }
-
 
   render() {
     const { product, loading } = this.props;

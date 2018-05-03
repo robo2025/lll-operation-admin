@@ -46,8 +46,10 @@
 .tableList {
   .tableListOperator {
     margin-bottom: 16px;
-    button {
-      margin-right: 8px;
+    :global{
+      .ant-btn{
+        margin-right: 8px;
+      }
     }
   }
 }
@@ -58,6 +60,21 @@
   align-items: center;
   button{
     margin: 0 15px;
+  }
+}
+
+.pics-wrap{
+  display: flex;
+  flex-wrap: wrap;
+  :global{
+    .pic-box{
+      text-align: center;
+      cursor: pointer;
+    }
+    .upload-pic-desc{
+      height: 30px;
+      line-height: 30px;
+    }
   }
 }
 

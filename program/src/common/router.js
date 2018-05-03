@@ -61,7 +61,16 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['product'], () => import('../routes/ProductManager')),
     },
     '/product/model': {
-      component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelList.js')),
+      component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelList')),
+    },
+    '/product/:model/add': {
+      component: dynamicWrapper(app, ['catalog', 'brand', 'product', 'productModel'], () => import('../routes/ProductModel/ProductModelNew')),
+    },
+    '/product/:model/edit': {
+      component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelModify')),
+    },
+    '/product/:model/view': {
+      component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelDetail')),
     },
     '/product/:list/new': {
       component: dynamicWrapper(app, ['product', 'catalog', 'brand', 'upload'], () => import('../routes/NewProduct/NewProduct')),

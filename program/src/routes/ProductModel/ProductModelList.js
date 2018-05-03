@@ -18,7 +18,7 @@ const { RangePicker } = DatePicker;
   loading,
 }))
 @Form.create()
-export default class BrandList extends Component {
+export default class ProductModelList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -99,13 +99,13 @@ export default class BrandList extends Component {
       key: 'actions',
       render: (text, record) => (
         <Fragment>
-          <a href={`#/brand/list/modify?bno=${record.bno}`}>查看</a>
+          <a href={`#/product/model/view?mno=${record.bno}`}>查看</a>
           <Divider type="vertical" />
-          <a onClick={() => { this.removeBrand(record.bno); }}>
+          <a href={`#/product/model/edit?mno=${record.bno}`}>
             编辑
           </a>
           <Divider type="vertical" />
-          <a href={`#/brand/list/detail?bno=${record.bno}`}>供货消息</a>
+          <a onClick={() => { console.log('供货消息'); }}>供货消息</a>
         </Fragment>
       ),
       width: 180,
@@ -302,7 +302,7 @@ export default class BrandList extends Component {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              <Button type="primary" icon="plus" onClick={() => { console.info('新建型号'); }}>新建</Button>
+              <Button type="primary" icon="plus" href="#/product/model/add">新建</Button>
               {
                 selectedRows.length > 0 ? (
                   <span>

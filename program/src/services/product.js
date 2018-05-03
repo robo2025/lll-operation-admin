@@ -17,6 +17,18 @@ export async function queryProducts({ params, offset = 0, limit = 10 }) {
   });
 }
 
+/**
+ * 根据目录id,品牌id获取产品列表
+ */
+export async function queryProductsByParams({ params }) {
+  const acessToken = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/products/all?${queryString.toQueryString(params)}`, {
+    headers: {
+      Authorization: acessToken,
+    },
+  });
+}
+
 
 /**
  * 添加产品信息

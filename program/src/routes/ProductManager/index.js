@@ -321,7 +321,7 @@ export default class ProductManager extends Component {
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">未知</Option>
                   <Option value="1">未知</Option>
-                  <Option value="1">未知</Option>
+                  <Option value="2">未知</Option>
                 </Select>
               )}
             </FormItem>
@@ -333,7 +333,6 @@ export default class ProductManager extends Component {
               )}
             </FormItem>
           </Col>
-
           <Col xll={4} md={8} sm={24}>
             <FormItem label="创建日期">
               {getFieldDecorator('create_time')(

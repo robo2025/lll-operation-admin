@@ -85,6 +85,15 @@ const MONTHER_ORDER_STATUS = {
   6: '全部发货',
 };
 
+const PIC_TYPES = {
+  1: '正面',
+  2: '反面',
+  3: '侧面',
+  4: '包装图一',
+  5: '包装图二',
+  6: '包装图三',
+};
+
 export {
   ACTION_STATUS,
   ABNORMAL_TYPE,
@@ -94,4 +103,5 @@ export {
   REFUND_STATUS,
   RESPONSIBLE_PARTY, 
   MONTHER_ORDER_STATUS,
+  PIC_TYPES,
 };

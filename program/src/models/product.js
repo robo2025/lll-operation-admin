@@ -1,10 +1,11 @@
-import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail, querySupplyInfo, queryOperationLog, exportProduct } from '../services/product';
+import { queryProducts, queryProductsByParams, addProduct, removeProducts, modifyProduct, queryProductDetail, querySupplyInfo, queryOperationLog, exportProduct } from '../services/product';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
 export default {
   namespace: 'product',
 
   state: {
+    all: [],
     list: [],
     detail: {},
     logs: [],
@@ -25,6 +26,17 @@ export default {
         type: 'save',
         payload: response.data,
         headers,
+      });
+    },
+    *fetchByParams({ params, success, error }, { call, put }) {
+      const response = yield call(queryProductsByParams, { params });
+      if (response.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(response);
+      } else if (typeof error === 'function') { error(response); return; }
+      
+      yield put({
+        type: 'saveAll',
+        payload: response.data,
       });
     },
     *fetchDetail({ pno, success, error }, { call, put }) {
@@ -133,6 +145,12 @@ export default {
         ...state,
         list: action.payload,
         total: action.headers['x-content-total'] >> 0,
+      };
+    },
+    saveAll(state, action) {
+      return {
+        ...state,
+        all: action.payload,
       };
     },
     saveDetail(state, action) {

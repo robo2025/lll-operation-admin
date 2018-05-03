@@ -241,8 +241,6 @@ class ProductForm extends Component {
     );
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构    
 
-    console.log('props data', data, brands);
-
     return (
       <div className={styles['product-info-wrap']} >
         {/* 产品主要属性 */}
