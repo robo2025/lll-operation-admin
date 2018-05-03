@@ -388,7 +388,6 @@ export default class ProductManager extends Component {
         </Card>
         <Card bordered={false}>
           <div className={styles.tableList}>
-
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
               {

@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Row, Col, Form, Input, Button, Icon, DatePicker, Select, message } from 'antd';
+import moment from 'moment';
+import { Card, Row, Col, Form, Input, Button, Icon, DatePicker, Select, Divider, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 
 import styles from './style.less';
 import { handleServerMsgObj } from '../../utils/tools';
@@ -10,8 +12,9 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-@connect(({ brand, loading }) => ({
+@connect(({ brand, productModel, loading }) => ({
   brand,
+  productModel,
   loading,
 }))
 @Form.create()
@@ -23,16 +26,100 @@ export default class BrandList extends Component {
       selectedRows: [],
       expandForm: false,
     };
+    this.columns = [{
+      title: '序号',
+      dataIndex: 'idx',
+      key: 'idx',
+      width: 60,
+      fixed: 'left',
+      render: (text, record, idx) => (<span>{idx}</span>),
+    }, {
+      title: '产品型号ID',
+      dataIndex: 'mno',
+      key: 'mno',
+      width: 150,
+      fixed: 'left',
+    }, {
+      title: '产品型号',
+      dataIndex: 'partnumber',
+      key: 'partnumber',
+      width: 150,
+      fixed: 'left',
+    }, {
+      title: '三级类目',
+      dataIndex: 'product',
+      key: 'menu3',
+      width: 150,
+      render: text => (<span>{!text || text.category.children.children.category_name}</span>),
+    }, {
+      title: '产品名称',
+      dataIndex: 'product',
+      key: 'product_name',
+      render: text => (<span>{!text || text.product_name}</span>),
+    }, {
+      title: '产品图片',
+      dataIndex: 'product',
+      key: 'pics',
+      width: 150,      
+      render: (text) => {
+        return text.pics.map((item, idx) => {
+          if (idx < 3) {
+            return (
+              <img
+                className="product-thumb"
+                alt={item.img_tyle}
+                key={item.id}
+                src={item.img_url}
+              />);
+          }
+        });
+      },
+    }, {
+      title: '品牌',
+      dataIndex: 'product',
+      key: 'brand_name',
+      render: text => (<span>{!text || text.brand.brand_name}</span>),
+    }, {
+      title: '产地',
+      dataIndex: 'product',
+      key: 'registration_place',
+      render: text => (<span>{!text || text.brand.registration_place}</span>),
+    }, {
+      title: '已有供应商数量',
+      dataIndex: 'supplier_count',
+      key: 'supplier_count',
+    }, {
+      title: '创建时间',
+      dataIndex: 'created_time',
+      key: 'created_time',
+      render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD hh:mm:ss')}</span>),
+    }, {
+      title: '操作',
+      dataIndex: 'actions',
+      key: 'actions',
+      render: (text, record) => (
+        <Fragment>
+          <a href={`#/brand/list/modify?bno=${record.bno}`}>查看</a>
+          <Divider type="vertical" />
+          <a onClick={() => { this.removeBrand(record.bno); }}>
+            编辑
+          </a>
+          <Divider type="vertical" />
+          <a href={`#/brand/list/detail?bno=${record.bno}`}>供货消息</a>
+        </Fragment>
+      ),
+      width: 180,
+      fixed: 'right',
+    }];
   }
 
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'brand/fetch',
+      type: 'productModel/fetch',
     });
   }
-
 
   onSelectChange = (selectedRowKeys) => {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
@@ -198,7 +285,7 @@ export default class BrandList extends Component {
 
   render() {
     const { selectedRowKeys, selectedRows } = this.state;
-    const { history, brand } = this.props;
+    const { productModel, brand } = this.props;
     const rowSelection = {
       fixed: true,
       selectedRowKeys,
@@ -214,7 +301,28 @@ export default class BrandList extends Component {
         </Card>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            产品型号列表
+            <div className={styles.tableListOperator}>
+              <Button type="primary" icon="plus" onClick={() => { console.info('新建型号'); }}>新建</Button>
+              {
+                selectedRows.length > 0 ? (
+                  <span>
+                    <Button
+                      onClick={this.removeProducts}
+                    >
+                      删除
+                    </Button>
+                  </span>
+                ) : null
+              }
+              <Button onClick={this.showExportModal}>导出数据</Button>
+            </div>
+            <CustomizableTable
+              rowSelection={rowSelection}
+              data={productModel.list}
+              columns={this.columns}
+              scroll={{ x: 2000 }}
+              onSelectRow={this.handleSelectRows}
+            />
           </div>
         </Card>
       </PageHeaderLayout>
