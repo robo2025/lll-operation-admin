@@ -28,6 +28,7 @@ export default class BrandList extends Component {
       key: 'idx',
       width: 60,
       fixed: 'left',
+      render: (text, record, idx) => (<span>{idx + 1}</span>),
     }, {
       title: '品牌',
       dataIndex: 'brand_name',
