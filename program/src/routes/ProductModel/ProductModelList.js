@@ -340,6 +340,7 @@ export default class ProductModelList extends Component {
           >
             <SupplyInformation
               headerData={currProductModel}
+              
             />
           </Modal>
         </Card>
