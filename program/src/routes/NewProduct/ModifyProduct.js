@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-27 18:22:35
+ * @Last Modified time: 2018-05-04 10:52:08
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -29,7 +29,7 @@ export default class ModifyProduct extends Component {
     this.state = {
       isShowAttrMOdal: false,
       args: queryString.parse(window.location.href),
-      fields: { ...this.props.product.detail, pdf_url: [] },
+      fields: { pdf_url: [] },
       specs: [], // 用户自定义的其他属性
     };
   }
@@ -49,6 +49,7 @@ export default class ModifyProduct extends Component {
         this.setState({
           fields: {
             ...detail,
+            bno: detail.brand.bno,
             category_id_1: detail.category.id, // 一级目录
             category_id_2: detail.category.children.id, // 二级目录
             category_id_3: detail.category.children.children.id, // 三级目录
@@ -66,14 +67,7 @@ export default class ModifyProduct extends Component {
     dispatch({
       type: 'upload/fetch',
     });
-    // 获取操作日志
-    dispatch({
-      type: 'product/queryLogs',
-      module: 'product',
-      productId: args.prdId,
-    });
   }
-
 
   onCancel = () => {
     this.setState({ isShowAttrMOdal: false });
@@ -338,7 +332,7 @@ export default class ModifyProduct extends Component {
   render() {
     const { isShowAttrMOdal, specs, editSpec } = this.state;
     const argsKey = Object.keys(this.state.args);
-    const { product, loading, catalog, upload } = this.props;
+    const { loading, catalog, upload } = this.props;
 
     // 其他属性列
     const attrClomns = [{

@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Form, Row, Col, Upload, Modal, Tabs, message } from 'antd';
+import { Form, Row, Col, Upload, Modal, Tabs } from 'antd';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
-import { checkFile, replaceObjFromArr } from '../../utils/tools';
 import styles from './good-form.less';
 
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
 const mapImageType = ['正面', '侧面', '反面', '包装图一', '包装图二', '包装图三'];
 
 // 拼凑单个商品图片数据

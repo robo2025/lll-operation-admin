@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Row, Input, Cascader, Select, Tabs, message } from 'antd';
+import { Form, Card, Row, Input, Cascader, Select, Tabs, Upload, Button, Icon, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
+import { QINIU_SERVER } from '../../constant/config';
+import { getFileSuffix, checkFile, handleServerMsgObj } from '../../utils/tools';
 import { PIC_TYPES } from '../../constant/statusList';
 
 import styles from './style.less';
@@ -12,11 +14,11 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-@connect(({ brand, product, productModel, catalog, loading }) => ({
+@connect(({ brand, product, upload, catalog, loading }) => ({
   brand,
   catalog,
   product,
-  productModel,
+  upload,
   loading,
 }))
 @Form.create()
@@ -25,13 +27,16 @@ export default class productModelNew extends Component {
     super(props);
     this.state = {
       productList: [],
+      cadUrls: [],
+      file: { uid: '', name: '' },
     };
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
+    // 获取upload_token
     dispatch({
-      type: 'productModel/fetch',
+      type: 'upload/fetch',
     });
     // 请求目录
     dispatch({
@@ -90,6 +95,12 @@ export default class productModelNew extends Component {
     const selectedProduct = product.all.find(val => val.pno === value);
     this.setState({
       selectedProduct,
+      cadUrls: selectedProduct.cad_urls.map((val, idx) => ({
+        uid: idx,
+        name: val,
+        status: 'done',
+        url: val,
+      })),
     });
   }
 
@@ -100,19 +111,84 @@ export default class productModelNew extends Component {
       type: 'product/fetchByParams',
       params,
       success: (res) => {
-        console.log(res);
         this.setState({ productList: res.data });
       },
     });
   }
 
+  // 文件上传状态改变时处理
+  handleChange = (key, { fileList }) => {
+    this.setState({ [key]: fileList });
+  }
+
+  // 文件上传时处理
+  beforeUpload = (file) => {
+    this.setState({ file });
+    const isRequiredPicType = checkFile(file.name, ['pdf', 'word']);
+    if (!isRequiredPicType) {
+      message.error('不支持当前文件格式');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 1;
+    if (!isLt2M) {
+      message.error('图像不能大于 1MB!');
+    }
+    return isRequiredPicType && isLt2M;
+  }
+
+  handleSubmitProductModel = () => {
+    const { selectedProduct } = this.state;
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        console.log('校验出错', err);
+      }
+      // 从fieldsValue中取出参数项
+      const specs = [];
+      const specKeys = Object.keys(fieldsValue).filter(val => /spec_/.test(val));
+      specKeys.forEach((val) => {
+        specs.push({
+          spec_name: val.replace(/spec_/, ''), // 参数名称
+          spec_value: fieldsValue[val], // 参数值
+          sort: 0,
+        });
+      });
+
+      // 
+      this.dispatchAddProductModel({
+        pno: selectedProduct.pno,
+        partnumber: fieldsValue.partnumber, // 型号
+        specs,
+      });
+    });
+  }
+
+  // 发起新增产品型号操作
+  dispatchAddProductModel = (data) => {
+    const { dispatch, history } = this.props;
+    dispatch({
+      type: 'productModel/add',
+      data,
+      success: () => { history.goBack(); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { catalog, brand } = this.props;
-    const { selectedBrand, selectedCatalog, productList, selectedProduct } = this.state;
+    const { catalog, brand, upload } = this.props;
+    const {
+      selectedBrand,
+      selectedCatalog,
+      productList,
+      selectedProduct,
+      cadUrls,
+      file } = this.state;
     const formItemLayout = {
-      labelCol: { span: 4 },
+      labelCol: { span: 3 },
       wrapperCol: { span: 15 },
+    };
+    const formItemLayout2 = {
+      labelCol: { span: 3 },
+      wrapperCol: { span: 6 },
     };
 
     return (
@@ -148,7 +224,7 @@ export default class productModelNew extends Component {
                   {getFieldDecorator('bno', {
                     rules: [{
                       required: true,
-                      message: '请填写产品品牌',
+                      message: '请选择产品品牌',
                     }],
                   })(
                     <Select
@@ -183,7 +259,7 @@ export default class productModelNew extends Component {
                 >
                   {getFieldDecorator('registration_place', {
                     rules: [{
-                      required: true,
+                      required: false,
                       message: '请完善产品产地',
                     }],
                   })(
@@ -214,6 +290,19 @@ export default class productModelNew extends Component {
                     </Select>
                   )}
                 </FormItem>
+                <FormItem
+                  label="产品型号"
+                  {...formItemLayout}
+                >
+                  {getFieldDecorator('partnumber', {
+                    rules: [{
+                      required: true,
+                      message: '请输入...',
+                    }],
+                  })(
+                    <Input />
+                  )}
+                </FormItem>
               </Form>
             </div>
             <div style={{ float: 'left', maxWidth: 520, position: 'relative', top: -60 }}>
@@ -242,11 +331,67 @@ export default class productModelNew extends Component {
           <SectionHeader
             title="规格参数"
           />
+          <div className="spec-wrap" style={{ width: 800 }}>
+            <Form>
+              {
+                selectedProduct && selectedProduct.specs.map(val => (
+                  <FormItem
+                    label={val.spec_name}
+                    {...formItemLayout2}
+                    key={val.id}
+                  >
+                    {getFieldDecorator(`spec_${val.spec_name}`, {
+                      rules: [{
+                        required: Boolean(val.is_require),
+                        message: '该参数项必填',
+                      }],
+                    })(
+                      <Input addonAfter={val.spec_unit} />
+                    )}
+                  </FormItem>
+                ))
+              }
+            </Form>
+          </div>
           <SectionHeader
             title="系列详情"
           />
           <div className="good-desc">
-            <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
+            <div className="cad-urls-wrap" style={{ width: 800 }}>
+              <FormItem
+                label="CAD图"
+                {...formItemLayout2}
+                extra="暂只支持PDF、WORD格式文档"
+              >
+                {getFieldDecorator('cad_urls', {
+                  rules: [{
+                    required: false,
+                    message: '请上传CAD图',
+                  }],
+                })(
+                  <Upload
+                    name="file"
+                    action={QINIU_SERVER}
+                    listType="text"
+                    fileList={cadUrls}
+                    onPreview={this.handlePreview}
+                    beforeUpload={this.beforeUpload}
+                    onChange={({ ...rest }) => { this.handleChange('cadUrls', rest); }}
+                    data={
+                      {
+                        token: upload.upload_token,
+                        key: `product/attachment/cad/${file.uid}.${getFileSuffix(file.name)}`,
+                      }
+                    }
+                  >
+                    <Button>
+                      <Icon type="upload" /> 上传
+                    </Button>
+                  </Upload>
+                )}
+              </FormItem>
+            </div>
+            <Tabs defaultActiveKey="1">
               <TabPane tab="*产品概述" key="1">
                 <RichEditorShow content={selectedProduct && selectedProduct.summary} />
               </TabPane>
@@ -263,6 +408,10 @@ export default class productModelNew extends Component {
                 <RichEditorShow content={selectedProduct && selectedProduct.faq} />
               </TabPane>
             </Tabs>
+          </div>
+          <div className={styles['submit-btn-wrap']} style={{ marginTop: 20 }}>
+            <Button onClick={() => { history.goBack(); }}>取消</Button>
+            <Button type="primary" onClick={this.handleSubmitProductModel}>提交</Button>
           </div>
         </Card>
       </PageHeaderLayout>

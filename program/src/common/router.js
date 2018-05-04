@@ -64,13 +64,14 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelList')),
     },
     '/product/:model/add': {
-      component: dynamicWrapper(app, ['catalog', 'brand', 'product', 'productModel'], () => import('../routes/ProductModel/ProductModelNew')),
+      component: dynamicWrapper(app, ['catalog', 'upload', 'brand', 'product', 'productModel'], () => import('../routes/ProductModel/ProductModelNew')),
     },
     '/product/:model/edit': {
-      component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelModify')),
+      component: dynamicWrapper(app, ['brand', 'upload', 'productModel'], () => import('../routes/ProductModel/ProductModelModify')),
     },
     '/product/:model/view': {
       component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelDetail')),
+      name: '查看产品型号',    
     },
     '/product/:list/new': {
       component: dynamicWrapper(app, ['product', 'catalog', 'brand', 'upload'], () => import('../routes/NewProduct/NewProduct')),

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
-import { Card, Table, Button } from 'antd';
+import { Card, Button } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductForm from '../../components/CustomeForm/ProductForm';

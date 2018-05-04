@@ -78,7 +78,6 @@ export default class BrandNew extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
         const { logoUrl, certificateUrls } = this.state;
         // logourl
         const logoUrlArr = logoUrl.map(val => (val.response.key)); // logo的url数组

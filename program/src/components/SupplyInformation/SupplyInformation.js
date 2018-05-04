@@ -49,39 +49,38 @@ export default class SupplyInformation extends Component {
     ];
   }
   render() {
-    console.log('供货信息组件props', this.props);
-    const { product, loadding, productId } = this.props;
-    const currProduct = product.list.filter(val => (
-      val.id === productId
-    ));
-    console.log('供货信息组件props', this.props, currProduct);
+    const { product, loadding, headerData } = this.props;
+
 
     return (
       <div>
         <div style={{ marginBottom: 5 }}>
           <Row className={styles['product-info']}>
-            <Col span={7} offset={1}>产品名称：{currProduct[0].product_name}</Col>
-            <Col span={8}>型号：{currProduct[0].partnumber}</Col>
-            <Col span={8}>品牌：{currProduct[0].brand_name}</Col>
-            <Col span={7} offset={1}>产品ID：{currProduct[0].pno}</Col>
             <Col span={8}>所属分类：
-              {`
-              ${currProduct[0].category.category_name}-${currProduct[0].category.children.category_name}
-              ${currProduct[0].category.children.children.category_name}-${currProduct[0].category.children.children.children.category_name}
-              `
-              }
+              {
+                headerData.product && `
+                ${headerData.product.category.category_name}-
+                ${headerData.product.category.children.category_name}-
+                ${headerData.product.category.children.children.category_name}-
+                ${headerData.product.category.children.children.children.category_name}`
+                }
             </Col>
-            <Col span={8}>创建人：{currProduct[0].staff_name}</Col>
-            <Col span={7} offset={1}>创建时间：{moment(currProduct[0].created_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
+            <Col span={7} offset={1}>系列ID：{headerData.mno}</Col>
+            <Col span={7} offset={1}>系列名称：{headerData.product && headerData.product.product_name}</Col>
+            <Col span={8}>品牌：{headerData.product && headerData.product.brand.brand_name}</Col>
+            <Col span={8}>产品型号ID：{headerData.mno}</Col>            
+            <Col span={8}>产品型号：{headerData.partnumber}</Col>            
+            <Col span={8}>创建人：{headerData.creator}</Col>
+            <Col span={7} offset={1}>创建时间：{moment(headerData.created_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
           </Row>
         </div>
-        <Table
+        {/* <Table
           loading={loadding}
           bordered
           dataSource={product.supplierList}
           columns={this.columns}
           rowKey={record => (`${record.pno}-${record.id}`)}
-        />
+        /> */}
       </div>
     );
   }

@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Row, Col, Form, Input, Button, Icon, DatePicker, Select, Divider, message } from 'antd';
+import { Card, Row, Col, Form, Input, Button, Icon, DatePicker, Select, Divider, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
-
+import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
 import styles from './style.less';
 import { handleServerMsgObj } from '../../utils/tools';
 
@@ -24,7 +24,9 @@ export default class ProductModelList extends Component {
     this.state = {
       selectedRowKeys: [],
       selectedRows: [],
+      currProductModel: {},
       expandForm: false,
+      isShowModal: false,
     };
     this.columns = [{
       title: '序号',
@@ -99,13 +101,13 @@ export default class ProductModelList extends Component {
       key: 'actions',
       render: (text, record) => (
         <Fragment>
-          <a href={`#/product/model/view?mno=${record.bno}`}>查看</a>
+          <a href={`#/product/model/view?mno=${record.mno}`}>查看</a>
           <Divider type="vertical" />
-          <a href={`#/product/model/edit?mno=${record.bno}`}>
+          <a href={`#/product/model/edit?mno=${record.mno}`}>
             编辑
           </a>
           <Divider type="vertical" />
-          <a onClick={() => { console.log('供货消息'); }}>供货消息</a>
+          <a onClick={() => { this.handleBtnClick(record); }}>供货消息</a>
         </Fragment>
       ),
       width: 180,
@@ -126,6 +128,14 @@ export default class ProductModelList extends Component {
     this.setState({ selectedRowKeys });
   }
 
+  onCancel = () => {
+    this.setState({ isShowModal: false });
+  }
+
+  onOk = () => {
+    this.setState({ isShowModal: false });
+  }
+
   toggleForm = () => {
     this.setState({
       expandForm: !this.state.expandForm,
@@ -138,14 +148,9 @@ export default class ProductModelList extends Component {
     });
   };
 
-  removeBrand = (bno) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'brand/remove',
-      bno,
-      success: () => { message.success('删除成功'); },
-      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
-    });
+  // 供货信息被点击
+  handleBtnClick = (record) => {
+    this.setState({ currProductModel: record, isShowModal: true });
   }
 
   renderSimpleForm() {
@@ -284,8 +289,8 @@ export default class ProductModelList extends Component {
   }
 
   render() {
-    const { selectedRowKeys, selectedRows } = this.state;
-    const { productModel, brand } = this.props;
+    const { selectedRowKeys, selectedRows, currProductModel, isShowModal } = this.state;
+    const { productModel } = this.props;
     const rowSelection = {
       fixed: true,
       selectedRowKeys,
@@ -324,6 +329,19 @@ export default class ProductModelList extends Component {
               onSelectRow={this.handleSelectRows}
             />
           </div>
+          <Modal
+            width="60%"
+            visible={isShowModal}
+            title="供货信息"
+            okText=""
+            cancelText=""
+            onCancel={this.onCancel}
+            onOk={this.onOk}
+          >
+            <SupplyInformation
+              headerData={currProductModel}
+            />
+          </Modal>
         </Card>
       </PageHeaderLayout>
     );

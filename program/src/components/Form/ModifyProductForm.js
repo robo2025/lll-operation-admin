@@ -104,12 +104,12 @@ class ProductForm extends Component {
 
   componentWillReceiveProps(nextProps) {
     console.log('will reiceve', nextProps);
-    const { pics, cad_url } = nextProps.data;
+    const { pics, cad_urls } = nextProps.data;
     if (pics) {
       this.setState({
         pics,
-        cad_url: cad_url || [],
-        cadUrl: getCAD(cad_url),
+        cad_url: cad_urls || [],
+        cadUrl: getCAD(cad_urls),
         a: getPic('1', pics),
         b: getPic('2', pics),
         c: getPic('3', pics),
@@ -161,7 +161,7 @@ class ProductForm extends Component {
   // cad和图片上传时处理
   handleUploaderChange = (key, fileList) => {
     console.log('文件上传列表：', key, fileList);
-    const { pics, cad_url, cadUrl } = this.state;
+    const { pics, cad_urls, cadUrl } = this.state;
     const { onAttrChange } = this.props;
     // 如果上传的是cad文件
     if (key === 'cadUrl') {
@@ -183,13 +183,13 @@ class ProductForm extends Component {
               },
             ],
           });
-          onAttrChange({ cad_url: [...cad_url, file.response.key] });
+          onAttrChange({ cad_urls: [...cad_urls, file.response.key] });
         } else if (file.status === 'complete') {
           const completeCADS = fileList.filter(val => val.status === 'complete');
           this.setState({
             cadUrl: completeCADS,
           });
-          onAttrChange({ cad_url: completeCADS.map(val => (val.url)) });
+          onAttrChange({ cad_urls: completeCADS.map(val => (val.url)) });
         } else if (!file.status || file.status === 'error') {
           this.setState({
             cadUrl: [
@@ -243,7 +243,7 @@ class ProductForm extends Component {
         }
         return file;
       });
-    } else if (key === 'cad_url') {
+    } else if (key === 'cad_urls') {
       console.log('cad fileList', fileList);
     }
   }
@@ -255,7 +255,7 @@ class ProductForm extends Component {
     };
     const { getFieldDecorator } = this.props.form;
     const { data, catalog, loading, uploadToken } = this.props;
-    const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cad_url, cadUrl } = this.state;
+    const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cad_urls, cadUrl } = this.state;
     const { category } = data;
     const slectedCatagory = category ? [
       category.id,
