@@ -12,8 +12,9 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-@connect(({ brand, productModel, loading }) => ({
+@connect(({ brand, good, productModel, loading }) => ({
   brand,
+  good,
   productModel,
   loading,
 }))
@@ -118,6 +119,7 @@ export default class ProductModelList extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    // 请求产品型号列表
     dispatch({
       type: 'productModel/fetch',
     });
@@ -151,6 +153,18 @@ export default class ProductModelList extends Component {
   // 供货信息被点击
   handleBtnClick = (record) => {
     this.setState({ currProductModel: record, isShowModal: true });
+    this.dispatchGoodsList(record.mno);
+  }
+
+  // 请求供货商品列表
+  dispatchGoodsList = (mno) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'good/fetch',
+      params: {
+        mno,
+      },
+    });
   }
 
   renderSimpleForm() {
@@ -290,7 +304,7 @@ export default class ProductModelList extends Component {
 
   render() {
     const { selectedRowKeys, selectedRows, currProductModel, isShowModal } = this.state;
-    const { productModel } = this.props;
+    const { productModel, good, loading } = this.props;
     const rowSelection = {
       fixed: true,
       selectedRowKeys,
@@ -322,6 +336,7 @@ export default class ProductModelList extends Component {
               <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
             <CustomizableTable
+              loading={loading.models.productModel}
               rowSelection={rowSelection}
               data={productModel.list}
               columns={this.columns}
@@ -340,7 +355,8 @@ export default class ProductModelList extends Component {
           >
             <SupplyInformation
               headerData={currProductModel}
-              
+              data={good.list}
+              loading={loading.models.good}
             />
           </Modal>
         </Card>

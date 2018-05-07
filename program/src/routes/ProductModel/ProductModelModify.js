@@ -89,7 +89,7 @@ export default class productModelModify extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { specs } = this.state;
-    const { productModel } = this.props;
+    const { productModel, history } = this.props;
     const { detail } = productModel;
     const formItemLayout = {
       labelCol: { span: 3 },
