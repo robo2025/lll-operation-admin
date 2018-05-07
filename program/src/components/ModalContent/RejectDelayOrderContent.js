@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-22 17:00:26
+ * @Last Modified time: 2018-05-07 14:28:12
  */
 
 import React, { PureComponent } from 'react';
@@ -16,9 +16,9 @@ const { TextArea } = Input;
 
 // 延期驳回弹出层内容 
 export default class RejectDelayOrderContent extends PureComponent {
-   // 处理下拉列表改变
-   handleSelectChange = (key, value) => {
-    const { onChange } = this.props;     
+  // 处理下拉列表改变
+  handleSelectChange = (key, value) => {
+    const { onChange } = this.props;
     const tempJson = {};
     tempJson[key] = value;
     onChange(tempJson);
@@ -26,14 +26,14 @@ export default class RejectDelayOrderContent extends PureComponent {
 
   // 处理输入框改变
   handleTextChange = (key, text) => {
-    const { onChange } = this.props;        
+    const { onChange } = this.props;
     const tempJson = {};
     tempJson[key] = text;
     onChange(tempJson);
   }
 
   render() {
-    const { data } = this.props;    
+    const { data } = this.props;
     console.log('延期驳回modal', data);
     return (
       <div className={styles['modal-content']}>

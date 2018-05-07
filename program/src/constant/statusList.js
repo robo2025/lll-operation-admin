@@ -94,6 +94,23 @@ const PIC_TYPES = {
   6: '包装图三',
 };
 
+const SHIPPING_FEE_TYPE = {
+  1: '包邮',
+  2: '货到付款',
+};
+
+const AUDIT_STATUS = {
+  0: '未审核',
+  1: '审核通过',
+  2: '审核不通过',
+};
+
+const PUBLISH_STATUS = {
+  0: '下架中',
+  1: '上架中',
+  2: '待下架(无法交易)',
+};
+
 export {
   ACTION_STATUS,
   ABNORMAL_TYPE,
@@ -104,4 +121,7 @@ export {
   RESPONSIBLE_PARTY, 
   MONTHER_ORDER_STATUS,
   PIC_TYPES,
+  SHIPPING_FEE_TYPE,
+  AUDIT_STATUS,
+  PUBLISH_STATUS,
 };

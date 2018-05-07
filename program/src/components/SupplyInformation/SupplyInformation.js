@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import { Table, Row, Col } from 'antd';
 import { connect } from 'dva';
+import { SHIPPING_FEE_TYPE } from '../../constant/statusList';
 import styles from './supply-infomation.less';
 
-const shippingFee = ['包邮', '货到付款'];
 
 @connect(({ product, loading }) => ({
   product,
@@ -16,11 +16,12 @@ export default class SupplyInformation extends Component {
     this.columns = [
       {
         title: '序号',
-        dataIndex: 'id',
-        key: 'id',
+        dataIndex: 'idx',
+        key: 'idx',
+        render: (text, reocrd, idx) => (<span>{idx + 1}</span>),
       },
       {
-        title: '供应商名称',
+        title: '供应商公司名称',
         dataIndex: 'supplier_name',
         key: 'supplier_name',
       },
@@ -30,16 +31,16 @@ export default class SupplyInformation extends Component {
         key: 'gno',
       },
       {
-        title: '价格（含税）',
+        title: '销售单价（含税）',
         dataIndex: 'prices',
-        render: val => (<span >{val[0].price}</span>),
         key: 'price',
+        render: val => (<span >{val.length > 0 ? `${val.slice(0)[0].price}-${val.slice(-1)[0].price}` : '无'}</span>),
       },
       {
         title: '运费',
         dataIndex: 'shipping_fee_type',
         align: 'shipping_fee_type',
-        render: val => `${shippingFee[val - 1]}`,
+        render: val => `${SHIPPING_FEE_TYPE[val]}`,
       },
       {
         title: '库存数量',
@@ -48,9 +49,9 @@ export default class SupplyInformation extends Component {
       },
     ];
   }
-  render() {
-    const { product, loadding, headerData } = this.props;
 
+  render() {
+    const { data, headerData, loading } = this.props;
 
     return (
       <div>
@@ -63,24 +64,24 @@ export default class SupplyInformation extends Component {
                 ${headerData.product.category.children.category_name}-
                 ${headerData.product.category.children.children.category_name}-
                 ${headerData.product.category.children.children.children.category_name}`
-                }
+              }
             </Col>
             <Col span={7} offset={1}>系列ID：{headerData.mno}</Col>
             <Col span={7} offset={1}>系列名称：{headerData.product && headerData.product.product_name}</Col>
             <Col span={8}>品牌：{headerData.product && headerData.product.brand.brand_name}</Col>
-            <Col span={8}>产品型号ID：{headerData.mno}</Col>            
-            <Col span={8}>产品型号：{headerData.partnumber}</Col>            
+            <Col span={8}>产品型号ID：{headerData.mno}</Col>
+            <Col span={8}>产品型号：{headerData.partnumber}</Col>
             <Col span={8}>创建人：{headerData.creator}</Col>
             <Col span={7} offset={1}>创建时间：{moment(headerData.created_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
           </Row>
         </div>
-        {/* <Table
-          loading={loadding}
+        <Table
+          loading={loading}
           bordered
-          dataSource={product.supplierList}
+          dataSource={data}
           columns={this.columns}
-          rowKey={record => (`${record.pno}-${record.id}`)}
-        /> */}
+          rowKey="gno"
+        />
       </div>
     );
   }

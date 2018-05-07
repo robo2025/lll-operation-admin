@@ -25,8 +25,8 @@ export default {
         headers,
       });
     },
-    *fetchDetail({ goodId, success, error }, { call, put }) {
-      const res = yield call(queryGoodDetail, { goodId });
+    *fetchDetail({ gno, success, error }, { call, put }) {
+      const res = yield call(queryGoodDetail, { gno });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
@@ -36,20 +36,8 @@ export default {
         payload: res.data,
       });
     },
-    *add({ data, success, error }, { call, put }) {
-      const res = yield call(addGood, { data });
-      if (res.rescode >> 0 === SUCCESS_STATUS) {
-        if (typeof success === 'function') success(res);
-      } else if (typeof error === 'function') { error(res); return; }
-
-      const response = yield call(queryGoods, {});
-      yield put({
-        type: 'saveOne',
-        payload: response.data,
-      });
-    },
-    *modifyInfo({ goodId, data, success, error }, { call, put }) {
-      const res = yield call(modifyGoodInfo, { goodId, data });
+    *modifyInfo({ gno, data, success, error }, { call, put }) {
+      const res = yield call(modifyGoodInfo, { gno, data });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); }
@@ -60,8 +48,8 @@ export default {
         payload: response.data,
       });
     },
-    *modifyGoodStatus({ goodId, goodStatus, success, error }, { call, put }) {
-      const res = yield call(modifyGoodStatus, { goodId, goodStatus });
+    *modifyGoodStatus({ gno, publishStatus, success, error }, { call, put }) {
+      const res = yield call(modifyGoodStatus, { gno, publishStatus });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
@@ -72,8 +60,8 @@ export default {
         payload: response.data,
       });
     },
-    *queryLogs({ module, goodId, success, error }, { call, put }) {
-      const res = yield call(queryOperationLog, { module, goodId });
+    *queryLogs({ module, gno, success, error }, { call, put }) {
+      const res = yield call(queryOperationLog, { module, gno });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }

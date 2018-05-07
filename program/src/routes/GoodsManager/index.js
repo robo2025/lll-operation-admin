@@ -23,10 +23,6 @@ const plainOptions = ['gno', 'product_name', 'brand_name', 'english_name', 'part
 export default class GoodsMananger extends Component {
   constructor(props) {
     super(props);
-    this.showExportModal = this.showExportModal.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.handleOk = this.handleOk.bind(this);
-    this.handlePublishGood = this.handlePublishGood.bind(this);
     this.state = {
       modalVisible: false,
       expandForm: false,
@@ -34,7 +30,7 @@ export default class GoodsMananger extends Component {
       formValues: {},
       isShowExportModal: false,
       exportFields: [], // 导出产品字段 
-      isCheckAll: false, // 是否全选导出数据     
+      isCheckAll: false, // 是否全选导出数据   
     };
   }
 
@@ -68,16 +64,16 @@ export default class GoodsMananger extends Component {
   }
 
   // 显示导出数据Modal
-  showExportModal() {
+  showExportModal = () => {
     this.setState({ isShowExportModal: true });
   }
 
   // 取消导出数据
-  handleCancel() {
+  handleCancel = () => {
     this.setState({ isShowExportModal: false });
   }
   // 确定导出数据
-  handleOk() {
+  handleOk = () => {
     this.setState({ isShowExportModal: false });
     console.log('商品导出数据项目', this.state.exportFields);
     const { dispatch } = this.props;
@@ -92,12 +88,11 @@ export default class GoodsMananger extends Component {
   }
 
   // 上下架商品
-  handlePublishGood(goodId, status) {
+  handlePublishGood = (gno, status) => {
     const { dispatch } = this.props;
-    console.log(goodId, status);
     dispatch({
       type: 'good/modifyGoodStatus',
-      goodId,
+      gno,
       goodStatus: status,
       success: () => { message.success('下架成功'); },
       error: (res) => { message.error(handleServerMsg(res.msg)); },
@@ -117,22 +112,6 @@ export default class GoodsMananger extends Component {
       offset: params.offset,
       limit: params.pageSize,
     });
-
-    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
-    //   const newObj = { ...obj };
-    //   newObj[key] = getValue(filtersArg[key]);
-    //   return newObj;
-    // }, {});
-
-    // const params = {
-    //   currentPage: pagination.current,
-    //   pageSize: pagination.pageSize,
-    //   ...formValues,
-    //   ...filters,
-    // };
-    // if (sorter.field) {
-    //   params.sorter = `${sorter.field}_${sorter.order}`;
-    // }
   }
 
   handleFormReset = () => {
@@ -233,20 +212,12 @@ export default class GoodsMananger extends Component {
     });
   }
 
-  handleAdd = (fields) => {
-    console.log(111);
-    this.props.dispatch({
-      type: 'rule/add',
-      payload: {
-        description: fields.desc,
-      },
-    });
-
-    message.success('添加成功');
-    this.setState({
-      modalVisible: false,
-    });
+  // 校验表单：传入的是this.props.form对象
+  validateForm = (formObj) => {
+    // 将子组件的this.props.form传给父组件，方便后面校验
+    this.formObj = formObj;
   }
+
 
   renderSimpleForm() {
     const { getFieldDecorator } = this.props.form;
