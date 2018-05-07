@@ -22,8 +22,8 @@ export default {
         payload: res.data,
       });
     },
-    *fetchLevel({ success, error }, { call, put }) {
-      const res = yield call(queryCatalogLevel);
+    *fetchLevel({ pid, success, error }, { call, put }) {
+      const res = yield call(queryCatalogLevel, { pid });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }

@@ -5,20 +5,20 @@ import { API_URL } from '../constant/config';
 
 // 获取服务器目录信息
 export async function queryCatalog() {
-  const acess_token = Cookies.get('access_token');
+  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories`, {
     headers: {
-      Authorization: acess_token,
+      Authorization: acessToken,
     },
   });
 }
 
 // 获取级联目录
-export async function queryCatalogLevel() {
-  const acess_token = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/product_categories/level_selection`, {
+export async function queryCatalogLevel({ pid = 0 }) {
+  const acessToken = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/product_categories/level_selection?pid=${pid}`, {
     headers: {
-      Authorization: acess_token,
+      Authorization: acessToken,
     },
   });  
 }
@@ -32,11 +32,11 @@ export async function queryCatalogLevel() {
  * @param  {string=} desc 目录说明(可选)
 */
 export async function addCatalog({ pid, name, isActive, desc }) {
-  const acess_token = Cookies.get('access_token');
+  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories`, {
     method: 'post',
     headers: {
-      Authorization: acess_token,
+      Authorization: acessToken,
     },
     data: {
       pid,
@@ -57,11 +57,11 @@ export async function addCatalog({ pid, name, isActive, desc }) {
  * @param  {string=} desc 目录说明(可选)
 */
 export async function modifyCatalog({ categoryId, name, isActive, desc }) {
-  const acess_token = Cookies.get('access_token');
+  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories/${categoryId}`, {
     method: 'put',
     headers: {
-      Authorization: acess_token,
+      Authorization: acessToken,
     },
     data: {
       category_name: name,
@@ -78,11 +78,11 @@ export async function modifyCatalog({ categoryId, name, isActive, desc }) {
  * @param {number} isActive 是否启用 （0:禁用 1:启用）
 */
 export async function modifyCatalogStatus({ categoryId, isActive }) {
-  const acess_token = Cookies.get('access_token');
+  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories/${categoryId}/active_status`, {
     method: 'put',
     headers: {
-      Authorization: acess_token,
+      Authorization: acessToken,
     },
     data: {
       is_active: isActive,
@@ -97,11 +97,11 @@ export async function modifyCatalogStatus({ categoryId, isActive }) {
  * @param {number} categoryId 目录id (一级目录为 0)
 */
 export async function removeCatalog({ categoryId }) {
-  const acess_token = Cookies.get('access_token');
+  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories/${categoryId}`, {
     method: 'delete',
     headers: {
-      Authorization: acess_token,
+      Authorization: acessToken,
     },
   });
 }
@@ -114,11 +114,11 @@ export async function removeCatalog({ categoryId }) {
  * @param {object} data  排序号 （按升序排序）
 */
 export async function sortCatalog({ level, data }) {
-  const acess_token = Cookies.get('access_token');
+  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories/level_sort`, {
     method: 'patch',
     headers: {
-      Authorization: acess_token,
+      Authorization: acessToken,
     },
     data: {
       level, 

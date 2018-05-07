@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-07 17:15:02
+ * @Last Modified time: 2018-05-07 17:46:46
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
@@ -86,7 +86,6 @@ class GoodDetail extends Component {
 
   // 处理审批意见的单选框按钮
   handleRadioChange = (e) => {
-    console.log('radio checked', e.target.value);
     this.setState({
       auditStatus: e.target.value,
     });
@@ -111,7 +110,6 @@ class GoodDetail extends Component {
     if (auditStatus === 2 && !auditDesc) {
       message.info('审批意见必须填写');
     } else {
-      console.log('提交审核数据', data);
       dispatch({
         type: 'good/modifyInfo',
         gno: args.gno,

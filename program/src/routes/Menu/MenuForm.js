@@ -165,7 +165,6 @@ function getStanrdCatalog(data) {
 class MenuForm extends React.Component {
   constructor(props) {
     super(props);
-    console.log('构造函数----------------------------------', this.props);
     this.showModal = this.showModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.customValidate = this.customValidate.bind(this);
@@ -315,23 +314,7 @@ class MenuForm extends React.Component {
     }
     this.setState({ breadData });
     window.sessionStorage.setItem('breadData', JSON.stringify(breadData));
-    // const lastBreadDataLevel = breadData[breadData.length - 1].level;
-    // if (record.level === lastBreadDataLevel) {
-    //   breadData.pop();
-    //   const newBreadData = [
-    //     ...breadData,
-    //     record,
-    //   ];
-    //   this.setState({ breadData: newBreadData });
-    // } else if (record.level > lastBreadDataLevel) {
-    //   const newBreadData = [
-    //     ...breadData,
-    //     record,
-    //   ];
-    //   this.setState({ breadData: newBreadData });
-    // }
   }
-  
 
   // 是否取消排序
   showSortConfirm = () => {
