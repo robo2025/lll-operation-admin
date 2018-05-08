@@ -31,7 +31,7 @@ export async function queryCatalogLevel({ pid = 0 }) {
  * @param {number} isActive 是否启用 （0:禁用 1:启用）
  * @param  {string=} desc 目录说明(可选)
 */
-export async function addCatalog({ pid, name, isActive, desc }) {
+export async function addCatalog({ data }) {
   const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories`, {
     method: 'post',
@@ -39,10 +39,7 @@ export async function addCatalog({ pid, name, isActive, desc }) {
       Authorization: acessToken,
     },
     data: {
-      pid,
-      category_name: name,
-      is_active: isActive,
-      description: desc,
+      ...data,
     },
   });
 }
@@ -56,7 +53,7 @@ export async function addCatalog({ pid, name, isActive, desc }) {
  * @param {number} isActive 是否启用 （0:禁用 1:启用）
  * @param  {string=} desc 目录说明(可选)
 */
-export async function modifyCatalog({ categoryId, name, isActive, desc }) {
+export async function modifyCatalog({ categoryId, data }) {
   const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories/${categoryId}`, {
     method: 'put',
@@ -64,9 +61,7 @@ export async function modifyCatalog({ categoryId, name, isActive, desc }) {
       Authorization: acessToken,
     },
     data: {
-      category_name: name,
-      is_active: isActive,
-      description: desc,
+      ...data,
     },
   });
 }
@@ -126,3 +121,28 @@ export async function sortCatalog({ level, data }) {
     },
   });
 }
+
+// 请求目录参数列表
+export async function getCatalogSpecs({ categoryId }) {
+  const acessToken = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/product_categories/${categoryId}/specs`, {
+    headers: {
+      Authorization: acessToken,
+    },
+  });  
+}
+
+// 修改产品目录参数
+export async function modifyCatalogSpecs({ categoryId, specId, data }) {
+  const acessToken = Cookies.get('access_token');
+  return lyRequest(`${API_URL}/product_categories/${categoryId}/specs/${specId}`, {
+    method: 'put',
+    headers: {
+      Authorization: acessToken,
+    },
+    data: {
+      ...data,
+    },
+  });  
+}
+

@@ -4,11 +4,30 @@ import { Card, Modal, message } from 'antd';
 import qs from 'qs';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import FilterContent from '../../components/ModalContent/FilterContent';
+import EditCatalogContent from './EditCatalogContent';
+import AddCatalogContent from './AddCatalogContent';
 import DragMenuForm from './MenuForm';
-import { handleServerMsg } from '../../utils/tools';
+import { handleServerMsgObj } from '../../utils/tools';
 
 import styles from './product-manager.less';
 
+const modalData = {
+  edit: {
+    width: 500,
+    title: '编辑类目',
+    component: EditCatalogContent,
+  },
+  filter: {
+    width: 800,
+    title: '筛选项设置',
+    component: FilterContent,
+  },
+  add: {
+    width: 500,
+    title: '筛选项设置',
+    component: AddCatalogContent,
+  },
+};
 
 // 产品目录管理
 @connect(({ catalog, loading }) => ({
@@ -23,13 +42,19 @@ class MenuManager extends React.Component {
       visible: false,
       cate: searchVal.bread ? searchVal.bread : [{ id: 0, pid: 0, category_name: '根目录' }],
       args: searchVal,
+      modalKey: 'filter',
+      currentCatalog: {},
     };
   }
 
   componentDidMount() {
+    this.dispatchDefaultCatalogList();
+  }
+
+  // 默认更新数据
+  dispatchDefaultCatalogList = () => {
     const { dispatch } = this.props;
     const { args } = this.state;
-    console.log('didMount-目录参数', this.state.args);
     if (args.bread && Array.isArray(args.bread) && args.bread.length > 0) {
       const lastCatelog = args.bread[args.bread.length - 1];
       dispatch({
@@ -58,16 +83,46 @@ class MenuManager extends React.Component {
     });
   }
 
+  // 根据目录ID获取参数列表
+  dispatchCatalogSpecs = (categoryId) => {
+    this.props.dispatch({
+      type: 'catalog/fetchSpecs',
+      categoryId,
+    });
+  }
+
+  // 修改类目操作
+  dispatchModifyCatalog = (data) => {
+    const { dispatch } = this.props;
+    const { currentCatalog } = this.state;
+    dispatch({
+      type: 'catalog/modifyInfo',
+      categoryId: currentCatalog.id,
+      data,
+      success: () => {
+        message.success('修改成功');
+        this.setState({
+          visible: false,
+        });
+        this.dispatchDefaultCatalogList();
+      },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
+  }
+
   // 添加类目
-  addMenu = (pid, name, isActive, desc) => {
+  dispatchAddCatalog = (data) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'catalog/add',
-      pid,
-      name,
-      isActive: isActive + 0,
-      desc,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
+      data,
+      success: () => {
+        this.setState({
+          visible: false,
+        });
+        this.dispatchDefaultCatalogList();
+      },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
@@ -79,8 +134,9 @@ class MenuManager extends React.Component {
       categoryId: id,
       success: (res) => {
         message.success(res.msg);
+        this.dispatchDefaultCatalogList();
       },
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
@@ -91,20 +147,10 @@ class MenuManager extends React.Component {
       type: 'catalog/modifyStatus',
       categoryId: id,
       isActive: status,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
-    });
-  }
-
-  // 修改类目
-  modifyCatalog = (categoryId, name, isActive, desc) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'catalog/modifyInfo',
-      categoryId,
-      name,
-      isActive,
-      desc,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
+      success: () => {
+        this.dispatchDefaultCatalogList();
+      },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
@@ -115,10 +161,9 @@ class MenuManager extends React.Component {
       type: 'catalog/sortCatalogLevel',
       level,
       data,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
-
 
   // 当目录被点击
   handleCatalogClick = (record) => {
@@ -149,25 +194,51 @@ class MenuManager extends React.Component {
   }
 
   // 是否展示Modal
-  showModal = (record) => {
-    this.setState({ visible: true, currCatalog: record });
+  showModal = (record, key) => {
+    this.setState({
+      visible: true,
+      modalKey: key,
+      currentCatalog: record,
+    });
+    if (key === 'filter') { // 获取参数列表
+      this.dispatchCatalogSpecs(record.id);
+    }
   }
 
   handleOk = () => {
-    this.setState({
-      visible: false,
+    const { modalKey } = this.state;
+    this.$formObj.validateFields((err, values) => {
+      if (err) {
+        console.log('校验出错', err);
+        return false;
+      }
+      if (modalKey === 'edit') { // 编辑类目
+        this.dispatchModifyCatalog(values);
+      } else if (modalKey === 'filter') { // 筛选项设置
+        alert('筛选设置');
+      } else if (modalKey === 'add') { // 添加类目
+        const { cate } = this.state;
+        const lastCatelog = cate[cate.length - 1];
+        this.dispatchAddCatalog({ pid: lastCatelog.id, ...values });
+      }
     });
   }
+
   handleCancel = () => {
     this.setState({
       visible: false,
     });
   }
 
+  // 将子组件form对象传过来
+  bindForm = (formObj) => {
+    this.$formObj = formObj;
+  }
+
   render() {
     const { catalog, loading } = this.props;
-    const { visible, cate } = this.state;
-    console.log('面包屑', cate);
+    const { visible, cate, modalKey, currentCatalog } = this.state;
+    const ModalContent = modalData[modalKey].component;
 
     return (
       <PageHeaderLayout title="产品目录管理">
@@ -184,17 +255,23 @@ class MenuManager extends React.Component {
             onCatalogClick={this.handleCatalogClick}
             onBreadClick={this.handleBreadClick}
             onFilterClick={this.showModal}
+            onActionClick={this.showModal}
           />
         </Card>
         <Modal
           visible={visible}
-          width={800}
+          width={modalData[modalKey].width}
           confirmLoading={false}
-          title="筛选条件项设置"
+          title={modalData[modalKey].title}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          <FilterContent />
+          <ModalContent
+            data={currentCatalog}
+            specsData={catalog.specs}
+            total={catalog.total}
+            bindForm={this.bindForm}
+          />
         </Modal>
       </PageHeaderLayout>
     );

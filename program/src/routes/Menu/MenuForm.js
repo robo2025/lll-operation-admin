@@ -54,7 +54,7 @@ let BodyRow = (props) => {
   } = props;
   const style = { ...restProps.style, cursor: 'move' };
 
-  let className = restProps.className;
+  let { className } = restProps;
   if (isOver && initialClientOffset) {
     const direction = dragDirection(
       dragRow.index,
@@ -145,7 +145,9 @@ class MenuForm extends React.Component {
       title: '类目名称',
       dataIndex: 'category_name',
       key: 'category_name',
-      render: (text, record) => (<a onClick={() => { this.handleCatelogItemClick(record); }}>{text}</a>),
+      render: (text, record) => (
+        <a onClick={() => { this.handleCatelogItemClick(record); }}>{text}</a>
+      ),
     }, {
       title: '类目ID',
       dataIndex: 'cno',
@@ -173,15 +175,15 @@ class MenuForm extends React.Component {
       dataIndex: '',
       key: 'x',
       render: (text, record) => {
-        return record.level < 4 ?
+        return record.level < 3 ?
           (
             <span>
               {/* <a onClick={() => { this.showModal('isShowAddChildModal', record); }}>新增子类</a> */}
               {/* <Divider type="vertical" /> */}
-              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>编辑</a>
+              <a onClick={() => { this.props.onActionClick(record, 'edit'); }}>编辑</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
-                <a disabled>删除</a>
+                <a disabled={record.product_count > 0}>删除</a>
               </Popconfirm>
               <Divider type="vertical" />
               {
@@ -195,20 +197,20 @@ class MenuForm extends React.Component {
             <span>
               {/* <a disabled>新增子类</a> */}
               {/* <Divider type="vertical" /> */}
-              <a onClick={() => { this.showModal('isShowModifyModal', record); }}>编辑</a>
+              <a onClick={() => { this.props.onActionClick(record, 'edit'); }}>编辑</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
-                <a>删除</a>
+                <a disabled={record.product_count > 0}>删除</a>
               </Popconfirm>
               <Divider type="vertical" />
               {
                 record.is_active === 0 ?
                   <a onClick={() => this.changeCatalogStatus(record.id, 1)}>启用</a>
                   :
-                  <a onClick={() => this.changeCatalogStatus(record.id, 0)}>禁用</a>
+                  <a onClick={() => this.changeCatalogStatus(record.id, 0)} style={{ color: '#E21918' }}>禁用</a>
               }
               <Divider type="vertical" />
-              <a onClick={() => { this.onFilterClick(record); }}>筛选项设置</a>
+              <a onClick={() => { this.props.onActionClick(record, 'filter'); }}>筛选项设置</a>
             </span>
           );
       },
@@ -309,7 +311,6 @@ class MenuForm extends React.Component {
 
   // 修改类目状态
   changeCatalogStatus(id, status) {
-    console.log('修改类目状态', id, status);
     const { modifyStatus } = this.props;
     modifyStatus(id, status);
   }
@@ -403,7 +404,7 @@ class MenuForm extends React.Component {
       wrapperCol: { span: 12 },
     } : null;
 
-    const { data, breadData, loading, onFilterClick } = this.props; // 表单数据
+    const { data, breadData, loading, onFilterClick, onActionClick } = this.props; // 表单数据
     const { catalogName, currCatalog, isSort } = this.state;
 
     const breadDataLength = breadData.length;// 当前面包屑有效数据长度
@@ -414,7 +415,7 @@ class MenuForm extends React.Component {
           type="primary"
           icon="plus"
           disabled={breadDataLength > 4}
-          onClick={() => { this.showModal('visible'); }}
+          onClick={() => { onActionClick(data, 'add'); }}
           style={{ marginBottom: 15 }}
         >
           新增类目

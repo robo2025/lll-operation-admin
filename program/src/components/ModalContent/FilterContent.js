@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { Input, Table, Checkbox, Button } from 'antd';
 import styles from './FilterContent.less';
 
+/**
+ * 产品目录筛选项弹出层
+ */
+
 const { Search } = Input;
 const columns = [{
   title: 'ID',
@@ -10,46 +14,39 @@ const columns = [{
   align: 'center',
 }, {
   title: '参数项名称',
-  dataIndex: 'name',
-  key: 'name',
+  dataIndex: 'spec_name',
+  key: 'spec_name',
   align: 'center',
 }, {
   title: '单位',
-  dataIndex: 'unit',
-  key: 'unit',
+  dataIndex: 'spec_unit',
+  key: 'spec_unit',
   align: 'center',
 }, {
   title: '参数值',
-  dataIndex: 'value',
-  key: 'value',
+  dataIndex: 'spec_values',
+  key: 'spec_values',
   align: 'center',
+  render: text => (<span>{text.join(',')}</span>),
 }, {
   title: '已有产品使用条数',
-  dataIndex: 'association',
+  dataIndex: 'product_count',
+  key: 'product_count',
   align: 'center',
-  key: 'association',
 },
 {
   title: '是否为筛选条件项',
-  dataIndex: 'flag',
-  key: 'flag',
+  dataIndex: 'is_search',
+  key: 'is_search',
   align: 'center',
   render: text => (<span><Checkbox defaultChecked={text} /></span>),
-}];
-const fakeData = [{
-  id: 'C123456',
-  name: '电压',
-  unit: 'A',
-  value: '0.5,1.2',
-  association: 9,
-  flag: true,
 }];
 
 export default class FilterContent extends Component {
   showTotal = () => {
     return (
       <span className="total-text">
-        查询到30条数据
+        查询到{this.props.total}条数据
       </span>
     );
   }
@@ -58,6 +55,8 @@ export default class FilterContent extends Component {
     const paginationProps = {
       showTotal: this.showTotal,
     };
+    const { specsData } = this.props;
+    
     return (
       <div className={styles['filter-wrap']}>
         <div className="tools">
@@ -72,7 +71,7 @@ export default class FilterContent extends Component {
           <Button type="primary">刷新</Button>
         </div>
         <Table
-          dataSource={fakeData}
+          dataSource={specsData}
           columns={columns}
           pagination={paginationProps}
         />

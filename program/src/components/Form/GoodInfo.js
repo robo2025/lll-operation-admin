@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-07 16:44:49
+ * @Last Modified time: 2018-05-08 15:58:27
  */
 import React from 'react';
 import 'braft-editor/dist/braft.css';

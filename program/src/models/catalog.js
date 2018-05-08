@@ -1,4 +1,13 @@
-import { queryCatalog, addCatalog, modifyCatalog, modifyCatalogStatus, removeCatalog, queryCatalogLevel, sortCatalog } from '../services/catalog';
+import {
+  queryCatalog,
+  addCatalog, modifyCatalog,
+  modifyCatalogStatus,
+  removeCatalog,
+  queryCatalogLevel,
+  sortCatalog,
+  getCatalogSpecs,
+  modifyCatalogSpecs,
+} from '../services/catalog';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
 
@@ -8,6 +17,8 @@ export default {
   state: {
     list: [],
     level: [],
+    specs: [],
+    total: 0,
   },
 
   effects: {
@@ -34,53 +45,59 @@ export default {
         payload: res.data,
       });
     },
-    *add({ pid, name, isActive, desc, success, error }, { call, put }) {
-      const res = yield call(addCatalog, { pid, name, isActive, desc });
+    *fetchSpecs({ categoryId, success, error }, { call, put }) {
+      const res = yield call(getCatalogSpecs, { categoryId });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
-
-      const response = yield call(queryCatalog);
+      // console.log('服务器目录列表', response);
+      const { headers } = res;
       yield put({
-        type: 'saveOne',
-        payload: response.data,
+        type: 'saveSpecs',
+        payload: res.data,
+        headers,
       });
     },
-    *modifyInfo({ categoryId, name, isActive, desc, success, error }, { call, put }) {
-      const res = yield call(modifyCatalog, { categoryId, name, isActive, desc });
+    *modifySpecs({ categoryId, specId, data, success, error }, { call, put }) {
+      const res = yield call(modifyCatalogSpecs, { categoryId, specId, data });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
-      } else if (typeof error === 'function') { error(res); return; }
-
-      const response = yield call(queryCatalog);
-      yield put({
-        type: 'modify',
-        payload: response.data,
-      });
+      } else if (typeof error === 'function') { error(res); }
+      // console.log('服务器目录列表', response);
+    },
+    *add({ data, success, error }, { call, put }) {
+      const res = yield call(addCatalog, { data });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); }
+    },
+    *modifyInfo({ categoryId, data, success, error }, { call, put }) {
+      const res = yield call(modifyCatalog, { categoryId, data });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res);
+      } else if (typeof error === 'function') { error(res); }
+      // yield put({
+      //   type: 'modify',
+      //   payload: response.data,
+      // });
     },
     *modifyStatus({ categoryId, isActive, success, error }, { call, put }) {
       const res = yield call(modifyCatalogStatus, { categoryId, isActive });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
-      } else if (typeof error === 'function') { error(res); return; }
+      } else if (typeof error === 'function') { error(res); }
 
-      const response = yield call(queryCatalog);
-      yield put({
-        type: 'modify',
-        payload: response.data,
-      });
+      // const response = yield call(queryCatalog);
+      // yield put({
+      //   type: 'modify',
+      //   payload: response.data,
+      // });
     },
     *removeOne({ categoryId, success, error }, { call, put }) {
       const res = yield call(removeCatalog, { categoryId });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
-      } else if (typeof error === 'function') { error(res); return; }
-
-      const response = yield call(queryCatalog);
-      yield put({
-        type: 'remove',
-        payload: response.data,
-      });
+      } else if (typeof error === 'function') { error(res); }
     },
     *sortCatalogLevel({ level, data, success, error }, { call, put }) {
       const res = yield call(sortCatalog, { level, data });
@@ -93,7 +110,7 @@ export default {
         type: 'save',
         payload: response.data,
       });
-    },   
+    },
   },
 
   reducers: {
@@ -107,6 +124,13 @@ export default {
       return {
         ...state,
         level: action.payload,
+      };
+    },
+    saveSpecs(state, action) {
+      return {
+        ...state,
+        specs: action.payload,
+        total: action.headers['x-content-total'] >> 0,        
       };
     },
     saveOne(state, action) {
