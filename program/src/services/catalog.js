@@ -4,9 +4,9 @@ import { API_URL } from '../constant/config';
 
 
 // 获取服务器目录信息
-export async function queryCatalog() {
+export async function queryCatalog({ pid = 0 }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/product_categories`, {
+  return lyRequest(`${API_URL}/product_categories?pid=${pid}`, {
     headers: {
       Authorization: acessToken,
     },

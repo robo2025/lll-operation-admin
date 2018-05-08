@@ -11,8 +11,8 @@ export default {
   },
 
   effects: {
-    *fetch({ success, error }, { call, put }) {
-      const res = yield call(queryCatalog);
+    *fetch({ pid, success, error }, { call, put }) {
+      const res = yield call(queryCatalog, { pid });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }

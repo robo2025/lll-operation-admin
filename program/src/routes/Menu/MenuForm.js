@@ -123,78 +123,10 @@ BodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
     initialClientOffset: monitor.getInitialClientOffset(),
   }))(BodyRow)
 );
-// -------------------------------------
-
-function getStanrdCatalog(data) {
-  data.forEach((val) => {
-    // const newChildren = _.cloneDeep(val.children);
-    // val.lyChildren = newChildren;
-    // if (val.children && val.children.length >= 0) {
-    //   getStanrdCatalog(val.children);
-    // }
-    const test = _.transform(val, (result, value, key) => {
-      if (key === 'children') {
-        result.lyChildren = value;
-      } else {
-        result[key] = value;
-      }
-    }, {});
-    val.lyChildren = test.lyChildren;
-    delete val.children;
-    if (val.children || val.lyChildren) {
-      getStanrdCatalog(val.children || val.lyChildren);
-    }
-  });
-}
-
-// let idx = 0;
-// const arr2 = [52, 60];
-// function getChildCataLog(cataArr) {
-//   const newArr = _.find(cataArr, (o) => {
-//     return o.id === arr2[idx];
-//   });
-//   idx += 1;
-//   console.log(1, newArr);
-//   if (idx < 2) {
-//     getChildCataLog(newArr.lyChildren);
-//   }
-//   return newArr;
-// }
-
 
 class MenuForm extends React.Component {
   constructor(props) {
     super(props);
-    this.showModal = this.showModal.bind(this);
-    this.hideModal = this.hideModal.bind(this);
-    this.customValidate = this.customValidate.bind(this);
-
-    const breadDataStr = window.sessionStorage.getItem('breadData');
-    getStanrdCatalog(this.props.data);
-    let breadDataJson = breadDataStr ? JSON.parse(breadDataStr) : [{ level: 0, id: 0, category_name: '根目录' }];
-    breadDataJson = _.compact(breadDataJson);
-    let idx = 1;
-    // const arr2 = [52, 60];
-
-    let currLyChildren = [];
-    function getChildCataLog(cataArr) {
-      if (breadDataJson.length === 1) {
-        return cataArr;
-      }
-      const newArr = _.find(cataArr, (o) => {
-        return o.id === breadDataJson[idx].id;
-      });
-      idx += 1;
-      currLyChildren = newArr;
-      if (idx < breadDataJson.length) {
-        getChildCataLog(newArr.lyChildren);
-      }
-      return newArr;
-    }
-    if (this.props.data.length > 0) {
-      getChildCataLog(this.props.data);
-    }
-
     this.state = {
       visible: false,
       currCatalog: {}, // 当前要被新增的类目
@@ -202,15 +134,13 @@ class MenuForm extends React.Component {
       isShowModifyModal: false,
       catalogName: {},
       isActive: { value: true },
-      breadData: breadDataStr ? breadDataJson : [{ level: 0, id: 0, category_name: '根目录' }],
-      currCatalogData: breadDataJson.length > 1 ? currLyChildren.lyChildren : this.props.data,
       isSort: false,
     };
     this.columns = [{
       title: '类目级别',
       dataIndex: 'level',
       key: 'level',
-      render: (text, record) => (<span>{mapLevel[text - 1]}</span>),
+      render: text => (<span>{mapLevel[text - 1]}</span>),
     }, {
       title: '类目名称',
       dataIndex: 'category_name',
@@ -251,7 +181,7 @@ class MenuForm extends React.Component {
               <a onClick={() => { this.showModal('isShowModifyModal', record); }}>编辑</a>
               <Divider type="vertical" />
               <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.id)}>
-                <a disabled={record.lyChildren.length >= 1}>删除</a>
+                <a disabled>删除</a>
               </Popconfirm>
               <Divider type="vertical" />
               {
@@ -277,17 +207,12 @@ class MenuForm extends React.Component {
                   :
                   <a onClick={() => this.changeCatalogStatus(record.id, 0)}>禁用</a>
               }
-              <Divider type="vertical" />              
-              <a onClick={() => { this.onFilterClick(record); }}>筛选项设置</a>                      
+              <Divider type="vertical" />
+              <a onClick={() => { this.onFilterClick(record); }}>筛选项设置</a>
             </span>
           );
       },
     }];
-  }
-
-
-  componentDidMount() {
-    // this.setState({ currCatalogData: getStanrdCatalog(this.props.data) });
   }
 
   onFilterClick = (record) => {
@@ -296,24 +221,7 @@ class MenuForm extends React.Component {
 
   // 类目点击
   handleCatelogItemClick = (record) => {
-    console.log('当前点击record', record, record.lyChildren);
-    if (this.state.isSort) {
-      this.showSortConfirm();
-      return;
-    }
-    if (record.id === 0) {
-      this.setState({ currCatalogData: this.props.data });
-    } else {
-      this.setState({ currCatalogData: record.lyChildren });
-    }
-    const { breadData } = this.state;
-    const recordLevel = record.level; // 目录的层级
-    breadData[recordLevel] = record;
-    for (let i = recordLevel + 1; i < breadData.length; i++) {
-      breadData[i] = null;
-    }
-    this.setState({ breadData });
-    window.sessionStorage.setItem('breadData', JSON.stringify(breadData));
+    this.props.onCatalogClick(record);
   }
 
   // 是否取消排序
@@ -335,14 +243,15 @@ class MenuForm extends React.Component {
   }
 
   // 是否展示Modal，key:state对应的key
-  showModal(key, record) {
+  showModal = (key, record) => {
     const tempJson = {};
     tempJson[key] = true;
     this.setState({ ...tempJson, currCatalog: record });
     console.log(record);
   }
+
   // 是否隐藏Modal,key:state对应的key
-  hideModal(key) {
+  hideModal = (key) => {
     const tempJson = {};
     tempJson[key] = false;
     this.setState(tempJson);
@@ -411,7 +320,7 @@ class MenuForm extends React.Component {
    * @param {string} value 行内容值
    * @param {string} message 出错时提示信息
    * */
-  customValidate(name, value, message) {
+  customValidate = (name, value, message) => {
     const tempJson = {};
     tempJson[name] = {
       value,
@@ -494,17 +403,11 @@ class MenuForm extends React.Component {
       wrapperCol: { span: 12 },
     } : null;
 
-    const { data, onFilterClick } = this.props; // 表单数据
-    const { catalogName, currCatalog, isSort, breadData } = this.state;
+    const { data, breadData, loading, onFilterClick } = this.props; // 表单数据
+    const { catalogName, currCatalog, isSort } = this.state;
 
-    // const dataTemp = JSON.stringify(data);
-    // const data2 = JSON.parse(dataTemp);
-    // data2.forEach((val) => {
-    //   delete val.children;
-    // });
+    const breadDataLength = breadData.length;// 当前面包屑有效数据长度
 
-    const breadDataLength = _.compact(breadData).length;// 当前面包屑有效数据长度
-    
     return (
       <div className={styles['catelog-wrap']}>
         <Button
@@ -612,22 +515,24 @@ class MenuForm extends React.Component {
         <Breadcrumb
           separator=">"
         >
-          {this.state.breadData.map((val, idx) => {
+          {breadData.map((val, idx) => {
             return val ?
               (
                 <Breadcrumb.Item
-                  key={idx}
+                  key={val.id}
                 >
-                  <a onClick={() => { this.handleCatelogItemClick(val); }}>{val.category_name}</a>
+                  <a onClick={() => { this.props.onBreadClick(val, idx); }}>{val.category_name}</a>
                 </Breadcrumb.Item>
               ) : null;
           })
           }
         </Breadcrumb>
         <Table
+          loading={loading}
           pagination={false}
+          childrenColumnName="lyChildren"
           columns={this.columns}
-          dataSource={this.state.currCatalogData}
+          dataSource={data}
           components={this.components}
           rowKey={record => (record.id)}
           onRow={(record, index) => ({
