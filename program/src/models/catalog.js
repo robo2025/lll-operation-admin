@@ -104,12 +104,6 @@ export default {
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); }
-
-      const response = yield call(queryCatalog);
-      yield put({
-        type: 'save',
-        payload: response.data,
-      });
     },
   },
 

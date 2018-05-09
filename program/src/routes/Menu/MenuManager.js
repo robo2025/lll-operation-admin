@@ -55,7 +55,6 @@ class MenuManager extends React.Component {
 
   onMoveRow = (dragIndex, hoverIndex) => {
     const { catalogList } = this.state;
-    console.log('目录', catalogList);
     const dragRow = catalogList[dragIndex];
     this.setState(
       update(this.state, {
@@ -64,7 +63,6 @@ class MenuManager extends React.Component {
         },
       }),
     );
-    console.log('行被移动了', catalogList, dragIndex, hoverIndex);
   }
 
   // 默认更新数据
