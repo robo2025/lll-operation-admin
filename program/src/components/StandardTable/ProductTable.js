@@ -204,7 +204,7 @@ class ProductTable extends React.Component {
         </div>
         <Table
           loading={loading}
-          rowKey={record => record.id}
+          rowKey={record => record.pno}
           rowSelection={rowSelection}
           dataSource={data}
           columns={columns}
