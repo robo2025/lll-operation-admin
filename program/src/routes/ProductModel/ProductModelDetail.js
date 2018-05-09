@@ -1,20 +1,43 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import qs from 'qs';
-import { Card, Row, Form, Button, Tabs } from 'antd';
+import { Card, Row, Form, Button, Table, Tabs } from 'antd';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
-import { PIC_TYPES } from '../../constant/statusList';
+import { PIC_TYPES, ACTION_FLAG } from '../../constant/statusList';
 
 import styles from './style.less';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
+// 操作记录列
+const actionColumns = [{
+  title: '操作类型',
+  dataIndex: 'action_flag',
+  key: 'action_flag',
+  render: val => <span>{ACTION_FLAG[val]}</span>,
+}, {
+  title: '说明',
+  dataIndex: 'change_message',
+  key: 'change_message',
+}, {
+  title: '操作员',
+  dataIndex: 'creator',
+  key: 'creator',
+  render: (text, record) => (<span>{`${text}(${record.creator_id})`}</span>),
+}, {
+  title: '操作时间',
+  dataIndex: 'created_time',
+  key: 'created_time',
+  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+}];
 
 
-@connect(({ productModel, loading }) => ({
+@connect(({ productModel, logs, loading }) => ({
   productModel,
+  logs,
   loading,
 }))
 @Form.create()
@@ -33,11 +56,17 @@ export default class productModelDetail extends Component {
       type: 'productModel/fetchDetail',
       mno: args.mno,
     });
+    // 获取产品操作日志
+    dispatch({
+      type: 'logs/fetch',
+      module: 'product_model',
+      objectId: args.mno,
+    });
   }
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { productModel } = this.props;
+    const { productModel, logs, loading } = this.props;
     const { detail } = productModel;    
     const formItemLayout = {
       labelCol: { span: 3 },
@@ -167,6 +196,15 @@ export default class productModelDetail extends Component {
               </TabPane>
             </Tabs>
           </div>
+          <SectionHeader
+            title="操作日志"
+          />
+          <Table
+            loading={loading.models.logs}
+            rowKey="id"
+            columns={actionColumns}
+            dataSource={logs.list}
+          />
           <div className={styles['submit-btn-back-wrap']}>
             <Button type="primary" onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
           </div>

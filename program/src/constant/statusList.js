@@ -1,4 +1,4 @@
-// 操作记录 status 字段说明
+// 江朝 操作记录 status 字段说明
 const ACTION_STATUS = {
   1: '提交订单',
   2: '支付订单',
@@ -18,6 +18,15 @@ const ACTION_STATUS = {
   16: '处理无货订单',
   17: '填写退货物流',
   18: '退货审核失败',
+};
+
+// 刘彪 操作记录类型
+const ACTION_FLAG = {
+  1: '新增',
+  2: '修改',
+  4: '审核',
+  8: '发布',
+  16: '删除',
 };
 
 // 异常状态
@@ -113,6 +122,7 @@ const PUBLISH_STATUS = {
 
 export {
   ACTION_STATUS,
+  ACTION_FLAG,
   ABNORMAL_TYPE,
   ORDER_STATUS,
   PAY_STATUS,

@@ -1,19 +1,42 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import qs from 'qs';
-import { Card, Row, Tabs, Form, Input, Button, message } from 'antd';
+import moment from 'moment';
+import { Card, Row, Table, Tabs, Form, Input, Button, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
-import { PIC_TYPES } from '../../constant/statusList';
+import { PIC_TYPES, ACTION_FLAG } from '../../constant/statusList';
 import { handleServerMsgObj } from '../../utils/tools';
 import styles from './style.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+// 操作记录列
+const actionColumns = [{
+  title: '操作类型',
+  dataIndex: 'action_flag',
+  key: 'action_flag',
+  render: val => <span>{ACTION_FLAG[val]}</span>,
+}, {
+  title: '说明',
+  dataIndex: 'change_message',
+  key: 'change_message',
+}, {
+  title: '操作员',
+  dataIndex: 'creator',
+  key: 'creator',
+  render: (text, record) => (<span>{`${text}(${record.creator_id})`}</span>),
+}, {
+  title: '操作时间',
+  dataIndex: 'created_time',
+  key: 'created_time',
+  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+}];
 
-@connect(({ productModel, loading }) => ({
+@connect(({ productModel, logs, loading }) => ({
   productModel,
+  logs,
   loading,
 }))
 @Form.create()
@@ -46,6 +69,12 @@ export default class productModelModify extends Component {
         });
         this.setState({ specs });
       },
+    });
+    // 获取产品操作日志
+    dispatch({
+      type: 'logs/fetch',
+      module: 'product_model',
+      objectId: args.mno,
     });
   }
 
@@ -89,7 +118,7 @@ export default class productModelModify extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { specs } = this.state;
-    const { productModel, history } = this.props;
+    const { productModel, logs, loading, history } = this.props;
     const { detail } = productModel;
     const formItemLayout = {
       labelCol: { span: 3 },
@@ -272,6 +301,15 @@ export default class productModelModify extends Component {
               </TabPane>
             </Tabs>
           </div>
+          <SectionHeader
+            title="操作日志"
+          />
+          <Table
+            loading={loading.models.logs}
+            rowKey="id"
+            columns={actionColumns}
+            dataSource={logs.list}
+          />
           <div className={styles['submit-btn-wrap']} style={{ marginTop: 20 }}>
             <Button onClick={() => { history.goBack(); }}>取消</Button>
             <Button type="primary" onClick={this.handleSubmitProductModel}>提交</Button>

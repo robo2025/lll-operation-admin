@@ -2,24 +2,49 @@
  * @Author: lll
  * @Date: 2018-01-31 15:37:34
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-07 17:46:46
+ * @Last Modified time: 2018-05-09 14:05:34
  */
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import qs from 'qs';
-import { Card, Radio, Tooltip, Input, Button, message } from 'antd';
+import moment from 'moment';
+import { Card, Radio, Tooltip, Input, Table, Button, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import GoodInfo from '../../components/Form//GoodInfo';
+import SectionHeader from '../../components/PageHeader/SectionHeader';
+import { ACTION_FLAG } from '../../constant/statusList';
 import { handleServerMsgObj } from '../../utils/tools';
 
 import styles from './good-detail.less';
 
 const RadioGroup = Radio.Group;
+// 操作记录列
+const actionColumns = [{
+  title: '操作类型',
+  dataIndex: 'action_flag',
+  key: 'action_flag',
+  render: val => <span>{ACTION_FLAG[val]}</span>,
+}, {
+  title: '说明',
+  dataIndex: 'change_message',
+  key: 'change_message',
+}, {
+  title: '操作员',
+  dataIndex: 'creator',
+  key: 'creator',
+  render: (text, record) => (<span>{`${text}(${record.creator_id})`}</span>),
+}, {
+  title: '操作时间',
+  dataIndex: 'created_time',
+  key: 'created_time',
+  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+}];
 
 // 商品详情页
-@connect(({ good, loading, user }) => ({
+@connect(({ good, logs, loading, user }) => ({
   good,
-  loading: loading.models.good,
+  logs,
+  loading,
   user,
 })
 )
@@ -53,6 +78,12 @@ class GoodDetail extends Component {
         });
         this.dispatchSupplierInfo(res.data.supplier_id);
       },
+    });
+    // 获取商品操作日志
+    dispatch({
+      type: 'logs/fetch',
+      module: 'goods',
+      objectId: args.gno,
     });
   }
 
@@ -121,18 +152,27 @@ class GoodDetail extends Component {
   }
 
   render() {
-    const { good, loading, user } = this.props;
+    const { good, logs, loading, user } = this.props;
     const { args, auditStatus, auditDesc } = this.state;
 
     return (
       <PageHeaderLayout title="商品详情审核页">
-        <Card className={styles['good-detail-wrap']} loading={loading}>
+        <Card className={styles['good-detail-wrap']} loading={loading.models.good}>
           <GoodInfo
             data={{ ...good.detail, ...this.state.fields }}
             onChange={this.handleFormChange}
-            loading={loading}
+            loading={loading.models.good}
             onAttrChange={this.handleProductAttr}
             user={user.supplier}
+          />
+          <SectionHeader
+            title="操作日志"
+          />
+          <Table
+            loading={loading.models.logs}
+            rowKey="id"
+            columns={actionColumns}
+            dataSource={logs.list}
           />
           <Card bordered={false}>
             {

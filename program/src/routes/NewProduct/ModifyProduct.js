@@ -2,26 +2,50 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-04 10:52:08
+ * @Last Modified time: 2018-05-09 13:59:13
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import { Card, Button, Checkbox, Modal, Table, InputNumber, Divider, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ModifyProductForm from '../../components/Form/ModifyProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import AddAttrForm from '../../components/Form//AddAttrForm';
 import { queryString, checkFile, handleServerMsgObj } from '../../utils/tools';
+import { ACTION_FLAG } from '../../constant/statusList';
 import styles from './modify-product.less';
 
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的文件类型
+// 操作记录列
+const actionColumns = [{
+  title: '操作类型',
+  dataIndex: 'action_flag',
+  key: 'action_flag',
+  render: val => <span>{ACTION_FLAG[val]}</span>,
+}, {
+  title: '说明',
+  dataIndex: 'change_message',
+  key: 'change_message',
+}, {
+  title: '操作员',
+  dataIndex: 'creator',
+  key: 'creator',
+  render: (text, record) => (<span>{`${text}(${record.creator_id})`}</span>),
+}, {
+  title: '操作时间',
+  dataIndex: 'created_time',
+  key: 'created_time',
+  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+}];
 
 // 修改产品信息
-@connect(({ loading, product, catalog, upload }) => ({
+@connect(({ loading, product, logs, catalog, upload }) => ({
   product,
   catalog,
+  logs,
   upload,
-  loading: loading.models.product,
+  loading,
 }))
 export default class ModifyProduct extends Component {
   constructor(props) {
@@ -66,6 +90,12 @@ export default class ModifyProduct extends Component {
     // 获取upload_token
     dispatch({
       type: 'upload/fetch',
+    });
+    // 获取产品操作日志
+    dispatch({
+      type: 'logs/fetch',
+      module: 'product',
+      objectId: args.pno,
     });
   }
 
@@ -332,7 +362,7 @@ export default class ModifyProduct extends Component {
   render() {
     const { isShowAttrMOdal, specs, editSpec } = this.state;
     const argsKey = Object.keys(this.state.args);
-    const { loading, catalog, upload } = this.props;
+    const { loading, catalog, logs, upload } = this.props;
 
     // 其他属性列
     const attrClomns = [{
@@ -390,7 +420,7 @@ export default class ModifyProduct extends Component {
 
     return (
       <PageHeaderLayout title={argsKey.includes('prdId') ? '修改产品信息' : '新建产品信息'}>
-        <Card bordered={false} loading={loading} className={styles['modify-product']}>
+        <Card bordered={false} loading={loading.models.product} className={styles['modify-product']}>
           {/* 添加其它属性Modal */}
           <Modal
             width="650px"
@@ -411,7 +441,7 @@ export default class ModifyProduct extends Component {
             data={this.state.fields}
             onChange={this.handleFormChange}
             catalog={catalog.level}
-            loading={loading}
+            loading={loading.models.product}
             onAttrChange={this.handleProductAttr}
             uploadToken={upload.upload_token}
           />
@@ -433,6 +463,15 @@ export default class ModifyProduct extends Component {
               }}
             />
           </div>
+          <SectionHeader
+            title="操作日志"
+          />
+          <Table
+            loading={loading.models.logs}
+            rowKey="id"
+            columns={actionColumns}
+            dataSource={logs.list}
+          />
           <div className={styles['submit-btn-wrap']}>
             <Button onClick={() => { this.props.history.goBack(); }}>取消</Button>
             <Button type="primary" onClick={this.handleSubmitProduct}>提交</Button>

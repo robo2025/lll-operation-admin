@@ -9,7 +9,6 @@ import { HOME_PAGE } from '../../constant/config';
 })
 class Test extends React.Component {
   componentDidMount() {
-    console.log('测试页面加载好了!');
     verifyLogin();
     const { dispatch } = this.props;
     dispatch({
@@ -22,7 +21,6 @@ class Test extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     return (
       <div>跳转中...</div>
     );

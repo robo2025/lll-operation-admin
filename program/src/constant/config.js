@@ -4,9 +4,15 @@
 
 // 单点登录URL
 export const URL = 'https://login.robo2025.com';
+// export const URL = 'http://140.143.56.14:9001';
+
 
 // 网站内容接口URL
 export const API_URL = 'https://testapi.robo2025.com/scm/operation';
+
+
+// 操作日志URL
+export const OPERATION_URL = 'https://testapi.robo2025.com/scm';
 // 140.143.56.14:9005/operation
 
 // 上传文件获取token URL
@@ -34,7 +40,7 @@ const myHost = `${window.location.protocol}//${window.location.host}`;
 export const NEXT_URL = `${myHost}/#/test`;
 
 // 前端首页URL
-export const HOME_PAGE = `${myHost}/#/product/list`;
+export const HOME_PAGE = `${myHost}/#/product/menu`;
 
 // 前端验证URL
 export const VERIFY_PAGE = `${myHost}/#/test`;

@@ -8,12 +8,12 @@ const menuData = [{
       path: 'menu',
     },
     {
-      name: '产品型号列表',
-      path: 'model',
-    },
-    {
       name: '产品列表',
       path: 'list',
+    },
+    {
+      name: '产品型号列表',
+      path: 'model',
     },
   ],
 

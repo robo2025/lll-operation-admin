@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
-import { API_URL } from '../constant/config';
+import { API_URL, OPERATION_URL } from '../constant/config';
 import { queryString } from '../utils/tools';
 
 
@@ -122,9 +122,9 @@ export async function querySupplyInfo({ productId }) {
  *
  * @param {array} module 模块
 */
-export async function queryOperationLog({ module, productId }) {
+export async function queryOperationLog({ module, objectId, offset = 0, limit = 10 }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/operationlogs?module=${module}&object_id=${productId}`, {
+  return lyRequest(`${OPERATION_URL}/operationlogs?offset=${offset}&limit=${limit}&object_id=${objectId}`, {
     method: 'get',
     headers: {
       Authorization: acessToken,

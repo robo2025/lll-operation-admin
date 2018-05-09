@@ -115,8 +115,8 @@ export default {
         payload: res.data,
       });
     },
-    *queryLogs({ module, productId, success, error }, { call, put }) {
-      const res = yield call(queryOperationLog, { module, productId });
+    *queryLogs({ module, objectId, success, error }, { call, put }) {
+      const res = yield call(queryOperationLog, { module, objectId });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }

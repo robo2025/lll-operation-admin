@@ -54,7 +54,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['good'], () => import('../routes/GoodsManager')),
     },
     '/goods/:list/detail': {
-      component: dynamicWrapper(app, ['user', 'good'], () => import('../routes/GoodDetail/GoodDetail')),
+      component: dynamicWrapper(app, ['user', 'good', 'logs'], () => import('../routes/GoodDetail/GoodDetail')),
       name: '商品详情页',
     },
     '/product/list': {
@@ -67,10 +67,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['catalog', 'upload', 'brand', 'product', 'productModel'], () => import('../routes/ProductModel/ProductModelNew')),
     },
     '/product/:model/edit': {
-      component: dynamicWrapper(app, ['brand', 'upload', 'productModel'], () => import('../routes/ProductModel/ProductModelModify')),
+      component: dynamicWrapper(app, ['brand', 'upload', 'productModel', 'logs'], () => import('../routes/ProductModel/ProductModelModify')),
     },
     '/product/:model/view': {
-      component: dynamicWrapper(app, ['brand', 'productModel'], () => import('../routes/ProductModel/ProductModelDetail')),
+      component: dynamicWrapper(app, ['brand', 'productModel', 'logs'], () => import('../routes/ProductModel/ProductModelDetail')),
       name: '查看产品型号',    
     },
     '/product/:list/new': {
@@ -78,11 +78,11 @@ export const getRouterData = (app) => {
       name: '新建产品信息',
     },
     '/product/:list/detail': {
-      component: dynamicWrapper(app, ['product', 'catalog', 'upload'], () => import('../routes/ProductDetail/ProductDetail')),
+      component: dynamicWrapper(app, ['product', 'catalog', 'upload', 'logs'], () => import('../routes/ProductDetail/ProductDetail')),
       name: '产品详情',
     },
     '/product/:list/modify': {
-      component: dynamicWrapper(app, ['product', 'catalog', 'upload'], () => import('../routes/NewProduct/ModifyProduct')),
+      component: dynamicWrapper(app, ['product', 'catalog', 'upload', 'logs'], () => import('../routes/NewProduct/ModifyProduct')),
       name: '产品信息',
     },
     '/product/menu': {
