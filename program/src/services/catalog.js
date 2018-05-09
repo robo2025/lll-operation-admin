@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 import { API_URL } from '../constant/config';
-
+import qs from 'qs';
 
 // 获取服务器目录信息
 export async function queryCatalog({ pid = 0 }) {
@@ -123,9 +123,9 @@ export async function sortCatalog({ level, data }) {
 }
 
 // 请求目录参数列表
-export async function getCatalogSpecs({ categoryId }) {
+export async function getCatalogSpecs({ categoryId, params = {} }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/product_categories/${categoryId}/specs`, {
+  return lyRequest(`${API_URL}/product_categories/${categoryId}/specs?${qs.stringify(params)}`, {
     headers: {
       Authorization: acessToken,
     },

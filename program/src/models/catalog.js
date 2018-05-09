@@ -45,8 +45,8 @@ export default {
         payload: res.data,
       });
     },
-    *fetchSpecs({ categoryId, success, error }, { call, put }) {
-      const res = yield call(getCatalogSpecs, { categoryId });
+    *fetchSpecs({ categoryId, params, success, error }, { call, put }) {
+      const res = yield call(getCatalogSpecs, { categoryId, params });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }

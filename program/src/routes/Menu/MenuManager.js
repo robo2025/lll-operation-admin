@@ -84,10 +84,11 @@ class MenuManager extends React.Component {
   }
 
   // 根据目录ID获取参数列表
-  dispatchCatalogSpecs = (categoryId) => {
+  dispatchCatalogSpecs = (categoryId, params) => {
     this.props.dispatch({
       type: 'catalog/fetchSpecs',
       categoryId,
+      params,
     });
   }
 
@@ -123,6 +124,18 @@ class MenuManager extends React.Component {
         this.dispatchDefaultCatalogList();
       },
       error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
+  }
+
+  // 修改产品类目参数操作
+  dispatchModifyCatalogSpecs = ({ categoryId, specId, data }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'catalog/modifySpecs',
+      categoryId,
+      specId,
+      data,
+      error: (res) => { handleServerMsgObj(res.msg); },
     });
   }
 
@@ -207,21 +220,27 @@ class MenuManager extends React.Component {
 
   handleOk = () => {
     const { modalKey } = this.state;
-    this.$formObj.validateFields((err, values) => {
-      if (err) {
-        console.log('校验出错', err);
-        return false;
-      }
-      if (modalKey === 'edit') { // 编辑类目
-        this.dispatchModifyCatalog(values);
-      } else if (modalKey === 'filter') { // 筛选项设置
-        alert('筛选设置');
-      } else if (modalKey === 'add') { // 添加类目
-        const { cate } = this.state;
-        const lastCatelog = cate[cate.length - 1];
-        this.dispatchAddCatalog({ pid: lastCatelog.id, ...values });
-      }
-    });
+    if (this.$formObj) {
+      this.$formObj.validateFields((err, values) => {
+        if (err) {
+          console.log('校验出错', err);
+          return false;
+        }
+        if (modalKey === 'edit') { // 编辑类目
+          this.dispatchModifyCatalog(values);
+        } else if (modalKey === 'filter') { // 筛选项设置
+          alert('筛选设置');
+        } else if (modalKey === 'add') { // 添加类目
+          const { cate } = this.state;
+          const lastCatelog = cate[cate.length - 1];
+          this.dispatchAddCatalog({ pid: lastCatelog.id, ...values });
+        }
+      });
+    } else {
+      this.setState({
+        visible: false,
+      });
+    }
   }
 
   handleCancel = () => {
@@ -267,10 +286,13 @@ class MenuManager extends React.Component {
           onCancel={this.handleCancel}
         >
           <ModalContent
+            loading={loading.models.catalog}
             data={currentCatalog}
             specsData={catalog.specs}
             total={catalog.total}
             bindForm={this.bindForm}
+            onFilterClick={this.dispatchModifyCatalogSpecs}
+            onRefreshSpecs={this.dispatchCatalogSpecs}
           />
         </Modal>
       </PageHeaderLayout>
