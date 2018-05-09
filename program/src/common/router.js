@@ -125,7 +125,7 @@ export const getRouterData = (app) => {
       name: '编辑品牌',
     },
     '/brand/:list/detail': {
-      component: dynamicWrapper(app, ['brand', 'upload'], () => import('../routes/Brand/BrandDetail')),
+      component: dynamicWrapper(app, ['brand', 'upload', 'product', 'logs'], () => import('../routes/Brand/BrandDetail')),
       name: '品牌详情',      
     },
    

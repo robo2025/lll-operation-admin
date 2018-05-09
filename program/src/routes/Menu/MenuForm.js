@@ -345,16 +345,8 @@ class MenuForm extends React.Component {
 
   // 移动行
   moveRow = (dragIndex, hoverIndex) => {
-    // alert(dragIndex + ',' + hoverIndex);
-    const data = this.state.currCatalogData;
-    const dragRow = data[dragIndex];
-    this.setState(
-      update(this.state, {
-        currCatalogData: {
-          $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
-        },
-      }),
-    );
+    const { data, onMoveRow } = this.props;
+    onMoveRow(dragIndex, hoverIndex);
     this.setState({ isSort: true });
   }
 
@@ -365,9 +357,9 @@ class MenuForm extends React.Component {
 
   // 确定排序
   handleSubmitSort = () => {
-    const { currCatalogData } = this.state;
-    const { pid, level } = currCatalogData[0] ? currCatalogData[0] : [{ pid: -1, level: -1 }];
-    const sortResult = currCatalogData.map((val, idx) => (
+    const { data } = this.props;
+    const { pid, level } = data[0] ? data[0] : [{ pid: -1, level: -1 }];
+    const sortResult = data.map((val, idx) => (
       {
         sort: idx,
         id: val.id,
@@ -376,7 +368,6 @@ class MenuForm extends React.Component {
     if (pid >= 0) {
       // 提交排序结果
       this.setState({ isSort: false });
-      console.log('排序结果', pid, level, sortResult, currCatalogData);
       this.props.sortCatalog(level, sortResult);
     } else {
       Modal.error({

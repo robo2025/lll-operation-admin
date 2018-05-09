@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Card, Modal, message } from 'antd';
 import qs from 'qs';
+import update from 'immutability-helper';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import FilterContent from '../../components/ModalContent/FilterContent';
 import EditCatalogContent from './EditCatalogContent';
@@ -44,11 +45,26 @@ class MenuManager extends React.Component {
       args: searchVal,
       modalKey: 'filter',
       currentCatalog: {},
+      catalogList: [],
     };
   }
 
   componentDidMount() {
     this.dispatchDefaultCatalogList();
+  }
+
+  onMoveRow = (dragIndex, hoverIndex) => {
+    const { catalogList } = this.state;
+    console.log('目录', catalogList);
+    const dragRow = catalogList[dragIndex];
+    this.setState(
+      update(this.state, {
+        catalogList: {
+          $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
+        },
+      }),
+    );
+    console.log('行被移动了', catalogList, dragIndex, hoverIndex);
   }
 
   // 默认更新数据
@@ -60,11 +76,17 @@ class MenuManager extends React.Component {
       dispatch({
         type: 'catalog/fetch',
         pid: lastCatelog.id,
+        success: (res) => {
+          this.setState({ catalogList: res.data });
+        },
       });
     } else {
       dispatch({
         type: 'catalog/fetch',
         pid: 0,
+        success: (res) => {
+          this.setState({ catalogList: res.data });
+        },
       });
     }
   }
@@ -76,7 +98,8 @@ class MenuManager extends React.Component {
     this.props.dispatch({
       type: 'catalog/fetch',
       pid,
-      success: () => {
+      success: (res) => {
+        this.setState({ catalogList: res.data });
         const breadCataArr = cate.map(val => ({ id: val.id, category_name: val.category_name }));
         history.push(`?${qs.stringify({ bread: breadCataArr })}`);
       },
@@ -256,7 +279,7 @@ class MenuManager extends React.Component {
 
   render() {
     const { catalog, loading } = this.props;
-    const { visible, cate, modalKey, currentCatalog } = this.state;
+    const { visible, cate, modalKey, currentCatalog, catalogList } = this.state;
     const ModalContent = modalData[modalKey].component;
 
     return (
@@ -264,7 +287,7 @@ class MenuManager extends React.Component {
         <Card title="目录管理" className={styles.card} bordered={false}>
           <DragMenuForm
             loading={loading.models.catalog}
-            data={catalog.list}
+            data={catalogList}
             breadData={cate}
             addMenu={this.addMenu}
             removeCatalog={this.removeCatalog}
@@ -275,6 +298,7 @@ class MenuManager extends React.Component {
             onBreadClick={this.handleBreadClick}
             onFilterClick={this.showModal}
             onActionClick={this.showModal}
+            onMoveRow={this.onMoveRow}
           />
         </Card>
         <Modal

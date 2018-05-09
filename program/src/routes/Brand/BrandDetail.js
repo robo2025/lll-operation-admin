@@ -18,8 +18,10 @@ const formItemLayout = {
   },
 };
 
-@connect(({ brand, loading }) => ({
+@connect(({ brand, product, logs, loading }) => ({
   brand,
+  product,
+  logs,
   loading,
 }))
 export default class BrandDetail extends Component {

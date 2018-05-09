@@ -111,7 +111,7 @@ export async function removeCatalog({ categoryId }) {
 export async function sortCatalog({ level, data }) {
   const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/product_categories/level_sort`, {
-    method: 'patch',
+    method: 'put',
     headers: {
       Authorization: acessToken,
     },

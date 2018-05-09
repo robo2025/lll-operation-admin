@@ -4,8 +4,6 @@
 
 // 单点登录URL
 export const URL = 'https://login.robo2025.com';
-// export const URL = 'http://140.143.56.14:9001';
-
 
 // 网站内容接口URL
 export const API_URL = 'https://testapi.robo2025.com/scm/operation';
