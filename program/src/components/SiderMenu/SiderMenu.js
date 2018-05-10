@@ -115,7 +115,9 @@ export default class SiderMenu extends PureComponent {
    */
   getSubMenuOrItem = (item) => {
     if (item.children && item.children.some(child => child.name)) {
-      const childrenItems = this.getNavMenuItems(item.children);
+      const childrenItems = this.getNavMenuItems(item.children.map((val, idx) => (
+        { ...val, name: `${idx + 1}. ${val.name}` })
+      ));
       // 当无子菜单时就不展示菜单
       if (childrenItems && childrenItems.length > 0) {
         return (
@@ -151,9 +153,9 @@ export default class SiderMenu extends PureComponent {
     }
     return menusData
       .filter(item => item.name && !item.hideInMenu)
-      .map((item) => {
+      .map((item, idx) => {
         // make dom
-        const ItemDom = this.getSubMenuOrItem(item);
+        const ItemDom = this.getSubMenuOrItem({ ...item });
         return this.checkPermissionItem(item.authority, ItemDom);
       })
       .filter(item => item);
