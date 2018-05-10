@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
-import { API_URL } from '../constant/config';
+import { API_URL, OPERATION_URL } from '../constant/config';
 import { queryString } from '../utils/tools';
 
 
@@ -91,7 +91,7 @@ export async function queryOperationLog({ module, gno }) {
 // 导出数据
 export async function exportGood({ fields }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/goods_reports`, {
+  return lyRequest(`${OPERATION_URL}/api/admin/goods_reports`, {
     method: 'post',
     headers: {
       Authorization: acessToken,

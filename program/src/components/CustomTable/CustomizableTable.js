@@ -20,11 +20,12 @@ export default class CustomizableTable extends React.Component {
   }
 
   render() {
-    const { data, columns, loading, total, rowSelection, scroll } = this.props;
+    const { data, columns, defaultPage, loading, total, rowSelection, scroll } = this.props;
     const selectedRowKeys = rowSelection ? rowSelection.selectedRowKeys : [];
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
+      defaultCurrent: defaultPage - 0 || 1,
       total,
     };
 

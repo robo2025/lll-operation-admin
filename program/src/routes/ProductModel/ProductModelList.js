@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
+import qs from 'qs';
 import { Card, Row, Col, Form, Input, Button, Icon, DatePicker, Select, Divider, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
 import styles from './style.less';
+import { PAGE_SIZE } from '../../constant/config';
 import { handleServerMsgObj } from '../../utils/tools';
 
 const FormItem = Form.Item;
@@ -28,6 +30,7 @@ export default class ProductModelList extends Component {
       currProductModel: {},
       expandForm: false,
       isShowModal: false,
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
     this.columns = [{
       title: '序号',
@@ -35,7 +38,7 @@ export default class ProductModelList extends Component {
       key: 'idx',
       width: 60,
       fixed: 'left',
-      render: (text, record, idx) => (<span>{idx}</span>),
+      render: (text, record, idx) => (<span>{idx + 1}</span>),
     }, {
       title: '产品型号ID',
       dataIndex: 'mno',
@@ -119,9 +122,12 @@ export default class ProductModelList extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { args } = this.state;
     // 请求产品型号列表
     dispatch({
       type: 'productModel/fetch',
+      offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
+      limit: PAGE_SIZE,
     });
   }
 
@@ -149,6 +155,29 @@ export default class ProductModelList extends Component {
       selectedRows: rows,
     });
   };
+
+  // 处理表格变化
+  handleCustomizableTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch, history } = this.props;
+   
+    const params = {
+      currentPage: pagination.current,
+      pageSize: pagination.pageSize,
+      offset: (pagination.current - 1) * (pagination.pageSize),
+    };
+    
+    // 分页：将页数提取到url上
+    history.push({
+      pathname: '/product/model',
+      search: `?page=${params.currentPage}`,
+    });
+
+    dispatch({
+      type: 'productModel/fetch',
+      offset: params.offset,
+      limit: params.pageSize,
+    });
+  }
 
   // 供货信息被点击
   handleBtnClick = (record) => {
@@ -303,7 +332,7 @@ export default class ProductModelList extends Component {
   }
 
   render() {
-    const { selectedRowKeys, selectedRows, currProductModel, isShowModal } = this.state;
+    const { selectedRowKeys, selectedRows, currProductModel, isShowModal, args } = this.state;
     const { productModel, good, loading } = this.props;
     const rowSelection = {
       fixed: true,
@@ -342,6 +371,9 @@ export default class ProductModelList extends Component {
               columns={this.columns}
               scroll={{ x: 2000 }}
               onSelectRow={this.handleSelectRows}
+              onChange={this.handleCustomizableTableChange}
+              defaultPage={args.page || 1}
+              total={productModel.total}
             />
           </div>
           <Modal

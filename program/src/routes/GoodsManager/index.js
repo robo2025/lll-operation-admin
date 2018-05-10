@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
+import qs from 'qs';
 import { Row, Col, Card, Form, Input, Checkbox, Select, Icon, Button, Menu, DatePicker, Modal, message } from 'antd';
 import GoodsTable from '../../components/StandardTable/GoodsTable';
 import GoodCheckboxGroup from '../../components/Checkbox/GoodCheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { handleServerMsg } from '../../utils/tools';
+import { PAGE_SIZE } from '../../constant/config';
 import styles from './index.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 const plainOptions = ['gno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'stock', 'price', 'supplier_name', 'min_buy', 'audit_status', 'publish_status', 'created_time'];// 所有选项
@@ -31,14 +32,18 @@ export default class GoodsMananger extends Component {
       isShowExportModal: false,
       exportFields: [], // 导出产品字段 
       isCheckAll: false, // 是否全选导出数据   
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),      
     };
   }
 
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { args } = this.state;    
     dispatch({
       type: 'good/fetch',
+      offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
+      limit: PAGE_SIZE,
     });
   }
 
@@ -51,7 +56,7 @@ export default class GoodsMananger extends Component {
     console.log('exportFiles', fields);
     this.setState({
       exportFields: fields,
-      isCheckAll: fields.length === plainOptions.length,
+      isCheckAll: fields.length === plainOptions.length, 
     });
   }
 
@@ -81,7 +86,7 @@ export default class GoodsMananger extends Component {
       type: 'good/queryExport',
       fields: this.state.exportFields,
       success: (res) => {
-        window.open('http://139.199.96.235:9005/api/goods_reports?filename=' + res.filename);
+        window.open('http://139.199.96.235:9005/api/admin/goods_reports?filename=' + res.filename);
       },
       error: (res) => { message.error(handleServerMsg(res.msg)); },
     });
