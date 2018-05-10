@@ -153,9 +153,9 @@ export default class SiderMenu extends PureComponent {
     }
     return menusData
       .filter(item => item.name && !item.hideInMenu)
-      .map((item, idx) => {
+      .map((item) => {
         // make dom
-        const ItemDom = this.getSubMenuOrItem({ ...item });
+        const ItemDom = this.getSubMenuOrItem(item);
         return this.checkPermissionItem(item.authority, ItemDom);
       })
       .filter(item => item);

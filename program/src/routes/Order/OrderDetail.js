@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Card, Table, Divider, Row, Col, message } from 'antd';
+import { Card, Table, Divider, Row, Col, Button, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { queryString, handleServerMsg } from '../../utils/tools';
@@ -359,6 +359,9 @@ export default class OrderDetail extends Component {
           >
             {contentList[this.state.operationkey]}
           </Card>
+          <div className={styles['submit-btn-wrap']}>
+            <Button type="primary" onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
+          </div>
         </Card>
       </PageHeaderLayout>
     );

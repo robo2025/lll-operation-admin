@@ -1,9 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import qs from 'qs';
 import moment from 'moment';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message, Divider, Badge } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
+import { PAGE_SIZE } from '../../constant/config';
 import { handleServerMsgObj } from '../../utils/tools';
 import styles from './order-list.less';
 
@@ -25,14 +27,17 @@ export default class ReturnsList extends Component {
     super(props);
     this.state = {
       expandForm: false,
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),      
     };
   }
 
   componentDidMount() {
-    console.log('我渲染好了', this.props);
     const { dispatch } = this.props;
+    const { args } = this.state;
     dispatch({
       type: 'returns/fetch',
+      offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
+      limit: PAGE_SIZE,
     });
   }
 
@@ -56,7 +61,6 @@ export default class ReturnsList extends Component {
         end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
       };
 
-      console.log('搜索字段', values);
       dispatch({
         type: 'orders/fetchSearch',
         data: values,
@@ -77,13 +81,19 @@ export default class ReturnsList extends Component {
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
+    const { dispatch, history } = this.props;
     const { formValues } = this.state;
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
+
+    // 分页：将页数提取到url上
+    history.push({
+      pathname: '/returns/list',
+      search: `?page=${params.currentPage}`,
+    });
     dispatch({
       type: 'returns/fetch',
       offset: params.offset,
@@ -216,6 +226,7 @@ export default class ReturnsList extends Component {
 
   render() {
     const { returns, loading } = this.props;
+    const { args } = this.state;
     const { total, list } = returns;
 
 
@@ -312,6 +323,7 @@ export default class ReturnsList extends Component {
               loading={loading}
               onChange={this.handleStandardTableChange}
               total={total}
+              defaultPage={args.page}
             />
           </div>
         </Card>

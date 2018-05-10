@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
+import qs from 'qs';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import OrderTable from '../../components/CustomTable/OrderTable';
@@ -7,6 +8,7 @@ import ReminderContent from '../../components/ModalContent/ReminderContent';
 import CancelOrderContent from '../../components/ModalContent/CancelOrderContent';
 import DelayOrderContent from '../../components/ModalContent/DelayOrderConten';
 import { handleServerMsgObj } from '../../utils/tools';
+import { PAGE_SIZE } from '../../constant/config';
 import styles from './order-list.less';
 
 const { Option } = Select;
@@ -30,14 +32,17 @@ export default class OrderList extends Component {
         responsible_party: '1',
         cancel_desc: '',
       },
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
   }
 
   componentDidMount() {
-    console.log('我渲染好了', this.props);
     const { dispatch } = this.props;
+    const { args } = this.state;    
     dispatch({
       type: 'orders/fetch',
+      offset: (args.page - 1) * PAGE_SIZE,
+      limit: PAGE_SIZE,
     });
   }
 
@@ -61,7 +66,6 @@ export default class OrderList extends Component {
         end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
       };
 
-      console.log('搜索字段', values);
       dispatch({
         type: 'orders/fetchSearch',
         data: values,
@@ -87,7 +91,6 @@ export default class OrderList extends Component {
    * @param {string} orderId  订单ID
    */
   handleModalToggle = (modalKey, orderId) => {
-    console.log('toggleModal', modalKey, orderId);
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = true;
     this.setState({ ...modalTempJson, orderId });
@@ -109,7 +112,6 @@ export default class OrderList extends Component {
    */
   handleModalConfirm = (modalKey) => {
     const { orderId, cancelOrderData } = this.state;
-    console.log('确定取消订单', modalKey, orderId, cancelOrderData);
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = false;
    
@@ -141,33 +143,24 @@ export default class OrderList extends Component {
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const { dispatch, history } = this.props;
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
+    
+    // 分页：将页数提取到url上
+    history.push({
+      pathname: '/orders/list',
+      search: `?page=${params.currentPage}`,
+    });
+
     dispatch({
       type: 'orders/fetch',      
       offset: params.offset,
       limit: params.pageSize,
     });
-    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
-    //   const newObj = { ...obj };
-    //   newObj[key] = getValue(filtersArg[key]);
-    //   return newObj;
-    // }, {});
-
-    // const params = {
-    //   currentPage: pagination.current,
-    //   pageSize: pagination.pageSize,
-    //   ...formValues,
-    //   ...filters,
-    // };
-    // if (sorter.field) {
-    //   params.sorter = `${sorter.field}_${sorter.order}`;
-    // }
   }
 
   renderSimpleForm() {
@@ -314,10 +307,9 @@ export default class OrderList extends Component {
   }
 
   render() {
-    const { isShowModal1, isShowModal2, isShowModal3, cancelOrderData } = this.state;
+    const { isShowModal1, isShowModal2, isShowModal3, cancelOrderData, args } = this.state;
     const { orders, loading } = this.props;
     const { total, list } = orders;
-    console.log('订单列表------', orders);
 
     return (
       <PageHeaderLayout title="订单列表">
@@ -334,6 +326,7 @@ export default class OrderList extends Component {
               loading={loading}
               onChange={this.handleStandardTableChange}
               total={total}
+              defaultPage={args.page || 1}              
             />
             {/* 催货Modal */}
             <Modal

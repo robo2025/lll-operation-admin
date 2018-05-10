@@ -40,14 +40,14 @@ export default class OrderTable extends React.Component {
   }
 
   // 订单处理点击：催货、订单取消、收货延期
-handleOrderClick = (key) => {
-  const [modalKey, orderKey] = key.split('-');
-  this.props.onHandleOrderClick(modalKey, orderKey);
-}
+  handleOrderClick = (key) => {
+    const [modalKey, orderKey] = key.split('-');
+    this.props.onHandleOrderClick(modalKey, orderKey);
+  }
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
-    const { data, loading, total } = this.props;
+    const { data, defaultPage, loading, total } = this.props;
 
     const columns = [
       {
@@ -96,7 +96,7 @@ handleOrderClick = (key) => {
       {
         title: '交易总金额(元)',
         dataIndex: 'total_money',
-        width: 150,        
+        width: 150,
         key: 'total_money',
       },
       {
@@ -110,13 +110,13 @@ handleOrderClick = (key) => {
         title: '订单状态',
         dataIndex: 'order_status',
         key: 'order_status',
-        width: 150,        
+        width: 150,
         render: text => (<span>{mapOrderStatus[text - 1]}</span>),
       },
       {
         title: '佣金(元)',
         dataIndex: 'commission',
-        width: 150,        
+        width: 150,
         key: 'commission',
       },
       {
@@ -156,6 +156,7 @@ handleOrderClick = (key) => {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
+      defaultPage: defaultPage || 1,
       total,
     };
 
