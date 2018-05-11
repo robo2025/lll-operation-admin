@@ -68,7 +68,6 @@ export default function request(url, options) {
       });
     })
     .catch((error) => {
-      console.log('axios请求错误', error);
       return Promise.reject(error);
     });
 }
