@@ -165,6 +165,7 @@ class MenuForm extends React.Component {
       title: '创建人',
       dataIndex: 'creator_id',
       key: 'creator_id',
+      render: (text, record) => (<span>{`${record.creator}(${text})`}</span>),
     }, {
       title: '创建时间',
       dataIndex: 'created_time',
