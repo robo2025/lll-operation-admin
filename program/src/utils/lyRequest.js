@@ -44,6 +44,7 @@ function checkStatus(response) {
 export default function request(url, options) {
   const defaultOptions = {
     credentials: 'include',
+    timeout: 2000,
   };
   const newOptions = { ...defaultOptions, ...options };
   if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
@@ -65,6 +66,10 @@ export default function request(url, options) {
         headers,
         ...response.data,
       });
+    })
+    .catch((error) => {
+      console.log('axios请求错误', error);
+      return Promise.reject(error);
     });
 }
 

@@ -14,8 +14,9 @@ const { RangePicker } = DatePicker;
 const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
 
 
-@connect(({ loading, product }) => ({
+@connect(({ product, testApi, loading }) => ({
   product,
+  testApi,
   loading: loading.models.product,
 }))
 @Form.create()

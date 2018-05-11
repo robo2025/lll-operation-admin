@@ -95,7 +95,7 @@ export const getRouterData = (app) => {
       name: '商品详情页',
     },
     '/product/list': {
-      component: dynamicWrapper(app, ['product'], () => import('../routes/ProductManager')),
+      component: dynamicWrapper(app, ['product', 'testApi'], () => import('../routes/ProductManager')),
     },
     '/product/model': {
       component: dynamicWrapper(app, ['brand', 'good', 'productModel'], () => import('../routes/ProductModel/ProductModelList')),
