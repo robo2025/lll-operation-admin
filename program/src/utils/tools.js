@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { LOGIN_URL, NEXT_URL, HOME_PAGE, VERIFY_PAGE } from '../constant/config';
+import { LOGIN_URL, VERIFY_PAGE } from '../constant/config';
 
 // 验证是否登录
 export function verifyLogin() {
@@ -10,7 +10,6 @@ export function verifyLogin() {
     const accessToken = paramas.access_token.split('#/')[0];
     Cookies.set('access_token', accessToken, { expires: 7 });
   } else {
-    console.log('不存在token');
     window.location.href = `${LOGIN_URL}?next=${VERIFY_PAGE}`;
   }
   // 读取cookie，如果没有access_token,则跳转到登录页面
