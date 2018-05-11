@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-07 14:45:24
+ * @Last Modified time: 2018-05-11 17:27:16
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -225,7 +225,6 @@ export default class NewProduct extends Component {
    */
   handleSubmitProduct = () => {
     const { fields, specs } = this.state;
-    console.log('提交产品信息', { ...fields, specs });
     const { dispatch, history } = this.props;
     dispatch({
       type: 'product/add',
@@ -270,7 +269,7 @@ export default class NewProduct extends Component {
       render: (text, record) => (
         <Checkbox
           defaultChecked={text}
-          onChange={(e) => { this.handleSpecChange(record.id, 'is_require', e.target.checked >> 0); }}          
+          onChange={(e) => { this.handleSpecChange(record.id, 'is_require', e.target.checked >> 0); }}
         />
       ),
     }, {
@@ -280,7 +279,7 @@ export default class NewProduct extends Component {
       render: (text, record) => (
         <Checkbox
           defaultChecked={text}
-          onChange={(e) => { this.handleSpecChange(record.id, 'is_search', e.target.checked >> 0); }}          
+          onChange={(e) => { this.handleSpecChange(record.id, 'is_search', e.target.checked >> 0); }}
         />
       ),
     }, {
