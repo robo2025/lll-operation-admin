@@ -150,7 +150,6 @@ export default class BrandModify extends Component {
         <div className="ant-upload-text">上传</div>
       </div>
     );
-
     console.log(this.state);
 
     return (
@@ -225,6 +224,7 @@ export default class BrandModify extends Component {
                     required: true,
                     message: '您必须上传品牌LOGO',
                   }],
+                  initialValue: logoUrl,
                 })(
                   <div className="pic-box">
                     <Upload
