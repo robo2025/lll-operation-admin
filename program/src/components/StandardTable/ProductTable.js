@@ -56,116 +56,95 @@ class ProductTable extends React.Component {
     const { selectedRowKeys, isShowModal } = this.state;
     const { data, loading, total, isShowAlert, defaultPage } = this.props;
 
-    const columns = [
-      {
-        title: '序号',
-        dataIndex: 'id',
-        key: 'id',
-        width: 60,
-        fixed: 'left',
-        render: (record, text, idx) => (<span>{idx + 1}</span>),
-      },
-      {
-        title: '产品ID',
-        dataIndex: 'pno',
-        key: 'pno',
-        width: 110,
-        fixed: 'left',
-      },
-      {
-        title: '产品图片',
-        dataIndex: 'pics',
-        render: val => val.map((item, idx) => {
-          if (idx < 3) {
-            return (
-              <img
-                className="product-thumb"
-                alt={item.img_tyle}
-                key={idx}
-                src={item.img_url}
-              />);
-          }
-        }),
-        width: 150,
-        fixed: 'left',
-      },
-      {
-        title: '产品名称',
-        dataIndex: 'product_name',
-        key: 'product_name',
-      },
-      {
-        title: '品牌',
-        dataIndex: 'brand',
-        key: 'brand_name',
-        width: 100,
-        render: text => (<span>{text ? text.brand_name : '' }</span>),
-      },
-      {
-        title: '产地',
-        dataIndex: 'brand',
-        key: 'registration_place',
-        width: 100,
-        render: text => (<span>{text ? text.registration_place : ''}</span>),
-      },
-      {
-        title: '一级类目',
-        dataIndex: 'category',
-        render: val => (val.category_name),
-        width: 100,
-        key: 'menu-1',
-      },
-      {
-        title: '二级类目',
-        dataIndex: 'category',
-        render: val => (val.children.category_name),
-        width: 100,
-        key: 'menu-2',
-      },
-      {
-        title: '三级类目',
-        dataIndex: 'category',
-        render: val => (val.children.children.category_name),
-        width: 150,
-        key: 'menu-3',
-      },
-      {
-        title: '四级类目',
-        dataIndex: 'category',
-        render: val => (val.children.children.children.category_name),
-        width: 150,
-        key: 'menu-4',
-      },
-      {
-        title: '已有产品型号数',
-        dataIndex: 'goods_count',
-        width: 130,
-      },
-      {
-        title: '创建人',
-        dataIndex: 'creator',
-        key: 'creator',
-        render: (text, record) => (<span>{text}({record.creator_id})</span>),
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'created_time',
-        sorter: true,
-        render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
-      },
-      {
-        title: '操作',
-        render: (text, record) => (
-          <Fragment>
-            <a href={'#/product/list/detail?pno=' + record.pno}>查看</a>
-            <Divider type="vertical" />
-            <a href={'#/product/list/modify?pno=' + record.pno}>修改</a>
-          </Fragment>
-        ),
-        width: 120,
-        fixed: 'right',
-      },
-    ];
+    const columns = [{
+      title: '序号',
+      dataIndex: 'id',
+      key: 'id',
+      width: 60,
+      fixed: 'left',
+      render: (record, text, idx) => (<span>{idx + 1}</span>),
+    }, {
+      title: '产品ID',
+      dataIndex: 'pno',
+      key: 'pno',
+      width: 110,
+      fixed: 'left',
+    }, {
+      title: '产品图片',
+      dataIndex: 'pics',
+      render: val => val.map((item, idx) => {
+        if (idx < 3) {
+          return (
+            <img
+              className="product-thumb"
+              alt={item.img_tyle}
+              key={idx}
+              src={item.img_url}
+            />);
+        }
+      }),
+      width: 150,
+      fixed: 'left',
+    }, {
+      title: '产品名称',
+      dataIndex: 'product_name',
+      key: 'product_name',
+    }, {
+      title: '品牌',
+      dataIndex: 'brand',
+      key: 'brand_name',
+      width: 100,
+      render: text => (<span>{text ? text.brand_name : '' }</span>),
+    }, {
+      title: '产地',
+      dataIndex: 'brand',
+      key: 'registration_place',
+      width: 100,
+      render: text => (<span>{text ? text.registration_place : ''}</span>),
+    }, {
+      title: '一级类目',
+      dataIndex: 'category',
+      render: val => (val.category_name),
+      width: 100,
+      key: 'menu-1',
+    }, {
+      title: '二级类目',
+      dataIndex: 'category',
+      render: val => (val.children.category_name),
+      width: 100,
+      key: 'menu-2',
+    }, {
+      title: '三级类目',
+      dataIndex: 'category',
+      render: val => (val.children.children.category_name),
+      width: 150,
+      key: 'menu-3',
+    }, {
+      title: '已有产品型号数',
+      dataIndex: 'goods_count',
+      width: 130,
+    }, {
+      title: '创建人',
+      dataIndex: 'creator',
+      key: 'creator',
+      render: (text, record) => (<span>{text}({record.creator_id})</span>),
+    }, {
+      title: '创建时间',
+      dataIndex: 'created_time',
+      sorter: true,
+      render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    }, {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a href={'#/product/list/detail?pno=' + record.pno}>查看</a>
+          <Divider type="vertical" />
+          <a href={'#/product/list/modify?pno=' + record.pno}>修改</a>
+        </Fragment>
+      ),
+      width: 120,
+      fixed: 'right',
+    }];
 
     const paginationProps = {
       showSizeChanger: true,
