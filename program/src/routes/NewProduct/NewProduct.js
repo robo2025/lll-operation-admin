@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-11 17:27:16
+ * @Last Modified time: 2018-05-16 17:13:59
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -226,6 +226,10 @@ export default class NewProduct extends Component {
   handleSubmitProduct = () => {
     const { fields, specs } = this.state;
     const { dispatch, history } = this.props;
+    if (fields.pics.length <= 0) {
+      message.error('产品图片必须上传');
+      return;
+    }
     dispatch({
       type: 'product/add',
       data: { ...fields, specs },
