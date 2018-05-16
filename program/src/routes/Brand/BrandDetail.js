@@ -105,7 +105,7 @@ export default class BrandDetail extends Component {
     // 获取品牌操作日志
     dispatch({
       type: 'logs/fetch',
-      module: 'brand',
+      module: 'product_brand',
       objectId: args.bno,
     });
   }
@@ -114,7 +114,6 @@ export default class BrandDetail extends Component {
     const { brand, product, logs, loading } = this.props;
     const { detail } = brand;
     const { selectedRows, args } = this.state;
-    console.log('请求到的产品列表:', product.list);
 
     return (
       <PageHeaderLayout title="查看品牌">

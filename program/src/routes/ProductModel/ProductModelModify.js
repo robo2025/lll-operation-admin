@@ -59,7 +59,7 @@ export default class productModelModify extends Component {
         const specs = [];
         res.data.specs.forEach((val1) => {
           res.data.product.specs.forEach((val2) => {
-            if (val1.id === val2.id) {
+            if (val1.spec_name === val2.spec_name) {
               specs.push({
                 ...val1,
                 is_require: val2.is_require,
@@ -125,7 +125,7 @@ export default class productModelModify extends Component {
       wrapperCol: { span: 15 },
     };
     const formItemLayout2 = {
-      labelCol: { span: 3 },
+      labelCol: { span: 4 },
       wrapperCol: { span: 6 },
     };
 
