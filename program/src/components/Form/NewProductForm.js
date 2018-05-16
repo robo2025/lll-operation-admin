@@ -274,6 +274,7 @@ class ProductForm extends Component {
               })(
                 <Select
                   showSearch
+                  optionFilterProp="children"
                   placeholder="请选择一个品牌"
                 >
                   {
@@ -309,7 +310,7 @@ class ProductForm extends Component {
                 }],
                 initialValue: data.registration_place || '',
               })(
-                <Input />
+                <Input disabled />
               )}
             </FormItem>
             <FormItem
@@ -525,7 +526,6 @@ class ProductForm extends Component {
     );
   }
 }
-
 
 export default ProductForm;
 

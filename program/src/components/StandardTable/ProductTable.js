@@ -89,6 +89,7 @@ class ProductTable extends React.Component {
       title: '产品名称',
       dataIndex: 'product_name',
       key: 'product_name',
+      width: 400,
     }, {
       title: '品牌',
       dataIndex: 'brand',
@@ -111,7 +112,7 @@ class ProductTable extends React.Component {
       title: '二级类目',
       dataIndex: 'category',
       render: val => (val.children.category_name),
-      width: 100,
+      width: 120,
       key: 'menu-2',
     }, {
       title: '三级类目',
@@ -121,7 +122,7 @@ class ProductTable extends React.Component {
       key: 'menu-3',
     }, {
       title: '已有产品型号数',
-      dataIndex: 'goods_count',
+      dataIndex: 'model_count',
       width: 130,
     }, {
       title: '创建人',
@@ -157,7 +158,7 @@ class ProductTable extends React.Component {
       selectedRowKeys,
       onChange: this.handleRowSelectChange,
       getCheckboxProps: record => ({
-        disabled: record.goods_count >= 1,
+        disabled: record.model_count >= 1,
       }),
     };
 
@@ -189,7 +190,7 @@ class ProductTable extends React.Component {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 2300 }}
+          scroll={{ x: 2000 }}
         />
         {/* 供货信息 */}
         <Modal
