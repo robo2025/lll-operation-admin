@@ -2,6 +2,7 @@ import {
   queryProductModels,
   addProductModel,
   modifyProductModel,
+  removeProductModels,
   queryProductModelDetail,
 } from '../services/productModel';
 import { SUCCESS_STATUS } from '../constant/config.js';
@@ -65,6 +66,12 @@ export default {
         payload: response.data,
         headers,
       });
+    },
+    *remove({ mnos, success, error }, { call, put }) {
+      const res = yield call(removeProductModels, { mnos });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(res.data);
+      } else if (typeof error === 'function') { error(res); }
     },
   },
 

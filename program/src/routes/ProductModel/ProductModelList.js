@@ -66,7 +66,7 @@ export default class ProductModelList extends Component {
       title: '产品图片',
       dataIndex: 'product',
       key: 'pics',
-      width: 150,      
+      width: 150,
       render: (text) => {
         return text.pics.map((item, idx) => {
           if (idx < 3) {
@@ -131,9 +131,8 @@ export default class ProductModelList extends Component {
     });
   }
 
-  onSelectChange = (selectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRowKeys, selectedRows });
   }
 
   onCancel = () => {
@@ -151,6 +150,7 @@ export default class ProductModelList extends Component {
   }
 
   handleSelectRows = (rows) => {
+    console.log('选择行', rows);
     this.setState({
       selectedRows: rows,
     });
@@ -159,13 +159,13 @@ export default class ProductModelList extends Component {
   // 处理表格变化
   handleCustomizableTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch, history } = this.props;
-   
+
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
-    
+
     // 分页：将页数提取到url上
     history.push({
       pathname: '/product/model',
@@ -193,6 +193,31 @@ export default class ProductModelList extends Component {
       params: {
         mno,
       },
+    });
+  }
+
+  
+  // 删除产品型号
+  removeProductsModel = () => {
+    const { dispatch } = this.props;
+    const mnos = this.state.selectedRows.map(val => val.mno);
+    if (mnos.length <= 0) {
+      message.error('请先选择要删除的产品型号');
+      return;
+    }
+    dispatch({
+      type: 'productModel/remove',
+      mnos,
+      success: () => { 
+        message.success('删除成功');
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+        dispatch({
+          type: 'productModel/fetch',
+          offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
+          limit: PAGE_SIZE,
+        });
+      },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
@@ -351,17 +376,13 @@ export default class ProductModelList extends Component {
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" href="#/product/model/add">新建</Button>
-              {
-                selectedRows.length > 0 ? (
-                  <span>
-                    <Button
-                      onClick={this.removeProducts}
-                    >
-                      删除
-                    </Button>
-                  </span>
-                ) : null
-              }
+              <span>
+                <Button
+                  onClick={this.removeProductsModel}
+                >
+                  删除
+                </Button>
+              </span>
               <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
             <CustomizableTable

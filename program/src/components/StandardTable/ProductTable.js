@@ -30,7 +30,6 @@ class ProductTable extends React.Component {
     const totalCallNo = selectedRows.reduce((sum, val) => {
       return sum + parseFloat(val.callNo, 10);
     }, 0);
-
     if (this.props.onSelectRow) {
       this.props.onSelectRow(selectedRows);
     }

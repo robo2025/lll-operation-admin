@@ -56,16 +56,19 @@ export async function modifyProductModel({ mno, data }) {
 }
 
 /**
- * --删除品牌
+ * --删除产品型号
  *
- * @param {array} ids 产品型号数组
+ * @param {array} mnos 产品型号数组
 */
-export async function removeBrand({ bno }) {
+export async function removeProductModels({ mnos }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/product_models/${bno}`, {
+  return lyRequest(`${API_URL}/product_models`, {
     method: 'delete',
     headers: {
       Authorization: acessToken,
+    },
+    data: {
+      mnos,
     },
   });
 }
