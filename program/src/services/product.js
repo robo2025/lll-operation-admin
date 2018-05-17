@@ -89,7 +89,7 @@ export async function queryProductDetail({ pno }) {
  *
  * @param {array} ids 产品id数组
 */
-export async function removeProducts({ ids }) {
+export async function removeProducts({ pnos }) {
   const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/products`, {
     method: 'delete',
@@ -97,7 +97,7 @@ export async function removeProducts({ ids }) {
       Authorization: acessToken,
     },
     data: {
-      ids,
+      pnos,
     },
   });
 }

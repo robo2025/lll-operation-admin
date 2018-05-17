@@ -4,7 +4,7 @@ import { Row, Col, Card, Form, Input, Select, Icon, Button, DatePicker, message,
 import ProductTable from '../../components/StandardTable/ProductTable';
 import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import { handleServerMsg, queryString } from '../../utils/tools';
+import { handleServerMsgObj, queryString } from '../../utils/tools';
 import { API_URL, PAGE_SIZE } from '../../constant/config';
 import styles from './product-manager.less';
 
@@ -107,11 +107,15 @@ export default class ProductManager extends Component {
   // 删除产品
   removeProducts() {
     const { dispatch } = this.props;
-    const ids = this.state.selectedRows.map(val => val.id);
+    const pnos = this.state.selectedRows.map(val => val.pno);
+    if (pnos.length <= 0) {
+      message.error('请先选择要删除的产品');
+      return;
+    }
     dispatch({
       type: 'product/remove',
-      ids,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
+      pnos,
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
@@ -390,17 +394,13 @@ export default class ProductManager extends Component {
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
-              {
-                selectedRows.length > 0 ? (
-                  <span>
-                    <Button
-                      onClick={this.removeProducts}
-                    >
-                      删除
-                    </Button>
-                  </span>
-                ) : null
-              }
+              <span>
+                <Button
+                  onClick={this.removeProducts}
+                >
+                  删除
+                </Button>
+              </span>
               <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
             <Modal

@@ -89,8 +89,8 @@ export default {
         headers,
       });
     },
-    *remove({ ids, success, error }, { call, put }) {
-      const res = yield call(removeProducts, { ids });
+    *remove({ pnos, success, error }, { call, put }) {
+      const res = yield call(removeProducts, { pnos });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
