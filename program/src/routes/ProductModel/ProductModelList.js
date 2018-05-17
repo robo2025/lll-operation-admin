@@ -150,7 +150,6 @@ export default class ProductModelList extends Component {
   }
 
   handleSelectRows = (rows) => {
-    console.log('选择行', rows);
     this.setState({
       selectedRows: rows,
     });
