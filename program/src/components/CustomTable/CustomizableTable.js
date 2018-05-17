@@ -36,9 +36,6 @@ export default class CustomizableTable extends React.Component {
             message={
               <Fragment>
                 已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
-                <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>
-                  清空
-                </a>
               </Fragment>
             }
             type="info"

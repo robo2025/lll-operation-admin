@@ -216,6 +216,7 @@ export default class ProductModelList extends Component {
           offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
           limit: PAGE_SIZE,
         });
+        this.setState({ selectedRows: [], selectedRowKeys: [] });
       },
       error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
