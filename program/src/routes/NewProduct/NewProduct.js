@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-16 17:13:59
+ * @Last Modified time: 2018-05-17 10:11:36
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -200,7 +200,6 @@ export default class NewProduct extends Component {
   // 当产品列表改变时：分页
   handleProductTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-    console.log('产品table改变--：', pagination, filtersArg, sorter);
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,

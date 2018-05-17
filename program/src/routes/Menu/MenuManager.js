@@ -97,8 +97,8 @@ class MenuManager extends React.Component {
       type: 'catalog/fetch',
       pid,
       success: (res) => {
-        this.setState({ catalogList: res.data });
         const breadCataArr = cate.map(val => ({ id: val.id, category_name: val.category_name }));
+        this.setState({ catalogList: res.data, args: { bread: breadCataArr } });
         history.push(`?${qs.stringify({ bread: breadCataArr })}`);
       },
     });
