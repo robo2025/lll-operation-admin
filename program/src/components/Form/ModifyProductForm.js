@@ -9,6 +9,7 @@ import styles from './product-info.less';
 const FILE_CDN = FILE_SERVER;
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+const { TextArea } = Input;
 const CAD_TYPES = ['doc', 'docx', 'pdf', 'dwt', 'dxf', 'dxb'];// 支持的CAD文件格式
 const FILE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
 const mapImageType = {// 图片类型：正面、反面、侧面、包装图
@@ -488,10 +489,15 @@ class ProductForm extends Component {
         <div className="good-desc">
           <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
             <TabPane tab="*产品概述" key="1">
-              <RichEditor
+              {/* <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
                 token={uploadToken}
                 defaultValue={data.summary}
+              /> */}
+              <TextArea
+                style={{ height: 500 }}
+                defaultValue={data.summary}
+                onChange={(e) => { this.handleChange('summary', e.target.value); }}
               />
             </TabPane>
             <TabPane tab="*产品详情" key="2">

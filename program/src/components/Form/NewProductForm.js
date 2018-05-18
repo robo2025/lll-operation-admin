@@ -9,6 +9,7 @@ const FILE_CDN = FILE_SERVER;
 const FormItem = Form.Item;
 const { Option } = Select;
 const { TabPane } = Tabs;
+const { TextArea } = Input;
 const IMAGE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
 const CAD_TYPES = ['doc', 'docx', 'pdf', 'dwt', 'dxf', 'dxb'];// 支持的CAD文件格式
 function getStanrdCatalog(data) {
@@ -112,6 +113,7 @@ class ProductForm extends Component {
 
   // 输入框有改变时
   handleChange(key, value) {
+    console.log('输入内容', value);
     const tempJson = {};
     tempJson[key] = value;
     this.props.onAttrChange(tempJson);
@@ -489,11 +491,16 @@ class ProductForm extends Component {
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
-          <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
+          <Tabs defaultActiveKey="1" >
             <TabPane tab="*产品概述" key="1">
-              <RichEditor
+              {/* <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
                 token={uploadToken}
+              /> */}
+              <TextArea
+                style={{ height: 500 }}
+                defaultValue=""
+                onChange={(e) => { this.handleChange('summary', e.target.value); }}
               />
             </TabPane>
             <TabPane tab="*产品详情" key="2">

@@ -295,9 +295,9 @@ export default class ReturnsDetail extends Component {
                   <div className="left">
                     审核意见：
                     <RadioGroup onChange={this.handleRadioChange} value={audit_status}>
-                  <Radio value={1}>审核通过</Radio>
-                  <Radio value={0}>审核不通过</Radio>
-                </RadioGroup>
+                      <Radio value={1}>审核通过</Radio>
+                      <Radio value={0}>审核不通过</Radio>
+                    </RadioGroup>
                     <Tooltip title="审核意见不能为空" visible={audit_status === 0} autoAdjustOverflow={false}>
                       <Input
                         placeholder="未通过说明"
