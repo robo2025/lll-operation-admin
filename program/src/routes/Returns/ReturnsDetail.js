@@ -5,6 +5,7 @@ import { Card, Table, Input, Radio, Divider, Row, Col, message, Button, Tooltip 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { ACTION_STATUS } from '../../constant/statusList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 import { queryString, handleServerMsg } from '../../utils/tools';
 import styles from './OrderDetail.less';
 
@@ -48,52 +49,6 @@ const goodsColumns = [{
   dataIndex: 'sale_price',
   key: 'sale_price',
 }];
-// 发货记录列
-const logisticsColumns = [{
-  title: '商品名称',
-  dataIndex: 'goodName',
-  key: 'goodName',
-}, {
-  title: '型号',
-  dataIndex: 'type',
-  key: 'type',
-}, {
-  title: '品牌',
-  dataIndex: 'brand',
-  key: 'brand',
-}, {
-  title: '数量',
-  dataIndex: 'count',
-  key: 'count',
-}, {
-  title: '发货日期',
-  dataIndex: 'delivery',
-  key: 'delivery',
-}, {
-  title: '送货人',
-  dataIndex: 'delivery_man',
-  key: 'delivery_man',
-}, {
-  title: '联系号码',
-  dataIndex: 'mobile',
-  key: 'mobile',
-}, {
-  title: '物流公司',
-  dataIndex: 'delivery_company',
-  key: 'delivery_company',
-}, {
-  title: '物流单号',
-  dataIndex: 'delivery_id',
-  key: 'delivery_id',
-}];
-// 操作日志tab
-const operationTabList = [{
-  key: 'tab1',
-  tab: '订单操作记录',
-}, {
-  key: 'tab2',
-  tab: '异常操作记录',
-}];
 // 操作日志列
 const actionColumns = [{
   title: '操作记录',
@@ -122,15 +77,7 @@ const actionColumns = [{
   dataIndex: 'time_consuming',
   key: 'time_consuming',
 }];
-const actionLogs = [{
-  id: 1,
-  desc: '提交订单',
-  operater: 'admin',
-  detail: '未支付',
-  progress: '已支付',
-  create_time: '2017-10-12 12:56:30',
-  time: 5,
-}];
+
 
 @connect(({ returns, orders, loading }) => ({
   returns,
@@ -219,6 +166,7 @@ export default class ReturnsDetail extends Component {
     const exceptionAction = operationRecord.filter((val) => {
       return val.is_abnormal;
     });
+    const supplierAdress = getAreaBycode(supplierInfo.profile ? supplierInfo.profile.district_id.toString() : '130303').join('');
 
     return (
       <PageHeaderLayout title="退货单详情">
@@ -239,12 +187,12 @@ export default class ReturnsDetail extends Component {
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
-            <Description term="公司名称">{supplierInfo.company}</Description>
-            <Description term="公司法人">{supplierInfo.contactname}</Description>
-            <Description term="公司类型">{supplierInfo.nature}</Description>
-            <Description term="联系人">{supplierInfo.contactname}</Description>
+            <Description term="公司名称">{supplierInfo.profile ? supplierInfo.profile.company : ''}</Description>
+            <Description term="公司法人">{supplierInfo.profile ? supplierInfo.profile.legal : ''}</Description>
+            <Description term="公司类型">{supplierInfo.profile ? supplierInfo.profile.company_type : ''}</Description>
+            <Description term="联系人">{supplierInfo.username}</Description>
             <Description term="联系号码">{supplierInfo.mobile}</Description>
-            <Description term="收货地址">{supplierInfo.shipping_address}</Description>
+            <Description term="收货地址" >{supplierAdress}{supplierInfo.profile ? supplierInfo.profile.address : ''}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>退货商品</div>
@@ -307,7 +255,7 @@ export default class ReturnsDetail extends Component {
                     </Tooltip>
                   </div>
                   <div className="right">
-                    <Button onClick={() => { this.props.history.push('/returns/list'); }}>返回列表</Button>
+                    <Button onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
                     <Button type="primary" onClick={this.handleSubmit}>提交</Button>
                   </div>
                 </div>
@@ -315,7 +263,7 @@ export default class ReturnsDetail extends Component {
               :
               (
                 <div className={styles['back-btn-wrap']}>
-                  <Button onClick={() => { this.props.history.push('/returns/list'); }}>返回列表</Button>
+                  <Button onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
                 </div>
               )
           }

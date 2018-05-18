@@ -5,10 +5,10 @@ import { Card, Table, Divider, Row, Col, Button, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { queryString, handleServerMsg } from '../../utils/tools';
-import { ORDER_STATUS, PAY_STATUS, ACTION_STATUS } from '../../constant/statusList';
+import { ORDER_STATUS, ACTION_STATUS } from '../../constant/statusList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 
 import styles from './OrderDetail.less';
-import order from '../../models/order';
 
 const { Description } = DescriptionList;
 const goodsData = [];// 订单商品数据
@@ -158,15 +158,7 @@ const actionColumns = [{
   key: 'time_consuming',
   render: text => (<span>{text}s</span>),
 }];
-const actionLogs = [{
-  id: 1,
-  desc: '提交订单',
-  operater: 'admin',
-  detail: '未支付',
-  progress: '已支付',
-  create_time: '2017-10-12 12:56:30',
-  time: 5,
-}];
+
 
 @connect(({ orders, loading }) => ({
   orders,
@@ -255,6 +247,8 @@ export default class OrderDetail extends Component {
       money += val.subtotal_money;
     });
 
+    const supplierAdress = getAreaBycode(supplier_info.profile ? supplier_info.profile.district_id.toString() : '130303').join('');
+    
 
     // console.log('订单详情', order_info);
     return (
@@ -287,10 +281,10 @@ export default class OrderDetail extends Component {
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
-            <Description term="联系人">{supplier_info.linkman}</Description>
+            <Description term="联系人">{supplier_info.username}</Description>
             <Description term="联系电话">{supplier_info.mobile}</Description>
-            <Description term="公司名称">{supplier_info.company_name}</Description>
-            <Description term="收货地址">{supplier_info.address}</Description>
+            <Description term="公司名称">{supplier_info.profile ? supplier_info.profile.company : ''}</Description>
+            <Description term="收货地址">{supplierAdress}{supplier_info.profile ? supplier_info.profile.address : ''}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>订单商品明细</div>

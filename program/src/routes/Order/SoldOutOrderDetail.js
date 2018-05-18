@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-18 11:55:11
+ * @Last Modified time: 2018-05-18 15:47:48
  */
 
 import React, { Component } from 'react';
@@ -12,6 +12,7 @@ import { Card, Table, Divider, Row, Col, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { queryString, handleServerMsg } from '../../utils/tools';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 
 import styles from './OrderDetail.less';
 
@@ -62,71 +63,6 @@ const goodsColumns = [{
   dataIndex: 'subtotal_money',
   key: 'subtotal_money',
 }];
-// 发货记录列
-const logisticsColumns = [{
-  title: '商品名称',
-  dataIndex: 'goodName',
-  key: 'goodName',
-}, {
-  title: '型号',
-  dataIndex: 'type',
-  key: 'type',
-}, {
-  title: '品牌',
-  dataIndex: 'brand',
-  key: 'brand',
-}, {
-  title: '数量',
-  dataIndex: 'count',
-  key: 'count',
-}, {
-  title: '发货日期',
-  dataIndex: 'delivery',
-  key: 'delivery',
-}, {
-  title: '送货人',
-  dataIndex: 'delivery_man',
-  key: 'delivery_man',
-}, {
-  title: '联系号码',
-  dataIndex: 'mobile',
-  key: 'mobile',
-}, {
-  title: '物流公司',
-  dataIndex: 'delivery_company',
-  key: 'delivery_company',
-}, {
-  title: '物流单号',
-  dataIndex: 'delivery_id',
-  key: 'delivery_id',
-}];
-for (let i = 0; i < 3; i++) { // 生成订单商品假数据
-  goodsData.push({
-    id: i + 1,
-    name: '测试' + i,
-    type: '测试' + i,
-    price: 10,
-    num: 5,
-    delivery: '当天',
-    yh: 0,
-    price2: 10,
-    amount: 50,
-  });
-}
-for (let i = 0; i < 3; i++) { // 生成订单商品假数据
-  logisticsData.push({
-    id: i + 1,
-    goodName: '压轧滚珠丝杠　轴径28·32、螺距6·10·32 标准螺帽' + i,
-    type: '测试' + i,
-    brand: '欧姆龙',
-    num: 5,
-    delivery: '2017-12-7 11:45:30',
-    delivery_man: '王麻子',
-    mobile: '13574488306',
-    delivery_company: '恒运货运',
-    delivery_id: 'HYWL12345789',
-  });
-}
 const operationTabList = [{
   key: 'tab1',
   tab: '订单操作记录',
@@ -252,8 +188,8 @@ export default class SoldOutOrderDetail extends Component {
         rowKey="id"
       />,
     };
+    const supplierAdress = getAreaBycode(supplier_info.profile ? supplier_info.profile.district_id.toString() : '130303').join('');
 
-    console.log('商品明细', orderGoodsList);
     return (
       <PageHeaderLayout title="无货订单详情">
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
@@ -305,10 +241,10 @@ export default class SoldOutOrderDetail extends Component {
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
-            <Description term="联系人">{supplier_info.linkman}</Description>
+            <Description term="联系人">{supplier_info.username}</Description>
             <Description term="联系电话">{supplier_info.mobile}</Description>
-            <Description term="公司名称">{supplier_info.company_name}</Description>
-            <Description term="收货地址">{supplier_info.address}</Description>
+            <Description term="公司名称">{supplier_info.profile ? supplier_info.profile.company : ''}</Description>
+            <Description term="收货地址">{supplierAdress}{supplier_info.profile ? supplier_info.profile.address : ''}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>订单商品明细</div>
