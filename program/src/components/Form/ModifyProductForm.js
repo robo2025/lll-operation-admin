@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Cascader, Input, Row, Col, Upload, Icon, Modal, Button, Tabs, message } from 'antd';
+import { Form, Input, Row, Col, Upload, Icon, Modal, Button, Tabs, message } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
 import { checkFile, getFileSuffix, replaceObjFromArr, removeObjFromArr } from '../../utils/tools';
 import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
@@ -20,18 +20,6 @@ const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   d5: '5',
   d6: '6',
 };
-
-
-// 将服务器目录转换成需求目录
-function getStanrdCatalog(data) {
-  data.forEach((val) => {
-    val.value = val.id;
-    val.label = val.category_name;
-    if (val.children.length > 0) {
-      getStanrdCatalog(val.children);
-    }
-  });
-}
 
 // 拼凑单个商品图片数据
 function getPic(key, pics) {
@@ -272,10 +260,6 @@ class ProductForm extends Component {
       </div>
     );
 
-
-    getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构
-
-    console.log('修改产品表单state', this.state);
     return (
       <div className={styles['product-info-wrap']} >
         {/* 产品主要属性 */}
