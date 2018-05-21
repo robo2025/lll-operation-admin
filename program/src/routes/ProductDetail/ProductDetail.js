@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Button, Table } from 'antd';
+import { Card, Button, Table, Form } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import ProductForm from '../../components/CustomeForm/ProductForm';
@@ -9,6 +9,8 @@ import { ACTION_FLAG } from '../../constant/statusList';
 import { queryString } from '../../utils/tools';
 
 import styles from './ProductDetail.less';
+
+const FormItem = Form.Item;
 
 // 操作记录列
 const actionColumns = [{
@@ -31,12 +33,18 @@ const actionColumns = [{
   key: 'created_time',
   render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
 }];
+const formItemLayout2 = {
+  labelCol: { span: 3 },
+  wrapperCol: { span: 6 },
+};
+
 
 @connect(({ product, logs, loading }) => ({
   product,
   logs,
   loading,
 }))
+@Form.create()
 export default class GoodDetail extends Component {
   constructor(props) {
     super(props);
@@ -63,6 +71,8 @@ export default class GoodDetail extends Component {
 
   render() {
     const { product, logs, loading } = this.props;
+    const { detail } = product;
+    const { getFieldDecorator } = this.props.form;
 
     return (
       <PageHeaderLayout title="产品详情" >
@@ -74,6 +84,27 @@ export default class GoodDetail extends Component {
             loading={loading.models.product}
             data={product.detail}
           />
+          <SectionHeader
+            title="规格参数"
+          />
+          <div className="spec-wrap" style={{ width: 800 }}>
+            <Form>
+              {
+                detail.specs && detail.specs.map(val => (
+                  <FormItem
+                    label={val.spec_name}
+                    {...formItemLayout2}
+                    key={val.id}
+                  >
+                    {getFieldDecorator(`spec_${val.spec_name}`, {
+                    })(
+                      <span>{val.spec_value}{val.spec_unit}</span>
+                    )}
+                  </FormItem>
+                ))
+              }
+            </Form>
+          </div>
           <SectionHeader
             title="操作日志"
           />
