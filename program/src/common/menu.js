@@ -33,7 +33,7 @@ const menuData = [{
 }, {
   name: '客户订单管理',
   path: 'orders',
-  icon: 'bars',
+  icon: 'pay-circle-o',
   children: [
     {
       name: '客户订单列表',
@@ -47,7 +47,7 @@ const menuData = [{
 }, {
   name: '退货管理',
   path: 'returns',
-  icon: 'bars',
+  icon: 'disconnect',
   children: [
     {
       name: '退货单列表',
@@ -57,7 +57,7 @@ const menuData = [{
 }, {
   name: '品牌管理',
   path: 'brand',
-  icon: 'bars',
+  icon: 'apple-o',
   children: [
     {
       name: '品牌列表',
@@ -67,7 +67,7 @@ const menuData = [{
 }, {
   name: '导入导出管理',
   path: 'import-export',
-  icon: 'bars',
+  icon: 'export',
   children: [
     {
       name: '导入列表',

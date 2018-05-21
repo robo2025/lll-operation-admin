@@ -1,9 +1,9 @@
 @import '~antd/lib/style/themes/default.less';
 @ease-in-out-circ: cubic-bezier(0.78, 0.14, 0.15, 0.86);
 .logo {
-  height: 64px;
+  height: 75px;
   position: relative;
-  line-height: 64px;
+  line-height: 75px;
   padding-left: (@menu-collapsed-width - 32px) / 2;
   transition: all 0.3s;
   background: #f0f2f5;
@@ -48,6 +48,9 @@
 :global {
   .drawer .drawer-content {
     background: #001529;
+  }
+  .ant-layout-sider-collapsed [class^="logo"]{
+    padding-left: (@menu-collapsed-width - 32px) / 4;      
   }
   .ant-menu-inline-collapsed {
     & > .ant-menu-item .sider-menu-item-img + span,
