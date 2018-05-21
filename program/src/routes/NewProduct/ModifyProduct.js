@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-09 13:59:13
+ * @Last Modified time: 2018-05-21 09:28:08
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -374,9 +374,9 @@ export default class ModifyProduct extends Component {
       title: '排序',
       dataIndex: 'sort',
       key: 'sort',
-      render: (text, record, idx) => (
+      render: (text, record) => (
         <InputNumber
-          defaultValue={text || idx + 1}
+          defaultValue={text}
           min={1}
           onChange={(value) => { this.handleSpecChange(record.id, 'sort', value); }
           }

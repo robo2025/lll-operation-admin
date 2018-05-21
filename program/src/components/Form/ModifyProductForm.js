@@ -259,10 +259,10 @@ class ProductForm extends Component {
     const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cad_urls, cadUrl } = this.state;
     const { category } = data;
     const slectedCatagory = category ? [
-      category.id,
-      category.children.id,
-      category.children.children.id,
-      category.children.children.children.id,
+      category.category_name,
+      category.children.category_name,
+      category.children.children.category_name,
+      category.children.children.children.category_name,
     ] : [];
 
     const uploadButton = (
