@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import qs from 'qs';
-import { Card, Row, Form, Button, Table, Tabs } from 'antd';
+import { Card, Row, Col, Form, Button, Table, Tabs } from 'antd';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
@@ -46,6 +46,7 @@ export default class productModelDetail extends Component {
     super(props);
     this.state = {
       args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
+      specs: [],
     };
   }
 
@@ -55,6 +56,17 @@ export default class productModelDetail extends Component {
     dispatch({
       type: 'productModel/fetchDetail',
       mno: args.mno,
+      success: (res) => {
+        const specs = [];
+        res.data.specs.forEach((val1) => {
+          res.data.product.specs.forEach((val2) => {
+            if (val1.spec_value !== '' && val1.spec_name === val2.spec_name) {
+              specs.push({ ...val1, sort: val2.sort });
+            }
+          });
+        });
+        this.setState({ specs: specs.sort((a, b) => a.sort - b.sort) });
+      },
     });
     // 获取产品操作日志
     dispatch({
@@ -66,8 +78,9 @@ export default class productModelDetail extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { specs } = this.state;
     const { productModel, logs, loading } = this.props;
-    const { detail } = productModel;    
+    const { detail } = productModel;
     const formItemLayout = {
       labelCol: { span: 3 },
       wrapperCol: { span: 15 },
@@ -160,13 +173,12 @@ export default class productModelDetail extends Component {
             title="规格参数"
           />
           <div className="spec-wrap" style={{ width: 800 }}>
-            <Form>
+            <Form >
               {
-                detail.specs && detail.specs.map(val => (
+                specs.map((val, idx) => (
                   <FormItem
                     label={val.spec_name}
                     {...formItemLayout2}
-                    key={val.id}
                   >
                     {getFieldDecorator(`spec_${val.spec_name}`, {
                     })(
@@ -175,6 +187,7 @@ export default class productModelDetail extends Component {
                   </FormItem>
                 ))
               }
+              <div style={{ clear: 'both' }} />
             </Form>
           </div>
           <div className="good-desc">

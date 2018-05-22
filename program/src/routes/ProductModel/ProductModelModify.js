@@ -71,7 +71,6 @@ export default class productModelModify extends Component {
           if (!isExist) {
             specs.push({ ...val1, spec_value: '' });
           }
-          console.log('--', isExist);
         });
         this.setState({ specs });
       },
@@ -96,11 +95,9 @@ export default class productModelModify extends Component {
         specs.push({
           spec_name: val.replace(/spec_/, ''), // 参数名称
           spec_value: fieldsValue[val], // 参数值
-          sort: 0,
         });
       });
 
-      // 
       this.dispatchAddProductModel({
         partnumber: fieldsValue.partnumber, // 型号
         specs,
