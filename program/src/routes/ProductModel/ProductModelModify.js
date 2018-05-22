@@ -57,12 +57,16 @@ export default class productModelModify extends Component {
       mno: args.mno,
       success: (res) => {
         const specs = [];
-        res.data.specs.forEach((val1) => {
-          res.data.product.specs.forEach((val2) => {
+        res.data.product.specs.forEach((val1) => {
+          const isNotExist = res.data.specs.every(val => val.spec_name !== val1.spec_name);
+          if (isNotExist) {
+            specs.push(val1);
+          } 
+          res.data.specs.forEach((val2) => {
             if (val1.spec_name === val2.spec_name) {
               specs.push({
-                ...val1,
-                is_require: val2.is_require,
+                ...val2,
+                is_require: val1.is_require,
               });
             }
           });
@@ -237,11 +241,11 @@ export default class productModelModify extends Component {
           <div className="spec-wrap" style={{ width: 800 }}>
             <Form>
               {
-                specs.map(val => (
+                specs.map((val, idx) => (
                   <FormItem
                     label={val.spec_name}
                     {...formItemLayout2}
-                    key={val.id}
+                    key={idx}
                   >
                     {getFieldDecorator(`spec_${val.spec_name}`, {
                       rules: [{
