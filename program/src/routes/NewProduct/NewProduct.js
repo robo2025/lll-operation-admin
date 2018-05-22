@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-17 10:11:36
+ * @Last Modified time: 2018-05-22 10:46:33
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -80,7 +80,7 @@ export default class NewProduct extends Component {
           });
           this.setState({
             isShowAttrMOdal: false, // 隐藏添加属性弹窗    
-            specs: { ...newSpecs },
+            specs: newSpecs,
           });
         } else {
           this.setState({
@@ -104,7 +104,7 @@ export default class NewProduct extends Component {
   }
 
   ShowAttrModal = () => {
-    this.setState({ isShowAttrMOdal: true });
+    this.setState({ isShowAttrMOdal: true, editSpec: {} });
   }
 
   // 当表单被修改事件

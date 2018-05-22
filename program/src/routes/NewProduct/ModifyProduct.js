@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-21 14:25:07
+ * @Last Modified time: 2018-05-22 10:54:45
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -152,7 +152,7 @@ export default class ModifyProduct extends Component {
   }
 
   ShowAttrModal = () => {
-    this.setState({ isShowAttrMOdal: true });
+    this.setState({ isShowAttrMOdal: true, editSpec: {} });
   }
 
   /**
