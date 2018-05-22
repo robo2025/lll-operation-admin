@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-22 10:46:33
+ * @Last Modified time: 2018-05-22 11:17:04
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -152,6 +152,9 @@ export default class NewProduct extends Component {
    * 编辑产品参数
    */
   handleEditOtherAttrFiled = (id) => {
+    if (this.formObj) {
+      this.formObj.resetFields();// 重置表单    
+    }
     const { specs } = this.state;
     const newOtherAttrsFiled = specs.find((val) => {
       return val.id === id;
