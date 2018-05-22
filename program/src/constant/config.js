@@ -14,15 +14,13 @@ export const OPERATION_URL = 'https://testapi.robo2025.com/scm';
 // 140.143.56.14:9005/operation
 
 // 上传文件获取token URL
-export const UPLOAD_URL = '//api-common-service.robo2025.com';
+export const UPLOAD_URL = 'http://testapi.robo2025.com/common';
 
 // 用户管理系统API URL
 export const USERS_URL = 'https://testapi.robo2025.com/user/service';
 
-
 // 订单系统接口
 export const ORDERS_URL = '//testapi.robo2025.com/order';
-// export const ORDERS_URL = 'http://192.168.2.22:8009';
 
 // 验证登录接口URL
 export const LOGIN_URL = `${URL}/server/authorize`;
