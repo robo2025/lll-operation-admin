@@ -1,7 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
+import qs from 'qs';
 import { connect } from 'dva';
 import { Card, Row, Col, Form, Input, Button, Icon, Divider, message } from 'antd';
+import { PAGE_SIZE } from '../../constant/config';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 
@@ -21,6 +23,7 @@ export default class BrandList extends Component {
     this.state = {
       selectedRowKeys: [],
       selectedRows: [],
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),      
     };
     this.columns = [{
       title: '序号',
@@ -82,8 +85,12 @@ export default class BrandList extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { args } = this.state;
+    
     dispatch({
       type: 'brand/fetch',
+      offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
+      limit: PAGE_SIZE,
     });
   }
 
@@ -96,6 +103,28 @@ export default class BrandList extends Component {
       selectedRows: rows,
     });
   };
+
+   // 处理表格变化
+   handleCustomizableTableChange = (pagination, filtersArg, sorter) => {
+     const { dispatch, history } = this.props;
+
+     const params = {
+       currentPage: pagination.current,
+       pageSize: pagination.pageSize,
+       offset: (pagination.current - 1) * (pagination.pageSize),
+     };
+
+     // 分页：将页数提取到url上
+     history.push({
+       search: `?page=${params.currentPage}`,
+     });
+
+     dispatch({
+       type: 'brand/fetch',
+       offset: params.offset,
+       limit: params.pageSize,
+     });
+   }
 
   removeBrand = (bno) => {
     const { dispatch } = this.props;
@@ -187,7 +216,9 @@ export default class BrandList extends Component {
               data={brand.list}
               columns={this.columns}
               scroll={{ x: 800 }}
+              onChange={this.handleCustomizableTableChange}
               onSelectRow={this.handleSelectRows}
+              total={brand.total}
             />
           </div>
         </Card>

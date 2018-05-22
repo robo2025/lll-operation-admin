@@ -14,7 +14,7 @@ export const OPERATION_URL = 'https://testapi.robo2025.com/scm';
 // 140.143.56.14:9005/operation
 
 // 上传文件获取token URL
-export const UPLOAD_URL = 'http://testapi.robo2025.com/common';
+export const UPLOAD_URL = 'https://testapi.robo2025.com/common';
 
 // 用户管理系统API URL
 export const USERS_URL = 'https://testapi.robo2025.com/user/service';
