@@ -58,18 +58,20 @@ export default class productModelModify extends Component {
       success: (res) => {
         const specs = [];
         res.data.product.specs.forEach((val1) => {
-          const isNotExist = res.data.specs.every(val => val.spec_name !== val1.spec_name);
-          if (isNotExist) {
-            specs.push(val1);
-          } 
+          let isExist = false;      
           res.data.specs.forEach((val2) => {
             if (val1.spec_name === val2.spec_name) {
+              isExist = true;
               specs.push({
                 ...val2,
                 is_require: val1.is_require,
               });
             }
           });
+          if (!isExist) {
+            specs.push({ ...val1, spec_value: '' });
+          }
+          console.log('--', isExist);
         });
         this.setState({ specs });
       },

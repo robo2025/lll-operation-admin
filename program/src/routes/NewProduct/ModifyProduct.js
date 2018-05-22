@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-22 11:15:57
+ * @Last Modified time: 2018-05-22 14:41:16
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -391,6 +391,10 @@ export default class ModifyProduct extends Component {
       key: 'spec_name',
       render: (text, record) => (<span>{text}{record.spec_unit ? `(${record.spec_unit})` : ''}</span>),
     }, {
+      title: '已被产品关联次数',
+      dataIndex: 'model_count',
+      key: 'model_count',
+    }, {
       title: '是否必填',
       dataIndex: 'is_require',
       key: 'is_require',
@@ -416,7 +420,12 @@ export default class ModifyProduct extends Component {
         <Fragment>
           <a onClick={() => { this.handleEditOtherAttrFiled(record.id); }}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}>删除</a>
+          <a
+            disabled={record.model_count > 0}
+            onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}
+          >
+            删除
+          </a>
         </Fragment>
       ),
     }];

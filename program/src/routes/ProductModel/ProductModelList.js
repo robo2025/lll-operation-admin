@@ -195,7 +195,40 @@ export default class ProductModelList extends Component {
     });
   }
 
-  
+  handleSearch = (e) => {
+    e.preventDefault();
+
+    const { dispatch, form } = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const createTime = {};
+      if (fieldsValue.create_time) {
+        createTime.created_start = fieldsValue.create_time[0].format('YYYY-MM-DD');
+        createTime.created_end = fieldsValue.create_time[1].format('YYYY-MM-DD');
+      }
+      const values = {
+        ...fieldsValue,
+        ...createTime,
+      };
+
+      this.setState({
+        formValues: values,
+      });
+      const { pno, mno, partnumber, created_start, created_end } = values;
+      dispatch({
+        type: 'productModel/fetch',
+        params: {
+          pno,
+          mno,
+          partnumber,
+          created_start,
+          created_end,
+        },
+      });
+    });
+  }
+
   // 删除产品型号
   removeProductsModel = () => {
     const { dispatch } = this.props;
@@ -207,7 +240,7 @@ export default class ProductModelList extends Component {
     dispatch({
       type: 'productModel/remove',
       mnos,
-      success: () => { 
+      success: () => {
         message.success('删除成功');
         const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
         dispatch({
@@ -228,18 +261,26 @@ export default class ProductModelList extends Component {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="产品型号ID">
-              {getFieldDecorator('pno')(
+              {getFieldDecorator('mno')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="产品型号">
-              {getFieldDecorator('product_name')(
+              {getFieldDecorator('partnumber')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="产品ID">
+              {getFieldDecorator('pno')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+
           <Col xll={4} md={6} sm={24}>
             <FormItem label="所属类目">
               {getFieldDecorator('catalog')(
@@ -248,13 +289,6 @@ export default class ProductModelList extends Component {
                   <Option value="1">未知</Option>
                   <Option value="1">未知</Option>
                 </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
-                <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
@@ -279,14 +313,21 @@ export default class ProductModelList extends Component {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="产品型号ID">
-              {getFieldDecorator('pno')(
+              {getFieldDecorator('mno')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="产品型号">
-              {getFieldDecorator('product_name')(
+              {getFieldDecorator('partnumber')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="产品ID">
+              {getFieldDecorator('pno')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -302,32 +343,25 @@ export default class ProductModelList extends Component {
               )}
             </FormItem>
           </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="产品名称">
-              {getFieldDecorator('pno')(
+              {getFieldDecorator('test1')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="产地">
-              {getFieldDecorator('product_name')(
+              {getFieldDecorator('test2')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="创建人">
-              {getFieldDecorator('partnumber')(
+              {getFieldDecorator('test3')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
