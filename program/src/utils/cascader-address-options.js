@@ -33,10 +33,13 @@ const options = provinces.map(province => ({
 
 // 根据区号返回省市区的中文（数组）
 export function getAreaBycode(code) {
-  console.log('区号', code);
+  if (!code) { return []; }
   const areaData = areas.filter((area) => {
     return area.code === code;
   });
+  if (areaData.length === 0) {
+    return [];
+  }
   const cityData = cities.filter((city) => {
     return city.code === areaData[0].cityCode;
   });

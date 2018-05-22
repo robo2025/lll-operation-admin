@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-08 15:58:27
+ * @Last Modified time: 2018-05-22 10:05:03
  */
 import React from 'react';
 import 'braft-editor/dist/braft.css';
@@ -10,6 +10,7 @@ import { Form, Row, Col, Table, Tabs, Spin } from 'antd';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
 import { PIC_TYPES } from '../../constant/statusList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 
 import styles from './good-info.less';
 
@@ -79,6 +80,8 @@ class GoodInfo extends React.Component {
     const categoryStr = category ?
       `${category.category_name}-${category.children.category_name}-${category.children.children.category_name}-${category.children.children.children.category_name}`
       : '';
+    const supplierAdress = getAreaBycode(user.profile ? user.profile.district_id.toString() : '').join('');
+      
 
     return (
       <div className={styles['good-info-wrap']}>
@@ -339,7 +342,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>{user.contactname}</span>
+                <span>{user.username}</span>
               </FormItem>
             </Col>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -357,7 +360,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>{user.company}</span>
+                <span>{user.profile ? user.profile.company : ''}</span>
               </FormItem>
             </Col>
           </Row>
@@ -368,7 +371,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>{user.shipping_address}</span>
+                <span>{supplierAdress}{user.profile ? user.profile.address : ''}</span>
               </FormItem>
             </Col>
           </Row>
