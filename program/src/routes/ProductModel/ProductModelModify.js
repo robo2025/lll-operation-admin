@@ -87,6 +87,7 @@ export default class productModelModify extends Component {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         console.log('校验出错', err);
+        return;
       }
       // 从fieldsValue中取出参数项
       const specs = [];
@@ -251,7 +252,7 @@ export default class productModelModify extends Component {
                         required: Boolean(val.is_require),
                         message: '该参数项必填',
                       }],
-                      initialValue: val.spec_value,
+                      initialValue: val.spec_value || '',
                     })(
                       <Input addonAfter={val.spec_unit} />
                     )}
