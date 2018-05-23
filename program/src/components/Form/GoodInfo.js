@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-22 10:05:03
+ * @Last Modified time: 2018-05-23 17:37:01
  */
 import React from 'react';
 import 'braft-editor/dist/braft.css';
@@ -133,7 +133,7 @@ class GoodInfo extends React.Component {
             >
               {getFieldDecorator('partnumber', {
               })(
-                <span>{data.partnumber}</span>
+                <span>{data.product_model ? data.product_model.partnumber : ''}</span>
               )}
             </FormItem>
             <FormItem

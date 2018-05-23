@@ -58,20 +58,20 @@ const goodsColumns = [{
 // 发货记录列
 const logisticsColumns = [{
   title: '商品名称',
-  dataIndex: 'goodName',
-  key: 'goodName',
+  dataIndex: 'goods_name',
+  key: 'goods_name',
 }, {
   title: '型号',
-  dataIndex: 'type',
-  key: 'type',
+  dataIndex: 'model',
+  key: 'model',
 }, {
   title: '品牌',
   dataIndex: 'brand',
   key: 'brand',
 }, {
   title: '数量',
-  dataIndex: 'count',
-  key: 'count',
+  dataIndex: 'number',
+  key: 'number',
 }, {
   title: '发货日期',
   dataIndex: 'delivery',
@@ -80,47 +80,21 @@ const logisticsColumns = [{
   title: '送货人',
   dataIndex: 'delivery_man',
   key: 'delivery_man',
+  render: text => (<span>{text || '不可见'}</span>),  
 }, {
   title: '联系号码',
   dataIndex: 'mobile',
   key: 'mobile',
+  render: text => (<span>{text || '不可见'}</span>),
 }, {
   title: '物流公司',
-  dataIndex: 'delivery_company',
-  key: 'delivery_company',
+  dataIndex: 'logistics_company',
+  key: 'logistics_company',
 }, {
   title: '物流单号',
-  dataIndex: 'delivery_id',
-  key: 'delivery_id',
+  dataIndex: 'logistics_number',
+  key: 'logistics_number',
 }];
-for (let i = 0; i < 3; i++) { // 生成订单商品假数据
-  goodsData.push({
-    id: i + 1,
-    name: '测试' + i,
-    type: '测试' + i,
-    price: 10,
-    num: 5,
-    delivery: '当天',
-    yh: 0,
-    price2: 10,
-    amount: 50,
-  });
-}
-for (let i = 0; i < 3; i++) { // 生成订单商品假数据
-  logisticsData.push({
-    id: i + 1,
-    goodName: '压轧滚珠丝杠　轴径28·32、螺距6·10·32 标准螺帽' + i,
-    type: '测试' + i,
-    type: '测试' + i,
-    brand: '欧姆龙',
-    num: 5,
-    delivery: '2017-12-7 11:45:30',
-    delivery_man: '王麻子',
-    mobile: '13574488306',
-    delivery_company: '恒运货运',
-    delivery_id: 'HYWL12345789',
-  });
-}
 // 操作日志tab
 const operationTabList = [{
   key: 'tab1',
@@ -184,7 +158,6 @@ export default class OrderDetail extends Component {
   }
 
   onOperationTabChange = (key) => {
-    console.log(key);
     this.setState({ operationkey: key });
   }
 
@@ -210,6 +183,7 @@ export default class OrderDetail extends Component {
     const exceptionAction = operation.filter((val) => {
       return val.is_abnormal;
     });
+    const deliveryInfo = [{ ...delivery_info, ...order_detail }];
     const contentList = {
       tab1: <Table
         pagination={{
@@ -248,7 +222,7 @@ export default class OrderDetail extends Component {
     });
 
     const supplierAdress = getAreaBycode(supplier_info.profile ? supplier_info.profile.district_id.toString() : '130303').join('');
-    
+
 
     // console.log('订单详情', order_info);
     return (
@@ -339,11 +313,11 @@ export default class OrderDetail extends Component {
             style={{ marginBottom: 24 }}
             pagination={false}
             loading={false}
-            dataSource={[]}
+            dataSource={deliveryInfo}
             columns={logisticsColumns}
             rowKey="id"
           />
-          {/* <Divider style={{ marginBottom: 32 }} />           */}
+          {/* <Divider style={{ marginBottom: 32 }} /> */}
           <div className={styles.title}>操作日志记录</div>
           <Card
             className={styles.tabsCard}

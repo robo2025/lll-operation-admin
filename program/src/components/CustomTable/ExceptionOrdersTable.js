@@ -42,21 +42,21 @@ export default class ExceptionOrdersTable extends React.Component {
   }
 
   // 订单处理点击：催货、订单取消、收货延期
-handleOrderClick = ({ modalKey, orderId, data }) => {
-  this.props.onHandleOrderClick(modalKey, orderId, data);
-}
+  handleOrderClick = ({ modalKey, orderId, data }) => {
+    this.props.onHandleOrderClick(modalKey, orderId, data);
+  }
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
     const { data, loading, total } = this.props;
-    
+
     const Actions = ({ code, text, onClick }) => {
       if (code === 13) { // 无货
         return (
-          <Dropdown 
+          <Dropdown
             disabled={text.is_deal}
             overlay={(
-              <Menu 
+              <Menu
                 onClick={({ key }) => { onClick({ modalKey: key, orderId: text.id, data: text }); }}
               >
                 {/* <Menu.Item key={`1-${text.id}`}>修改并推送</Menu.Item> */}
@@ -65,28 +65,28 @@ handleOrderClick = ({ modalKey, orderId, data }) => {
               </Menu>
             )}
           >
-              <a className="ant-dropdown-link">
-                处理<Icon type="down" />
-              </a>
+            <a className="ant-dropdown-link">
+              处理<Icon type="down" />
+            </a>
           </Dropdown>
         );
       } else if (code === 8) { // 申请延期
         return (
-          <Dropdown 
+          <Dropdown
             disabled={text.is_deal}
             overlay={(
-              <Menu 
+              <Menu
                 onClick={({ key }) => { onClick({ modalKey: key, orderId: text.id, data: text }); }}
               >
                 {/* <Menu.Item key={`1-${text.id}`}>修改并推送</Menu.Item> */}
                 <Menu.Item key="4">同意延期</Menu.Item>
-                <Menu.Item key="5">驳回延期</Menu.Item>
+                <Menu.Item key="5">取消订单</Menu.Item>
               </Menu>
             )}
           >
-              <a className="ant-dropdown-link">
-                处理<Icon type="down" />
-              </a>
+            <a className="ant-dropdown-link">
+              处理<Icon type="down" />
+            </a>
           </Dropdown>
         );
       } else {
@@ -140,7 +140,7 @@ handleOrderClick = ({ modalKey, orderId, data }) => {
         dataIndex: 'add_time',
         key: 'add_time',
         width: 180,
-        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,        
+        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
       },
       {
         title: '佣金(元)',
@@ -169,7 +169,7 @@ handleOrderClick = ({ modalKey, orderId, data }) => {
         title: '订单状态',
         dataIndex: 'order_status',
         key: 'order_status',
-        width: 150,        
+        width: 150,
         render: text => (<span>{mapOrderStatus[text - 1]}</span>),
       },
       {
@@ -204,13 +204,13 @@ handleOrderClick = ({ modalKey, orderId, data }) => {
             {
               Actions({ code: text.order_status, text, onClick: this.handleOrderClick })
             }
-            
+
             <Divider type="vertical" />
             {record.abnormal_tag === 1
-            ?
-            (<a href={'#/orders/exception-list/sold-out-order?orderId=' + record.id}>查看</a>)
-            :
-            (<a href={'#/orders/exception-list/delay-order?orderId=' + record.id}>查看</a>)
+              ?
+              (<a href={'#/orders/exception-list/sold-out-order?orderId=' + record.id}>查看</a>)
+              :
+              (<a href={'#/orders/exception-list/delay-order?orderId=' + record.id}>查看</a>)
             }
           </Fragment>
         ),
@@ -232,7 +232,7 @@ handleOrderClick = ({ modalKey, orderId, data }) => {
         disabled: record.disabled,
       }),
     };
-    
+
 
     return (
       <div className={styles.standardTable}>
