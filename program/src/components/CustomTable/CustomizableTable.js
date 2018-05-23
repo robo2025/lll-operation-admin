@@ -20,7 +20,7 @@ export default class CustomizableTable extends React.Component {
   }
 
   render() {
-    const { data, columns, defaultPage, loading, total, rowSelection, scroll } = this.props;
+    const { data, columns, defaultPage, loading, total, rowSelection, scroll, rowKey } = this.props;
     const selectedRowKeys = rowSelection ? rowSelection.selectedRowKeys : [];
     const paginationProps = {
       showSizeChanger: true,
@@ -44,7 +44,7 @@ export default class CustomizableTable extends React.Component {
         </div>
         <Table
           loading={loading}
-          rowKey={record => (record.id ? record.id : record.created_time)}
+          rowKey={rowKey || 'created_time'}
           rowSelection={rowSelection}
           dataSource={data}
           columns={columns}

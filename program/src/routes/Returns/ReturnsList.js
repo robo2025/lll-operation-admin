@@ -2,9 +2,10 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import qs from 'qs';
 import moment from 'moment';
-import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message, Divider, Badge } from 'antd';
+import { Card, Button, Row, Col, Form, Input, Select, Icon, Radio, Modal, message, Divider, Badge } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
+import ReturnAuditContent from './ReturnAuditContent';
 import { PAGE_SIZE } from '../../constant/config';
 import { handleServerMsgObj } from '../../utils/tools';
 import styles from './order-list.less';
@@ -27,7 +28,8 @@ export default class ReturnsList extends Component {
     super(props);
     this.state = {
       expandForm: false,
-      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),      
+      isShowModal: false,
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
   }
 
@@ -79,6 +81,58 @@ export default class ReturnsList extends Component {
     const { history } = this.props;
     history.push(url);
   }
+
+  // 绑定审核弹出层form对象
+  bindFormObj = (formObj) => {
+    this.$FormObj = formObj;
+  }
+
+  // 审核按钮被点击
+  handleAuditClick = (returnId) => {
+    this.setState({
+      isShowModal: true,
+      returnId,
+    });
+  }
+
+  // 审核退货：取消弹出层
+  handleCancelModal = () => {
+    this.setState({
+      isShowModal: false,
+    });
+  }
+
+  // 审核退货：确定弹出层
+  handleOkModal = () => {
+    const that = this;
+    this.$FormObj.validateFields((err, values) => {
+      if (!err) {
+        this.setState({
+          isShowModal: false,
+        });
+        that.handleAuditSubmit({
+          is_pass: values.is_pass,
+          remarks: values.remarks,
+          responsible_party: values.responsible_party,
+        });
+      } else {
+        console.log('校验出错', err);
+      }
+    });
+  }
+
+  // 提交审核
+  handleAuditSubmit = (data) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'returns/fetchAudit',
+      returnId: this.state.returnId,
+      data,
+      success: () => { message.success('提交成功'); },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
+  }
+
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch, history } = this.props;
@@ -226,7 +280,7 @@ export default class ReturnsList extends Component {
 
   render() {
     const { returns, loading } = this.props;
-    const { args } = this.state;
+    const { args, isShowModal } = this.state;
     const { total, list } = returns;
 
 
@@ -292,12 +346,12 @@ export default class ReturnsList extends Component {
         key: 'is_deal',
         width: 150,
         render: text => (<span><Badge status={text === 2 ? 'success' : 'default'} />{dealStatus[text - 1]}</span>),
-      }, 
+      },
       {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            <a href={`#/returns/list/detail?orderId=${record.return_id}&audit=1`} >审核</a>
+            <a onClick={() => { this.handleAuditClick(record.return_id); }} >审核</a>
             <Divider type="vertical" />
             <a href={'#/returns/list/detail?orderId=' + record.return_id}>查看</a>
           </Fragment>
@@ -318,6 +372,7 @@ export default class ReturnsList extends Component {
           <div className={styles.tableList}>
             <CustomizableTable
               onHandleOrderClick={this.handleModalToggle}
+              rowKey="returns_sn"
               data={list}
               columns={columns}
               loading={loading}
@@ -327,6 +382,17 @@ export default class ReturnsList extends Component {
             />
           </div>
         </Card>
+        {/* 退货单审核面板 */}
+        <Modal
+          visible={isShowModal}
+          title="审核面板"
+          onCancel={() => { this.handleCancelModal(); }}
+          onOk={() => { this.handleOkModal(); }}
+        >
+          <ReturnAuditContent
+            bindFormObj={this.bindFormObj}
+          />
+        </Modal>
       </PageHeaderLayout>
     );
   }
