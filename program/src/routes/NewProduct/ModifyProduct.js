@@ -2,12 +2,12 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-22 14:41:16
+ * @Last Modified time: 2018-05-24 14:14:18
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Button, Checkbox, Modal, Table, InputNumber, Divider, message } from 'antd';
+import { Card, Button, Checkbox, Modal, Table, InputNumber, Divider, Popconfirm, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ModifyProductForm from '../../components/Form/ModifyProductForm';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
@@ -420,12 +420,18 @@ export default class ModifyProduct extends Component {
         <Fragment>
           <a onClick={() => { this.handleEditOtherAttrFiled(record.id); }}>编辑</a>
           <Divider type="vertical" />
-          <a
-            disabled={record.model_count > 0}
-            onClick={() => { this.handleDeleteOtherAttrFiled(record.id); }}
+          <Popconfirm
+            title="确定删除吗？"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => { this.handleDeleteOtherAttrFiled(record.id); }}
           >
-            删除
-          </a>
+            <a
+              disabled={record.model_count > 0}
+            >
+              删除
+            </a>
+          </Popconfirm>
         </Fragment>
       ),
     }];
