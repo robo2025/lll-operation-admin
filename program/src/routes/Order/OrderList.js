@@ -136,7 +136,15 @@ export default class OrderList extends Component {
       type: 'orders/fetchCancel',
       orderId,
       data: cancelOrderData,
-      success: () => { message.success('取消订单成功'); },
+      success: () => { 
+        message.success('取消订单成功'); 
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });        
+        dispatch({
+          type: 'orders/fetch',
+          offset: (args.page - 1) * PAGE_SIZE,
+          limit: PAGE_SIZE,
+        });
+      },
       error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
@@ -249,7 +257,7 @@ export default class OrderList extends Component {
             <FormItem label="订单状态">
               {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
+                  <Option value="">全部</Option>
                   <Option value="1">待接单</Option>
                   <Option value="2">已接单</Option>
                   <Option value="3">已部分发货</Option>

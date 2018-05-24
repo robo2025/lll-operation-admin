@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
-import { Table, Divider, Dropdown, Menu, Icon } from 'antd';
+import { Table, Divider } from 'antd';
 import styles from './order-table.less';
 import OrderTableData from './orderTableData'; // 假数据
 
@@ -143,7 +143,7 @@ export default class OrderTable extends React.Component {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      defaultPage: defaultPage || 1,
+      defaultCurrent: defaultPage ? defaultPage >> 0 : 1,
       total,
     };
 

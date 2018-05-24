@@ -94,130 +94,113 @@ export default class ExceptionOrdersTable extends React.Component {
       }
     };
 
-    const columns = [
-      {
-        title: '序号',
-        dataIndex: 'id',
-        key: 'id',
-        width: 60,
-        fixed: 'left',
-      },
-      {
-        title: '客户订单编号',
-        dataIndex: 'son_order_sn',
-        key: 'son_order_sn',
-        width: 200,
-        fixed: 'left',
-      },
-      {
-        title: '供应商公司名称',
-        dataIndex: 'supplier_name',
-        key: 'supplier_name',
-        width: 130,
-        fixed: 'left',
-      },
-      {
-        title: '客户公司名称',
-        dataIndex: 'guest_name',
-        align: 'guest_name',
-        width: 130,
-        fixed: 'left',
-        render: val => `${val}`,
-      },
-      {
-        title: '最大发货日期',
-        dataIndex: 'max_delivery_time',
-        key: 'max_delivery_time-1',
-        render: text => (<span>{text}天</span>),
-      },
-      {
-        title: '交易总金额(元)',
-        dataIndex: 'total_money',
-        key: 'total_money',
-      },
-      {
-        title: '下单时间',
-        dataIndex: 'add_time',
-        key: 'add_time',
-        width: 180,
-        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
-      },
-      {
-        title: '佣金(元)',
-        dataIndex: 'commission',
-        key: 'commission',
-      },
-      {
-        title: '是否接单',
-        dataIndex: 'is_taking',
-        key: 'is_taking',
-        render: text => (<span>{text ? '是' : '否'}</span>),
-      },
-      {
-        title: '是否发货',
-        dataIndex: 'is_delivery',
-        key: 'is_delivery',
-        render: text => (<span>{text ? '是' : '否'}</span>),
-      },
-      {
-        title: '责任方',
-        dataIndex: 'responsible_party',
-        key: 'responsible_party',
-        render: text => (<span>{mapOrderResponsible[text - 1]}</span>),
-      },
-      {
-        title: '订单状态',
-        dataIndex: 'order_status',
-        key: 'order_status',
-        width: 150,
-        render: text => (<span>{mapOrderStatus[text - 1]}</span>),
-      },
-      {
-        title: '异常状态标签',
-        dataIndex: 'abnormal_tag',
-        key: 'abnormal_tag',
-        render: text => (<span>{mapExceptionStatus[text - 1]}</span>),
-      },
-      {
-        title: '处理状态',
-        dataIndex: 'is_deal',
-        key: 'is_deal',
-        render: text => (
-          <span>
-            <Badge status={PROGRESS_STATUS[text]} />
-            {mapDealStatus[text]}
-          </span>
-        ),
-      },
-      {
-        title: '异常提交时间',
-        dataIndex: 'abnormal_add_time',
-        key: 'abnormal_add_time',
-        width: 180,
-        sorter: true,
-        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
-      },
-      {
-        title: '操作',
-        render: (text, record) => (
-          <Fragment>
-            {
-              Actions({ code: text.order_status, text, onClick: this.handleOrderClick })
-            }
+    const columns = [{
+      title: '序号',
+      dataIndex: 'id',
+      key: 'id',
+      width: 60,
+      fixed: 'left',
+    }, {
+      title: '客户订单编号',
+      dataIndex: 'son_order_sn',
+      key: 'son_order_sn',
+      width: 200,
+      fixed: 'left',
+    }, {
+      title: '供应商公司名称',
+      dataIndex: 'supplier_name',
+      key: 'supplier_name',
+      width: 130,
+    }, {
+      title: '客户公司名称',
+      dataIndex: 'guest_name',
+      align: 'guest_name',
+      width: 130,
+      render: val => `${val}`,
+    }, {
+      title: '最大发货日期',
+      dataIndex: 'max_delivery_time',
+      key: 'max_delivery_time-1',
+      render: text => (<span>{text}天</span>),
+    }, {
+      title: '交易总金额(元)',
+      dataIndex: 'total_money',
+      key: 'total_money',
+    }, {
+      title: '下单时间',
+      dataIndex: 'add_time',
+      key: 'add_time',
+      width: 180,
+      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
+    }, {
+      title: '佣金(元)',
+      dataIndex: 'commission',
+      key: 'commission',
+    }, {
+      title: '是否接单',
+      dataIndex: 'is_taking',
+      key: 'is_taking',
+      render: text => (<span>{text ? '是' : '否'}</span>),
+    }, {
+      title: '是否发货',
+      dataIndex: 'is_delivery',
+      key: 'is_delivery',
+      render: text => (<span>{text ? '是' : '否'}</span>),
+    }, {
+      title: '责任方',
+      dataIndex: 'responsible_party',
+      key: 'responsible_party',
+      render: text => (<span>{mapOrderResponsible[text - 1]}</span>),
+    }, {
+      title: '订单状态',
+      dataIndex: 'order_status',
+      key: 'order_status',
+      width: 150,
+      render: text => (<span>{mapOrderStatus[text - 1]}</span>),
+    }, {
+      title: '异常提交时间',
+      dataIndex: 'abnormal_add_time',
+      key: 'abnormal_add_time',
+      width: 180,
+      sorter: true,
+      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
+    }, {
+      title: '异常状态标签',
+      dataIndex: 'abnormal_tag',
+      key: 'abnormal_tag',
+      fixed: 'right',
+      render: text => (<span>{mapExceptionStatus[text - 1]}</span>),
+    }, {
+      title: '处理状态',
+      dataIndex: 'is_deal',
+      key: 'is_deal',
+      fixed: 'right',
+      render: text => (
+        <span>
+          <Badge status={PROGRESS_STATUS[text]} />
+          {mapDealStatus[text]}
+        </span>
+      ),
+    }, {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          {
+            Actions({ code: text.order_status, text, onClick: this.handleOrderClick })
+          }
 
-            <Divider type="vertical" />
-            {record.abnormal_tag === 1
-              ?
-              (<a href={'#/orders/exception-list/sold-out-order?orderId=' + record.id}>查看</a>)
-              :
-              (<a href={'#/orders/exception-list/delay-order?orderId=' + record.id}>查看</a>)
-            }
-          </Fragment>
-        ),
-        width: 150,
-        fixed: 'right',
-      },
-    ];
+          <Divider type="vertical" />
+          {record.abnormal_tag === 1
+            ?
+            (<a href={'#/orders/exception-list/sold-out-order?orderId=' + record.id}>查看</a>)
+            :
+            (<a href={'#/orders/exception-list/delay-order?orderId=' + record.id}>查看</a>)
+          }
+        </Fragment>
+      ),
+      width: 150,
+      fixed: 'right',
+    }];
 
     const paginationProps = {
       showSizeChanger: true,

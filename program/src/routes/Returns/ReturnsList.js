@@ -7,13 +7,12 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import ReturnAuditContent from './ReturnAuditContent';
 import { PAGE_SIZE } from '../../constant/config';
+import { RETURNS_STATUS } from "../../constant/statusList";
 import { handleServerMsgObj } from '../../utils/tools';
 import styles from './order-list.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
-// 订单状态
-const returnsStatus = ['申请退货中', '退货中', '退货失败', '退货完成'];
 // 处理状态
 const dealStatus = ['未处理', '已处理'];
 
@@ -259,7 +258,7 @@ export default class ReturnsList extends Component {
               {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="">全部</Option>
-                  <Option value="1">申请退货</Option>
+                  <Option value="1">申请退货中</Option>
                   <Option value="2">退货中</Option>
                   <Option value="3">退货失败</Option>
                   <Option value="4">退货完成</Option>
@@ -328,7 +327,7 @@ export default class ReturnsList extends Component {
       dataIndex: 'return_status',
       key: 'return_status',
       width: 150,
-      render: text => (<span>{returnsStatus[text - 1]}</span>),
+      render: text => (<span>{RETURNS_STATUS[text]}</span>),
     }, {
       title: '退货申请时间',
       dataIndex: 'return_add_time',
