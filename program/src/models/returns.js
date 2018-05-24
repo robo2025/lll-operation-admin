@@ -17,8 +17,8 @@ export default {
   },
 
   effects: {
-    *fetch({ offset, limit, success, error }, { call, put }) {
-      const res = yield call(queryReturns, { offset, limit });
+    *fetch({ offset, limit, params, success, error }, { call, put }) {
+      const res = yield call(queryReturns, { params, offset, limit });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }

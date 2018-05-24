@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-17 13:56:54
+ * @Last Modified time: 2018-05-24 11:34:41
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
@@ -82,7 +82,6 @@ export default class ExceptionOrderList extends Component {
   // 处理表单搜索
   handleSearch = (e) => {
     e.preventDefault();
-    e.preventDefault();
 
     const { dispatch, form } = this.props;
 
@@ -90,14 +89,14 @@ export default class ExceptionOrderList extends Component {
       if (err) return;
       const values = {
         ...fieldsValue,
+        is_type: 1,        
         start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
         end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
       };
-
-      console.log('搜索字段', values);
+      delete values.create_time;
       dispatch({
         type: 'orders/fetchSearch',
-        data: values,
+        params: values,
       });
     });
   }
@@ -291,9 +290,9 @@ export default class ExceptionOrderList extends Component {
             <FormItem label="支付状态">
               {getFieldDecorator('pay_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">已支付</Option>
-                  <Option value="2">未支付</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已支付</Option>
+                  <Option value="1">未支付</Option>
                 </Select>
               )}
             </FormItem>
@@ -350,9 +349,9 @@ export default class ExceptionOrderList extends Component {
             <FormItem label="支付状态">
               {getFieldDecorator('pay_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">已支付</Option>
-                  <Option value="2">未支付</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已支付</Option>
+                  <Option value="1">未支付</Option>
                 </Select>
               )}
             </FormItem>

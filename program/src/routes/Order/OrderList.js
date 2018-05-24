@@ -54,7 +54,6 @@ export default class OrderList extends Component {
   // 处理表单搜索
   handleSearch = (e) => {
     e.preventDefault();
-    e.preventDefault();
 
     const { dispatch, form } = this.props;
 
@@ -65,10 +64,10 @@ export default class OrderList extends Component {
         start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
         end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
       };
-
+      delete values.create_time;
       dispatch({
         type: 'orders/fetchSearch',
-        data: values,
+        params: values,
       });
     });
   }

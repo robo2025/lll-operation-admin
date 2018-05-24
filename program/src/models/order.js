@@ -130,19 +130,21 @@ export default {
         headers,
       });
     },
-    *fetchSearch({ data, success, error }, { call, put }) {
-      const res = yield call(querySearchResults, { ...data });
+    *fetchSearch({ offset, limit, params, success, error }, { call, put }) {
+      const res = yield call(querySearchResults, { offset, limit, params });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
+      const { headers } = res;            
 
       yield put({
         type: 'saveSearch',
         payload: res.data,
+        headers,
       });
     },
   },
-
+  
   reducers: {
     save(state, action) {
       return {
@@ -169,6 +171,7 @@ export default {
         ...state,
         list: action.payload,
         exceptionList: action.payload,
+        total: action.headers['x-content-total'] >> 0,        
       };
     },
   },

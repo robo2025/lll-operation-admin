@@ -51,7 +51,6 @@ export default class ReturnsList extends Component {
   // 处理表单搜索
   handleSearch = (e) => {
     e.preventDefault();
-    e.preventDefault();
 
     const { dispatch, form } = this.props;
 
@@ -62,10 +61,10 @@ export default class ReturnsList extends Component {
         start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
         end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
       };
-
+      delete values.create_time;
       dispatch({
-        type: 'orders/fetchSearch',
-        data: values,
+        type: 'returns/fetch',
+        params: values,
       });
     });
   }
@@ -128,7 +127,15 @@ export default class ReturnsList extends Component {
       type: 'returns/fetchAudit',
       returnId: this.state.returnId,
       data,
-      success: () => { message.success('提交成功'); },
+      success: () => {
+        message.success('提交成功');
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+        this.props.dispatch({
+          type: 'returns/fetch',
+          offset: qs.page ? (args.page - 1) * PAGE_SIZE : 0,
+          limit: PAGE_SIZE,
+        });
+      },
       error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
@@ -169,7 +176,7 @@ export default class ReturnsList extends Component {
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="源订单编号">
-              {getFieldDecorator('order_sn')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -214,7 +221,7 @@ export default class ReturnsList extends Component {
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="源订单编号">
-              {getFieldDecorator('order_sn')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -249,13 +256,13 @@ export default class ReturnsList extends Component {
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="退货状态">
-              {getFieldDecorator('return_status')(
+              {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">申请退货组</Option>
+                  <Option value="">全部</Option>
+                  <Option value="1">申请退货</Option>
                   <Option value="2">退货中</Option>
-                  <Option value="3">已退货完成</Option>
-                  <Option value="4">退货失败</Option>
+                  <Option value="3">退货失败</Option>
+                  <Option value="4">退货完成</Option>
                 </Select>
               )}
             </FormItem>
