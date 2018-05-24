@@ -80,7 +80,6 @@ export default class GoodsMananger extends Component {
   // 确定导出数据
   handleOk = () => {
     this.setState({ isShowExportModal: false });
-    console.log('商品导出数据项目', this.state.exportFields);
     const { dispatch } = this.props;
     dispatch({
       type: 'good/queryExport',
@@ -105,13 +104,17 @@ export default class GoodsMananger extends Component {
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
+    const { dispatch, history } = this.props;
     const { formValues } = this.state;
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
+    // 分页：将页数提取到url上
+    history.push({
+      search: `?page=${params.currentPage}`,
+    });
     dispatch({
       type: 'good/fetch',
       offset: params.offset,
@@ -404,7 +407,7 @@ export default class GoodsMananger extends Component {
 
   render() {
     const { loading, good } = this.props;
-    const { selectedRows, modalVisible, isShowExportModal } = this.state;
+    const { selectedRows, args, isShowExportModal } = this.state;
     const data = good.list;
     const { total } = good;
     const menu = (
@@ -462,6 +465,7 @@ export default class GoodsMananger extends Component {
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
               onPublish={this.handlePublishGood}
+              defaultPage={args.page}              
             />
           </div>
         </Card>

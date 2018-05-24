@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-21 15:02:53
+ * @Last Modified time: 2018-05-24 16:02:36
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -51,7 +51,7 @@ class GoodsTable extends PureComponent {
 
   render() {
     const { selectedRowKeys, totalCallNo } = this.state;
-    const { data, loading, onPublish, total } = this.props;
+    const { data, loading, onPublish, defaultPage, total } = this.props;
 
     const columns = [{
       title: '商品ID',
@@ -130,6 +130,7 @@ class GoodsTable extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
+      defaultCurrent: defaultPage >> 0 ? defaultPage >> 0 : 1,
       total,
       // ...pagination,
     };

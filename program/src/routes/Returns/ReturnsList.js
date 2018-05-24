@@ -291,82 +291,69 @@ export default class ReturnsList extends Component {
     const { total, list } = returns;
 
 
-    const columns = [
-      {
-        title: '退货单编号',
-        dataIndex: 'returns_sn',
-        key: 'returns_sn',
-        width: 200,
-        fixed: 'left',
-      },
-      {
-        title: '源订单编号',
-        dataIndex: 'order_sn',
-        key: 'order_sn',
-        width: 200,
-        fixed: 'left',
-      },
-      {
-        title: '客户公司名称',
-        dataIndex: 'guest_company_name',
-        align: 'guest_company_name',
-        width: 150,
-        fixed: 'left',
-        render: val => `${val}`,
-      },
-      {
-        title: '供应商公司名称',
-        dataIndex: 'supplier_company_name',
-        key: 'supplier_company_name',
-        width: 150,
-        fixed: 'left',
-      },
-      {
-        title: '退货申请时间',
-        dataIndex: 'return_add_time',
-        key: 'return_add_time',
-        sorter: true,
-        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,
-      },
-      {
-        title: '交易总金额(元)',
-        dataIndex: 'subtotal_money',
-        key: 'subtotal_money',
-        width: 150,
-      },
-      {
-        title: '退货金额(元)',
-        dataIndex: 'return_money',
-        key: 'return_money',
-        width: 150,
-      },
-      {
-        title: '退货状态',
-        dataIndex: 'return_status',
-        key: 'return_status',
-        width: 150,
-        render: text => (<span>{returnsStatus[text - 1]}</span>),
-      },
-      {
-        title: '处理状态',
-        dataIndex: 'is_deal',
-        key: 'is_deal',
-        width: 150,
-        render: text => (<span><Badge status={text === 2 ? 'success' : 'default'} />{dealStatus[text - 1]}</span>),
-      },
-      {
-        title: '操作',
-        render: (text, record) => (
-          <Fragment>
-            <a onClick={() => { this.handleAuditClick(record.return_id); }} >审核</a>
-            <Divider type="vertical" />
-            <a href={'#/returns/list/detail?orderId=' + record.return_id}>查看</a>
-          </Fragment>
-        ),
-        width: 150,
-        fixed: 'right',
-      },
-    ];
+    const columns = [{
+      title: '退货单编号',
+      dataIndex: 'returns_sn',
+      key: 'returns_sn',
+      width: 200,
+      fixed: 'left',
+    }, {
+      title: '源订单编号',
+      dataIndex: 'order_sn',
+      key: 'order_sn',
+      width: 200,
+    }, {
+      title: '客户公司名称',
+      dataIndex: 'guest_company_name',
+      align: 'guest_company_name',
+      width: 150,
+      render: val => `${val}`,
+    }, {
+      title: '供应商公司名称',
+      dataIndex: 'supplier_company_name',
+      key: 'supplier_company_name',
+      width: 150,
+    }, {
+      title: '交易总金额(元)',
+      dataIndex: 'subtotal_money',
+      key: 'subtotal_money',
+      width: 150,
+    }, {
+      title: '退货金额(元)',
+      dataIndex: 'return_money',
+      key: 'return_money',
+      width: 150,
+    }, {
+      title: '退货状态',
+      dataIndex: 'return_status',
+      key: 'return_status',
+      width: 150,
+      render: text => (<span>{returnsStatus[text - 1]}</span>),
+    }, {
+      title: '退货申请时间',
+      dataIndex: 'return_add_time',
+      key: 'return_add_time',
+      sorter: true,
+      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    }, {
+      title: '处理状态',
+      dataIndex: 'is_deal',
+      key: 'is_deal',
+      width: 120,
+      fixed: 'right',
+      render: text => (<span><Badge status={text === 2 ? 'success' : 'default'} />{dealStatus[text - 1]}</span>),
+    }, {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => { this.handleAuditClick(record.return_id); }} >审核</a>
+          <Divider type="vertical" />
+          <a href={'#/returns/list/detail?orderId=' + record.return_id}>查看</a>
+        </Fragment>
+      ),
+      width: 150,
+      fixed: 'right',
+    }];
 
     return (
       <PageHeaderLayout title="退货单列表">
