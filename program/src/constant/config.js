@@ -20,6 +20,7 @@ export const USERS_URL = 'https://testapi.robo2025.com/user/service';
 
 // 订单系统接口
 export const ORDERS_URL = 'https://testapi.robo2025.com/order';
+// export const ORDERS_URL = 'http://192.168.2.109:8009';
 
 // 验证登录接口URL
 export const LOGIN_URL = `${URL}/server/authorize`;
@@ -50,7 +51,6 @@ export const QINIU_SERVER = '//upload.qiniup.com';
 
 // 分页：每页显示多少记录
 export const PAGE_SIZE = 10;
-
 
 // 接口请求状态码
 export const SUCCESS_STATUS = 10000; // 操作成功

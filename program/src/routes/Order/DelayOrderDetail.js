@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-18 15:46:57
+ * @Last Modified time: 2018-05-25 17:30:25
  */
 
 import React, { Component } from 'react';
@@ -219,10 +219,10 @@ export default class DelayOrderDetail extends Component {
               </Col>
             </Row>
             <Row>
-              <b>延期发货时间：</b><span style={{ fontWeight: 500 }}>2017-4-1</span>
+              <b>延期发货时间：</b><span style={{ fontWeight: 500 }}>{moment(order_info.due_time * 1000).format('YYYY-MM-DD')}</span>
             </Row>
             <Row>
-              <b>延期说明：</b><span style={{ fontWeight: 500 }}>这两件商品因本身公司备货不足，需要批量生产，抱歉！</span>
+              <b>延期说明：</b><span style={{ fontWeight: 500 }}>{order_info.remarks}</span>
             </Row>
           </div>
           <Divider style={{ marginBottom: 32 }} />

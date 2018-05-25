@@ -26,7 +26,8 @@ function getPic(key, pics) {
   if (!Array.isArray(pics)) {
     throw new Error('传参必须是一个数组');
   }
-  const pic = pics.filter(val => (val.img_type === key));
+  const pic = pics.filter(val => (val.img_type >> 0 === key >> 0));
+  console.log('pic', key, pic);
   if (pic.length > 0) {
     return [{
       id: pic[0].id,
@@ -237,6 +238,10 @@ class ProductForm extends Component {
     }
   }
 
+  removeCAD = (file) => {
+    console.log('移除文件', file);
+  }
+
   render() {
     const formItemLayout = {
       labelCol: { md: { span: 4 }, xxl: { span: 3 } },
@@ -323,6 +328,7 @@ class ProductForm extends Component {
                   fileList={cadUrl}
                   beforeUpload={currFile => (this.beforeUpload('cadUrl', currFile))}
                   onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
+                  onRemove={(currFile) => { this.removeCAD(currFile); }}
                   data={
                     {
                       token: uploadToken,
@@ -411,7 +417,7 @@ class ProductForm extends Component {
                 name="file"
                 action={QINIU_SERVER}
                 listType="picture-card"
-                defaultFileList={d4}
+                fileList={d4}
                 onPreview={this.handlePreview}
                 beforeUpload={currFile => (this.beforeUpload('d4', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('d4', fileList); }}
@@ -424,14 +430,14 @@ class ProductForm extends Component {
               >
                 {(d4.length >= 1) ? null : uploadButton}
               </Upload>
-              <p className="upload-pic-desc">包装图1</p>
+              <p className="upload-pic-desc">包装图一</p>
             </Col>
             <Col span={8}>
               <Upload
                 name="file"
                 action={QINIU_SERVER}
                 listType="picture-card"
-                defaultFileList={d5}
+                fileList={d5}
                 onPreview={this.handlePreview}
                 beforeUpload={currFile => (this.beforeUpload('a', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('d5', fileList); }}
@@ -444,14 +450,14 @@ class ProductForm extends Component {
               >
                 {(d5.length >= 1) ? null : uploadButton}
               </Upload>
-              <p className="upload-pic-desc">包装图2</p>
+              <p className="upload-pic-desc">包装图二</p>
             </Col>
             <Col span={8}>
               <Upload
                 name="file"
                 action={QINIU_SERVER}
                 listType="picture-card"
-                defaultFileList={d6}
+                fileList={d6}
                 onPreview={this.handlePreview}
                 beforeUpload={currFile => (this.beforeUpload('a', currFile))}
                 onChange={({ fileList }) => { this.handleUploaderChange('d6', fileList); }}
@@ -464,7 +470,7 @@ class ProductForm extends Component {
               >
                 {(d6.length >= 1) ? null : uploadButton}
               </Upload>
-              <p className="upload-pic-desc">包装图3</p>
+              <p className="upload-pic-desc">包装图三</p>
             </Col>
           </Row>
         </div>

@@ -105,7 +105,7 @@ export default class ProductForm extends Component {
               url: val.img_url,
             }]}
             onPreview={this.handlePreview}
-            onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
+            // onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
           />
           <p className="upload-pic-desc">{mapImageType[val.img_type - 1]}</p>
         </Col>

@@ -188,10 +188,10 @@ class MenuForm extends React.Component {
               </Popconfirm>
               <Divider type="vertical" />
               {
-                record.is_active === 0 ?
-                  <a onClick={() => this.changeCatalogStatus(record.id, 1)}>启用</a>
-                  :
-                  <a onClick={() => this.changeCatalogStatus(record.id, 0)} style={{ color: '#E21918' }}>禁用</a>
+                // record.is_active === 0 ?
+                //   <a onClick={() => this.changeCatalogStatus(record.id, 1)}>启用</a>
+                //   :
+                //   <a onClick={() => this.changeCatalogStatus(record.id, 0)} style={{ color: '#E21918' }}>禁用</a>
               }
             </span>
           ) : (
@@ -205,10 +205,10 @@ class MenuForm extends React.Component {
               </Popconfirm>
               <Divider type="vertical" />
               {
-                record.is_active === 0 ?
-                  <a onClick={() => this.changeCatalogStatus(record.id, 1)}>启用</a>
-                  :
-                  <a onClick={() => this.changeCatalogStatus(record.id, 0)} style={{ color: '#E21918' }}>禁用</a>
+                // record.is_active === 0 ?
+                //   <a onClick={() => this.changeCatalogStatus(record.id, 1)}>启用</a>
+                //   :
+                //   <a onClick={() => this.changeCatalogStatus(record.id, 0)} style={{ color: '#E21918' }}>禁用</a>
               }
               <Divider type="vertical" />
               <a onClick={() => { this.props.onActionClick(record, 'filter'); }}>筛选项设置</a>
@@ -217,7 +217,7 @@ class MenuForm extends React.Component {
       },
     }];
   }
-
+  
   onFilterClick = (record) => {
     this.props.onFilterClick(record);
   }
