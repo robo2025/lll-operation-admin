@@ -31,12 +31,12 @@ const menuData = [{
     },
   ],
 }, {
-  name: '客户订单管理',
+  name: '商品订单管理',
   path: 'orders',
   icon: 'pay-circle-o',
   children: [
     {
-      name: '客户订单列表',
+      name: '商品订单列表',
       path: 'list',
     },
     {

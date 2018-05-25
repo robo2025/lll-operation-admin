@@ -101,11 +101,16 @@ export default class ExceptionOrdersTable extends React.Component {
       width: 60,
       fixed: 'left',
     }, {
-      title: '客户订单编号',
+      title: '商品订单号',
       dataIndex: 'son_order_sn',
       key: 'son_order_sn',
       width: 200,
       fixed: 'left',
+    }, {
+      title: '订单号',
+      dataIndex: 'order_sn',
+      key: 'sorder_sn',
+      width: 200,
     }, {
       title: '供应商公司名称',
       dataIndex: 'supplier_name',
@@ -226,7 +231,7 @@ export default class ExceptionOrdersTable extends React.Component {
           columns={columns}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 2000 }}
+          scroll={{ x: 2200 }}
         />
       </div>
     );

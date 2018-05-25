@@ -57,13 +57,13 @@ export default class OrderTable extends React.Component {
       fixed: 'left',
       render: (text, record, idx) => (<span>{idx + 1}</span>),
     }, {
-      title: '客户订单编号',
+      title: '商品订单号',
       dataIndex: 'son_order_sn',
       key: 'son_order_sn',
       width: 200,
       fixed: 'left',
     }, {
-      title: '母订单编号',
+      title: '订单号',
       dataIndex: 'order_sn',
       key: 'order_sn',
       width: 200,

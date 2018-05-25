@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-24 18:06:01
+ * @Last Modified time: 2018-05-24 18:52:36
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
@@ -56,7 +56,7 @@ export default class ExceptionOrderList extends Component {
       isShowModal1: false, // 推送Modal
       data: {}, // 当前列表被点击的产品数据
       modalKey: 2,
-      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),      
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
   }
 
@@ -170,9 +170,9 @@ export default class ExceptionOrderList extends Component {
       type: 'orders/fetchAgreeNoGood',
       orderId,
       data,
-      success: () => { 
+      success: () => {
         message.success('操作成功');
-        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });        
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
         dispatch({
           type: 'orders/fetchExptionOrders',
           offset: (args.page - 1) * PAGE_SIZE,
@@ -191,9 +191,9 @@ export default class ExceptionOrderList extends Component {
       type: 'orders/fetchRejectNoGood',
       orderId,
       data,
-      success: () => { 
+      success: () => {
         message.success('操作成功');
-        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });        
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
         dispatch({
           type: 'orders/fetchExptionOrders',
           offset: (args.page - 1) * PAGE_SIZE,
@@ -212,9 +212,9 @@ export default class ExceptionOrderList extends Component {
       type: 'orders/fetchAgreeDelay',
       orderId,
       data,
-      success: () => { 
+      success: () => {
         message.success('操作成功');
-        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });        
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
         dispatch({
           type: 'orders/fetchExptionOrders',
           offset: (args.page - 1) * PAGE_SIZE,
@@ -233,9 +233,9 @@ export default class ExceptionOrderList extends Component {
       type: 'orders/fetchRejectDelay',
       orderId,
       data,
-      success: () => { 
+      success: () => {
         message.success('操作成功');
-        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });        
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
         dispatch({
           type: 'orders/fetchExptionOrders',
           offset: (args.page - 1) * PAGE_SIZE,
@@ -267,7 +267,7 @@ export default class ExceptionOrderList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="客户订单编号">
+            <FormItem label="商品订单号">
               {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
@@ -326,7 +326,7 @@ export default class ExceptionOrderList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="客户订单编号">
+            <FormItem label="商品订单号">
               {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
@@ -368,6 +368,13 @@ export default class ExceptionOrderList extends Component {
         </Row>
         <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
+            <FormItem label="订单号">
+              {getFieldDecorator('order_sn')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col xll={4} md={6} sm={24}>
             <FormItem label="供应商公司名称">
               {getFieldDecorator('suppier_name')(
                 <Input placeholder="请输入" />
@@ -393,6 +400,8 @@ export default class ExceptionOrderList extends Component {
               )}
             </FormItem>
           </Col>
+        </Row>
+        <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
             <FormItem label="是否发货">
               {getFieldDecorator('is_delivery')(
@@ -404,9 +413,6 @@ export default class ExceptionOrderList extends Component {
               )}
             </FormItem>
           </Col>
-        </Row>
-        <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
-
           <Col xll={4} md={6} sm={24}>
             <FormItem label="是否接单">
               {getFieldDecorator('is_taking')(
@@ -453,7 +459,6 @@ export default class ExceptionOrderList extends Component {
     const { orders, loading } = this.props;
     const { total } = orders;
     const ModalComponent = ACTIONS_DATA[modalKey].component;
-    console.log('异常订单列表', this.state);
 
     return (
       <PageHeaderLayout title="异常订单列表">

@@ -176,7 +176,7 @@ export default class OrderList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="客户订单编号">
+            <FormItem label="商品订单号">
               {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
@@ -236,7 +236,7 @@ export default class OrderList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="客户订单编号">
+            <FormItem label="商品订单号">
               {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
@@ -292,6 +292,15 @@ export default class OrderList extends Component {
             <FormItem label="下单时间">
               {getFieldDecorator('create_time')(
                 <RangePicker format="YYYY-MM-DD" onChange={this.onChange} />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
+          <Col xll={4} md={8} sm={24}>
+            <FormItem label="订单号">
+              {getFieldDecorator('guest_order_sn')(
+                <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
