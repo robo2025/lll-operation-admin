@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import moment from 'moment';
 import qs from 'qs';
 import { connect } from 'dva';
-import { Card, Row, Col, Form, Input, Button, Icon, Divider, message } from 'antd';
+import { Card, Row, Col, Form, Input, Button, Icon, Divider, Popconfirm, message } from 'antd';
 import { PAGE_SIZE } from '../../constant/config';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
@@ -23,7 +23,7 @@ export default class BrandList extends Component {
     this.state = {
       selectedRowKeys: [],
       selectedRows: [],
-      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),      
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
     this.columns = [{
       title: '序号',
@@ -70,9 +70,16 @@ export default class BrandList extends Component {
         <Fragment>
           <a href={`#/brand/list/modify?bno=${record.bno}`}>编辑</a>
           <Divider type="vertical" />
-          <a onClick={() => { this.removeBrand(record.bno); }}>
-            删除
-          </a>
+          <Popconfirm
+            title="确定删除吗？"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => { this.removeBrand(record.bno); }}
+          >
+            <a disabled={record.product_count > 0}>
+              删除
+            </a>
+          </Popconfirm>
           <Divider type="vertical" />
           <a href={`#/brand/list/detail?bno=${record.bno}`}>查看</a>
         </Fragment>
@@ -81,12 +88,12 @@ export default class BrandList extends Component {
       fixed: 'right',
     }];
   }
-  
+
 
   componentDidMount() {
     const { dispatch } = this.props;
     const { args } = this.state;
-    
+
     dispatch({
       type: 'brand/fetch',
       offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
@@ -104,27 +111,27 @@ export default class BrandList extends Component {
     });
   };
 
-   // 处理表格变化
-   handleCustomizableTableChange = (pagination, filtersArg, sorter) => {
-     const { dispatch, history } = this.props;
+  // 处理表格变化
+  handleCustomizableTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch, history } = this.props;
 
-     const params = {
-       currentPage: pagination.current,
-       pageSize: pagination.pageSize,
-       offset: (pagination.current - 1) * (pagination.pageSize),
-     };
+    const params = {
+      currentPage: pagination.current,
+      pageSize: pagination.pageSize,
+      offset: (pagination.current - 1) * (pagination.pageSize),
+    };
 
-     // 分页：将页数提取到url上
-     history.push({
-       search: `?page=${params.currentPage}`,
-     });
+    // 分页：将页数提取到url上
+    history.push({
+      search: `?page=${params.currentPage}`,
+    });
 
-     dispatch({
-       type: 'brand/fetch',
-       offset: params.offset,
-       limit: params.pageSize,
-     });
-   }
+    dispatch({
+      type: 'brand/fetch',
+      offset: params.offset,
+      limit: params.pageSize,
+    });
+  }
 
   removeBrand = (bno) => {
     const { dispatch } = this.props;

@@ -111,22 +111,11 @@ export default class ProductForm extends Component {
         </Col>
       ));
       // 商品cad图
-      if (data.cad_url) {
-        uploaderCAD = data.cad_url.map((val, idx) => (
-          <Col span={8} key={idx}>
-            <Upload
-              action="//jsonplaceholder.typicode.com/posts/"
-              listType="picture-card"
-              fileList={[{
-                uid: -1,
-                name: 'CAD文件预览失败',
-                url: val,
-              }]}
-              onPreview={this.handlePreview}
-              onChange={({ fileList }) => { this.handleUploaderChange('b', fileList); }}
-            />
-            <p className="upload-pic-desc">cad图</p>
-          </Col>
+      if (data.cad_urls) {
+        uploaderCAD = data.cad_urls.map((val, idx) => (
+          <Row span={8} key={idx}>
+            <a href={val} target="_blank">{val}</a>
+          </Row>
         ));
       }
     }

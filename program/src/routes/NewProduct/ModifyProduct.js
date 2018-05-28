@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-24 14:14:18
+ * @Last Modified time: 2018-05-28 11:07:20
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -54,6 +54,7 @@ export default class ModifyProduct extends Component {
       isShowAttrMOdal: false,
       args: queryString.parse(window.location.href),
       fields: { pdf_url: [] },
+      toServerCadUrls: [], // 传给服务器的cad_urls
       specs: [], // 用户自定义的其他属性
     };
   }

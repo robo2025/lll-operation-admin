@@ -84,12 +84,12 @@ export default class ProductModelList extends Component {
       title: '品牌',
       dataIndex: 'product',
       key: 'brand_name',
-      render: text => (<span>{!text || text.brand.brand_name}</span>),
+      render: text => (<span>{text.brand && text.brand.brand_name}</span>),
     }, {
       title: '产地',
       dataIndex: 'product',
       key: 'registration_place',
-      render: text => (<span>{!text || text.brand.registration_place}</span>),
+      render: text => (<span>{text.brand && text.brand.registration_place}</span>),
     }, {
       title: '已有供应商数量',
       dataIndex: 'supplier_count',

@@ -47,7 +47,6 @@ function getCAD(cads) {
       uid: idx,
       name: 'CAD图',
       status: 'complete',
-      reponse: '200', // custom error message to show
       url: val,
     }));
   } else {
@@ -153,48 +152,22 @@ class ProductForm extends Component {
     console.log('文件上传列表：', key, fileList);
     const { pics, cad_urls, cadUrl } = this.state;
     const { onAttrChange } = this.props;
+    const cadStrUrls = []; // 传给服务器的cad_urls
+
     // 如果上传的是cad文件
     if (key === 'cadUrl') {
       const tempJson = {};
       tempJson[key] = fileList;
       this.setState(tempJson);
       fileList.slice(-1).forEach((file) => {
-        console.log('CAD文件：', file);
-        if (file.status === 'done') {
-          this.setState({
-            cadUrl: [
-              ...cadUrl,
-              {
-                uid: cadUrl.length - 100,
-                name: file.name,
-                status: 'done',
-                reponse: '200', // custom error message to show
-                url: FILE_CDN + file.response.key,
-              },
-            ],
-          });
-          onAttrChange({ cad_urls: [...cad_urls, file.response.key] });
-        } else if (file.status === 'complete') {
-          const completeCADS = fileList.filter(val => val.status === 'complete');
-          this.setState({
-            cadUrl: completeCADS,
-          });
-          onAttrChange({ cad_urls: completeCADS.map(val => (val.url)) });
+        if (file.status === 'done' || file.status === 'complete') {
+          cadStrUrls.push(file.response ? file.response.key : file.url);
+          onAttrChange({ cad_urls: [...cad_urls, file.response ? file.response.key : file.url] });
         } else if (!file.status || file.status === 'error') {
-          this.setState({
-            cadUrl: [
-              ...cadUrl,
-              {
-                uid: cadUrl.length - 100,
-                name: file.name,
-                status: 'error',
-                reponse: '不支持的文件类型', // custom error message to show
-                url: '',
-              },
-            ],
-          });
+          message.error('上传cad文件出错');
         }
       });
+      console.log('传给服务器的cad_urls', cadStrUrls);
       return;
     }
     // 如果上传的是图片
@@ -315,8 +288,34 @@ class ProductForm extends Component {
                 <Input disabled />
               )}
             </FormItem>
+            <FormItem
+              label="CAD图"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('cad_urls', {
+                rules: [{ required: false }],
+
+              })(
+                <Upload
+                  name="file"
+                  action={QINIU_SERVER}
+                  fileList={cadUrl}
+                  beforeUpload={currFile => (this.beforeUpload('cadUrl', currFile))}
+                  onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
+                  onRemove={(currFile) => { this.removeCAD(currFile); }}
+                  data={
+                    {
+                      token: uploadToken,
+                      key: `product/attachment/cad/${file.uid}.${getFileSuffix(file.name)}`,
+                    }
+                  }
+                >
+                  <Button icon="upload">上传</Button>
+                </Upload>
+              )}
+            </FormItem>
           </Form>
-          <Row gutter={24}>
+          {/* <Row gutter={24}>
             <Col span={24}>
               <FormItem
                 label="CAD图"
@@ -340,7 +339,7 @@ class ProductForm extends Component {
                 </Upload>
               </FormItem>
             </Col>
-          </Row>
+          </Row> */}
         </div >
         {/* 产品图片 */}
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} >
