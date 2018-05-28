@@ -96,10 +96,11 @@ export default class ExceptionOrdersTable extends React.Component {
 
     const columns = [{
       title: '序号',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'idx',
+      key: 'idx',
       width: 60,
       fixed: 'left',
+      render: (text, record, idx) => (<span>{idx + 1}</span>),
     }, {
       title: '商品订单号',
       dataIndex: 'son_order_sn',

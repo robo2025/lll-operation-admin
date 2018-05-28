@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-28 11:07:20
+ * @Last Modified time: 2018-05-28 15:39:11
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -146,6 +146,12 @@ export default class ModifyProduct extends Component {
     });
   }
 
+
+  // 绑定审核弹出层form对象
+  bindFormObj = (formObj) => {
+    this.$FormObj = formObj;
+  }
+
   // 校验表单：传入的是this.props.form对象
   validateForm = (formObj) => {
     // 将子组件的this.props.form传给父组件，方便后面校验
@@ -180,6 +186,7 @@ export default class ModifyProduct extends Component {
  * 
  */
   handleProductAttr = (obj) => {
+    console.log('handleProductAttr', obj);
     const { fields } = this.state;
     if (obj.selectedCatalog) {
       this.setState({
@@ -201,6 +208,7 @@ export default class ModifyProduct extends Component {
 
   // 当表单输入框被修改事件
   handleFormChange = (changedFields) => {
+    console.log('handleFormChange', changedFields);
     const { fields } = this.state;
     if (changedFields.selectedCatalog) {
       this.setState({
@@ -348,18 +356,36 @@ export default class ModifyProduct extends Component {
    * 
    */
   handleSubmitProduct = () => {
-    const {
-      args,
-      fields,
-      specs,
-    } = this.state;
+    const { args, fields, specs } = this.state;
     const { dispatch } = this.props;
-    dispatch({
-      type: 'product/modifyInfo',
-      pno: args.pno,
-      data: { ...fields, specs },
-      success: () => { this.props.history.goBack(); },
-      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    const that = this;
+    this.$FormObj.validateFields((err, values) => {
+      if (err) {
+        console.log('产品信息校验出错', err);
+        return;
+      }
+      let cadUrls = [];
+      if (values.cad_urls.fileList) {
+        cadUrls = values.cad_urls.fileList.map((val) => {
+          return val.response ? val.response.key : val.url;
+        });
+      } else {
+        cadUrls = values.cad_urls;
+      }
+      const data = {
+        specs,
+        ...fields,
+        ...values,
+        cad_urls: cadUrls,
+      };
+      console.log('产品信息校验通过', values, specs, data);
+      dispatch({
+        type: 'product/modifyInfo',
+        pno: args.pno,
+        data,
+        success: () => { that.props.history.goBack(); },
+        error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+      });
     });
   }
 
@@ -438,7 +464,7 @@ export default class ModifyProduct extends Component {
     }];
 
     return (
-      <PageHeaderLayout title={argsKey.includes('prdId') ? '修改产品信息' : '新建产品信息'}>
+      <PageHeaderLayout title={argsKey.includes('pno') ? '修改产品信息' : '新建产品信息'}>
         <Card bordered={false} loading={loading.models.product} className={styles['modify-product']}>
           {/* 添加其它属性Modal */}
           <Modal
@@ -463,6 +489,7 @@ export default class ModifyProduct extends Component {
             loading={loading.models.product}
             onAttrChange={this.handleProductAttr}
             uploadToken={upload.upload_token}
+            bindFormObj={this.bindFormObj}
           />
           {/* 产品规格参数项 */}
           <SectionHeader

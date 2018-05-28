@@ -42,8 +42,10 @@ function getPic(key, pics) {
 
 // 将服务器数据拼凑成upload组件接受格式
 function getCAD(cads) {
+  console.log('传参cds', cads);
   if (cads) {
     return cads.map((val, idx) => ({
+      key: idx,
       uid: idx,
       name: 'CAD图',
       status: 'complete',
@@ -67,9 +69,6 @@ function getCAD(cads) {
       ...fields,
     };
   },
-  onValuesChange(props, values) {
-    props.onChange(values);
-  },
 })
 class ProductForm extends Component {
   constructor(props) {
@@ -88,7 +87,15 @@ class ProductForm extends Component {
       d4: [],
       d5: [],
       d6: [],
+      cad_urls: [],
     };
+  }
+
+  componentDidMount() {
+    const { bindFormObj } = this.props;
+    if (bindFormObj) {
+      bindFormObj(this.props.form);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -97,8 +104,7 @@ class ProductForm extends Component {
     if (pics) {
       this.setState({
         pics,
-        cad_url: cad_urls || [],
-        cadUrl: getCAD(cad_urls),
+        cad_urls: cad_urls || [],
         a: getPic('1', pics),
         b: getPic('2', pics),
         c: getPic('3', pics),
@@ -109,7 +115,6 @@ class ProductForm extends Component {
       });
     }
   }
-
 
   handleCancel = () => this.setState({ previewVisible: false })
   handlePreview = (file) => {
@@ -150,24 +155,22 @@ class ProductForm extends Component {
   // cad和图片上传时处理
   handleUploaderChange = (key, fileList) => {
     console.log('文件上传列表：', key, fileList);
-    const { pics, cad_urls, cadUrl } = this.state;
+    const { pics } = this.state;
     const { onAttrChange } = this.props;
-    const cadStrUrls = []; // 传给服务器的cad_urls
-
     // 如果上传的是cad文件
     if (key === 'cadUrl') {
-      const tempJson = {};
-      tempJson[key] = fileList;
-      this.setState(tempJson);
-      fileList.slice(-1).forEach((file) => {
-        if (file.status === 'done' || file.status === 'complete') {
-          cadStrUrls.push(file.response ? file.response.key : file.url);
-          onAttrChange({ cad_urls: [...cad_urls, file.response ? file.response.key : file.url] });
-        } else if (!file.status || file.status === 'error') {
-          message.error('上传cad文件出错');
-        }
-      });
-      console.log('传给服务器的cad_urls', cadStrUrls);
+      // const tempJson = {};
+      // tempJson[key] = fileList;
+      // this.setState(tempJson);
+      // fileList.slice(-1).forEach((file) => {
+      //   if (file.status === 'done' || file.status === 'complete') {
+      //     cadStrUrls.push(file.response ? file.response.key : file.url);
+      //     onAttrChange({ cad_urls: [...cad_urls, file.response ? file.response.key : file.url] });
+      //   } else if (!file.status || file.status === 'error') {
+      //     message.error('上传cad文件出错');
+      //   }
+      // });
+      console.log('传给服务器的cad_urls', fileList);
       return;
     }
     // 如果上传的是图片
@@ -230,7 +233,6 @@ class ProductForm extends Component {
       category.children.children.category_name,
       category.children.children.children.category_name,
     ] : [];
-
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -294,14 +296,15 @@ class ProductForm extends Component {
             >
               {getFieldDecorator('cad_urls', {
                 rules: [{ required: false }],
-
+                initialValue: getCAD(data.cad_urls),
               })(
                 <Upload
                   name="file"
                   action={QINIU_SERVER}
-                  fileList={cadUrl}
+                  defaultFileList={getCAD(data.cad_urls)}
+                  // fileList={cadUrl}
                   beforeUpload={currFile => (this.beforeUpload('cadUrl', currFile))}
-                  onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
+                  // onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
                   onRemove={(currFile) => { this.removeCAD(currFile); }}
                   data={
                     {
@@ -315,31 +318,6 @@ class ProductForm extends Component {
               )}
             </FormItem>
           </Form>
-          {/* <Row gutter={24}>
-            <Col span={24}>
-              <FormItem
-                label="CAD图"
-                {...formItemLayout}
-              >
-                <Upload
-                  name="file"
-                  action={QINIU_SERVER}
-                  fileList={cadUrl}
-                  beforeUpload={currFile => (this.beforeUpload('cadUrl', currFile))}
-                  onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
-                  onRemove={(currFile) => { this.removeCAD(currFile); }}
-                  data={
-                    {
-                      token: uploadToken,
-                      key: `product/attachment/cad/${file.uid}.${getFileSuffix(file.name)}`,
-                    }
-                  }
-                >
-                  <Button icon="upload">上传</Button>
-                </Upload>
-              </FormItem>
-            </Col>
-          </Row> */}
         </div >
         {/* 产品图片 */}
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} >
