@@ -186,9 +186,9 @@ export default class OrderList extends Component {
             <FormItem label="支付状态">
               {getFieldDecorator('pay_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">已支付</Option>
-                  <Option value="2">未支付</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已支付</Option>
+                  <Option value="1">未支付</Option>
                 </Select>
               )}
             </FormItem>

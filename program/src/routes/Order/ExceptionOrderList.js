@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-08 14:51:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-24 18:52:36
+ * @Last Modified time: 2018-05-28 14:52:14
  */
 import React, { Component } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
@@ -147,7 +147,7 @@ export default class ExceptionOrderList extends Component {
         } else if (modalKey === 3) { // 无货驳回
           that.dispatchRejectRefund(values);
         } else if (modalKey === 4) { // 同意延期
-          that.dispatchAgreeDelay(values);
+          that.dispatchAgreeDelay({ ...values, due_time: values.due_time.format('YYYY-MM-DD') });
         } else if (modalKey === 5) { // 驳回延期
           that.dispatchRejectDelay(values);
         }
