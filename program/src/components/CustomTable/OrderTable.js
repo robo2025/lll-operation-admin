@@ -2,13 +2,8 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { Table, Divider } from 'antd';
 import styles from './order-table.less';
-import OrderTableData from './orderTableData'; // 假数据
+import { ORDER_STATUS, ABNORMAL_TYPE } from '../../constant/statusList';
 
-// 订单状态
-const mapOrderStatus = ['待支付', '已取消', '待接单', '待发货', '已发货,配送中',
-  '已完成', '', '申请延期中', '', '退款中',
-  '退货中', '作废', '无货', '退款完成', '退货完成',
-  '订单流转结束'];
 // 支付状态
 const mapPayStatus = ['全部', '未支付', '已支付'];
 
@@ -110,9 +105,9 @@ export default class OrderTable extends React.Component {
       title: '订单状态',
       dataIndex: 'order_status',
       key: 'order_status',
-      width: 100,
+      width: 150,
       fixed: 'right',
-      render: text => (<span>{mapOrderStatus[text - 1]}</span>),
+      render: (text, record) => (<span>{`${ORDER_STATUS[text]}${ABNORMAL_TYPE[record.abnormal_type]}`}</span>),
     }, {
       title: '操作',
       render: (text, record) => (

@@ -308,6 +308,10 @@ export default class OrderDetail extends Component {
             </Row>
           </div>
           <Divider style={{ marginBottom: 32 }} />
+          <DescriptionList size="large" title="异常备注" style={{ marginBottom: 32 }}>
+            <Description term="说明">{order_info.remarks || '无'}</Description>
+          </DescriptionList>
+          <Divider style={{ marginBottom: 32 }} />          
           <div className={styles.title}>发货记录</div>
           <Table
             style={{ marginBottom: 24 }}
