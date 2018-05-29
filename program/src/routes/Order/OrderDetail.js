@@ -73,13 +73,9 @@ const logisticsColumns = [{
   dataIndex: 'number',
   key: 'number',
 }, {
-  title: '发货日期',
-  dataIndex: 'delivery',
-  key: 'delivery',
-}, {
   title: '送货人',
-  dataIndex: 'delivery_man',
-  key: 'delivery_man',
+  dataIndex: 'sender',
+  key: 'sender',
   render: text => (<span>{text || '不可见'}</span>),  
 }, {
   title: '联系号码',
@@ -94,6 +90,11 @@ const logisticsColumns = [{
   title: '物流单号',
   dataIndex: 'logistics_number',
   key: 'logistics_number',
+}, {
+  title: '发货日期',
+  dataIndex: 'date_of_delivery',
+  key: 'date_of_delivery',
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD hh:mm:ss')}</span>),
 }];
 // 操作日志tab
 const operationTabList = [{
@@ -177,13 +178,13 @@ export default class OrderDetail extends Component {
     receipt_info = receipt_info || {};
     supplier_info = supplier_info || {};
     order_detail = order_detail || {};
-    delivery_info = delivery_info || {};
+    delivery_info = delivery_info || [];
     operation = operation || [];
     const orderGoodsList = [order_detail];
     const exceptionAction = operation.filter((val) => {
       return val.is_abnormal;
     });
-    const deliveryInfo = [{ ...delivery_info, ...order_detail }];
+    const deliveryInfo = delivery_info;
     const contentList = {
       tab1: <Table
         pagination={{
@@ -320,6 +321,9 @@ export default class OrderDetail extends Component {
             dataSource={deliveryInfo}
             columns={logisticsColumns}
             rowKey="id"
+            locale={{
+              emptyText: '暂无物流信息',
+            }}
           />
           {/* <Divider style={{ marginBottom: 32 }} /> */}
           <div className={styles.title}>操作日志记录</div>
