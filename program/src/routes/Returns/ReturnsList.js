@@ -7,7 +7,7 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import ReturnAuditContent from './ReturnAuditContent';
 import { PAGE_SIZE } from '../../constant/config';
-import { RETURNS_STATUS } from "../../constant/statusList";
+import { RETURNS_STATUS } from '../../constant/statusList';
 import { handleServerMsgObj } from '../../utils/tools';
 import styles from './order-list.less';
 
@@ -181,13 +181,12 @@ export default class ReturnsList extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="审核状态">
+            <FormItem label="处理状态">
               {getFieldDecorator('is_deal')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">待审核</Option>
-                  <Option value="2">通过</Option>
-                  <Option value="3">未通过</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已处理</Option>
+                  <Option value="1">未处理</Option>
                 </Select>
               )}
             </FormItem>
@@ -226,13 +225,12 @@ export default class ReturnsList extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="审核状态">
+            <FormItem label="处理状态">
               {getFieldDecorator('is_deal')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">待审核</Option>
-                  <Option value="2">通过</Option>
-                  <Option value="3">未通过</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已处理</Option>
+                  <Option value="1">未处理</Option>
                 </Select>
               )}
             </FormItem>
