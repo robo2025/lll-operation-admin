@@ -343,7 +343,11 @@ export default class ReturnsList extends Component {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => { this.handleAuditClick(record.return_id); }} >审核</a>
+          <a
+            onClick={() => { this.handleAuditClick(record.return_id); }}
+            disabled={record.is_deal === 2}
+          >审核
+          </a>
           <Divider type="vertical" />
           <a href={'#/returns/list/detail?orderId=' + record.return_id}>查看</a>
         </Fragment>
