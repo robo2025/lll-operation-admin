@@ -527,7 +527,7 @@ class MenuForm extends React.Component {
           columns={this.columns}
           dataSource={data}
           components={this.components}
-          rowKey={record => (record.id)}
+          rowKey="id"
           onRow={(record, index) => ({
             index,
             moveRow: this.moveRow,
