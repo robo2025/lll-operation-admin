@@ -69,10 +69,32 @@ export default class GoodDetail extends Component {
     });
   }
 
+  handleLogsTableChange = (pagination, filters, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues, args } = this.state;
+    const params = {
+      currentPage: pagination.current,
+      pageSize: pagination.pageSize,
+      offset: (pagination.current - 1) * (pagination.pageSize),
+    };
+    dispatch({
+      type: 'logs/fetch',
+      module: 'product',
+      objectId: args.pno,
+      offset: params.offset,
+      limit: params.pageSize,
+    });
+  }
+
   render() {
     const { product, logs, loading } = this.props;
     const { detail } = product;
     const { getFieldDecorator } = this.props.form;
+    const paginationProps = {
+      showSizeChanger: true,
+      showQuickJumper: true,
+      total: logs.total,
+    };
 
     return (
       <PageHeaderLayout title="产品详情" >
@@ -113,6 +135,8 @@ export default class GoodDetail extends Component {
             rowKey="id"
             columns={actionColumns}
             dataSource={logs.list}
+            pagination={paginationProps}
+            onChange={this.handleLogsTableChange}
           />
           <div className={styles['submit-btn-wrap']}>
             <Button type="primary" onClick={() => { this.props.history.goBack(); }}>返回列表</Button>

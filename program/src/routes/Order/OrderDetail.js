@@ -92,8 +92,8 @@ const logisticsColumns = [{
   key: 'logistics_number',
 }, {
   title: '发货日期',
-  dataIndex: 'date_of_delivery',
-  key: 'date_of_delivery',
+  dataIndex: 'add_time',
+  key: 'add_time',
   render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD hh:mm:ss')}</span>),
 }];
 // 操作日志tab
@@ -230,10 +230,10 @@ export default class OrderDetail extends Component {
       <PageHeaderLayout title="订单详情">
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
           <DescriptionList size="large" title="订单信息" style={{ marginBottom: 32 }}>
-            <Description term="客户订单编号">{order_info.son_order_sn}</Description>
+            <Description term="商品订单号">{order_info.son_order_sn}</Description>
             <Description term="支付状态">{mapPayStatus[order_info.pay_status]}</Description>
             <Description term="订单状态">{ORDER_STATUS[order_info.order_status]}</Description>
-            <Description term="母订单编号">{order_info.order_sn}</Description>
+            <Description term="订单号">{order_info.order_sn}</Description>
             <Description term="佣金服务费">{commission}元</Description>
             <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
           </DescriptionList>

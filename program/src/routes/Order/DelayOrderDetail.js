@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-25 17:30:25
+ * @Last Modified time: 2018-05-30 09:29:55
  */
 
 import React, { Component } from 'react';
@@ -194,10 +194,10 @@ export default class DelayOrderDetail extends Component {
       <PageHeaderLayout title="延期订单详情">
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
           <DescriptionList size="large" title="订单信息" style={{ marginBottom: 32 }}>
-            <Description term="客户订单编号">{order_info.order_sn}</Description>
+            <Description term="商品订单号">{order_info.order_sn}</Description>
             <Description term="支付状态">{mapPayStatus[order_info.pay_status]}</Description>
             <Description term="订单状态">{mapOrderStatus[order_info.order_status]}</Description>
-            <Description term="母订单编号">3214321432</Description>
+            <Description term="订单号">3214321432</Description>
             <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />

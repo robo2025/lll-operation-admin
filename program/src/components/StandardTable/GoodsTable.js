@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-26 14:08:45
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-29 10:35:21
+ * @Last Modified time: 2018-05-30 09:11:40
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
@@ -59,14 +59,15 @@ class GoodsTable extends PureComponent {
       width: 180,
       fixed: 'left',
     }, {
-      title: '型号',
-      dataIndex: 'partnumber',
-      key: 'partnumber',
-    }, {
       title: '商品名称',
       dataIndex: 'product',
       render: val => (<span >{val.product_name}</span>),
       key: 'product_name',
+    }, {
+      title: '型号',
+      dataIndex: 'product_model',
+      key: 'partnumber',
+      render: productModel => (<span>{productModel.partnumber}</span>),
     }, {
       title: '三级类目',
       dataIndex: 'product',
