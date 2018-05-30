@@ -192,7 +192,7 @@ export default class ReturnsDetail extends Component {
             <Description term="联系人">{guestInfo.receiver}</Description>
             <Description term="联系电话">{guestInfo.mobile}</Description>
             <Description term="收货地址">{guestInfo.address}</Description>
-            <Description term="退货说明">{guestInfo.return_desc}</Description>
+            {/* <Description term="退货说明">{guestInfo.return_desc}</Description> */}
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
@@ -221,6 +221,9 @@ export default class ReturnsDetail extends Component {
                 <span style={{ marginRight: 45 }}>配送：包邮</span>
                 <span>商品总金额：<span className="number money">￥{orderInfo.subtotal_money}</span></span>
               </Col>
+            </Row>
+            <Row>
+              <b>退货说明：</b><span style={{ fontWeight: 500 }}>{guestInfo.return_desc}</span>
             </Row>
           </div>
           <Divider style={{ marginBottom: 32 }} />
