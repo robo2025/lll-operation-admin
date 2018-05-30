@@ -230,6 +230,9 @@ export default class ReturnsDetail extends Component {
           <DescriptionList size="large" title="物流记录" style={{ marginBottom: 32 }}>
             <Description term="物流公司名称">{returnLogistics.length > 0 ? returnLogistics[0].logistics_company : ''}</Description>
             <Description term="物流单号">{returnLogistics.length > 0 ? returnLogistics[0].logistics_number : ''}</Description>
+            <Description term="收货人">{returnLogistics.length > 0 ? returnLogistics[0].receiver : ''}</Description>
+            <Description term="联系方式">{returnLogistics.length > 0 ? returnLogistics[0].mobile : ''}</Description>
+            <Description term="收货地址">{returnLogistics.length > 0 ? returnLogistics[0].address : ''}</Description>
           </DescriptionList>
           {/* <Divider style={{ marginBottom: 32 }} />           */}
           <div className={styles.title}>操作日志记录</div>
