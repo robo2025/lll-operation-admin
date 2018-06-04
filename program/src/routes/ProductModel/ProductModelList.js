@@ -1,13 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import Cookies from 'js-cookie';
 import moment from 'moment';
 import qs from 'qs';
-import { Card, Row, Col, Form, Input, Button, Icon, DatePicker, Select, Divider, Modal, message } from 'antd';
+import { Card, Row, Col, Form, Input, Upload, Button, Icon, DatePicker, Select, Divider, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
+import ModelContent from './ModelContent';
 import styles from './style.less';
-import { PAGE_SIZE } from '../../constant/config';
+import { PAGE_SIZE, SUCCESS_STATUS } from '../../constant/config';
 import { handleServerMsgObj } from '../../utils/tools';
 
 const FormItem = Form.Item;
@@ -30,6 +32,7 @@ export default class ProductModelList extends Component {
       currProductModel: {},
       expandForm: false,
       isShowModal: false,
+      isImportModal: false,
       args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
     this.columns = [{
@@ -154,6 +157,23 @@ export default class ProductModelList extends Component {
       selectedRows: rows,
     });
   };
+
+  // 是否显示modal
+  toggleModal = (key, visible) => {
+    this.setState({ [key]: visible });
+  }
+
+  handleModelUploadChange = ({ file }) => {
+    console.log('文件上次', file);
+    if (file.status === 'done' && file.response) {
+      const { msg, rescode } = file.response;
+      if (rescode >> 0 === SUCCESS_STATUS) {
+        message.success(msg);
+      } else {
+        message.error(msg);
+      }
+    }
+  }
 
   // 处理表格变化
   handleCustomizableTableChange = (pagination, filtersArg, sorter) => {
@@ -391,7 +411,10 @@ export default class ProductModelList extends Component {
   }
 
   render() {
-    const { selectedRowKeys, selectedRows, currProductModel, isShowModal, args } = this.state;
+    const {
+      selectedRowKeys, selectedRows,
+      currProductModel, isShowModal, isImportModal, args,
+    } = this.state;
     const { productModel, good, loading } = this.props;
     const rowSelection = {
       fixed: true,
@@ -418,6 +441,23 @@ export default class ProductModelList extends Component {
                 </Button>
               </span>
               <Button onClick={this.showExportModal}>导出数据</Button>
+              <div style={{ display: 'inline-block', marginLeft: 32 }}>
+                <Upload
+                  className={styles.upload}
+                  name="file"
+                  action="https://testapi.robo2025.com/scm-service/models/template"
+                  headers={{
+                    Authorization: Cookies.get('access_token') || 'null',
+                  }}
+                  showUploadList={false}
+                  onChange={this.handleModelUploadChange}
+                >
+                  <Button type="primary">
+                    <Icon type="upload" />导入产品数据
+                  </Button>
+                </Upload>
+                <Button onClick={() => { this.toggleModal('isImportModal', true); }}>下载数据模板</Button>
+              </div>
             </div>
             <CustomizableTable
               loading={loading.models.productModel}
@@ -445,6 +485,18 @@ export default class ProductModelList extends Component {
               data={good.list}
               loading={loading.models.good}
             />
+          </Modal>
+          {/* 下载数据模板Modal */}
+          <Modal
+            width="60%"
+            visible={isImportModal}
+            title="下载模板选择"
+            okText=""
+            cancelText=""
+            onCancel={() => { this.toggleModal('isImportModal', false); }}
+            onOk={this.onOk}
+          >
+            <ModelContent />
           </Modal>
         </Card>
       </PageHeaderLayout>

@@ -1,7 +1,7 @@
+import qs from 'qs';
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 import { API_URL } from '../constant/config';
-import qs from 'qs';
 
 // 获取服务器目录信息
 export async function queryCatalog({ pid = 0 }) {
