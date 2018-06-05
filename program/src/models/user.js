@@ -1,4 +1,5 @@
 import { getSupplierInfo, getUserInfo } from '../services/user';
+import { setAuthority } from '../utils/authority';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
 export default {
@@ -43,6 +44,7 @@ export default {
 
   reducers: {
     save(state, action) {
+      setAuthority(action.payload.user_type);
       return {
         ...state,
         info: action.payload,

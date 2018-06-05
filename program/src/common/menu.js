@@ -4,7 +4,6 @@ const menuData = [{
   name: '产品管理',
   icon: 'appstore-o',
   path: 'product',
-  authority: 'admin',
   children: [
     {
       name: '产品类目列表',
@@ -19,7 +18,6 @@ const menuData = [{
       path: 'model',
     },
   ],
-
 }, {
   name: '商品管理',
   icon: 'shop',
