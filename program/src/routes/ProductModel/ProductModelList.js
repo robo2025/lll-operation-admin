@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import qs from 'qs';
 import Cookies from 'js-cookie';
 import moment from 'moment';
-import qs from 'qs';
 import { Card, Row, Col, Form, Input, Upload, Button, Icon, DatePicker, Select, Divider, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
@@ -16,9 +16,10 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-@connect(({ brand, good, productModel, loading }) => ({
+@connect(({ brand, good, product, productModel, loading }) => ({
   brand,
   good,
+  product,
   productModel,
   loading,
 }))
@@ -132,6 +133,8 @@ export default class ProductModelList extends Component {
       offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
       limit: PAGE_SIZE,
     });
+    // 请求产品列表
+    this.dispatchProductList({ offset: 0, limit: 6 });
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
@@ -158,19 +161,59 @@ export default class ProductModelList extends Component {
     });
   };
 
+  // 请求产品列表
+  dispatchProductList = ({ offset, limit }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'product/fetch',
+      offset,
+      limit,
+    });
+  }
+
+  // bindState
+  bindModelThis = ($this) => {
+    this.$ModelThis = $this;
+  }
+
+  handleModelOk = () => {
+    console.log('$ModelThis', this.$ModelThis, this.$ModelThis.state);
+    const { modelList } = this.$ModelThis.state;
+    const pnos = modelList.map(val => val.pno);
+    if (pnos.length > 0) {
+      this.setState({ isImportModal: false });      
+      window.open(`https://testapi.robo2025.com/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);      
+    } else {
+      this.setState({ isImportModal: false });
+    }
+  }
+
+  // 处理下载模板产品列表改变
+  handleModelTableChange = (pagination, filtersArg, sorter) => {
+    const params = {
+      currentPage: pagination.current,
+      pageSize: pagination.pageSize,
+      offset: (pagination.current - 1) * (pagination.pageSize),
+    };
+    this.dispatchProductList({ offset: params.offset, limit: params.pageSize });
+  }
+
   // 是否显示modal
   toggleModal = (key, visible) => {
     this.setState({ [key]: visible });
   }
 
   handleModelUploadChange = ({ file }) => {
-    console.log('文件上次', file);
+    const DOWNLOAD_URL = 'https://testapi.robo2025.com/scm-service/download';
     if (file.status === 'done' && file.response) {
-      const { msg, rescode } = file.response;
+      const { data, msg, rescode } = file.response;
       if (rescode >> 0 === SUCCESS_STATUS) {
         message.success(msg);
       } else {
-        message.error(msg);
+        Modal.error({
+          title: '导入失败',
+          content: <div><p>失败文件下载：</p><a href={`${DOWNLOAD_URL}?filename=${data.filename}`}>{data.filename}</a></div>,
+        });
       }
     }
   }
@@ -415,7 +458,7 @@ export default class ProductModelList extends Component {
       selectedRowKeys, selectedRows,
       currProductModel, isShowModal, isImportModal, args,
     } = this.state;
-    const { productModel, good, loading } = this.props;
+    const { productModel, good, product, loading } = this.props;
     const rowSelection = {
       fixed: true,
       selectedRowKeys,
@@ -494,9 +537,15 @@ export default class ProductModelList extends Component {
             okText=""
             cancelText=""
             onCancel={() => { this.toggleModal('isImportModal', false); }}
-            onOk={this.onOk}
+            onOk={this.handleModelOk}
           >
-            <ModelContent />
+            <ModelContent
+              dataSource={product.list}
+              total={product.total}
+              loading={loading.models.product}
+              onModelTableChange={this.handleModelTableChange}
+              bindModelThis={this.bindModelThis}
+            />
           </Modal>
         </Card>
       </PageHeaderLayout>
