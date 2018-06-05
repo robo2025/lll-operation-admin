@@ -162,12 +162,13 @@ export default class ProductModelList extends Component {
   };
 
   // 请求产品列表
-  dispatchProductList = ({ offset, limit }) => {
+  dispatchProductList = ({ offset, limit, params = {} }) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'product/fetch',
       offset,
       limit,
+      params,
     });
   }
 
@@ -545,6 +546,7 @@ export default class ProductModelList extends Component {
               loading={loading.models.product}
               onModelTableChange={this.handleModelTableChange}
               bindModelThis={this.bindModelThis}
+              onSearch={this.dispatchProductList}
             />
           </Modal>
         </Card>

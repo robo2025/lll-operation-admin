@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:17:15 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-24 17:37:45
+ * @Last Modified time: 2018-06-05 16:48:00
  */
 import React, { PureComponent } from 'react';
 import moment from 'moment';
@@ -15,7 +15,6 @@ const dateFormat = 'YYYY-MM-DD';
 // 延迟收货弹出层内容 
 @Form.create()
 export default class ReminderContent extends PureComponent {
-
   componentDidMount() {
     const { bindFormObj } = this.props;
     if (bindFormObj) {
@@ -41,7 +40,7 @@ export default class ReminderContent extends PureComponent {
     return (
       <div className={styles['modal-content']}>
         <Row>
-          <Col span={12}>订单编号：{data.son_order_sn}</Col>
+          <Col span={12}>订单号：{data.son_order_sn}</Col>
           <Col span={12}>下单时间：{moment(data.add_time * 1000).format('YYYY-MM-DD hh:mm:ss')}</Col>
         </Row>
         <Row>

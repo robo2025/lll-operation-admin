@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-24 17:38:18
+ * @Last Modified time: 2018-06-05 16:48:16
  */
 
 import React, { PureComponent } from 'react';
@@ -43,7 +43,7 @@ export default class RefundContent extends PureComponent {
       <Form className={styles['modal-content']}>
         <Row>
           <Col span={12}>
-          订单编号：{data.son_order_sn}
+          订编号：{data.son_order_sn}
           </Col>
           <Col span={12}>下单时间：{moment(data.add_time * 1000).format('YYYY-MM-DD h:mm')}</Col>
         </Row>

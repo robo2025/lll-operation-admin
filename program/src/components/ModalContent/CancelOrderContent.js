@@ -44,7 +44,7 @@ export default class ReminderContent extends PureComponent {
     return (
       <div className={styles['modal-content']}>
         <Row>
-          <Col span={12}>订单编号：123456789</Col>
+          <Col span={12}>订单号：123456789</Col>
           <Col span={12}>下单时间：2017-01-02 12:12:11</Col>
         </Row>
         <Row>

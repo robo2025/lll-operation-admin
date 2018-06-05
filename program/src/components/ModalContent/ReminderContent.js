@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:05:56 
  * @Last Modified by: lll
- * @Last Modified time: 2018-03-09 13:45:10
+ * @Last Modified time: 2018-06-05 16:48:26
  */
 import React, { PureComponent } from 'react';
 import { Row, Col, Checkbox, Select, Input } from 'antd';
@@ -52,7 +52,7 @@ export default class ReminderContent extends PureComponent {
     return (
       <div className={styles['modal-content']}>
         <Row>
-          <Col span={12}>订单编号：123456789</Col>
+          <Col span={12}>订单号：123456789</Col>
           <Col span={12}>下单时间：2017-01-02 12:12:11</Col>
         </Row>
         <Row>
