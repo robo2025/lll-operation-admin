@@ -71,7 +71,7 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>),
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
@@ -184,7 +184,7 @@ export default class ReturnsDetail extends Component {
             <Description term="退货单编号">{returnInfo.return_sn}</Description>
             <Description term="处理状态">{returnsStatus[returnInfo.status - 1]}</Description>
             <Description term="源订单编号">{returnInfo.order_sn}(客户订单号)</Description>
-            <Description term="退货申请时间" >{moment(returnInfo.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
+            <Description term="退货申请时间" >{moment(returnInfo.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>

@@ -102,7 +102,7 @@ export default class ProductModelList extends Component {
       title: '创建时间',
       dataIndex: 'created_time',
       key: 'created_time',
-      render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD hh:mm:ss')}</span>),
+      render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>),
     }, {
       title: '操作',
       dataIndex: 'actions',

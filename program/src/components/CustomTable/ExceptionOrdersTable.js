@@ -137,7 +137,7 @@ export default class ExceptionOrdersTable extends React.Component {
       dataIndex: 'add_time',
       key: 'add_time',
       width: 180,
-      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
+      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,
     }, {
       title: '佣金(元)',
       dataIndex: 'commission',
@@ -169,7 +169,7 @@ export default class ExceptionOrdersTable extends React.Component {
       key: 'abnormal_add_time',
       width: 180,
       sorter: true,
-      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD h:mm:ss')}</span>,
+      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,
     }, {
       title: '异常状态标签',
       dataIndex: 'abnormal_tag',

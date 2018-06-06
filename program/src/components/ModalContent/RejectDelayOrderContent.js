@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-24 17:44:43
+ * @Last Modified time: 2018-06-06 10:54:39
  */
 
 import React, { PureComponent } from 'react';
@@ -43,7 +43,7 @@ export default class RejectDelayOrderContent extends PureComponent {
       <div className={styles['modal-content']}>
         <Row>
           <Col span={12}>订单编号：{data.son_order_sn}</Col>
-          <Col span={12}>下单时间：{moment(data.add_time * 1000).format('YYYY-MM-DD hh:mm:ss')}</Col>
+          <Col span={12}>下单时间：{moment(data.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
         </Row>
         <Row>
           <Col span={12}>客户公司名称：{data.guest_name}</Col>

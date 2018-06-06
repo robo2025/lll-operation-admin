@@ -2,7 +2,7 @@
  * @Author: lll 
  * @Date: 2018-03-09 14:56:55 
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-30 09:29:55
+ * @Last Modified time: 2018-06-06 10:59:30
  */
 
 import React, { Component } from 'react';
@@ -90,7 +90,7 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>),
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
@@ -198,7 +198,7 @@ export default class DelayOrderDetail extends Component {
             <Description term="支付状态">{mapPayStatus[order_info.pay_status]}</Description>
             <Description term="订单状态">{mapOrderStatus[order_info.order_status]}</Description>
             <Description term="订单号">3214321432</Description>
-            <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
+            <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>延期商品明细</div>
