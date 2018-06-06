@@ -10,7 +10,7 @@ import SupplyInformation from '../../components/SupplyInformation/SupplyInformat
 import ModelContent from './ModelContent';
 import styles from './style.less';
 import { PAGE_SIZE, SUCCESS_STATUS } from '../../constant/config';
-import { handleServerMsgObj } from '../../utils/tools';
+import { handleServerMsgObj, checkFile } from '../../utils/tools';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -182,10 +182,18 @@ export default class ProductModelList extends Component {
     const { modelList } = this.$ModelThis.state;
     const pnos = modelList.map(val => val.pno);
     if (pnos.length > 0) {
-      this.setState({ isImportModal: false });      
-      window.open(`https://testapi.robo2025.com/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);      
+      this.setState({ isImportModal: false });
+      window.open(`https://testapi.robo2025.com/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);
     } else {
       this.setState({ isImportModal: false });
+    }
+  }
+
+  // 图片上传前处理：验证文件类型
+  handleBeforeUpload = (file) => {
+    if (!checkFile(file.name, ['xls', 'xlsx'])) {
+      message.error(`${file.name}的文件格式暂不支持上传`);
+      return false;
     }
   }
 
@@ -494,6 +502,7 @@ export default class ProductModelList extends Component {
                     Authorization: Cookies.get('access_token') || 'null',
                   }}
                   showUploadList={false}
+                  beforeUpload={this.handleBeforeUpload}
                   onChange={this.handleModelUploadChange}
                 >
                   <Button type="primary">
