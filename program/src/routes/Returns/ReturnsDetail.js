@@ -182,7 +182,7 @@ export default class ReturnsDetail extends Component {
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
           <DescriptionList size="large" title="退货申请" style={{ marginBottom: 32 }}>
             <Description term="退货单编号">{returnInfo.return_sn}</Description>
-            <Description term="处理状态">{returnsStatus[returnInfo.status - 1]}</Description>
+            <Description term="退货状态">{returnsStatus[returnInfo.status - 1]}</Description>
             <Description term="源订单编号">{returnInfo.order_sn}(客户订单号)</Description>
             <Description term="退货申请时间" >{moment(returnInfo.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Description>
           </DescriptionList>

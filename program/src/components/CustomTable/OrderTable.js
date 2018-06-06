@@ -35,9 +35,8 @@ export default class OrderTable extends React.Component {
   }
 
   // 订单处理点击：催货、订单取消、收货延期
-  handleOrderClick = (key) => {
-    const [modalKey, orderKey] = key.split('-');
-    this.props.onHandleOrderClick(modalKey, orderKey);
+  handleOrderClick = (modalKey, record) => {
+    this.props.onHandleOrderClick(modalKey, record);
   }
 
   render() {
@@ -125,7 +124,7 @@ export default class OrderTable extends React.Component {
                 订单处理<Icon type="down" />
               </a>
             </Dropdown> */}
-          <a onClick={() => { this.handleOrderClick(`2-${text.id}`); }} disabled={![1, 3].includes(text.order_status)}>订单取消</a>
+          <a onClick={() => { this.handleOrderClick('2', record); }} disabled={![1, 3].includes(text.order_status)}>取消订单</a>
           <Divider type="vertical" />
           <a href={'#/orders/list/detail?orderId=' + record.id}>查看</a>
         </Fragment>

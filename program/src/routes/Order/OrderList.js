@@ -32,13 +32,14 @@ export default class OrderList extends Component {
         responsible_party: '1',
         cancel_desc: '',
       },
+      currRecord: {},
       args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
-    const { args } = this.state;    
+    const { args } = this.state;
     dispatch({
       type: 'orders/fetch',
       offset: (args.page - 1) * PAGE_SIZE,
@@ -89,10 +90,11 @@ export default class OrderList extends Component {
    * @param {string} modalKey Modal的key
    * @param {string} orderId  订单ID
    */
-  handleModalToggle = (modalKey, orderId) => {
+  handleModalToggle = (modalKey, record) => {
+    console.log('操作被点击', modalKey, record);
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = true;
-    this.setState({ ...modalTempJson, orderId });
+    this.setState({ ...modalTempJson, currRecord: record });
   }
 
   /**
@@ -113,13 +115,17 @@ export default class OrderList extends Component {
     const { orderId, cancelOrderData } = this.state;
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = false;
-   
-    if (modalKey === 2) { // 取消订单
-      if (cancelOrderData.cancel_desc) {
-        this.setState({ ...modalTempJson });
-        this.dispatchCancelOrder();
+    const that = this;
+    this.$FormObj.validateFields((err, values) => {
+      if (err) {
+        console.log('校验出错', err);
+        return;
       }
-    }
+      if (modalKey >> 0 === 2) { // 取消订单
+        that.setState({ ...modalTempJson });
+        that.dispatchCancelOrder(values);
+      }
+    });
   }
 
   // 取消订单Modal内容改变时处理
@@ -128,17 +134,22 @@ export default class OrderList extends Component {
     this.setState({ cancelOrderData: content });
   }
 
+  // 绑定审核弹出层form对象
+  bindFormObj = (formObj) => {
+    this.$FormObj = formObj;
+  }
+
   // dispatch:取消订单
-  dispatchCancelOrder = () => {
-    const { orderId, cancelOrderData } = this.state;
+  dispatchCancelOrder = (data) => {
+    const { currRecord } = this.state;
     const { dispatch } = this.props;
     dispatch({
       type: 'orders/fetchCancel',
-      orderId,
-      data: cancelOrderData,
-      success: () => { 
-        message.success('取消订单成功'); 
-        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });        
+      orderId: currRecord.id,
+      data,
+      success: () => {
+        message.success('取消订单成功');
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
         dispatch({
           type: 'orders/fetch',
           offset: (args.page - 1) * PAGE_SIZE,
@@ -156,7 +167,7 @@ export default class OrderList extends Component {
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
-    
+
     // 分页：将页数提取到url上
     history.push({
       pathname: '/orders/list',
@@ -164,7 +175,7 @@ export default class OrderList extends Component {
     });
 
     dispatch({
-      type: 'orders/fetch',      
+      type: 'orders/fetch',
       offset: params.offset,
       limit: params.pageSize,
     });
@@ -327,7 +338,9 @@ export default class OrderList extends Component {
   }
 
   render() {
-    const { isShowModal1, isShowModal2, isShowModal3, cancelOrderData, args } = this.state;
+    const {
+      isShowModal1, isShowModal2, isShowModal3, cancelOrderData, args, currRecord,
+    } = this.state;
     const { orders, loading } = this.props;
     const { total, list } = orders;
 
@@ -346,7 +359,7 @@ export default class OrderList extends Component {
               loading={loading}
               onChange={this.handleStandardTableChange}
               total={total}
-              defaultPage={args.page || 1}              
+              defaultPage={args.page || 1}
             />
             {/* 催货Modal */}
             <Modal
@@ -366,8 +379,9 @@ export default class OrderList extends Component {
               onOk={() => { this.handleModalConfirm(2); }}
             >
               <CancelOrderContent
-                data={cancelOrderData}
+                data={currRecord}
                 onChange={this.handleCancelOrderContentChange}
+                bindForm={this.bindFormObj}
               />
             </Modal>
             {/* 收货延迟Modal */}
