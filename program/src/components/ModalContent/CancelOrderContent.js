@@ -2,9 +2,10 @@
  * @Author: lll 
  * @Date: 2018-03-05 10:15:16 
  * @Last Modified by: lll
- * @Last Modified time: 2018-06-06 11:51:38
+ * @Last Modified time: 2018-06-06 12:02:12
  */
 import React, { PureComponent } from 'react';
+import moment from 'moment';
 import { Row, Col, Form, Select, Input } from 'antd';
 
 import styles from './modal-content.less';
@@ -36,18 +37,17 @@ export default class ReminderContent extends PureComponent {
         sm: { span: 16 },
       },
     };
-    console.log('取消订单弹窗', data);
     return (
       <div className={styles['modal-content']}>
         <Row>
-          <Col span={12}>订单号：123456789</Col>
-          <Col span={12}>下单时间：2017-01-02 12:12:11</Col>
+          <Col span={12}>订单号：{data && data.son_order_sn}</Col>
+          <Col span={12}>下单时间：{moment(data.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
         </Row>
         <Row>
-          <Col span={12}>客户公司名称：长沙ABC公司</Col>
+          <Col span={12}>客户公司名称：{data && data.guest_name}</Col>
         </Row>
         <Row>
-          <Col span={12}>供应商公司名称：长沙DEF公司</Col>
+          <Col span={12}>供应商公司名称：{data && data.supplier_name}</Col>
         </Row>
         <Row>
           <FormItem
