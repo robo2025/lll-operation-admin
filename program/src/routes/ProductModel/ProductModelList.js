@@ -9,7 +9,7 @@ import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
 import ModelContent from './ModelContent';
 import styles from './style.less';
-import { PAGE_SIZE, SUCCESS_STATUS } from '../../constant/config';
+import { PAGE_SIZE, SUCCESS_STATUS, FAIL_STATUS } from '../../constant/config';
 import { handleServerMsgObj, checkFile } from '../../utils/tools';
 
 const FormItem = Form.Item;
@@ -218,11 +218,13 @@ export default class ProductModelList extends Component {
       const { data, msg, rescode } = file.response;
       if (rescode >> 0 === SUCCESS_STATUS) {
         message.success(msg);
-      } else {
+      } else if (rescode >> 0 === FAIL_STATUS) {
         Modal.error({
           title: '导入失败',
           content: <div><p>失败文件下载：</p><a href={`${DOWNLOAD_URL}?filename=${data.filename}`}>{data.filename}</a></div>,
         });
+      } else {
+        message.error(msg);
       }
     }
   }
