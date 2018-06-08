@@ -265,6 +265,9 @@ class MenuManager extends React.Component {
   }
 
   handleCancel = () => {
+    if (this.$formObj) {
+      this.$formObj.resetFields();
+    }
     this.setState({
       visible: false,
     });
