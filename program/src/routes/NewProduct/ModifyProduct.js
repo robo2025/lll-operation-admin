@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-28 15:39:11
+ * @Last Modified time: 2018-06-08 09:50:23
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -373,12 +373,12 @@ export default class ModifyProduct extends Component {
         cadUrls = values.cad_urls;
       }
       const data = {
-        specs,
         ...fields,
         ...values,
         cad_urls: cadUrls,
+        specs,
       };
-      console.log('产品信息校验通过', values, specs, data);
+      console.log('产品信息校验通过', data, specs);
       dispatch({
         type: 'product/modifyInfo',
         pno: args.pno,
@@ -393,6 +393,7 @@ export default class ModifyProduct extends Component {
     const { isShowAttrMOdal, specs, editSpec } = this.state;
     const argsKey = Object.keys(this.state.args);
     const { loading, catalog, logs, upload } = this.props;
+    console.log('render specs', specs);
 
     // 其他属性列
     const attrClomns = [{
