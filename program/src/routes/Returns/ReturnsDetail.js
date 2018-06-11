@@ -5,6 +5,7 @@ import { Card, Table, Divider, Row, Col, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { ACTION_STATUS } from '../../constant/statusList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 import { queryString, handleServerMsg } from '../../utils/tools';
 import styles from './OrderDetail.less';
 
@@ -47,45 +48,6 @@ const goodsColumns = [{
   dataIndex: 'sale_price',
   key: 'sale_price',
 }];
-// 发货记录列
-const logisticsColumns = [{
-  title: '商品名称',
-  dataIndex: 'goodName',
-  key: 'goodName',
-}, {
-  title: '型号',
-  dataIndex: 'type',
-  key: 'type',
-}, {
-  title: '品牌',
-  dataIndex: 'brand',
-  key: 'brand',
-}, {
-  title: '数量',
-  dataIndex: 'count',
-  key: 'count',
-}, {
-  title: '发货日期',
-  dataIndex: 'delivery',
-  key: 'delivery',
-}, {
-  title: '送货人',
-  dataIndex: 'delivery_man',
-  key: 'delivery_man',
-}, {
-  title: '联系号码',
-  dataIndex: 'mobile',
-  key: 'mobile',
-}, {
-  title: '物流公司',
-  dataIndex: 'delivery_company',
-  key: 'delivery_company',
-}, {
-  title: '物流单号',
-  dataIndex: 'delivery_id',
-  key: 'delivery_id',
-}];
-
 // 操作日志列
 const actionColumns = [{
   title: '操作记录',
@@ -108,13 +70,22 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>),
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
   key: 'time_consuming',
 }];
-
+// 发货记录列
+const logisticsColumns = [{
+  title: '物流公司名称',
+  dataIndex: 'logistics_company',
+  key: 'logistics_company',
+}, {
+  title: '物流单号',
+  dataIndex: 'logistics_number',
+  key: 'logistics_number',
+}];
 
 @connect(({ returns, orders, loading }) => ({
   returns,
@@ -159,19 +130,20 @@ export default class ReturnsDetail extends Component {
     const returnInfo = return_info || {};
     const orderGoodsList = [order_detail];
     const operationRecord = operation_record || [];
-    const returnLogistics = return_logistics || {};
+    const returnLogistics = return_logistics || [];
     const exceptionAction = operationRecord.filter((val) => {
       return val.is_abnormal;
     });
+    const supplierAdress = getAreaBycode(supplierInfo.profile ? supplierInfo.profile.district_id.toString() : '130303').join('');
 
     return (
       <PageHeaderLayout title="退货单详情">
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
           <DescriptionList size="large" title="退货申请" style={{ marginBottom: 32 }}>
             <Description term="退货单编号">{returnInfo.return_sn}</Description>
-            <Description term="处理状态">{returnsStatus[returnInfo.status - 1]}</Description>
+            <Description term="退货状态">{returnsStatus[returnInfo.status - 1]}</Description>
             <Description term="源订单编号">{returnInfo.order_sn}(客户订单号)</Description>
-            <Description term="退货申请时间" >{moment(returnInfo.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
+            <Description term="退货申请时间" >{moment(returnInfo.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>
@@ -179,16 +151,16 @@ export default class ReturnsDetail extends Component {
             <Description term="联系人">{guestInfo.receiver}</Description>
             <Description term="联系电话">{guestInfo.mobile}</Description>
             <Description term="收货地址">{guestInfo.address}</Description>
-            <Description term="退货说明">{guestInfo.return_desc}</Description>
+            {/* <Description term="退货说明">{guestInfo.return_desc}</Description> */}
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
-            <Description term="公司名称">{supplierInfo.company}</Description>
-            <Description term="公司法人">{supplierInfo.contactname}</Description>
-            <Description term="公司类型">{supplierInfo.nature}</Description>
-            <Description term="联系人">{supplierInfo.contactname}</Description>
+            <Description term="公司名称">{supplierInfo.profile ? supplierInfo.profile.company : ''}</Description>
+            <Description term="公司法人">{supplierInfo.profile ? supplierInfo.profile.legal : ''}</Description>
+            <Description term="公司类型">{supplierInfo.profile ? supplierInfo.profile.company_type : ''}</Description>
+            <Description term="联系人">{supplierInfo.username}</Description>
             <Description term="联系号码">{supplierInfo.mobile}</Description>
-            <Description term="收货地址">{supplierInfo.shipping_address}</Description>
+            <Description term="收货地址" >{supplierAdress}{supplierInfo.profile ? supplierInfo.profile.address : ''}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>退货商品</div>
@@ -209,11 +181,17 @@ export default class ReturnsDetail extends Component {
                 <span>商品总金额：<span className="number money">￥{orderInfo.subtotal_money}</span></span>
               </Col>
             </Row>
+            <Row>
+              <b>退货说明：</b><span style={{ fontWeight: 500 }}>{guestInfo.return_desc}</span>
+            </Row>
           </div>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="物流记录" style={{ marginBottom: 32 }}>
-            <Description term="物流公司名称">{returnLogistics.logistics_company}</Description>
-            <Description term="物流单号">{returnLogistics.logistics_number}</Description>
+            <Description term="物流公司名称">{returnLogistics.length > 0 ? returnLogistics[0].logistics_company : ''}</Description>
+            <Description term="物流单号">{returnLogistics.length > 0 ? returnLogistics[0].logistics_number : ''}</Description>
+            <Description term="收货人">{returnLogistics.length > 0 ? returnLogistics[0].receiver : ''}</Description>
+            <Description term="联系方式">{returnLogistics.length > 0 ? returnLogistics[0].mobile : ''}</Description>
+            <Description term="收货地址">{returnLogistics.length > 0 ? returnLogistics[0].address : ''}</Description>
           </DescriptionList>
           {/* <Divider style={{ marginBottom: 32 }} />           */}
           <div className={styles.title}>操作日志记录</div>
@@ -232,6 +210,37 @@ export default class ReturnsDetail extends Component {
               rowKey="add_time"
             />
           </Card>
+          {
+            args.audit ?
+              (
+                <div className={styles['submit-btn-wrap']}>
+                  <div className="left">
+                    审核意见：
+                    <RadioGroup onChange={this.handleRadioChange} value={audit_status}>
+                      <Radio value={1}>审核通过</Radio>
+                      <Radio value={0}>审核不通过</Radio>
+                    </RadioGroup>
+                    <Tooltip title="审核意见不能为空" visible={audit_status === 0} autoAdjustOverflow={false}>
+                      <Input
+                        placeholder="未通过说明"
+                        className={audit_status === 0 ? 'show-inline' : 'hide'}
+                        onChange={e => this.handleAuditDesc(e)}
+                      />
+                    </Tooltip>
+                  </div>
+                  <div className="right">
+                    <Button onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
+                    <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+                  </div>
+                </div>
+              )
+              :
+              (
+                <div className={styles['back-btn-wrap']}>
+                  <Button onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
+                </div>
+              )
+          }
         </Card>
       </PageHeaderLayout>
     );

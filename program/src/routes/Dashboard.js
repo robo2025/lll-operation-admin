@@ -32,7 +32,7 @@ const columns = [{
 
 class Dashboard extends PureComponent {
   componentDidMount() {
-   /*  this.props.dispatch({
+    /*  this.props.dispatch({
       type: 'user/fetch',
     }); */
   }
@@ -68,7 +68,7 @@ class Dashboard extends PureComponent {
             <Card bordered={false}>
               <p>卡片内容</p>
               <p>卡片内容</p>
-              <p>卡片内容</p>
+              <p>卡片内容</p>      
             </Card>
           </Col>
           <Col span={12}>

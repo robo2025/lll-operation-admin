@@ -1,9 +1,9 @@
-// 操作记录 status 字段说明
+// 江朝 操作记录 status 字段说明
 const ACTION_STATUS = {
   1: '提交订单',
   2: '支付订单',
   3: '取消订单',
-  4: '待结单',
+  4: '待接单',
   5: '接单',
   6: '发货',
   7: '客户确认收货',
@@ -20,6 +20,15 @@ const ACTION_STATUS = {
   18: '退货审核失败',
 };
 
+// 刘彪 操作记录类型
+const ACTION_FLAG = {
+  1: '新增',
+  2: '修改',
+  4: '审核',
+  8: '发布',
+  16: '删除',
+};
+
 // 异常状态
 const ABNORMAL_TYPE = { 
   0: '', 
@@ -31,18 +40,18 @@ const ABNORMAL_TYPE = {
 // 订单状态
 const ORDER_STATUS = {
   1: '待支付',
-  2: '取消订单',
-  3: '待结单',
+  2: '订单已取消',
+  3: '待接单',
   4: '待发货',
   5: '已发货,配送中',
   6: '已完成',
-  8: '申请延期中',
+  8: '延期申请中',
   10: '退款中',
   11: '退货中',
   12: '作废',
-  13: '无货',
-  14: '退款完成',
-  15: '退货完成',
+  13: '无货申请中',
+  14: '已退款完成',
+  15: '已退货完成',
   16: '订单流转结束',
 };
 
@@ -85,8 +94,35 @@ const MONTHER_ORDER_STATUS = {
   6: '全部发货',
 };
 
+const PIC_TYPES = {
+  1: '正面',
+  2: '反面',
+  3: '侧面',
+  4: '包装图一',
+  5: '包装图二',
+  6: '包装图三',
+};
+
+const SHIPPING_FEE_TYPE = {
+  1: '包邮',
+  2: '货到付款',
+};
+
+const AUDIT_STATUS = {
+  0: '未审核',
+  1: '审核通过',
+  2: '审核不通过',
+};
+
+const PUBLISH_STATUS = {
+  0: '下架中',
+  1: '上架中',
+  2: '待下架(无法交易)',
+};
+
 export {
   ACTION_STATUS,
+  ACTION_FLAG,
   ABNORMAL_TYPE,
   ORDER_STATUS,
   PAY_STATUS,
@@ -94,4 +130,8 @@ export {
   REFUND_STATUS,
   RESPONSIBLE_PARTY, 
   MONTHER_ORDER_STATUS,
+  PIC_TYPES,
+  SHIPPING_FEE_TYPE,
+  AUDIT_STATUS,
+  PUBLISH_STATUS,
 };

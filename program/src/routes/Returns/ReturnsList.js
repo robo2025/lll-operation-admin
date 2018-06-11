@@ -1,18 +1,18 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import qs from 'qs';
 import moment from 'moment';
-import { Card, Button, Row, Col, Form, Input, Select, Icon, Modal, Divider, Badge, Radio, message } from 'antd';
+import { Card, Button, Row, Col, Form, Input, Select, Icon, Modal, message, Divider, Badge } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
+import ReturnAuditContent from './ReturnAuditContent';
+import { PAGE_SIZE } from '../../constant/config';
+import { RETURNS_STATUS } from '../../constant/statusList';
 import { handleServerMsgObj } from '../../utils/tools';
 import styles from './order-list.less';
 
 const { Option } = Select;
 const FormItem = Form.Item;
-const RadioGroup = Radio.Group;
-const { TextArea } = Input;
-// 订单状态
-const returnsStatus = ['申请退货中', '退货中', '退货失败', '退货完成'];
 // 处理状态
 const dealStatus = ['未处理', '已处理'];
 
@@ -28,16 +28,17 @@ export default class ReturnsList extends Component {
     this.state = {
       expandForm: false,
       isShowModal: false,
-      auditData: {
-        is_pass: 1,
-      },
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { args } = this.state;
     dispatch({
       type: 'returns/fetch',
+      offset: args.page ? (args.page - 1) * PAGE_SIZE : 0,
+      limit: PAGE_SIZE,
     });
   }
 
@@ -104,7 +105,6 @@ export default class ReturnsList extends Component {
   // 处理表单搜索
   handleSearch = (e) => {
     e.preventDefault();
-    e.preventDefault();
 
     const { dispatch, form } = this.props;
 
@@ -115,11 +115,10 @@ export default class ReturnsList extends Component {
         start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
         end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
       };
-
-      console.log('搜索字段', values);
+      delete values.create_time;
       dispatch({
-        type: 'orders/fetchSearch',
-        data: values,
+        type: 'returns/fetch',
+        params: values,
       });
     });
   }
@@ -136,14 +135,80 @@ export default class ReturnsList extends Component {
     history.push(url);
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+  // 绑定审核弹出层form对象
+  bindFormObj = (formObj) => {
+    this.$FormObj = formObj;
+  }
+
+  // 审核按钮被点击
+  handleAuditClick = (returnId) => {
+    this.setState({
+      isShowModal: true,
+      returnId,
+    });
+  }
+
+  // 审核退货：取消弹出层
+  handleCancelModal = () => {
+    this.setState({
+      isShowModal: false,
+    });
+  }
+
+  // 审核退货：确定弹出层
+  handleOkModal = () => {
+    const that = this;
+    this.$FormObj.validateFields((err, values) => {
+      if (!err) {
+        this.setState({
+          isShowModal: false,
+        });
+        that.handleAuditSubmit({
+          is_pass: values.is_pass,
+          remarks: values.remarks,
+          responsible_party: values.responsible_party,
+        });
+      } else {
+        console.log('校验出错', err);
+      }
+    });
+  }
+
+  // 提交审核
+  handleAuditSubmit = (data) => {
     const { dispatch } = this.props;
+    dispatch({
+      type: 'returns/fetchAudit',
+      returnId: this.state.returnId,
+      data,
+      success: () => {
+        message.success('提交成功');
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+        this.props.dispatch({
+          type: 'returns/fetch',
+          offset: qs.page ? (args.page - 1) * PAGE_SIZE : 0,
+          limit: PAGE_SIZE,
+        });
+      },
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
+    });
+  }
+
+
+  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch, history } = this.props;
     const { formValues } = this.state;
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
+
+    // 分页：将页数提取到url上
+    history.push({
+      pathname: '/returns/list',
+      search: `?page=${params.currentPage}`,
+    });
     dispatch({
       type: 'returns/fetch',
       offset: params.offset,
@@ -165,19 +230,18 @@ export default class ReturnsList extends Component {
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="源订单编号">
-              {getFieldDecorator('order_sn')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="审核状态">
+            <FormItem label="处理状态">
               {getFieldDecorator('is_deal')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">待审核</Option>
-                  <Option value="2">通过</Option>
-                  <Option value="3">未通过</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已处理</Option>
+                  <Option value="1">未处理</Option>
                 </Select>
               )}
             </FormItem>
@@ -210,19 +274,18 @@ export default class ReturnsList extends Component {
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="源订单编号">
-              {getFieldDecorator('order_sn')(
+              {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="审核状态">
+            <FormItem label="处理状态">
               {getFieldDecorator('is_deal')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">待审核</Option>
-                  <Option value="2">通过</Option>
-                  <Option value="3">未通过</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已处理</Option>
+                  <Option value="1">未处理</Option>
                 </Select>
               )}
             </FormItem>
@@ -245,13 +308,13 @@ export default class ReturnsList extends Component {
           </Col>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="退货状态">
-              {getFieldDecorator('return_status')(
+              {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">申请退货组</Option>
+                  <Option value="">全部</Option>
+                  <Option value="1">申请退货中</Option>
                   <Option value="2">退货中</Option>
-                  <Option value="3">已退货完成</Option>
-                  <Option value="4">退货失败</Option>
+                  <Option value="3">退货失败</Option>
+                  <Option value="4">退货完成</Option>
                 </Select>
               )}
             </FormItem>
@@ -275,7 +338,7 @@ export default class ReturnsList extends Component {
   }
 
   render() {
-    const { isShowModal, auditData } = this.state;
+    const { isShowModal, args } = this.state;
     const { returns, loading } = this.props;
     const { total, list } = returns;
     const { getFieldDecorator } = this.props.form;
@@ -290,82 +353,73 @@ export default class ReturnsList extends Component {
       },
     };
 
-    const columns = [
-      {
-        title: '退货单编号',
-        dataIndex: 'returns_sn',
-        key: 'returns_sn',
-        width: 200,
-        fixed: 'left',
-      },
-      {
-        title: '源订单编号',
-        dataIndex: 'order_sn',
-        key: 'order_sn',
-        width: 200,
-        fixed: 'left',
-      },
-      {
-        title: '客户公司名称',
-        dataIndex: 'guest_company_name',
-        align: 'guest_company_name',
-        width: 150,
-        fixed: 'left',
-        render: val => `${val}`,
-      },
-      {
-        title: '供应商公司名称',
-        dataIndex: 'supplier_company_name',
-        key: 'supplier_company_name',
-        width: 150,
-        fixed: 'left',
-      },
-      {
-        title: '退货申请时间',
-        dataIndex: 'return_add_time',
-        key: 'return_add_time',
-        sorter: true,
-        render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,
-      },
-      {
-        title: '交易总金额(元)',
-        dataIndex: 'subtotal_money',
-        key: 'subtotal_money',
-        width: 150,
-      },
-      {
-        title: '退货金额(元)',
-        dataIndex: 'return_money',
-        key: 'return_money',
-        width: 150,
-      },
-      {
-        title: '退货状态',
-        dataIndex: 'return_status',
-        key: 'return_status',
-        width: 150,
-        render: text => (<span>{returnsStatus[text - 1]}</span>),
-      },
-      {
-        title: '处理状态',
-        dataIndex: 'is_deal',
-        key: 'is_deal',
-        width: 150,
-        render: text => (<span><Badge status={text === 2 ? 'success' : 'default'} />{dealStatus[text - 1]}</span>),
-      },
-      {
-        title: '操作',
-        render: (text, record) => (
-          <Fragment>
-            <a onClick={() => { this.handleAuditClick(record.return_id); }} >审核</a>
-            <Divider type="vertical" />
-            <a href={'#/returns/list/detail?orderId=' + record.return_id}>查看</a>
-          </Fragment>
-        ),
-        width: 150,
-        fixed: 'right',
-      },
-    ];
+    const columns = [{
+      title: '退货单编号',
+      dataIndex: 'returns_sn',
+      key: 'returns_sn',
+      width: 200,
+      fixed: 'left',
+    }, {
+      title: '源订单编号',
+      dataIndex: 'order_sn',
+      key: 'order_sn',
+      width: 200,
+    }, {
+      title: '客户公司名称',
+      dataIndex: 'guest_company_name',
+      align: 'guest_company_name',
+      width: 150,
+      render: val => `${val}`,
+    }, {
+      title: '供应商公司名称',
+      dataIndex: 'supplier_company_name',
+      key: 'supplier_company_name',
+      width: 150,
+    }, {
+      title: '交易总金额(元)',
+      dataIndex: 'subtotal_money',
+      key: 'subtotal_money',
+      width: 150,
+    }, {
+      title: '退货金额(元)',
+      dataIndex: 'return_money',
+      key: 'return_money',
+      width: 150,
+    }, {
+      title: '退货状态',
+      dataIndex: 'return_status',
+      key: 'return_status',
+      width: 150,
+      render: text => (<span>{RETURNS_STATUS[text]}</span>),
+    }, {
+      title: '退货申请时间',
+      dataIndex: 'return_add_time',
+      key: 'return_add_time',
+      sorter: true,
+      render: val => <span>{moment(Math.floor(val * 1000)).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    }, {
+      title: '处理状态',
+      dataIndex: 'is_deal',
+      key: 'is_deal',
+      width: 120,
+      fixed: 'right',
+      render: text => (<span><Badge status={text === 2 ? 'success' : 'default'} />{dealStatus[text - 1]}</span>),
+    }, {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a
+            onClick={() => { this.handleAuditClick(record.return_id); }}
+            disabled={record.is_deal === 2}
+          >审核
+          </a>
+          <Divider type="vertical" />
+          <a href={'#/returns/list/detail?orderId=' + record.return_id}>查看</a>
+        </Fragment>
+      ),
+      width: 150,
+      fixed: 'right',
+    }];
 
     console.log('state', this.state);
 
@@ -380,11 +434,13 @@ export default class ReturnsList extends Component {
           <div className={styles.tableList}>
             <CustomizableTable
               onHandleOrderClick={this.handleModalToggle}
+              rowKey="returns_sn"
               data={list}
               columns={columns}
               loading={loading}
               onChange={this.handleStandardTableChange}
               total={total}
+              defaultPage={args.page}
             />
           </div>
         </Card>
@@ -395,75 +451,9 @@ export default class ReturnsList extends Component {
           onCancel={() => { this.handleCancelModal(); }}
           onOk={() => { this.handleOkModal(); }}
         >
-          <Form>
-            <Row>
-              <FormItem
-                label="审核选择"
-                {...formItemLayout}
-              >
-                {
-                  getFieldDecorator('is_pass', {
-                    rules: [{
-                      required: true,
-                      message: '',
-                    }],
-                    initialValue: 1,
-                  })(
-                    <RadioGroup onChange={(e) => { this.handleAuditRadioChange(e.target.value); }}>
-                      <Radio value={1}>通过</Radio>
-                      <Radio value={0}>不通过</Radio>
-                    </RadioGroup>
-                  )
-                }
-
-              </FormItem>
-            </Row>
-            <Row>
-              <FormItem
-                label="说明"
-                {...formItemLayout}
-              >
-                {
-                  getFieldDecorator('remarks', {
-                    rules: [{
-                      required: true,
-                      message: '你必须填写审核说明',
-                    }],
-                  })(
-                    <TextArea />
-                  )
-                }
-              </FormItem>
-            </Row>
-            {
-              auditData.is_pass >> 0 === 1 ? (
-                <Row>
-                  <FormItem
-                    label="责任方"
-                    {...formItemLayout}
-                  >
-                    {
-                      getFieldDecorator('responsible_party', {
-                        rules: [{
-                          required: true,
-                          message: '你必须选择一个责任方',
-                        }],
-                        initialValue: '1',
-                      })(
-                        <Select placeholder="请选择" style={{ width: '100%' }}>
-                          <Option value="1">客户</Option>
-                          <Option value="2">供应商</Option>
-                          <Option value="3">平台</Option>
-                        </Select>
-                      )
-                    }
-                  </FormItem>
-                </Row>
-              )
-                : null
-            }
-
-          </Form>
+          <ReturnAuditContent
+            bindFormObj={this.bindFormObj}
+          />
         </Modal>
       </PageHeaderLayout>
     );

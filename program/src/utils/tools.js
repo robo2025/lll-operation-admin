@@ -1,19 +1,15 @@
 import Cookies from 'js-cookie';
-import { LOGIN_URL, NEXT_URL, HOME_PAGE, VERIFY_PAGE } from '../constant/config';
+import { LOGIN_URL, VERIFY_PAGE } from '../constant/config';
 
 // 验证是否登录
 export function verifyLogin() {
-  console.log('下面进入验证程序');
-  const href = window.location.href;
-  console.log('页面地址:', href);
+  const { href } = window.location;
   const paramas = queryString.parse(href);
   /* 判断url是否有access_token,如果有则将其存储到cookie */
   if (paramas.access_token) {
-    const access_token = paramas.access_token.split('#/')[0];
-    console.log('token:', access_token);
-    Cookies.set('access_token', access_token, { expires: 7 });
+    const accessToken = paramas.access_token.split('#/')[0];
+    Cookies.set('access_token', accessToken, { expires: 7 });
   } else {
-    console.log('不存在token');
     window.location.href = `${LOGIN_URL}?next=${VERIFY_PAGE}`;
   }
   // 读取cookie，如果没有access_token,则跳转到登录页面
@@ -75,7 +71,6 @@ export const queryString = {
  */
 export function checkFile(fileName, fileNameArr) {
   const partter = '(\\.' + fileNameArr.join('|\\.') + ')$';
-  console.log('验证文件名:', partter);
   return new RegExp(partter, 'i').test(fileName);
 }
 

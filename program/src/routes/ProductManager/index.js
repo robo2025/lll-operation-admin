@@ -4,20 +4,19 @@ import { Row, Col, Card, Form, Input, Select, Icon, Button, DatePicker, message,
 import ProductTable from '../../components/StandardTable/ProductTable';
 import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import { handleServerMsg, queryString } from '../../utils/tools';
+import { handleServerMsgObj, queryString } from '../../utils/tools';
 import { API_URL, PAGE_SIZE } from '../../constant/config';
 import styles from './product-manager.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
-const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
 
 
-@connect(({ loading, product }) => ({
+@connect(({ product, testApi, loading }) => ({
   product,
+  testApi,
   loading: loading.models.product,
 }))
 @Form.create()
@@ -32,7 +31,6 @@ export default class ProductManager extends Component {
     this.removeProducts = this.removeProducts.bind(this);
     this.querySupplyInfo = this.querySupplyInfo.bind(this);
     this.state = {
-      modalVisible: false,
       expandForm: false,
       selectedRows: [],
       formValues: {},
@@ -50,7 +48,7 @@ export default class ProductManager extends Component {
     dispatch({
       type: 'product/fetch',
       offset: (args.page - 1) * PAGE_SIZE,
-      limit: PAGE_SIZE,      
+      limit: PAGE_SIZE,
     });
   }
 
@@ -109,11 +107,15 @@ export default class ProductManager extends Component {
   // 删除产品
   removeProducts() {
     const { dispatch } = this.props;
-    const ids = this.state.selectedRows.map(val => val.id);
+    const pnos = this.state.selectedRows.map(val => val.pno);
+    if (pnos.length <= 0) {
+      message.error('请先选择要删除的产品');
+      return;
+    }
     dispatch({
       type: 'product/remove',
-      ids,
-      error: (res) => { message.error(handleServerMsg(res.msg)); },
+      pnos,
+      error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
@@ -131,13 +133,13 @@ export default class ProductManager extends Component {
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch, history } = this.props;
     const { formValues } = this.state;
-   
+
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
-    
+
     // 分页：将页数提取到url上
     history.push({
       pathname: '/product/list',
@@ -231,26 +233,6 @@ export default class ProductManager extends Component {
     });
   }
 
-  handleModalVisible = (flag) => {
-    this.setState({
-      modalVisible: !!flag,
-    });
-  }
-
-  handleAdd = (fields) => {
-    this.props.dispatch({
-      type: 'rule/add',
-      payload: {
-        description: fields.desc,
-      },
-    });
-
-    message.success('添加成功');
-    this.setState({
-      modalVisible: false,
-    });
-  }
-
   jumpToPage(url) {
     const { history } = this.props;
     history.push(url);
@@ -276,15 +258,15 @@ export default class ProductManager extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="型号">
-              {getFieldDecorator('partnumber')(
+            <FormItem label="品牌">
+              {getFieldDecorator('brand_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
+            <FormItem label="产地">
+              {getFieldDecorator('place')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -323,15 +305,15 @@ export default class ProductManager extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="型号">
-              {getFieldDecorator('partnumber')(
+            <FormItem label="品牌">
+              {getFieldDecorator('brand_name')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
+            <FormItem label="产地">
+              {getFieldDecorator('place')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -339,48 +321,27 @@ export default class ProductManager extends Component {
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="产品名称">
-              {getFieldDecorator('product_name')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="型号">
-              {getFieldDecorator('partnumber')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="品牌">
-              {getFieldDecorator('brand_name')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col xll={4} md={6} sm={24}>
             <FormItem label="所属类目">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('catalog')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">未知</Option>
                   <Option value="1">未知</Option>
-                  <Option value="1">未知</Option>
+                  <Option value="2">未知</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
-          <Col xll={4} md={8} sm={24}>
-            <FormItem label="产品提交日期">
-              {getFieldDecorator('create_time')(
-                <RangePicker onChange={this.onChange} />
+          <Col xll={4} md={6} sm={24}>
+            <FormItem label="创建人">
+              {getFieldDecorator('creator')(
+                <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col xll={4} md={6} sm={24}>
-            <FormItem label="源产品ID">
-              {getFieldDecorator('origin_id')(
-                <Input placeholder="请输入" />
+          <Col xll={4} md={8} sm={24}>
+            <FormItem label="创建日期">
+              {getFieldDecorator('create_time')(
+                <RangePicker onChange={this.onChange} />
               )}
             </FormItem>
           </Col>
@@ -431,19 +392,15 @@ export default class ProductManager extends Component {
         </Card>
         <Card bordered={false}>
           <div className={styles.tableList}>
-
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
-              {
-                selectedRows.length > 0 ? (
-                  <span>
-                    <Button
-                      onClick={this.removeProducts}
-                    >删除
-                    </Button>
-                  </span>
-                ) : null
-              }
+              <span>
+                <Button
+                  onClick={this.removeProducts}
+                >
+                  删除
+                </Button>
+              </span>
               <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
             <Modal

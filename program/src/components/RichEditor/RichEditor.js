@@ -7,7 +7,7 @@ import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
 import styles from './rich-editor.less';
 
 const UPLOAD_URL = QINIU_SERVER; // 文件上传地址
-const IMG_SERVER = FILE_SERVER;
+const IMG_SERVER = FILE_SERVER; 
 export default class RichEditor extends React.Component {
   state = {
     htmlContent: '',

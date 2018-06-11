@@ -23,19 +23,19 @@ class ProductList extends React.Component {
         dataIndex: 'pics',
         width: 150,
         render: val => val.map((item, idx) => {
-            if (idx < 3) {
+          if (idx < 3) {
             return (
-              <img 
-                alt="缩略图" 
+              <img
+                alt="缩略图"
                 width={20}
-                height={20} 
-                style={{ display: 'inline', marginRight: 5 }} 
-                key={`key${idx}`} 
-                src={item.img_url} 
-               />
-              );
-            }
+                height={20}
+                style={{ display: 'inline', marginRight: 5 }}
+                key={`key${idx}`}
+                src={item.img_url}
+              />
+            );
           }
+        }
         ),
       },
       {
@@ -59,20 +59,20 @@ class ProductList extends React.Component {
       {
         title: '二级类目',
         dataIndex: 'category',
-        key: 'menu2',        
-        width: 100,        
+        key: 'menu2',
+        width: 100,
         render: val => (val.children.category_name),
       },
       {
         title: '三级类目',
         dataIndex: 'category',
-        key: 'menu3',   
-        width: 100,                     
+        key: 'menu3',
+        width: 100,
         render: val => (val.children.children.category_name),
       },
       {
         title: '品牌',
-        width: 60,        
+        width: 60,
         dataIndex: 'brand_name',
       },
       {
@@ -92,13 +92,13 @@ class ProductList extends React.Component {
   }
 
   render() {
-    const {data,total,loading} = this.props;
+    const { data, total, loading } = this.props;
 
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
       defaultPageSize: 8,
-      pageSizeOptions:[8,16,24,32,40],
+      pageSizeOptions: [8, 16, 24, 32, 40],
       total,
     };
 

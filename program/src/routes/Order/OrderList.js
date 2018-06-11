@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
+import qs from 'qs';
 import { Card, Button, Row, Col, Form, Input, Select, Icon, DatePicker, Modal, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import OrderTable from '../../components/CustomTable/OrderTable';
@@ -7,6 +8,7 @@ import ReminderContent from '../../components/ModalContent/ReminderContent';
 import CancelOrderContent from '../../components/ModalContent/CancelOrderContent';
 import DelayOrderContent from '../../components/ModalContent/DelayOrderConten';
 import { handleServerMsgObj } from '../../utils/tools';
+import { PAGE_SIZE } from '../../constant/config';
 import styles from './order-list.less';
 
 const { Option } = Select;
@@ -30,14 +32,18 @@ export default class OrderList extends Component {
         responsible_party: '1',
         cancel_desc: '',
       },
+      currRecord: {},
+      args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
     };
   }
 
   componentDidMount() {
-    console.log('我渲染好了', this.props);
     const { dispatch } = this.props;
+    const { args } = this.state;
     dispatch({
       type: 'orders/fetch',
+      offset: (args.page - 1) * PAGE_SIZE,
+      limit: PAGE_SIZE,
     });
   }
 
@@ -49,7 +55,6 @@ export default class OrderList extends Component {
   // 处理表单搜索
   handleSearch = (e) => {
     e.preventDefault();
-    e.preventDefault();
 
     const { dispatch, form } = this.props;
 
@@ -60,11 +65,10 @@ export default class OrderList extends Component {
         start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
         end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
       };
-
-      console.log('搜索字段', values);
+      delete values.create_time;
       dispatch({
         type: 'orders/fetchSearch',
-        data: values,
+        params: values,
       });
     });
   }
@@ -86,11 +90,11 @@ export default class OrderList extends Component {
    * @param {string} modalKey Modal的key
    * @param {string} orderId  订单ID
    */
-  handleModalToggle = (modalKey, orderId) => {
-    console.log('toggleModal', modalKey, orderId);
+  handleModalToggle = (modalKey, record) => {
+    console.log('操作被点击', modalKey, record);
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = true;
-    this.setState({ ...modalTempJson, orderId });
+    this.setState({ ...modalTempJson, currRecord: record });
   }
 
   /**
@@ -109,16 +113,19 @@ export default class OrderList extends Component {
    */
   handleModalConfirm = (modalKey) => {
     const { orderId, cancelOrderData } = this.state;
-    console.log('确定取消订单', modalKey, orderId, cancelOrderData);
     const modalTempJson = {};
     modalTempJson['isShowModal' + modalKey] = false;
-   
-    if (modalKey === 2) { // 取消订单
-      if (cancelOrderData.cancel_desc) {
-        this.setState({ ...modalTempJson });
-        this.dispatchCancelOrder();
+    const that = this;
+    this.$FormObj.validateFields((err, values) => {
+      if (err) {
+        console.log('校验出错', err);
+        return;
       }
-    }
+      if (modalKey >> 0 === 2) { // 取消订单
+        that.setState({ ...modalTempJson });
+        that.dispatchCancelOrder(values);
+      }
+    });
   }
 
   // 取消订单Modal内容改变时处理
@@ -127,47 +134,51 @@ export default class OrderList extends Component {
     this.setState({ cancelOrderData: content });
   }
 
+  // 绑定审核弹出层form对象
+  bindFormObj = (formObj) => {
+    this.$FormObj = formObj;
+  }
+
   // dispatch:取消订单
-  dispatchCancelOrder = () => {
-    const { orderId, cancelOrderData } = this.state;
+  dispatchCancelOrder = (data) => {
+    const { currRecord } = this.state;
     const { dispatch } = this.props;
     dispatch({
       type: 'orders/fetchCancel',
-      orderId,
-      data: cancelOrderData,
-      success: () => { message.success('取消订单成功'); },
+      orderId: currRecord.id,
+      data,
+      success: () => {
+        message.success('取消订单成功');
+        const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+        dispatch({
+          type: 'orders/fetch',
+          offset: (args.page - 1) * PAGE_SIZE,
+          limit: PAGE_SIZE,
+        });
+      },
       error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const { dispatch, history } = this.props;
     const params = {
       currentPage: pagination.current,
       pageSize: pagination.pageSize,
       offset: (pagination.current - 1) * (pagination.pageSize),
     };
+
+    // 分页：将页数提取到url上
+    history.push({
+      pathname: '/orders/list',
+      search: `?page=${params.currentPage}`,
+    });
+
     dispatch({
-      type: 'orders/fetch',      
+      type: 'orders/fetch',
       offset: params.offset,
       limit: params.pageSize,
     });
-    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
-    //   const newObj = { ...obj };
-    //   newObj[key] = getValue(filtersArg[key]);
-    //   return newObj;
-    // }, {});
-
-    // const params = {
-    //   currentPage: pagination.current,
-    //   pageSize: pagination.pageSize,
-    //   ...formValues,
-    //   ...filters,
-    // };
-    // if (sorter.field) {
-    //   params.sorter = `${sorter.field}_${sorter.order}`;
-    // }
   }
 
   renderSimpleForm() {
@@ -176,7 +187,7 @@ export default class OrderList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="客户订单编号">
+            <FormItem label="商品订单号">
               {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
@@ -186,9 +197,9 @@ export default class OrderList extends Component {
             <FormItem label="支付状态">
               {getFieldDecorator('pay_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">已支付</Option>
-                  <Option value="2">未支付</Option>
+                  <Option value="">全部</Option>
+                  <Option value="2">已支付</Option>
+                  <Option value="1">未支付</Option>
                 </Select>
               )}
             </FormItem>
@@ -197,10 +208,10 @@ export default class OrderList extends Component {
             <FormItem label="订单状态">
               {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
+                  <Option value="">全部</Option>
                   <Option value="1">待支付</Option>
-                  <Option value="2">取消订单</Option>
-                  <Option value="3">待结单</Option>
+                  <Option value="2">订单已取消</Option>
+                  <Option value="3">待接单</Option>
                   <Option value="4">待发货</Option>
                   <Option value="5">已发货,配送中</Option>
                   <Option value="6">已完成</Option>
@@ -209,8 +220,8 @@ export default class OrderList extends Component {
                   <Option value="11">退货中</Option>
                   <Option value="12">作废</Option>
                   <Option value="13">无货</Option>
-                  <Option value="14">退款完成</Option>
-                  <Option value="15">退货完成</Option>
+                  <Option value="14">已退款完成</Option>
+                  <Option value="15">已退货完成</Option>
                   <Option value="16">订单流转结束</Option>
                 </Select>
               )}
@@ -236,7 +247,7 @@ export default class OrderList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
-            <FormItem label="客户订单编号">
+            <FormItem label="商品订单号">
               {getFieldDecorator('guest_order_sn')(
                 <Input placeholder="请输入" />
               )}
@@ -257,17 +268,21 @@ export default class OrderList extends Component {
             <FormItem label="订单状态">
               {getFieldDecorator('order_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">待接单</Option>
-                  <Option value="2">已接单</Option>
-                  <Option value="3">已部分发货</Option>
-                  <Option value="4">已全部发货</Option>
-                  <Option value="5">已完成</Option>
-                  <Option value="6">已确认收货</Option>
-                  <Option value="7">已全部发货</Option>
-                  <Option value="8">上架申请延期</Option>
-                  <Option value="9">客户允许延期</Option>
-                  <Option value="10">客户已取消</Option>
+                  <Option value="">全部</Option>
+                  <Option value="1">待支付</Option>
+                  <Option value="2">订单已取消</Option>
+                  <Option value="3">待接单</Option>
+                  <Option value="4">待发货</Option>
+                  <Option value="5">已发货,配送中</Option>
+                  <Option value="6">已完成</Option>
+                  <Option value="8">申请延期中</Option>
+                  <Option value="10">退款中</Option>
+                  <Option value="11">退货中</Option>
+                  <Option value="12">作废</Option>
+                  <Option value="13">无货</Option>
+                  <Option value="14">已退款完成</Option>
+                  <Option value="15">已退货完成</Option>
+                  <Option value="16">订单流转结束</Option>
                 </Select>
               )}
             </FormItem>
@@ -296,6 +311,15 @@ export default class OrderList extends Component {
             </FormItem>
           </Col>
         </Row>
+        <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
+          <Col xll={4} md={8} sm={24}>
+            <FormItem label="订单号">
+              {getFieldDecorator('guest_order_sn')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+        </Row>
         <div style={{ overflow: 'hidden' }}>
           <span style={{ float: 'right', marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">查询</Button>
@@ -314,10 +338,11 @@ export default class OrderList extends Component {
   }
 
   render() {
-    const { isShowModal1, isShowModal2, isShowModal3, cancelOrderData } = this.state;
+    const {
+      isShowModal1, isShowModal2, isShowModal3, cancelOrderData, args, currRecord,
+    } = this.state;
     const { orders, loading } = this.props;
     const { total, list } = orders;
-    console.log('订单列表------', orders);
 
     return (
       <PageHeaderLayout title="订单列表">
@@ -334,6 +359,7 @@ export default class OrderList extends Component {
               loading={loading}
               onChange={this.handleStandardTableChange}
               total={total}
+              defaultPage={args.page || 1}
             />
             {/* 催货Modal */}
             <Modal
@@ -353,8 +379,9 @@ export default class OrderList extends Component {
               onOk={() => { this.handleModalConfirm(2); }}
             >
               <CancelOrderContent
-                data={cancelOrderData}
+                data={currRecord}
                 onChange={this.handleCancelOrderContentChange}
+                bindForm={this.bindFormObj}
               />
             </Modal>
             {/* 收货延迟Modal */}

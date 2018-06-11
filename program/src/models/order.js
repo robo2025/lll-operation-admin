@@ -66,13 +66,13 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryOrders, {});
-      const { headers } = response;      
-      yield put({
-        type: 'save',
-        payload: response.data,
-        headers,
-      });
+      // const response = yield call(queryOrders, {});
+      // const { headers } = response;      
+      // yield put({
+      //   type: 'save',
+      //   payload: response.data,
+      //   headers,
+      // });
     },
     *fetchAgreeNoGood({ orderId, data, success, error }, { call, put }) {
       const res = yield call(queryAgreeNoGood, { orderId, data });
@@ -80,13 +80,13 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders, {});
-      const { headers } = response;      
-      yield put({
-        type: 'saveException',
-        payload: response.data,
-        headers,
-      });
+      // const response = yield call(queryExceptionOrders, {});
+      // const { headers } = response;      
+      // yield put({
+      //   type: 'saveException',
+      //   payload: response.data,
+      //   headers,
+      // });
     },
     *fetchRejectNoGood({ orderId, data, success, error }, { call, put }) {
       const res = yield call(queryRejectNoGood, { orderId, data });
@@ -94,13 +94,13 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders, {});
-      const { headers } = response;            
-      yield put({
-        type: 'saveException',
-        payload: response.data,
-        headers,
-      });
+      // const response = yield call(queryExceptionOrders, {});
+      // const { headers } = response;            
+      // yield put({
+      //   type: 'saveException',
+      //   payload: response.data,
+      //   headers,
+      // });
     },
     *fetchAgreeDelay({ orderId, data, success, error }, { call, put }) {
       const res = yield call(queryAgreeDelay, { orderId, data });
@@ -108,13 +108,13 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders, {});
-      const { headers } = response;            
-      yield put({
-        type: 'saveException',
-        payload: response.data,
-        headers,
-      });
+      // const response = yield call(queryExceptionOrders, {});
+      // const { headers } = response;            
+      // yield put({
+      //   type: 'saveException',
+      //   payload: response.data,
+      //   headers,
+      // });
     },
     *fetchRejectDelay({ orderId, data, success, error }, { call, put }) {
       const res = yield call(queryRejectDelay, { orderId, data });
@@ -122,27 +122,29 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryExceptionOrders, {});
-      const { headers } = response;            
-      yield put({
-        type: 'saveException',
-        payload: response.data,
-        headers,
-      });
+      // const response = yield call(queryExceptionOrders, {});
+      // const { headers } = response;            
+      // yield put({
+      //   type: 'saveException',
+      //   payload: response.data,
+      //   headers,
+      // });
     },
-    *fetchSearch({ data, success, error }, { call, put }) {
-      const res = yield call(querySearchResults, { ...data });
+    *fetchSearch({ offset, limit, params, success, error }, { call, put }) {
+      const res = yield call(querySearchResults, { offset, limit, params });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
+      const { headers } = res;            
 
       yield put({
         type: 'saveSearch',
         payload: res.data,
+        headers,
       });
     },
   },
-
+  
   reducers: {
     save(state, action) {
       return {
@@ -169,6 +171,7 @@ export default {
         ...state,
         list: action.payload,
         exceptionList: action.payload,
+        total: action.headers['x-content-total'] >> 0,        
       };
     },
   },

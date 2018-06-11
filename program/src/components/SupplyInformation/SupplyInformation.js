@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import { Table, Row, Col } from 'antd';
 import { connect } from 'dva';
+import { SHIPPING_FEE_TYPE } from '../../constant/statusList';
 import styles from './supply-infomation.less';
 
-const shippingFee = ['包邮', '货到付款'];
 
 @connect(({ product, loading }) => ({
   product,
@@ -16,11 +16,12 @@ export default class SupplyInformation extends Component {
     this.columns = [
       {
         title: '序号',
-        dataIndex: 'id',
-        key: 'id',
+        dataIndex: 'idx',
+        key: 'idx',
+        render: (text, reocrd, idx) => (<span>{idx + 1}</span>),
       },
       {
-        title: '供应商名称',
+        title: '供应商公司名称',
         dataIndex: 'supplier_name',
         key: 'supplier_name',
       },
@@ -30,16 +31,16 @@ export default class SupplyInformation extends Component {
         key: 'gno',
       },
       {
-        title: '价格（含税）',
+        title: '销售单价（含税）',
         dataIndex: 'prices',
-        render: val => (<span >{val[0].price}</span>),
         key: 'price',
+        render: val => (<span >{val.length > 0 ? `${val.slice(0)[0].price}-${val.slice(-1)[0].price}` : '无'}</span>),
       },
       {
         title: '运费',
         dataIndex: 'shipping_fee_type',
         align: 'shipping_fee_type',
-        render: val => `${shippingFee[val - 1]}`,
+        render: val => `${SHIPPING_FEE_TYPE[val]}`,
       },
       {
         title: '库存数量',
@@ -48,39 +49,38 @@ export default class SupplyInformation extends Component {
       },
     ];
   }
+
   render() {
-    console.log('供货信息组件props', this.props);
-    const { product, loadding, productId } = this.props;
-    const currProduct = product.list.filter(val => (
-      val.id === productId
-    ));
-    console.log('供货信息组件props', this.props, currProduct);
+    const { data, headerData, loading } = this.props;
 
     return (
       <div>
         <div style={{ marginBottom: 5 }}>
           <Row className={styles['product-info']}>
-            <Col span={7} offset={1}>产品名称：{currProduct[0].product_name}</Col>
-            <Col span={8}>型号：{currProduct[0].partnumber}</Col>
-            <Col span={8}>品牌：{currProduct[0].brand_name}</Col>
-            <Col span={7} offset={1}>产品ID：{currProduct[0].pno}</Col>
             <Col span={8}>所属分类：
-              {`
-              ${currProduct[0].category.category_name}-${currProduct[0].category.children.category_name}
-              ${currProduct[0].category.children.children.category_name}-${currProduct[0].category.children.children.children.category_name}
-              `
+              {
+                headerData.product && `
+                ${headerData.product.category.category_name}-
+                ${headerData.product.category.children.category_name}-
+                ${headerData.product.category.children.children.category_name}-
+                ${headerData.product.category.children.children.children.category_name}`
               }
             </Col>
-            <Col span={8}>创建人：{currProduct[0].staff_name}</Col>
-            <Col span={7} offset={1}>创建时间：{moment(currProduct[0].created_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
+            <Col span={7} offset={1}>系列ID：{headerData.mno}</Col>
+            <Col span={7} offset={1}>系列名称：{headerData.product && headerData.product.product_name}</Col>
+            <Col span={8}>品牌：{headerData.product && headerData.product.brand.brand_name}</Col>
+            <Col span={8}>产品型号ID：{headerData.mno}</Col>
+            <Col span={8}>产品型号：{headerData.partnumber}</Col>
+            <Col span={8}>创建人：{headerData.creator}</Col>
+            <Col span={7} offset={1}>创建时间：{moment(headerData.created_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Col>
           </Row>
         </div>
         <Table
-          loading={loadding}
+          loading={loading}
           bordered
-          dataSource={product.supplierList}
+          dataSource={data}
           columns={this.columns}
-          rowKey={record => (`${record.pno}-${record.id}`)}
+          rowKey="gno"
         />
       </div>
     );

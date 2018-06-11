@@ -4,9 +4,13 @@ import styles from './richEditorShow.less';
 
 export default class RichEditorShow extends Component {
   render() {
-    console.log('html片段', this.props.content);
+    const { content } = this.props;
+    const isHtml = /<\/\S+>/.test(content);
     return (
-      <div className={styles['rich-text']} dangerouslySetInnerHTML={{ __html: this.props.content }} />
+      <div
+        className={styles['rich-text']}
+        dangerouslySetInnerHTML={{ __html: isHtml ? content : `<pre>${content}</pre>` }}
+      />
     );
   }
 }

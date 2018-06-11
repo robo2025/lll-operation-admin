@@ -1,74 +1,55 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Table, Button } from 'antd';
+import { Card, Button, Table, Form } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
-import ModifyProductForm from '../../components/CustomeForm/ModifyProductForm';
+import ProductForm from '../../components/CustomeForm/ProductForm';
+import { ACTION_FLAG } from '../../constant/statusList';
 import { queryString } from '../../utils/tools';
 
 import styles from './ProductDetail.less';
 
-const actionFlag = ['新增', '修改', '删除']; // 操作类型 (1:新增 2:修改 3:删除)
-// 其他属性列
-const attrClomns = [{
-  title: '属性名',
-  dataIndex: 'attr_name',
-  key: 'attr_name',
-}, {
-  title: '属性值',
-  dataIndex: 'attr_value',
-  key: 'attr_value',
-}];
-const operationTabList = [{
-  key: 'tab1',
-  tab: '',
-}];
+const FormItem = Form.Item;
+
 // 操作记录列
-const columns = [{
+const actionColumns = [{
   title: '操作类型',
   dataIndex: 'action_flag',
   key: 'action_flag',
-  render: val => <span>{actionFlag[val - 1]}</span>,
-}, {
-  title: '操作员',
-  dataIndex: 'username',
-  key: 'username',
-}, {
-  title: '执行结果',
-  dataIndex: 'status',
-  key: 'status',
-  render: () => (<span>成功</span>),
-}, {
-  title: '操作时间',
-  dataIndex: 'action_time',
-  key: 'action_time',
-  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+  render: val => <span>{ACTION_FLAG[val]}</span>,
 }, {
   title: '说明',
   dataIndex: 'change_message',
   key: 'change_message',
+}, {
+  title: '操作员',
+  dataIndex: 'creator',
+  key: 'creator',
+  render: (text, record) => (<span>{`${text}(${record.creator_id})`}</span>),
+}, {
+  title: '操作时间',
+  dataIndex: 'created_time',
+  key: 'created_time',
+  render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
 }];
+const formItemLayout2 = {
+  labelCol: { span: 3 },
+  wrapperCol: { span: 6 },
+};
 
 
-@connect(({ loading, product }) => ({
+@connect(({ product, logs, loading }) => ({
   product,
+  logs,
   loading,
 }))
+@Form.create()
 export default class GoodDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isShowModal: false,
-      isShowAttrMOdal: false,
-      operationkey: 'tab1',
       args: queryString.parse(window.location.href),
-      fields: {
-        pics: [],
-        other_attrs: [],
-      },
-      newFiled: {}, // 用户自定义的其他属性
-      otherAttrs: [],
     };
   }
 
@@ -78,77 +59,42 @@ export default class GoodDetail extends Component {
     // 获取商品详情
     dispatch({
       type: 'product/fetchDetail',
-      productId: args.prdId,
+      pno: args.pno,
     });
-    // 获取产品日志
+    // 获取产品操作日志
     dispatch({
-      type: 'product/queryLogs',
+      type: 'logs/fetch',
       module: 'product',
-      productId: args.prdId,
+      objectId: args.pno,
     });
   }
 
-  onCancel = () => {
-    this.setState({ isShowModal: false });
-    this.setState({ isShowAttrMOdal: false });
-  }
-
-  onOk = () => {
-    this.setState({ isShowModal: false });
-    const { newFiled, otherAttrsFiled, otherAttrs } = this.state;
-    if (newFiled.attr_name && newFiled.attr_value) {
-      this.setState({ isShowAttrMOdal: false }); // 隐藏添加属性弹窗
-      this.setState({
-        otherAttrsFiled: [
-          ...otherAttrsFiled,
-          { attr_name: newFiled.attr_name.value, attr_value: newFiled.attr_value.value },
-        ],
-        otherAttrs: [
-          ...otherAttrs,
-          {
-            id: otherAttrsFiled.length - 100,
-            attr_name: newFiled.attr_name.value,
-            attr_value: newFiled.attr_value.value,
-          },
-        ],
-      });
-      console.log('提交新属性', newFiled);
-    }
-  }
-
-  // 显示关联产品modal
-  showModal = () => {
-    this.setState({ isShowModal: true });
-  }
-  // 显示添加其他属性modal  
-  ShowAttrModal = () => {
-    this.setState({ isShowAttrMOdal: true });
-  }
-
-  /**
-  * 点击关联后事件
-  * @param {string=} prdId 产品ID
-  *
-  * */
-  handleAssociate = (prdId) => {
-    const { history } = this.props;
-    history.push(`/goods/new?origin_prdId=${prdId}`);
-    this.setState({ isShowModal: false });
-  }
-
-  // 当表单输入框被修改事件
-  handleFormChange = (changedFields) => {
-    this.setState({
-      fields: { ...this.state.fields, ...changedFields },
+  handleLogsTableChange = (pagination, filters, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues, args } = this.state;
+    const params = {
+      currentPage: pagination.current,
+      pageSize: pagination.pageSize,
+      offset: (pagination.current - 1) * (pagination.pageSize),
+    };
+    dispatch({
+      type: 'logs/fetch',
+      module: 'product',
+      objectId: args.pno,
+      offset: params.offset,
+      limit: params.pageSize,
     });
   }
-
 
   render() {
-    const { isShowModal, isShowAttrMOdal, otherAttrsFiled } = this.state;
-    const { product, loading } = this.props;
-
-    console.log('产品详情页:', product);
+    const { product, logs, loading } = this.props;
+    const { detail } = product;
+    const { getFieldDecorator } = this.props.form;
+    const paginationProps = {
+      showSizeChanger: true,
+      showQuickJumper: true,
+      total: logs.total,
+    };
 
     return (
       <PageHeaderLayout title="产品详情" >
@@ -156,43 +102,42 @@ export default class GoodDetail extends Component {
           <SectionHeader
             title="产品基础信息"
           />
-          <ModifyProductForm
+          <ProductForm
             loading={loading.models.product}
             data={product.detail}
-            onChange={this.handleFormChange}
           />
           <SectionHeader
-            title="产品其他属性"
+            title="规格参数"
           />
-          <div style={{ width: '50%', maxWidth: 500 }}>
-            <Table
-              className="attr-table"
-              bordered
-              pagination={false}
-              columns={attrClomns}
-              dataSource={product.detail.other_attrs || []}
-              locale={{
-                emptyText: '该产品没有其它属性',
-              }}
-            />
+          <div className="spec-wrap" style={{ width: 800 }}>
+            <Form>
+              {
+                detail.specs && detail.specs.map(val => (
+                  <FormItem
+                    label={val.spec_name}
+                    {...formItemLayout2}
+                    key={val.id}
+                  >
+                    {getFieldDecorator(`spec_${val.spec_name}`, {
+                    })(
+                      <span>{val.spec_value}{val.spec_unit}</span>
+                    )}
+                  </FormItem>
+                ))
+              }
+            </Form>
           </div>
-          <div className={styles['section-header']}>
-            <h2>操作日志</h2>
-          </div>
-          <Card
-            className={styles.tabsCard}
-            bordered={false}
-          >
-            <Table
-              pagination={{
-                defaultPageSize: 6,
-                pageSize: 6,
-              }}
-              loading={loading.models.product}
-              dataSource={product.logs}
-              columns={columns}
-            />
-          </Card>
+          <SectionHeader
+            title="操作日志"
+          />
+          <Table
+            loading={loading.models.logs}
+            rowKey="id"
+            columns={actionColumns}
+            dataSource={logs.list}
+            pagination={paginationProps}
+            onChange={this.handleLogsTableChange}
+          />
           <div className={styles['submit-btn-wrap']}>
             <Button type="primary" onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
           </div>

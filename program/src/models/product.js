@@ -1,10 +1,11 @@
-import { queryProducts, addProduct, removeProducts, modifyProduct, queryProductDetail, querySupplyInfo, queryOperationLog, exportProduct } from '../services/product';
+import { queryProducts, queryProductsByParams, addProduct, removeProducts, modifyProduct, queryProductDetail, querySupplyInfo, queryOperationLog, exportProduct } from '../services/product';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
 export default {
   namespace: 'product',
 
   state: {
+    all: [],
     list: [],
     detail: {},
     logs: [],
@@ -27,8 +28,19 @@ export default {
         headers,
       });
     },
-    *fetchDetail({ productId, success, error }, { call, put }) {
-      const response = yield call(queryProductDetail, { productId });
+    *fetchByParams({ params, success, error }, { call, put }) {
+      const response = yield call(queryProductsByParams, { params });
+      if (response.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') success(response);
+      } else if (typeof error === 'function') { error(response); return; }
+      
+      yield put({
+        type: 'saveAll',
+        payload: response.data,
+      });
+    },
+    *fetchDetail({ pno, success, error }, { call, put }) {
+      const response = yield call(queryProductDetail, { pno });
       if (response.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(response.data);
       } else if (typeof error === 'function') { error(response); return; }
@@ -49,8 +61,8 @@ export default {
         payload: response.data,
       });
     },
-    *modifyInfo({ prdId, data, success, error }, { call, put }) {
-      const res = yield call(modifyProduct, { prdId, data });
+    *modifyInfo({ pno, data, success, error }, { call, put }) {
+      const res = yield call(modifyProduct, { pno, data });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
@@ -77,8 +89,8 @@ export default {
         headers,
       });
     },
-    *remove({ ids, success, error }, { call, put }) {
-      const res = yield call(removeProducts, { ids });
+    *remove({ pnos, success, error }, { call, put }) {
+      const res = yield call(removeProducts, { pnos });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
@@ -103,8 +115,8 @@ export default {
         payload: res.data,
       });
     },
-    *queryLogs({ module, productId, success, error }, { call, put }) {
-      const res = yield call(queryOperationLog, { module, productId });
+    *queryLogs({ module, objectId, success, error }, { call, put }) {
+      const res = yield call(queryOperationLog, { module, objectId });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res.data);
       } else if (typeof error === 'function') { error(res); return; }
@@ -133,6 +145,12 @@ export default {
         ...state,
         list: action.payload,
         total: action.headers['x-content-total'] >> 0,
+      };
+    },
+    saveAll(state, action) {
+      return {
+        ...state,
+        all: action.payload,
       };
     },
     saveDetail(state, action) {

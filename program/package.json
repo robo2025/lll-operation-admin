@@ -27,6 +27,7 @@
     "bizcharts": "^3.1.0-beta.4",
     "bizcharts-plugin-slider": "^2.0.1",
     "braft-editor": "^1.6.1",
+    "china-division": "^2.0.0",
     "classnames": "^2.2.5",
     "dva": "^2.1.0",
     "dva-loading": "^1.0.4",

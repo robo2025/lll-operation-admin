@@ -1,18 +1,23 @@
+import { isUrl } from '../utils/utils';
+
 const menuData = [{
   name: '产品管理',
   icon: 'appstore-o',
   path: 'product',
   children: [
     {
-      name: '产品类目管理',
+      name: '产品类目列表',
       path: 'menu',
     },
     {
       name: '产品列表',
       path: 'list',
     },
+    {
+      name: '产品型号列表',
+      path: 'model',
+    },
   ],
-
 }, {
   name: '商品管理',
   icon: 'shop',
@@ -24,12 +29,12 @@ const menuData = [{
     },
   ],
 }, {
-  name: '客户订单管理',
+  name: '商品订单管理',
   path: 'orders',
-  icon: 'bars',
+  icon: 'pay-circle-o',
   children: [
     {
-      name: '客户订单列表',
+      name: '商品订单列表',
       path: 'list',
     },
     {
@@ -40,32 +45,56 @@ const menuData = [{
 }, {
   name: '退货管理',
   path: 'returns',
-  icon: 'bars',
+  icon: 'disconnect',
   children: [
     {
       name: '退货单列表',
       path: 'list',
     },
   ],
+}, {
+  name: '品牌管理',
+  path: 'brand',
+  icon: 'apple-o',
+  children: [
+    {
+      name: '品牌列表',
+      path: 'list',
+    },
+  ],
+}, {
+  name: '导入导出管理',
+  path: 'import-export',
+  icon: 'export',
+  children: [
+    {
+      name: '导入列表',
+      path: 'import-list',
+    },
+    {
+      name: '导出列表',
+      path: 'export-list',
+    },
+  ],
 }];
 
-function formatter(data, parentPath = '') {
-  const list = [];
-  data.forEach((item) => {
-    if (item.children) {
-      list.push({
-        ...item,
-        path: `${parentPath}${item.path}`,
-        children: formatter(item.children, `${parentPath}${item.path}/`),
-      });
-    } else {
-      list.push({
-        ...item,
-        path: `${parentPath}${item.path}`,
-      });
+function formatter(data, parentPath = '/', parentAuthority) {
+  return data.map((item) => {
+    let { path } = item;
+    if (!isUrl(path)) {
+      path = parentPath + item.path;
     }
+    const result = {
+      ...item,
+      path,
+      authority: item.authority || parentAuthority,
+    };
+    if (item.children) {
+      result.children = formatter(item.children, `${parentPath}${item.path}/`, item.authority);
+    }
+    return result;
   });
-  return list;
 }
 
 export const getMenuData = () => formatter(menuData);
+

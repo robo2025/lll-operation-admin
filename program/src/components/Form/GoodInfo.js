@@ -2,57 +2,38 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-04-03 15:59:14
+ * @Last Modified time: 2018-05-23 17:37:01
  */
 import React from 'react';
 import 'braft-editor/dist/braft.css';
 import { Form, Row, Col, Table, Tabs, Spin } from 'antd';
 import SectionHeader from '../../components/PageHeader/SectionHeader';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
+import { PIC_TYPES } from '../../constant/statusList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 
 import styles from './good-info.less';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-const mapImageType = ['正面', '反面', '侧面', '包装图一', '包装图二', '包装图三'];
 
 // 其他属性列
 const attrClomns = [{
   title: '属性名',
-  dataIndex: 'attr_name',
-  key: 'attr_name',
+  dataIndex: 'spec_name',
+  key: 'spec_name',
 }, {
   title: '属性值',
-  dataIndex: 'attr_value',
-  key: 'attr_value',
+  dataIndex: 'spec_unit',
+  key: 'spec_unit',
+  render: (text, record) => (<span>{record.spec_value}{text}</span>),
 }];
 
-
-@Form.create({
-  mapPropsToFields(props) {
-    const { data } = props;
-    const fields = {};
-    Object.keys(data).forEach((key) => {
-      fields[key] = Form.createFormField({
-        value: data[key],
-      });
-    });
-    return {
-      ...fields,
-    };
-  },
-  onValuesChange(props, values) {
-    props.onChange(values);
-  },
-})
+@Form.create()
 class GoodInfo extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-  }
-
-  componentDidMount() {
-    console.log('渲染好了', this.goodDescDom, this);
   }
 
   // 输入框有改变时
@@ -94,11 +75,14 @@ class GoodInfo extends React.Component {
       return <Spin spinning />;
     }
     const { product } = data;
+    const productModel = data.product_model;
     const category = product ? product.category : '';
     const categoryStr = category ?
       `${category.category_name}-${category.children.category_name}-${category.children.children.category_name}-${category.children.children.children.category_name}`
       : '';
-    console.log('product', data.product.description);
+    const supplierAdress = getAreaBycode(user.profile ? user.profile.district_id.toString() : '').join('');
+      
+
     return (
       <div className={styles['good-info-wrap']}>
         <SectionHeader title="商品基础信息" />
@@ -120,7 +104,6 @@ class GoodInfo extends React.Component {
               {...formItemLayout}
             >
               {getFieldDecorator('pno', {
-                initialValue: product.pno,
               })(
                 <span>{product.pno}</span>
               )}
@@ -149,9 +132,8 @@ class GoodInfo extends React.Component {
               {...formItemLayout}
             >
               {getFieldDecorator('partnumber', {
-                initialValue: product.partnumber,
               })(
-                <span>{product.partnumber}</span>
+                <span>{data.product_model ? data.product_model.partnumber : ''}</span>
               )}
             </FormItem>
             <FormItem
@@ -159,9 +141,8 @@ class GoodInfo extends React.Component {
               {...formItemLayout}
             >
               {getFieldDecorator('band', {
-                initialValue: product.brand_name,
               })(
-                <span>{product.brand_name}</span>
+                <span>{product.brand.brand_name}</span>
               )}
             </FormItem>
             <FormItem
@@ -169,9 +150,8 @@ class GoodInfo extends React.Component {
               {...formItemLayout}
             >
               {getFieldDecorator('en_name', {
-                initialValue: product.english_name,
               })(
-                <span>{product.english_name}</span>
+                <span>{product.brand.english_name}</span>
               )}
             </FormItem>
             <FormItem
@@ -179,9 +159,8 @@ class GoodInfo extends React.Component {
               {...formItemLayout}
             >
               {getFieldDecorator('prodution_place', {
-                initialValue: product.prodution_place,
               })(
-               <span>{product.prodution_place}</span>
+                <span>{product.brand.registration_place}</span>
               )}
             </FormItem>
             <FormItem
@@ -213,7 +192,6 @@ class GoodInfo extends React.Component {
                     rules: [{ required: false, message: '请输入库存量' }],
                   })(
                     <span>{data.stock}</span>
-                    // <Input style={{ position: 'relative', left: 2 }} />
                   )}
                 </FormItem>
               </Col>
@@ -277,7 +255,7 @@ class GoodInfo extends React.Component {
                   bordered
                   pagination={false}
                   size="small"
-                  rowKey={item => (item.id + Math.random)}
+                  rowKey="id"
                   dataSource={data.prices}
                   columns={columns}
                 />
@@ -296,10 +274,10 @@ class GoodInfo extends React.Component {
                     <img
                       className="good-pics"
                       src={val.img_url}
-                      alt={mapImageType[val.img_type - 1]}
-                      title={mapImageType[val.img_type - 1]}
+                      alt={PIC_TYPES[val.img_type]}
+                      title={PIC_TYPES[val.img_type]}
                     />
-                    <p style={{ textAlign: 'center' }}>{mapImageType[val.img_type - 1]}</p>
+                    <p style={{ textAlign: 'center' }}>{PIC_TYPES[val.img_type]}</p>
                   </Col>
                 ))
               }
@@ -309,19 +287,25 @@ class GoodInfo extends React.Component {
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
-          <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
-            <TabPane tab="商品概述" key="1">
-              <RichEditorShow content={data.product.summary} />
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="产品概述" key="1">
+              <RichEditorShow content={data.product ? data.product.summary : '无'} />
             </TabPane>
-            <TabPane tab="商品详情" key="2">
-              <RichEditorShow content={data.product.description} />
+            <TabPane tab="产品详情" key="2">
+              <RichEditorShow content={data.product ? data.product.description : '无'} />
             </TabPane>
-            <TabPane tab="常见问题FAQ" key="3" >
-              <RichEditorShow content={data.product.faq} />
+            <TabPane tab="学堂" key="3">
+              <RichEditorShow content={data.product ? data.product.course : '无'} />
+            </TabPane>
+            <TabPane tab="视频详解" key="4">
+              <RichEditorShow content={data.product ? data.product.video : '无'} />
+            </TabPane>
+            <TabPane tab="常见问题FAQ" key="5" >
+              <RichEditorShow content={data.product ? data.product.faq : '无'} />
             </TabPane>
           </Tabs>
         </div>
-        <SectionHeader title="产品其他属性" />
+        <SectionHeader title="规格参数" />
         <div className="other-attrs" style={{ width: 680 }}>
           <Table
             className="attr-table"
@@ -329,7 +313,7 @@ class GoodInfo extends React.Component {
             size="small"
             pagination={false}
             columns={attrClomns}
-            dataSource={product.other_attrs}
+            dataSource={productModel.specs}
             locale={{
               emptyText: '该产品无其它属性',
             }}
@@ -358,7 +342,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>{user.supplier.contactname}</span>
+                <span>{user.username}</span>
               </FormItem>
             </Col>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -367,7 +351,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>{user.supplier.mobile}</span>
+                <span>{user.mobile}</span>
               </FormItem>
             </Col>
             <Col span={8} style={{ textAlign: 'left' }}>
@@ -376,7 +360,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>{user.supplier.company}</span>
+                <span>{user.profile ? user.profile.company : ''}</span>
               </FormItem>
             </Col>
           </Row>
@@ -387,7 +371,7 @@ class GoodInfo extends React.Component {
                 labelCol={{ span: 5 }}
                 wrapperCol={{ span: 10 }}
               >
-                <span>{user.supplier.shipping_address}</span>
+                <span>{supplierAdress}{user.profile ? user.profile.address : ''}</span>
               </FormItem>
             </Col>
           </Row>

@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs } from 'antd';
+import { Form, Cascader, message, Input, Row, Col, Upload, Icon, Modal, Button, Tabs, Select } from 'antd';
 import RichEditor from '../../components/RichEditor/RichEditor';
 import { checkFile, getFileSuffix, removeObjFromArr, replaceObjFromArr } from '../../utils/tools';
 import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
 import styles from './product-info.less';
 
+const FILE_CDN = FILE_SERVER;
 const FormItem = Form.Item;
+const { Option } = Select;
 const { TabPane } = Tabs;
+const { TextArea } = Input;
 const IMAGE_TYPES = ['jpg', 'png', 'gif', 'jpeg']; // 支持上传的图片文件类型
 const CAD_TYPES = ['doc', 'docx', 'pdf', 'dwt', 'dxf', 'dxb'];// 支持的CAD文件格式
 function getStanrdCatalog(data) {
@@ -18,8 +21,6 @@ function getStanrdCatalog(data) {
     }
   });
 }
-const FILE_CDN = FILE_SERVER;
-const UPLOAD_URL = QINIU_SERVER;
 const mapImageType = {// 图片类型：正面、反面、侧面、包装图
   a: '1',
   b: '2',
@@ -73,7 +74,7 @@ class ProductForm extends Component {
       previewImage: '',
       file: { uid: '', name: '' },
       pics: [], // 产品图片集合
-      cad_url: [], // 产品cad文件集合
+      cad_urls: [], // 产品cad文件集合
       cadUrl: [], // 产品cad文件集合      
       a: [],
       b: [],
@@ -85,13 +86,12 @@ class ProductForm extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('will reiceve', nextProps);
-    const { pics, cad_url } = nextProps.data;
+    const { pics, cad_urls } = nextProps.data;
     if (pics) {
       this.setState({
         pics,
-        cad_url: cad_url || [],
-        cadUrl: getCAD(cad_url),
+        cad_urls: cad_urls || [],
+        cadUrl: getCAD(cad_urls),
         a: getPic('1', pics),
         b: getPic('2', pics),
         c: getPic('3', pics),
@@ -113,6 +113,7 @@ class ProductForm extends Component {
 
   // 输入框有改变时
   handleChange(key, value) {
+    console.log('输入内容', value);
     const tempJson = {};
     tempJson[key] = value;
     this.props.onAttrChange(tempJson);
@@ -136,7 +137,7 @@ class ProductForm extends Component {
   // cad和图片上传时处理
   handleUploaderChange(key, fileList) {
     console.log('文件上传列表：', key, fileList);
-    const { pics, cad_url, cadUrl } = this.state;
+    const { pics, cad_urls, cadUrl } = this.state;
     const { onAttrChange } = this.props;
     // 如果上传的是cad文件
     if (key === 'cadUrl') {
@@ -158,13 +159,13 @@ class ProductForm extends Component {
               },
             ],
           });
-          onAttrChange({ cad_url: [...cad_url, file.response.key] });
+          onAttrChange({ cad_urls: [...cad_urls, file.response.key] });
         } else if (file.status === 'complete') {
           const completeCADS = fileList.filter(val => val.status === 'complete');
           this.setState({
             cadUrl: completeCADS,
           });
-          onAttrChange({ cad_url: completeCADS.map(val => (val.url)) });
+          onAttrChange({ cad_urls: completeCADS.map(val => (val.url)) });
         } else if (!file.status || file.status === 'error') {
           this.setState({
             cadUrl: [
@@ -216,7 +217,7 @@ class ProductForm extends Component {
         }
         return file;
       });
-    } else if (key === 'cad_url') {
+    } else if (key === 'cad_urls') {
       console.log('cad fileList', fileList);
     }
   }
@@ -226,14 +227,13 @@ class ProductForm extends Component {
   }
 
   render() {
-    console.log('new product state:', this.state);
     const formItemLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 15 },
     };
 
     const { getFieldDecorator } = this.props.form;
-    const { catalog, uploadToken } = this.props;
+    const { data, catalog, uploadToken, brands } = this.props;
     const { previewVisible, previewImage, a, b, c, d4, d5, d6, file, cadUrl } = this.state;
     const uploadButton = (
       <div>
@@ -241,7 +241,6 @@ class ProductForm extends Component {
         <div className="ant-upload-text">上传</div>
       </div>
     );
-
     getStanrdCatalog(catalog);// 将服务器目录结构转换成组件标准结构    
 
     return (
@@ -250,7 +249,7 @@ class ProductForm extends Component {
         <div style={{ float: 'left', width: '50%' }}>
           <Form layout="horizontal">
             <FormItem
-              label="所属分类"
+              label="所属类目"
               {...formItemLayout}
             >
               {getFieldDecorator('category', {
@@ -266,42 +265,26 @@ class ProductForm extends Component {
               )}
             </FormItem>
             <FormItem
-              label="产品名称"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('product_name', {
-                rules: [{
-                  required: true,
-                  message: '请填写产品名称',
-                }],
-              })(
-                <Input />
-              )}
-            </FormItem>
-            <FormItem
-              label="型号"
-              {...formItemLayout}
-            >
-              {getFieldDecorator('partnumber', {
-                rules: [{
-                  required: true,
-                  message: '请填写产品型号',
-                }],
-              })(
-                <Input />
-              )}
-            </FormItem>
-            <FormItem
               label="品牌"
               {...formItemLayout}
             >
-              {getFieldDecorator('brand_name', {
+              {getFieldDecorator('bno', {
                 rules: [{
                   required: true,
                   message: '请填写产品品牌',
                 }],
               })(
-                <Input />
+                <Select
+                  showSearch
+                  optionFilterProp="children"
+                  placeholder="请选择一个品牌"
+                >
+                  {
+                    brands.map(val => (
+                      <Option value={val.bno} key={val.bno}>{val.brand_name}</Option>
+                    ))
+                  }
+                </Select>
               )}
             </FormItem>
             <FormItem
@@ -313,19 +296,33 @@ class ProductForm extends Component {
                   required: false,
                   message: '请填写产品英文名',
                 }],
+                initialValue: data.english_name || '',
               })(
-                <Input />
+                <Input disabled />
               )}
             </FormItem>
             <FormItem
               label="产地"
               {...formItemLayout}
             >
-              {getFieldDecorator('prodution_place', {
+              {getFieldDecorator('registration_place', {
                 rules: [{
                   required: true,
                   message: '请完善产品产地',
-
+                }],
+                initialValue: data.registration_place || '',
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem
+              label="产品名称"
+              {...formItemLayout}
+            >
+              {getFieldDecorator('product_name', {
+                rules: [{
+                  required: true,
+                  message: '请填写产品名称',
                 }],
               })(
                 <Input />
@@ -340,7 +337,7 @@ class ProductForm extends Component {
                 >
                   <Upload
                     name="file"
-                    action={UPLOAD_URL}
+                    action={QINIU_SERVER}
                     fileList={cadUrl}
                     beforeUpload={currFile => (this.beforeUpload('cadUrl', currFile))}
                     onChange={({ fileList }) => { this.handleUploaderChange('cadUrl', fileList); }}
@@ -372,7 +369,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={a}
@@ -392,7 +389,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={b}
@@ -412,7 +409,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={c}
@@ -432,7 +429,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={d4}
@@ -452,7 +449,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={d5}
@@ -472,7 +469,7 @@ class ProductForm extends Component {
             <Col span={8}>
               <Upload
                 name="file"
-                action={UPLOAD_URL}
+                action={QINIU_SERVER}
                 listType="picture-card"
                 onPreview={this.handlePreview}
                 fileList={d6}
@@ -494,11 +491,16 @@ class ProductForm extends Component {
         {/* 商品描述、详情 */}
         <div style={{ clear: 'both' }} />
         <div className="good-desc">
-          <Tabs defaultActiveKey="1" onChange={(key) => { console.log(key); }}>
+          <Tabs defaultActiveKey="1" >
             <TabPane tab="*产品概述" key="1">
-              <RichEditor
+              {/* <RichEditor
                 onChange={(html) => { this.handleChange('summary', html); }}
                 token={uploadToken}
+              /> */}
+              <TextArea
+                style={{ height: 500 }}
+                defaultValue=""
+                onChange={(e) => { this.handleChange('summary', e.target.value); }}
               />
             </TabPane>
             <TabPane tab="*产品详情" key="2">
@@ -507,7 +509,19 @@ class ProductForm extends Component {
                 token={uploadToken}
               />
             </TabPane>
-            <TabPane tab="常见问题FAQ" key="3" >
+            <TabPane tab="学堂" key="3">
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}
+              />
+            </TabPane>
+            <TabPane tab="视频详解" key="4">
+              <RichEditor
+                onChange={(html) => { this.handleChange('description', html); }}
+                token={uploadToken}
+              />
+            </TabPane>
+            <TabPane tab="常见问题FAQ" key="5" >
               <RichEditor
                 onChange={(html) => { this.handleChange('faq', html); }}
                 token={uploadToken}
@@ -519,7 +533,6 @@ class ProductForm extends Component {
     );
   }
 }
-
 
 export default ProductForm;
 

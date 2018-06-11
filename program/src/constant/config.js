@@ -6,18 +6,21 @@
 export const URL = 'https://login.robo2025.com';
 
 // 网站内容接口URL
-export const API_URL = '//api-product.robo2025.com/api/admin';
+export const API_URL = 'https://api.robo2025.com/scm/operation';
+
+
+// 操作日志URL
+export const OPERATION_URL = 'https://api.robo2025.com/scm';
 
 // 上传文件获取token URL
-export const UPLOAD_URL = '//api-common-service.robo2025.com';
+export const UPLOAD_URL = 'https://api.robo2025.com/common';
 
 // 用户管理系统API URL
-export const USERS_URL = '//api-user.robo2025.com/api';
+export const USERS_URL = 'https://api.robo2025.com/user/service';
 
 // 订单系统接口
-export const ORDERS_URL = '//api-order.robo2025.com';
-// export const ORDERS_URL = 'http://192.168.4.4:8009';
-
+export const ORDERS_URL = 'https://api.robo2025.com/order';
+// export const ORDERS_URL = 'http://192.168.2.109:8009';
 
 // 验证登录接口URL
 export const LOGIN_URL = `${URL}/server/authorize`;
@@ -35,7 +38,7 @@ const myHost = `${window.location.protocol}//${window.location.host}`;
 export const NEXT_URL = `${myHost}/#/test`;
 
 // 前端首页URL
-export const HOME_PAGE = `${myHost}/#/product/list`;
+export const HOME_PAGE = `${myHost}/#/product/menu`;
 
 // 前端验证URL
 export const VERIFY_PAGE = `${myHost}/#/test`;
@@ -46,9 +49,10 @@ export const QINIU_SERVER = '//upload.qiniup.com';
 // 文件服务器URL
 export const FILE_SERVER = '//imgcdn.robo2025.com/';
 
+// 七牛云上传地址
+
 // 分页：每页显示多少记录
 export const PAGE_SIZE = 10;
-
 
 // 接口请求状态码
 export const SUCCESS_STATUS = 10000; // 操作成功

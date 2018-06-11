@@ -46,6 +46,7 @@ const goodsColumns = [{
   dataIndex: 'sale_price',
   key: 'sale_price',
 }];
+<<<<<<< HEAD
 // 发货记录列
 const logisticsColumns = [{
   title: '商品名称',
@@ -84,6 +85,8 @@ const logisticsColumns = [{
   dataIndex: 'delivery_id',
   key: 'delivery_id',
 }];
+=======
+>>>>>>> dev2.0
 // 操作日志列
 const actionColumns = [{
   title: '操作记录',
@@ -106,11 +109,21 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>),
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
   key: 'time_consuming',
+}];
+// 发货记录列
+const logisticsColumns = [{
+  title: '物流公司名称',
+  dataIndex: 'logistics_company',
+  key: 'logistics_company',
+}, {
+  title: '物流单号',
+  dataIndex: 'logistics_number',
+  key: 'logistics_number',
 }];
 
 @connect(({ returns, orders, loading }) => ({
@@ -156,7 +169,7 @@ export default class ReturnsDetail extends Component {
     const returnInfo = return_info || {};
     const orderGoodsList = [order_detail];
     const operationRecord = operation_record || [];
-    const returnLogistics = return_logistics || {};
+    const returnLogistics = return_logistics || [];
     const exceptionAction = operationRecord.filter((val) => {
       return val.is_abnormal;
     });
@@ -168,7 +181,7 @@ export default class ReturnsDetail extends Component {
             <Description term="退货单编号">{returnInfo.return_sn}</Description>
             <Description term="处理状态">{DEAL_STATUS[returnInfo.is_deal]}</Description>
             <Description term="源订单编号">{returnInfo.order_sn}(客户订单号)</Description>
-            <Description term="退货申请时间" >{moment(returnInfo.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
+            <Description term="退货申请时间" >{moment(returnInfo.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>
@@ -209,8 +222,8 @@ export default class ReturnsDetail extends Component {
           </div>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="物流记录" style={{ marginBottom: 32 }}>
-            <Description term="物流公司名称">{returnLogistics.logistics_company}</Description>
-            <Description term="物流单号">{returnLogistics.logistics_number}</Description>
+            <Description term="物流公司名称">{returnLogistics.length > 0 ? returnLogistics[0].logistics_company : ''}</Description>
+            <Description term="物流单号">{returnLogistics.length > 0 ? returnLogistics[0].logistics_number : ''}</Description>
           </DescriptionList>
           {/* <Divider style={{ marginBottom: 32 }} />           */}
           <div className={styles.title}>操作日志记录</div>

@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import qs from 'qs';
 import { ORDERS_URL } from '../constant/config';
 import lyRequest from '../utils/lyRequest';
 
@@ -128,20 +129,9 @@ export async function queryRejectDelay({ orderId, data }) {
  * 搜索接口
  * 
  */
-export async function querySearchResults({ 
-  guest_order_sn, pay_status, order_status, supplier_name, guest_company_name, start_time, end_time,
- }) {
-  const guestOrderSN = guest_order_sn || '';
-  const orderStatus = order_status || '';
-  const payStatus = pay_status || '';
-  const supplierName = supplier_name || '';
-  const guestCompanyName = guest_company_name || '';
-  const startTime = start_time || '';
-  const endTime = end_time || '';
-
+export async function querySearchResults({ offset = 0, limit = 10, params }) {
   const accessToken = Cookies.get('access_token');
-  return lyRequest(`${ORDER_SYS_URL}/order?
-  guest_order_sn=${guestOrderSN}&pay_status=${payStatus}&order_status=${orderStatus}&supplier_name=${supplierName}&guest_company_name=${guestCompanyName}&start_time=${startTime}&end_time=${endTime}`, {
+  return lyRequest(`${ORDER_SYS_URL}/order?offset=${offset}&limit=${limit}&${qs.stringify(params)}`, {
     headers: {
       Authorization: accessToken,
     },

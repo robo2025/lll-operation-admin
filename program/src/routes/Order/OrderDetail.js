@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Card, Table, Divider, Row, Col, message } from 'antd';
+import { Card, Table, Divider, Row, Col, Button, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import { queryString, handleServerMsg } from '../../utils/tools';
-import { ORDER_STATUS, PAY_STATUS, ACTION_STATUS } from '../../constant/statusList';
+import { ORDER_STATUS, ACTION_STATUS } from '../../constant/statusList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 
 import styles from './OrderDetail.less';
-import order from '../../models/order';
 
 const { Description } = DescriptionList;
 const goodsData = [];// 订单商品数据
@@ -58,69 +58,44 @@ const goodsColumns = [{
 // 发货记录列
 const logisticsColumns = [{
   title: '商品名称',
-  dataIndex: 'goodName',
-  key: 'goodName',
+  dataIndex: 'goods_name',
+  key: 'goods_name',
 }, {
   title: '型号',
-  dataIndex: 'type',
-  key: 'type',
+  dataIndex: 'model',
+  key: 'model',
 }, {
   title: '品牌',
   dataIndex: 'brand',
   key: 'brand',
 }, {
   title: '数量',
-  dataIndex: 'count',
-  key: 'count',
-}, {
-  title: '发货日期',
-  dataIndex: 'delivery',
-  key: 'delivery',
+  dataIndex: 'number',
+  key: 'number',
 }, {
   title: '送货人',
-  dataIndex: 'delivery_man',
-  key: 'delivery_man',
+  dataIndex: 'sender',
+  key: 'sender',
+  render: text => (<span>{text || '不可见'}</span>),  
 }, {
   title: '联系号码',
   dataIndex: 'mobile',
   key: 'mobile',
+  render: text => (<span>{text || '不可见'}</span>),
 }, {
   title: '物流公司',
-  dataIndex: 'delivery_company',
-  key: 'delivery_company',
+  dataIndex: 'logistics_company',
+  key: 'logistics_company',
 }, {
   title: '物流单号',
-  dataIndex: 'delivery_id',
-  key: 'delivery_id',
+  dataIndex: 'logistics_number',
+  key: 'logistics_number',
+}, {
+  title: '发货日期',
+  dataIndex: 'add_time',
+  key: 'add_time',
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>),
 }];
-for (let i = 0; i < 3; i++) { // 生成订单商品假数据
-  goodsData.push({
-    id: i + 1,
-    name: '测试' + i,
-    type: '测试' + i,
-    price: 10,
-    num: 5,
-    delivery: '当天',
-    yh: 0,
-    price2: 10,
-    amount: 50,
-  });
-}
-for (let i = 0; i < 3; i++) { // 生成订单商品假数据
-  logisticsData.push({
-    id: i + 1,
-    goodName: '压轧滚珠丝杠　轴径28·32、螺距6·10·32 标准螺帽' + i,
-    type: '测试' + i,
-    type: '测试' + i,
-    brand: '欧姆龙',
-    num: 5,
-    delivery: '2017-12-7 11:45:30',
-    delivery_man: '王麻子',
-    mobile: '13574488306',
-    delivery_company: '恒运货运',
-    delivery_id: 'HYWL12345789',
-  });
-}
 // 操作日志tab
 const operationTabList = [{
   key: 'tab1',
@@ -151,22 +126,14 @@ const actionColumns = [{
   title: '操作时间',
   dataIndex: 'add_time',
   key: 'add_time',
-  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD h:mm:ss')}</span>),
+  render: text => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>),
 }, {
   title: '耗时',
   dataIndex: 'time_consuming',
   key: 'time_consuming',
   render: text => (<span>{text}s</span>),
 }];
-const actionLogs = [{
-  id: 1,
-  desc: '提交订单',
-  operater: 'admin',
-  detail: '未支付',
-  progress: '已支付',
-  create_time: '2017-10-12 12:56:30',
-  time: 5,
-}];
+
 
 @connect(({ orders, loading }) => ({
   orders,
@@ -192,7 +159,6 @@ export default class OrderDetail extends Component {
   }
 
   onOperationTabChange = (key) => {
-    console.log(key);
     this.setState({ operationkey: key });
   }
 
@@ -212,12 +178,13 @@ export default class OrderDetail extends Component {
     receipt_info = receipt_info || {};
     supplier_info = supplier_info || {};
     order_detail = order_detail || {};
-    delivery_info = delivery_info || {};
+    delivery_info = delivery_info || [];
     operation = operation || [];
     const orderGoodsList = [order_detail];
     const exceptionAction = operation.filter((val) => {
       return val.is_abnormal;
     });
+    const deliveryInfo = delivery_info;
     const contentList = {
       tab1: <Table
         pagination={{
@@ -255,18 +222,20 @@ export default class OrderDetail extends Component {
       money += val.subtotal_money;
     });
 
+    const supplierAdress = getAreaBycode(supplier_info.profile ? supplier_info.profile.district_id.toString() : '130303').join('');
+
 
     // console.log('订单详情', order_info);
     return (
       <PageHeaderLayout title="订单详情">
         <Card bordered={false} className={styles['order-detail']} loading={loading}>
           <DescriptionList size="large" title="订单信息" style={{ marginBottom: 32 }}>
-            <Description term="客户订单编号">{order_info.son_order_sn}</Description>
+            <Description term="商品订单号">{order_info.son_order_sn}</Description>
             <Description term="支付状态">{mapPayStatus[order_info.pay_status]}</Description>
             <Description term="订单状态">{ORDER_STATUS[order_info.order_status]}</Description>
-            <Description term="母订单编号">{order_info.order_sn}</Description>
+            <Description term="订单号">{order_info.order_sn}</Description>
             <Description term="佣金服务费">{commission}元</Description>
-            <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD h:mm:ss')}</Description>
+            <Description term="下单时间" >{moment(order_info.add_time * 1000).format('YYYY-MM-DD HH:mm:ss')}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="客户信息" style={{ marginBottom: 32 }}>
@@ -287,10 +256,10 @@ export default class OrderDetail extends Component {
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <DescriptionList size="large" title="供应商信息" style={{ marginBottom: 32 }}>
-            <Description term="联系人">{supplier_info.linkman}</Description>
+            <Description term="联系人">{supplier_info.username}</Description>
             <Description term="联系电话">{supplier_info.mobile}</Description>
-            <Description term="公司名称">{supplier_info.company_name}</Description>
-            <Description term="收货地址">{supplier_info.address}</Description>
+            <Description term="公司名称">{supplier_info.profile ? supplier_info.profile.company : ''}</Description>
+            <Description term="收货地址">{supplierAdress}{supplier_info.profile ? supplier_info.profile.address : ''}</Description>
           </DescriptionList>
           <Divider style={{ marginBottom: 32 }} />
           <div className={styles.title}>订单商品明细</div>
@@ -340,16 +309,23 @@ export default class OrderDetail extends Component {
             </Row>
           </div>
           <Divider style={{ marginBottom: 32 }} />
+          <DescriptionList size="large" title="异常备注" style={{ marginBottom: 32 }}>
+            <Description term="说明">{order_info.remarks || '无'}</Description>
+          </DescriptionList>
+          <Divider style={{ marginBottom: 32 }} />          
           <div className={styles.title}>发货记录</div>
           <Table
             style={{ marginBottom: 24 }}
             pagination={false}
             loading={false}
-            dataSource={[]}
+            dataSource={deliveryInfo}
             columns={logisticsColumns}
             rowKey="id"
+            locale={{
+              emptyText: '暂无物流信息',
+            }}
           />
-          {/* <Divider style={{ marginBottom: 32 }} />           */}
+          {/* <Divider style={{ marginBottom: 32 }} /> */}
           <div className={styles.title}>操作日志记录</div>
           <Card
             className={styles.tabsCard}
@@ -359,6 +335,9 @@ export default class OrderDetail extends Component {
           >
             {contentList[this.state.operationkey]}
           </Card>
+          <div className={styles['submit-btn-wrap']}>
+            <Button type="primary" onClick={() => { this.props.history.goBack(); }}>返回列表</Button>
+          </div>
         </Card>
       </PageHeaderLayout>
     );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, Row, Col, Upload, Modal, Tabs, message } from 'antd';
+import { Form, Row, Col, Upload, Modal, Tabs, message } from 'antd';
 import RichEditorShow from '../../components/RichEditor/RichEidtorShow';
 import { checkFile, replaceObjFromArr } from '../../utils/tools';
 import styles from './good-form.less';
@@ -253,7 +253,7 @@ export default class NewGoodForm extends Component {
               label="产地"
               {...formItemLayout}
             >
-                <span>{data.prodution_place}</span>
+              <span>{data.prodution_place}</span>
             </FormItem>
           </Form>
         </div >
