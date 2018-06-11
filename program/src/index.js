@@ -1,13 +1,13 @@
 import '@babel/polyfill';
 import 'url-polyfill';
 import dva from 'dva';
+import { hashHistory } from 'dva/router';
+import createLoading from 'dva-loading';
 import 'moment/locale/zh-cn';
 import FastClick from 'fastclick';
 import './g2';
 import './rollbar';
 import onError from './error';
-import { hashHistory } from 'dva/router';
-import createLoading from 'dva-loading';
 
 import './index.less';
 // 1. Initialize
