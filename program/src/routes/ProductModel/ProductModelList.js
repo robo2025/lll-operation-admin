@@ -524,6 +524,7 @@ export default class ProductModelList extends Component {
               onChange={this.handleCustomizableTableChange}
               defaultPage={args.page || 1}
               total={productModel.total}
+              rowKey="mno"
             />
           </div>
           <Modal

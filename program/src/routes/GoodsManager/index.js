@@ -251,7 +251,7 @@ export default class GoodsMananger extends Component {
             </FormItem>
           </Col>
           <Col xxl={4} md={6} sm={24}>
-            <FormItem label="上限架状态">
+            <FormItem label="上下架状态">
               {getFieldDecorator('publish_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>
@@ -318,7 +318,7 @@ export default class GoodsMananger extends Component {
             </FormItem>
           </Col>
           <Col xll={4} md={6} sm={24}>
-            <FormItem label="上限架状态">
+            <FormItem label="上下架状态">
               {getFieldDecorator('publish_status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="0">全部</Option>

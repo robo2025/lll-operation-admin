@@ -166,7 +166,20 @@ export default class productModelDetail extends Component {
                   ))
                 }
               </Row>
+              <div style={{ marginBottom: 20 }}>
+                <h3>CAD图</h3>
+              </div>
+              <Row gutter={24} className={styles['pics-wrap']}>
+                {
+                  detail.product && detail.product.cad_urls.map((val, idx) => (
+                    <Row span={8} key={idx}>
+                      <a href={val} target="_blank">{val}</a>
+                    </Row>
+                  ))
+                }
+              </Row>
             </div>
+            <div style={{ clear: 'both' }} />
           </div>
           <div style={{ clear: 'both' }} />
           <SectionHeader
