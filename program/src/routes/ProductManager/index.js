@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Icon, Button, DatePicker, message, Modal, Checkbox } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Icon, Button, DatePicker, message, Modal, Checkbox, Popconfirm } from 'antd';
 import ProductTable from '../../components/StandardTable/ProductTable';
 import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -394,13 +394,14 @@ export default class ProductManager extends Component {
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
-              <span>
-                <Button
-                  onClick={this.removeProducts}
-                >
+              <Popconfirm
+                title="确定要删除吗?"
+                onConfirm={this.removeProducts}
+              >
+                <Button >
                   删除
                 </Button>
-              </span>
+              </Popconfirm>
               <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
             <Modal
