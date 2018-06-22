@@ -140,6 +140,7 @@ export default class productModelNew extends Component {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         console.log('校验出错', err);
+        return;
       }
       // 从fieldsValue中取出参数项
       const specs = [];
