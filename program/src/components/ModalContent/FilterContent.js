@@ -87,7 +87,8 @@ export default class FilterContent extends Component {
             <Search
               placeholder="请输入你要搜索的参数"
               onSearch={(value) => { onRefreshSpecs(data.id, { spec_name: value }); }}
-              style={{ width: 200 }}
+              enterButton
+              style={{ width: 260 }}
             />
           </div>
           <Button type="primary" onClick={() => { onRefreshSpecs(data.id); }}>刷新</Button>

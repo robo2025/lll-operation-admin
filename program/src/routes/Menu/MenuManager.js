@@ -25,7 +25,7 @@ const modalData = {
   },
   add: {
     width: 500,
-    title: '筛选项设置',
+    title: '新增类目',
     component: AddCatalogContent,
   },
 };
@@ -256,6 +256,7 @@ class MenuManager extends React.Component {
           const lastCatelog = cate[cate.length - 1];
           this.dispatchAddCatalog({ pid: lastCatelog.id, ...values });
         }
+        this.$formObj.resetFields();
       });
     } else {
       this.setState({

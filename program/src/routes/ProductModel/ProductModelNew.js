@@ -140,6 +140,7 @@ export default class productModelNew extends Component {
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
         console.log('校验出错', err);
+        return;
       }
       // 从fieldsValue中取出参数项
       const specs = [];
@@ -297,7 +298,7 @@ export default class productModelNew extends Component {
                   {getFieldDecorator('partnumber', {
                     rules: [{
                       required: true,
-                      message: '请输入...',
+                      message: '请输入产品型号',
                     }],
                   })(
                     <Input />

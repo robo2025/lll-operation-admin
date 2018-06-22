@@ -28,6 +28,7 @@ export default class CustomizableTable extends React.Component {
       defaultCurrent: defaultPage - 0 || 1,
       total,
     };
+    console.log('rokey', rowKey);
 
     return (
       <div className={styles.standardTable}>
