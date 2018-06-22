@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import qs from 'qs';
 import Cookies from 'js-cookie';
 import moment from 'moment';
-import { Card, Row, Col, Form, Input, Upload, Button, Icon, DatePicker, Select, Divider, Modal, message } from 'antd';
+import { Card, Row, Col, Form, Input, Upload, Button, Icon, DatePicker, Select, Divider, Modal, Popconfirm, message } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
@@ -487,13 +487,14 @@ export default class ProductModelList extends Component {
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" href="#/product/model/add">新建</Button>
-              <span>
-                <Button
-                  onClick={this.removeProductsModel}
-                >
+              <Popconfirm
+                title="确定删除吗？"
+                onConfirm={this.removeProductsModel}
+              >
+                <Button>
                   删除
                 </Button>
-              </span>
+              </Popconfirm>
               <Button onClick={this.showExportModal}>导出数据</Button>
               <div style={{ display: 'inline-block', marginLeft: 32 }}>
                 <Upload
