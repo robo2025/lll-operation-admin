@@ -66,6 +66,7 @@ const menuData = [{
   name: '导入导出管理',
   path: 'import-export',
   icon: 'export',
+  hideInMenu: true, // 隐藏导入导出菜单
   children: [
     {
       name: '导入列表',
