@@ -38,8 +38,8 @@ class SolutionDetail extends React.Component {
     this.setState({ key });
   };
   render() {
-    const { profile } = this.props;
-    const { customer, supplier, supplierInfo } = profile;
+    const { profile, loading } = this.props;
+    const { customer, supplier } = profile;
     if (!customer) {
       return <Spin />;
     }
@@ -95,7 +95,7 @@ class SolutionDetail extends React.Component {
         activeTabKey={this.state.key}
         onTabChange={this.onTabChange}
       >
-        {contentList[this.state.key]}
+        <Spin spinning={loading}>{contentList[this.state.key]}</Spin>
       </PageHeaderLayout>
     );
   }
