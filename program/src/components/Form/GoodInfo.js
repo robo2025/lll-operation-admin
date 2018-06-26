@@ -2,7 +2,7 @@
  * @Author: lll
  * @Date: 2018-01-31 16:19:39
  * @Last Modified by: lll
- * @Last Modified time: 2018-05-23 17:37:01
+ * @Last Modified time: 2018-06-22 13:43:10
  */
 import React from 'react';
 import 'braft-editor/dist/braft.css';
@@ -223,8 +223,8 @@ class GoodInfo extends React.Component {
               }
             </FormItem>
             {
-              product.cad_url ?
-                product.cad_url.map((val, idx) => (
+              product.cad_urls ?
+                product.cad_urls.map((val, idx) => (
                   <Row gutter={24} key={idx}>
                     <Col span={12}>
                       <FormItem
@@ -240,7 +240,7 @@ class GoodInfo extends React.Component {
                         labelCol={{ span: 1 }}
                         wrapperCol={{ span: 20, offset: 15 }}
                       >
-                        <a href={val}>查看</a>
+                        <a href={val} target="_blank">查看</a>
                       </FormItem>
                     </Col>
                   </Row>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Icon, Button, DatePicker, message, Modal, Checkbox } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Icon, Button, DatePicker, message, Modal, Checkbox, Popconfirm } from 'antd';
 import ProductTable from '../../components/StandardTable/ProductTable';
 import CheckboxGroup from '../../components/Checkbox/CheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -320,7 +320,7 @@ export default class ProductManager extends Component {
           </Col>
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col xll={4} md={6} sm={24}>
+          {/* <Col xll={4} md={6} sm={24}>
             <FormItem label="所属类目">
               {getFieldDecorator('catalog')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -330,7 +330,7 @@ export default class ProductManager extends Component {
                 </Select>
               )}
             </FormItem>
-          </Col>
+          </Col> */}
           <Col xll={4} md={6} sm={24}>
             <FormItem label="创建人">
               {getFieldDecorator('creator')(
@@ -394,13 +394,14 @@ export default class ProductManager extends Component {
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
               <Button type="primary" icon="plus" onClick={this.jumpToPage.bind(this, 'list/new')}>新建</Button>
-              <span>
-                <Button
-                  onClick={this.removeProducts}
-                >
+              <Popconfirm
+                title="确定要删除吗?"
+                onConfirm={this.removeProducts}
+              >
+                <Button >
                   删除
                 </Button>
-              </span>
+              </Popconfirm>
               <Button onClick={this.showExportModal}>导出数据</Button>
             </div>
             <Modal

@@ -500,7 +500,7 @@ class ProductForm extends Component {
               <TextArea
                 style={{ height: 500 }}
                 defaultValue=""
-                onChange={(e) => { this.handleChange('summary', e.target.value); }}
+                onChange={(e) => { this.handleChange('summary1', e.target.value); }}
               />
             </TabPane>
             <TabPane tab="*产品详情" key="2">

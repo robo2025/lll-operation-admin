@@ -176,6 +176,7 @@ export default class BrandModify extends Component {
                 getFieldDecorator('brand_name', {
                   rules: [{
                     required: true,
+                    message: '品牌名称必须填写',
                   }],
                   initialValue: detail.brand_name,
                 })(
@@ -206,6 +207,7 @@ export default class BrandModify extends Component {
                 getFieldDecorator('registration_place', {
                   rules: [{
                     required: true,
+                    message: '注册地必须填写',
                   }],
                   initialValue: detail.registration_place,
                 })(

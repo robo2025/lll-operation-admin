@@ -298,7 +298,7 @@ export default class productModelNew extends Component {
                   {getFieldDecorator('partnumber', {
                     rules: [{
                       required: true,
-                      message: '请输入...',
+                      message: '请输入产品型号',
                     }],
                   })(
                     <Input />
