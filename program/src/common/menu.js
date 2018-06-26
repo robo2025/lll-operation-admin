@@ -63,6 +63,20 @@ const menuData = [{
     },
   ],
 }, {
+  name: '方案管理',
+  path: 'solution',
+  icon: 'solution',
+  children: [
+    {
+      name: '方案询价报价',
+      path: 'priceQuotation',
+    },
+    {
+      name: '方案订单',
+      path: 'orders',
+    },
+  ],
+}, {
   name: '导入导出管理',
   path: 'import-export',
   icon: 'export',
