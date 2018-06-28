@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import {
@@ -15,62 +15,14 @@ import {
   DatePicker,
   Button,
   Icon,
-  Divider,
-  Modal,
-  Spin,
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import DescriptionList from '../../components/DescriptionList';
 import styles from './index.less';
 import { SLN_PAY_STATUS } from '../../constant/statusList';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const { Description } = DescriptionList;
-const deviceColumns = [
-  {
-    title: '组成部分',
-    dataIndex: 'device_component',
-    key: 'device_component',
-  },
-  {
-    title: '商品名称',
-    dataIndex: 'device_name',
-    key: 'device_name',
-  },
-  {
-    title: '型号',
-    dataIndex: 'device_model',
-    key: 'device_model',
-  },
-  {
-    title: '品牌',
-    dataIndex: 'brand_name',
-    key: 'brand_name',
-  },
-  {
-    title: '数量',
-    dataIndex: 'device_num',
-    key: 'device_num',
-  },
-  {
-    title: '单价（元）',
-    dataIndex: 'device_price',
-    key: 'device_price',
-  },
-  {
-    title: '小计（元）',
-    key: 'total_price',
-    render: row => <span>{row.device_num * row.device_price}</span>,
-  },
-  {
-    title: '备注',
-    key: 'device_note',
-    dataIndex: 'device_note',
-    render: text => (text === '' ? '无' : text),
-  },
-];
 export const SlnStatus = ({ status }) => {
   switch (status) {
     case 1:
@@ -123,121 +75,6 @@ export const SlnStatus = ({ status }) => {
       );
   }
 };
-const DeliveryModal = Form.create()((props) => {
-  const {
-    guest_info,
-    order_info,
-    supplier,
-    form,
-    modalVisible,
-    handleModalVisible,
-    handleConfirm,
-  } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleConfirm(fieldsValue, order_info.plan_order_sn);
-    });
-  };
-
-  return (
-    <Modal
-      title="发货单"
-      visible={modalVisible}
-      onOk={okHandle}
-      width={900}
-      onCancel={() => {
-        handleModalVisible(false);
-        form.resetFields();
-      }}
-    >
-      {guest_info ? (
-        <Fragment>
-          <DescriptionList size="small" col="3">
-            <Description term="收货单位">
-              {guest_info.guest_company_name}
-            </Description>
-            <Description term="收货人">{guest_info.receiver}</Description>
-            <Description term="收货方式">配送</Description>
-            <Description term="联系电话">{guest_info.mobile}</Description>
-            <Description term="地址">{guest_info.address}</Description>
-          </DescriptionList>
-
-          <Table
-            style={{ marginTop: 28 }}
-            columns={deviceColumns}
-            dataSource={supplier.sln_device}
-            pagination={false}
-          />
-          <Row style={{ marginTop: 28 }}>
-            <Col span={12}>
-              <FormItem
-                labelCol={{ span: 6 }}
-                wrapperCol={{ span: 12 }}
-                label="物流公司名称"
-              >
-                {form.getFieldDecorator('logistics_company', {
-                  rules: [
-                    { required: true, whitespace: true, message: '请输入' },
-                  ],
-                })(<Input placeholder="请输入" />)}
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem
-                labelCol={{ span: 6 }}
-                wrapperCol={{ span: 12 }}
-                label="物流编号"
-              >
-                {form.getFieldDecorator('logistics_number', {
-                  rules: [
-                    { required: true, whitespace: true, message: '请输入' },
-                  ],
-                })(<Input placeholder="请输入" />)}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <FormItem
-                labelCol={{ span: 6 }}
-                wrapperCol={{ span: 12 }}
-                label="联系电话"
-              >
-                {form.getFieldDecorator('mobile', {
-                  rules: [
-                    {
-                      required: true,
-                      pattern: /^[0-9-]*$/,
-                      message: '请输入正确的电话号码',
-                    },
-                  ],
-                })(<Input placeholder="请输入" />)}
-              </FormItem>
-            </Col>
-
-            <Col span={12}>
-              <FormItem
-                labelCol={{ span: 6 }}
-                wrapperCol={{ span: 12 }}
-                label="送货人"
-              >
-                {form.getFieldDecorator('sender', {
-                  rules: [
-                    { required: true, whitespace: true, message: '请输入' },
-                  ],
-                })(<Input placeholder="请输入" />)}
-              </FormItem>
-            </Col>
-          </Row>
-        </Fragment>
-      ) : (
-        <Spin />
-      )}
-    </Modal>
-  );
-});
 @connect(({ solutionOrders, loading }) => ({
   solutionOrders,
   loading: loading.effects['solutionOrders/fetch'],
@@ -246,7 +83,6 @@ const DeliveryModal = Form.create()((props) => {
 class SolutionOrderList extends React.Component {
   state = {
     formExpand: false,
-    modalVisible: false,
   };
   componentDidMount() {
     this.props.dispatch({
@@ -316,35 +152,6 @@ class SolutionOrderList extends React.Component {
           message.error(data);
         }
       },
-    });
-  };
-  handleModalVisible = (flag) => {
-    this.setState({
-      modalVisible: flag,
-    });
-  };
-  handleDelivery = (fieldsValue, plan_order_sn) => {
-    this.setState({ modalVisible: false });
-    this.props.dispatch({
-      type: 'solutionOrders/handleDelivery',
-      payload: { ...fieldsValue, plan_order_sn },
-      callback: (success, data) => {
-        if (success && success === true) {
-          message.success(data);
-          this.props.dispatch({
-            type: 'solutionOrders/fetch',
-          });
-        } else {
-          message.error(data);
-        }
-      },
-    });
-  };
-  showDeliveryModal = (plan_order_sn) => {
-    this.setState({ modalVisible: true });
-    this.props.dispatch({
-      type: 'solutionOrders/fetchDetail',
-      payload: plan_order_sn,
     });
   };
   render() {
@@ -521,12 +328,6 @@ class SolutionOrderList extends React.Component {
           <Table columns={columns} pagination={false} dataSource={list} />
           <Pagination {...paginationProps} />
         </Card>
-        <DeliveryModal
-          {...profile}
-          modalVisible={this.state.modalVisible}
-          handleModalVisible={this.handleModalVisible}
-          handleConfirm={this.handleDelivery}
-        />
       </PageHeaderLayout>
     );
   }

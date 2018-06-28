@@ -2,7 +2,8 @@ import {
   queryList,
   queryDetail,
   queryUserInfo,
-  handleQuotation,
+  querySuppliers,
+  handleAssigned,
 } from '../services/solution';
 import { getSupplierInfo } from '../services/user';
 
@@ -12,6 +13,7 @@ export default {
     list: [],
     profile: {},
     pagination: { current: 1, pageSize: 10 },
+    suppliers: [],
   },
   effects: {
     *fetch({ payload }, { call, put, select }) {
@@ -30,7 +32,7 @@ export default {
       const { data, headers, rescode } = response;
       if (rescode === 10000) {
         const dataWithKey = data.map((item) => {
-          return { ...item, key: item.plan_order_sn };
+          return { ...item, key: item.sln_no };
         });
         yield put({
           type: 'save',
@@ -82,15 +84,32 @@ export default {
         payload: { ...response.data, userInfo, supplierInfo },
       });
     },
-    *handleFormSubmit({ payload, callback }, { call, put }) {
-      const response = yield call(handleQuotation, { ...payload });
-      if (callback && typeof callback === 'function') {
-        if (response.rescode === 10000) {
-          callback(true, response.msg);
-        } else {
-          callback(false, response.msg);
+    *fetchSuppliers({ payload, callback }, { call, put }) {
+      const response = yield call(querySuppliers, { ...payload });
+      const { data, msg, rescode } = response;
+      if (rescode === '10000') {
+        const dataWithKey = data.map((item) => { return { ...item, key: item.id }; });
+        yield put({
+          type: 'saveSuppliers',
+          payload: dataWithKey,
+        });
+        if (callback) {
+          callback(true, msg);
         }
-      }
+      } else if (callback) {
+          callback(false, msg);
+        }
+    },
+    *handleAssigned({ payload, callback }, { call, put }) {
+      const response = yield call(handleAssigned, { ...payload });
+      const { msg, rescode } = response;
+      if (rescode === 10000) {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+          callback(false, msg);
+        }
     },
   },
 
@@ -111,6 +130,12 @@ export default {
       return {
         ...state,
         profile: payload,
+      };
+    },
+    saveSuppliers(state, { payload }) {
+      return {
+        ...state,
+        suppliers: payload,
       };
     },
   },

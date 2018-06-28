@@ -1,9 +1,8 @@
 import {
   queryOrders,
-  prepareGoods,
+  querySuppliers,
   queryDetail,
   querySolutionDetail,
-  delivery,
 } from '../services/solutionOrders';
 
 export default {
@@ -69,22 +68,6 @@ export default {
         type: 'saveSolutionOrder',
         payload: { ...response.data, ...slnInfo },
       });
-    },
-    *handlePrepare({ payload, callback }, { call, put }) {
-      const response = yield call(prepareGoods, { ...payload, is_type: 1 });
-      if (response.status === 200 && response.rescode === '10000') {
-        callback(true, response.msg);
-      } else {
-        callback(false, response.msg);
-      }
-    },
-    *handleDelivery({ payload, callback }, { call }) {
-      const response = yield call(delivery, { ...payload });
-      if (response.status === 200 && response.rescode === '10000') {
-        callback(true, response.msg);
-      } else {
-        callback(false, response.msg);
-      }
     },
   },
 

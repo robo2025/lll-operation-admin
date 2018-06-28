@@ -18,19 +18,26 @@ export async function queryDetail({ sln_no }) {
   return lyRequest(`${SOLUTION_URL}/v1/sln/${sln_no}?role=admin`);
 }
 
-
 export async function queryUserInfo({ id }) {
   return lyRequest(USERS_SERVER + '/service/customers/' + id);
 }
 
-export async function handleQuotation({ sln_no, sln_supplier_info, sln_device, welding_tech_param, sln_support }) {
-  return lyRequest(`${SOLUTION_URL}/v1/offer/${sln_no}`, {
-    method: 'post',
+export async function querySuppliers(params) {
+  const { company } = params;
+  return lyRequest(`${USERS_SERVER}/service/suppliers/all`, {
+    method: 'get',
+    params: { company },
+  });
+}
+
+export async function handleAssigned({ supplier_id, sln_no }) {
+  return lyRequest(`${SOLUTION_URL}/v1/assign`, {
+    method: 'put',
     data: {
-      sln_supplier_info,
-      sln_device,
-      welding_tech_param,
-      sln_support,
+      sln_assign: {
+        supplier_id,
+        sln_no,
+      },
     },
   });
 }

@@ -15,14 +15,112 @@ import {
   Icon,
   Divider,
   Pagination,
+  Modal,
+  message,
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './index.less';
+import DescriptionList from '../../components/DescriptionList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-
+const { Description } = DescriptionList;
+const supplierColumns = [
+  {
+    title: '供应商ID',
+    key: 'id',
+    dataIndex: 'id',
+  },
+  {
+    title: '供应商用户名',
+    dataIndex: 'username',
+    key: 'username',
+  },
+  {
+    title: '供应商公司名',
+    dataIndex: 'profile.company',
+    key: 'company',
+  },
+  {
+    title: '手机号',
+    dataIndex: 'mobile',
+    key: 'mobile',
+  },
+  {
+    title: '地区',
+    dataIndex: 'profile.district_id',
+    key: 'district_id',
+    render: text => getAreaBycode(`${text}`),
+  },
+];
+const AssignedModal = Form.create()((props) => {
+  const {
+    sln_no,
+    sln_name,
+    sln_date,
+    user_name,
+    modalVisible,
+    handleAssigned,
+    handleModalVisible,
+    handleSupplierSearch,
+    handleSupplierSelected,
+    suppliers,
+    loading,
+    form,
+  } = props;
+  return (
+    <Modal
+      title="询价单派单"
+      visible={modalVisible}
+      onOk={handleAssigned}
+      width={900}
+      onCancel={() => {
+        handleModalVisible(false);
+      }}
+    >
+      <DescriptionList size="small" col="2">
+        <Description term="方案询价单号">{sln_no}</Description>
+        <Description term="方案名称">{sln_name}</Description>
+        <Description term="客户">{user_name}</Description>
+        <Description term="创建时间">
+          {moment.unix(sln_date).format('YYYY-MM-DD HH:MM:SS')}
+        </Description>
+      </DescriptionList>
+      <Divider />
+      <FormItem
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 12 }}
+        label="可选供应商列表"
+      >
+        <div style={{ display: 'flex' }}>
+          {form.getFieldDecorator('company')(<Input placeholder="请输入" />)}
+          <Button
+            type="primary"
+            style={{ marginLeft: 8 }}
+            onClick={() => handleSupplierSearch(form)}
+          >
+            搜索
+          </Button>
+        </div>
+      </FormItem>
+      <Table
+        loading={loading}
+        style={{ marginTop: 28 }}
+        columns={supplierColumns}
+        dataSource={suppliers}
+        pagination={{ defaultPageSize: 5 }}
+        rowSelection={{
+          type: 'radio',
+          onSelect: (record) => {
+            handleSupplierSelected(record);
+          },
+        }}
+      />
+    </Modal>
+  );
+});
 const slnStatus = (status) => {
   switch (status) {
     case 'P':
@@ -53,12 +151,16 @@ const slnStatus = (status) => {
 };
 @connect(({ solution, loading }) => ({
   solution,
-  loading: loading.models.solution,
+  loading: loading.effects['solution/fetch'],
+  supplierFetchLoading: loading.effects['solution/fetchSuppliers'],
 }))
 @Form.create()
 class SolutionList extends React.Component {
   state = {
     formExpand: false,
+    modalVisible: false,
+    rowSelected: {},
+    suppilerSelected: {},
   };
   componentDidMount() {
     this.props.dispatch({
@@ -88,6 +190,46 @@ class SolutionList extends React.Component {
       type: 'solution/fetch',
     });
   };
+  handleModalVisible = (flag) => {
+    this.setState({
+      modalVisible: flag,
+    });
+  };
+  handleSupplierSelected = (supplier) => {
+    this.setState({ suppilerSelected: supplier });
+  };
+  handleSupplierSearch = (form) => {
+    const { company } = form.getFieldsValue();
+    this.props.dispatch({
+      type: 'solution/fetchSuppliers',
+      payload: { company },
+    });
+  };
+  handleAssigned = () => {
+    const { rowSelected, suppilerSelected } = this.state;
+    if (!suppilerSelected.id) {
+      message.error('请选择供应商！');
+      return;
+    }
+    this.props.dispatch({
+      type: 'solution/handleAssigned',
+      payload: {
+        sln_no: rowSelected.sln_no,
+        supplier_id: suppilerSelected.id,
+      },
+      callback: (success, data) => {
+        if (success && success === true) {
+          message.success(data);
+          this.setState({ modalVisible: false });
+          this.props.dispatch({
+            type: 'solution/fetch',
+          });
+        } else {
+          message.error(data);
+        }
+      },
+    });
+  };
   handleSearch = (e) => {
     e.preventDefault();
     const { dispatch, form, solution } = this.props;
@@ -111,9 +253,17 @@ class SolutionList extends React.Component {
       });
     });
   };
+  showAssignedModal = (row) => {
+    this.setState({ modalVisible: true, rowSelected: row });
+    if (this.props.solution.suppliers.length === 0) {
+      this.props.dispatch({
+        type: 'solution/fetchSuppliers',
+      });
+    }
+  };
   render() {
-    const { loading, form, solution } = this.props;
-    const { list, pagination } = solution;
+    const { loading, form, solution, supplierFetchLoading } = this.props;
+    const { list, pagination, suppliers } = solution;
     const { getFieldDecorator } = form;
     const paginationProps = {
       ...pagination,
@@ -146,7 +296,23 @@ class SolutionList extends React.Component {
         render: text => <span>¥{text}</span>,
       },
       {
-        title: '状态',
+        title: '派单状态',
+        dataIndex: 'assign_status',
+        key: 'assign_status',
+        render: text =>
+          (text === 'Y' ? (
+            <span>
+              <Badge status="success" />已指派
+            </span>
+          ) : (
+            <span>
+              <Badge status="default" />
+              未指派
+            </span>
+          )),
+      },
+      {
+        title: '报价状态',
         dataIndex: 'sln_status',
         key: 'sln_status',
         render: text => slnStatus(text),
@@ -158,6 +324,12 @@ class SolutionList extends React.Component {
         render: text => (text === 0 ? '-' : `¥${text}`),
       },
       {
+        title: '报价供应商',
+        dataIndex: 'supplier_name',
+        key: 'supplier_name',
+        render: text => (text === '' ? '-' : text),
+      },
+      {
         title: '创建时间',
         dataIndex: 'sln_date',
         key: 'sln_date',
@@ -167,32 +339,21 @@ class SolutionList extends React.Component {
         title: '操作',
         key: 'opreation',
         render: (row) => {
-          if (row.sln_status === 'M') {
-            // 已报价
-            return (
-              <Fragment>
+          return (
+            <Fragment>
+              {/* M：已报价 */}
+              {row.sln_status === 'M' ? (
                 <a>重置报价</a>
-                <Divider type="vertical" />
-                <a
-                  href={`${location.href}/solutionDetail?sln_no=${row.sln_no}`}
-                >
-                  查看
-                </a>
-              </Fragment>
-            );
-          } else {
-            return (
-              <Fragment>
-                <a disabled>重置报价</a>
-                <Divider type="vertical" />
-                <a
-                  href={`${location.href}/solutionDetail?sln_no=${row.sln_no}`}
-                >
-                  查看
-                </a>
-              </Fragment>
-            );
-          }
+              ) : (
+                // Y：已派单
+                row.assign_status === 'Y' ? <a disabled>重置报价</a> : <a onClick={() => this.showAssignedModal(row)}>派单</a>
+              )}
+              <Divider type="vertical" />
+              <a href={`${location.href}/solutionDetail?sln_no=${row.sln_no}`}>
+                查看
+              </a>
+            </Fragment>
+          );
         },
       },
     ];
@@ -224,9 +385,7 @@ class SolutionList extends React.Component {
               </Col>
               <Col xll={4} md={8} sm={24}>
                 <FormItem label="创建时间">
-                  {getFieldDecorator('range-picker')(
-                    <RangePicker />
-                  )}
+                  {getFieldDecorator('range-picker')(<RangePicker />)}
                 </FormItem>
               </Col>
             </Row>
@@ -304,9 +463,19 @@ class SolutionList extends React.Component {
           </Form>
         </Card>
         <Card bordered={false} loading={loading} style={{ marginTop: 30 }}>
-        <Table columns={columns} dataSource={list} pagination={false} />
+          <Table columns={columns} dataSource={list} pagination={false} />
           <Pagination {...paginationProps} />
         </Card>
+        <AssignedModal
+          {...this.state.rowSelected}
+          modalVisible={this.state.modalVisible}
+          handleModalVisible={this.handleModalVisible}
+          handleSupplierSelected={this.handleSupplierSelected}
+          handleSupplierSearch={this.handleSupplierSearch}
+          handleAssigned={this.handleAssigned}
+          suppliers={suppliers}
+          loading={supplierFetchLoading}
+        />
       </PageHeaderLayout>
     );
   }
