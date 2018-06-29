@@ -85,7 +85,7 @@ const AssignedModal = Form.create()((props) => {
         <Description term="方案名称">{sln_name}</Description>
         <Description term="客户">{user_name}</Description>
         <Description term="创建时间">
-          {moment.unix(sln_date).format('YYYY-MM-DD HH:MM:SS')}
+          {moment.unix(sln_date).format('YYYY-MM-DD HH:mm')}
         </Description>
       </DescriptionList>
       <Divider />
