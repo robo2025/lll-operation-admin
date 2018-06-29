@@ -19,13 +19,13 @@ export const UPLOAD_URL = 'https://api.robo2025.com/common';
 export const USERS_URL = 'https://api.robo2025.com/user/service';
 
 // 用户管理系统URL
-export const USERS_SERVER = '//testapi.robo2025.com/user';
+export const USERS_SERVER = '//api.robo2025.com/user';
 
 // 方案中心URL
-export const SOLUTION_URL = '//testapi.robo2025.com/slncenter';
+export const SOLUTION_URL = '//api.robo2025.com/slncenter';
 
 // 方案订单接口
-export const SLN_ORDER_URL = '//testapi.robo2025.com/sln-order';
+export const SLN_ORDER_URL = '//api.robo2025.com/sln-order';
 // export const SLN_ORDER_URL = 'http://192.168.2.109:9009';
 
 // 订单系统接口
