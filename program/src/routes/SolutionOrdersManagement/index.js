@@ -99,8 +99,8 @@ class SolutionOrderList extends React.Component {
     this.props.dispatch({
       type: 'solutionOrders/fetch',
       payload: {
-        start_time: rangeValue ? rangeValue[0].format('YYYY-MM-DD') : null,
-        end_time: rangeValue ? rangeValue[1].format('YYYY-MM-DD') : null,
+        start_time: rangeValue && rangeValue.length ? rangeValue[0].format('YYYY-MM-DD') : null,
+        end_time: rangeValue && rangeValue.length ? rangeValue[1].format('YYYY-MM-DD') : null,
         ...fieldsValue,
       },
     });
@@ -120,8 +120,8 @@ class SolutionOrderList extends React.Component {
       const rangeValue = fieldsValue['range-picker'];
       const { plan_order_sn, status, plan_name, plan_pay_status } = fieldsValue;
       const values = {
-        start_time: rangeValue ? rangeValue[0].format('YYYY-MM-DD') : null,
-        end_time: rangeValue ? rangeValue[1].format('YYYY-MM-DD') : null,
+        start_time: rangeValue && rangeValue.length ? rangeValue[0].format('YYYY-MM-DD') : null,
+        end_time: rangeValue && rangeValue.length ? rangeValue[1].format('YYYY-MM-DD') : null,
         plan_order_sn,
         status,
         plan_name,
