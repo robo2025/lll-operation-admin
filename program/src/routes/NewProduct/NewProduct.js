@@ -2,7 +2,11 @@
  * @Author: lll
  * @Date: 2018-02-01 11:30:59
  * @Last Modified by: lll
+<<<<<<< HEAD
  * @Last Modified time: 2018-06-11 15:56:30
+=======
+ * @Last Modified time: 2018-06-22 16:47:40
+>>>>>>> dev2.0
  */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -232,9 +236,10 @@ export default class NewProduct extends Component {
       message.error('产品图片必须上传');
       return;
     }
+    console.log('新建产品', { ...fields, summary: fields.summary1 || '' }, specs);
     dispatch({
       type: 'product/add',
-      data: { ...fields, specs },
+      data: { ...fields, summary: fields.summary1 || '', specs },
       success: () => { history.push('/product/list'); },
       error: (res) => { message.error(handleServerMsgObj(res.msg)); },
     });

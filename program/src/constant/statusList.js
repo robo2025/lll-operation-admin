@@ -119,7 +119,13 @@ const PUBLISH_STATUS = {
   1: '上架中',
   2: '待下架(无法交易)',
 };
-
+// 方案支付状态
+const SLN_PAY_STATUS = {
+  1: '首款未支付',
+  2: '尾款未支付',
+  3: '已全部支付',
+  4: '订单已取消',
+};
 export {
   ACTION_STATUS,
   ACTION_FLAG,
@@ -134,4 +140,5 @@ export {
   SHIPPING_FEE_TYPE,
   AUDIT_STATUS,
   PUBLISH_STATUS,
+  SLN_PAY_STATUS,
 };
