@@ -177,8 +177,14 @@ class SolutionList extends React.Component {
     this.props.dispatch({
       type: 'solution/fetch',
       payload: {
-        start_time: rangeValue && rangeValue.length ? rangeValue[0].format('YYYY-MM-DD') : null,
-        end_time: rangeValue && rangeValue.length ? rangeValue[1].format('YYYY-MM-DD') : null,
+        start_time:
+          rangeValue && rangeValue.length
+            ? rangeValue[0].format('YYYY-MM-DD')
+            : null,
+        end_time:
+          rangeValue && rangeValue.length
+            ? rangeValue[1].format('YYYY-MM-DD')
+            : null,
         ...fieldsValue,
       },
     });
@@ -236,12 +242,39 @@ class SolutionList extends React.Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const rangeValue = fieldsValue['range-picker'];
-      const { sln_no, is_type } = fieldsValue;
-      const values = {
-        start_time: rangeValue && rangeValue.length ? rangeValue[0].format('YYYY-MM-DD') : null,
-        end_time: rangeValue && rangeValue.length ? rangeValue[1].format('YYYY-MM-DD') : null,
+      console.log(fieldsValue);
+      const {
+        sln_name,
+        customer_name,
         sln_no,
+        supplier_name,
         is_type,
+        assign_status,
+        assigned_time,
+      } = fieldsValue;
+      const values = {
+        start_time:
+          rangeValue && rangeValue.length
+            ? rangeValue[0].format('YYYY-MM-DD')
+            : null,
+        end_time:
+          rangeValue && rangeValue.length
+            ? rangeValue[1].format('YYYY-MM-DD')
+            : null,
+        sp_start:
+          assigned_time && assigned_time.length
+            ? assigned_time[0].format('YYYY-MM-DD')
+            : null,
+        sp_end:
+          assigned_time && assigned_time.length
+            ? assigned_time[1].format('YYYY-MM-DD')
+            : null,
+        sln_name,
+        customer_name,
+        sln_no,
+        supplier_name,
+        is_type,
+        assign_status,
       };
       dispatch({
         type: 'solution/savePagination',
@@ -344,9 +377,11 @@ class SolutionList extends React.Component {
               {/* M：已报价 */}
               {row.sln_status === 'M' ? (
                 <a>重置报价</a>
+              ) : // Y：已派单
+              row.assign_status === 'Y' ? (
+                <a disabled>重置报价</a>
               ) : (
-                // Y：已派单
-                row.assign_status === 'Y' ? <a disabled>重置报价</a> : <a onClick={() => this.showAssignedModal(row)}>派单</a>
+                <a onClick={() => this.showAssignedModal(row)}>派单</a>
               )}
               <Divider type="vertical" />
               <a href={`${location.href}/solutionDetail?sln_no=${row.sln_no}`}>
@@ -367,22 +402,20 @@ class SolutionList extends React.Component {
           >
             <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
               <Col xll={4} md={8} sm={24}>
-                <FormItem label="方案询价单号">
-                  {getFieldDecorator('sln_no')(<Input placeholder="请输入" />)}
-                </FormItem>
-              </Col>
-              <Col xll={4} md={8} sm={24}>
-                <FormItem label="状态">
-                  {getFieldDecorator('is_type')(
-                    <Select placeholder="请选择" style={{ width: '100%' }}>
-                      <Option value="all">全部</Option>
-                      <Option value="P">未报价</Option>
-                      <Option value="M">已报价</Option>
-                      <Option value="E">失效</Option>
-                    </Select>
+                <FormItem label="方案名称">
+                  {getFieldDecorator('sln_name')(
+                    <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
+              <Col xll={4} md={8} sm={24}>
+                <FormItem label="客户">
+                  {getFieldDecorator('customer_name')(
+                    <Input placeholder="请输入" />
+                  )}
+                </FormItem>
+              </Col>
+
               <Col xll={4} md={8} sm={24}>
                 <FormItem label="创建时间">
                   {getFieldDecorator('range-picker')(<RangePicker />)}
@@ -390,36 +423,54 @@ class SolutionList extends React.Component {
               </Col>
             </Row>
             {this.state.formExpand ? (
-              <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-                <Col xll={4} md={8} sm={24}>
-                  <FormItem label="应用">
-                    {getFieldDecorator('no')(
-                      <Select placeholder="请选择" style={{ width: '100%' }}>
-                        <Option value="">全部</Option>
-                        <Option value="2">焊接</Option>
-                        <Option value="4">搬运</Option>
-                        <Option value="6">码垛</Option>
-                        <Option value="6">切割</Option>
-                        <Option value="6">抛光</Option>
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-                <Col xll={4} md={8} sm={24}>
-                  <FormItem label="行业">
-                    {getFieldDecorator('no')(
-                      <Select placeholder="请选择" style={{ width: '100%' }}>
-                        <Option value="">全部</Option>
-                        <Option value="2">航空</Option>
-                        <Option value="4">电力</Option>
-                        <Option value="6">3C</Option>
-                        <Option value="6">工业</Option>
-                        <Option value="6">汽车</Option>
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
+              <Fragment>
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                  <Col xll={4} md={8} sm={24}>
+                    <FormItem label="方案询价单号">
+                      {getFieldDecorator('sln_no')(
+                        <Input placeholder="请输入" />
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col xll={4} md={8} sm={24}>
+                    <FormItem label="供应商">
+                      {getFieldDecorator('supplier_name')(
+                        <Input placeholder="请输入" />
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col xll={4} md={8} sm={24}>
+                    <FormItem label="报价时间">
+                      {getFieldDecorator('assigned_time')(<RangePicker />)}
+                    </FormItem>
+                  </Col>
+                </Row>
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                  <Col xll={4} md={8} sm={24}>
+                    <FormItem label="报价状态">
+                      {getFieldDecorator('is_type')(
+                        <Select placeholder="请选择" style={{ width: '100%' }}>
+                          <Option value="all">全部</Option>
+                          <Option value="P">未报价</Option>
+                          <Option value="M">已报价</Option>
+                          <Option value="E">失效</Option>
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col xll={4} md={8} sm={24}>
+                    <FormItem label="派单状态">
+                      {getFieldDecorator('assign_status')(
+                        <Select placeholder="请选择" style={{ width: '100%' }}>
+                          <Option value="all">全部</Option>
+                          <Option value="W">未派单</Option>
+                          <Option value="Y">已派单</Option>
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                </Row>
+              </Fragment>
             ) : null}
 
             <div style={{ overflow: 'hidden' }}>
