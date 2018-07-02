@@ -68,11 +68,11 @@ const menuData = [{
   icon: 'solution',
   children: [
     {
-      name: '方案询价报价',
+      name: '方案询价单列表',
       path: 'priceQuotation',
     },
     {
-      name: '方案订单',
+      name: '方案订单列表',
       path: 'orders',
     },
   ],
