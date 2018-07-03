@@ -314,7 +314,7 @@ export default class OrderList extends Component {
         <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
           <Col xll={4} md={8} sm={24}>
             <FormItem label="订单号">
-              {getFieldDecorator('guest_order_sn')(
+              {getFieldDecorator('order_sn')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
