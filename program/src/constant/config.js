@@ -18,6 +18,8 @@ export const UPLOAD_URL = 'https://api.robo2025.com/common';
 // 用户管理系统API URL
 export const USERS_URL = 'https://api.robo2025.com/user/service';
 
+export const MAIN_URL = '//api.robo2025.com';
+
 // 用户管理系统URL
 export const USERS_SERVER = '//api.robo2025.com/user';
 
