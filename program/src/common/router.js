@@ -98,7 +98,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['product', 'testApi'], () => import('../routes/ProductManager')),
     },
     '/product/model': {
-      component: dynamicWrapper(app, ['brand', 'product', 'good', 'productModel'], () => import('../routes/ProductModel/ProductModelList')),
+      component: dynamicWrapper(app, ['brand', 'product', 'good', 'productModel','catalog'], () => import('../routes/ProductModel/ProductModelList')),
     },
     '/product/:model/add': {
       component: dynamicWrapper(app, ['catalog', 'upload', 'brand', 'product', 'productModel'], () => import('../routes/ProductModel/ProductModelNew')),

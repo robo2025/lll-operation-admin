@@ -53,7 +53,7 @@ class ProductTable extends React.Component {
 
   render() {
     const { selectedRowKeys, isShowModal } = this.state;
-    const { data, loading, total, isShowAlert, defaultPage } = this.props;
+    const { data, loading, total, isShowAlert, defaultPage,current,pageSize } = this.props;
 
     const columns = [{
       title: '序号',
@@ -151,6 +151,8 @@ class ProductTable extends React.Component {
       showQuickJumper: true,
       defaultCurrent: defaultPage - 0 || 1,
       total,
+      current,
+      pageSize,
     };
 
     const rowSelection = {
