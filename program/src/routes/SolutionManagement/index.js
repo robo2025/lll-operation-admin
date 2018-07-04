@@ -242,7 +242,6 @@ class SolutionList extends React.Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const rangeValue = fieldsValue['range-picker'];
-      console.log(fieldsValue);
       const {
         sln_name,
         customer_name,
