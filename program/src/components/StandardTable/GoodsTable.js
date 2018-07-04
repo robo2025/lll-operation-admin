@@ -51,7 +51,7 @@ class GoodsTable extends PureComponent {
 
   render() {
     const { selectedRowKeys, totalCallNo } = this.state;
-    const { data, loading, onPublish, defaultPage, total } = this.props;
+    const { data, loading, onPublish, defaultPage, total,current,pageSize } = this.props;
 
     const columns = [{
       title: '商品ID',
@@ -131,9 +131,9 @@ class GoodsTable extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      defaultCurrent: defaultPage >> 0 ? defaultPage >> 0 : 1,
+      current,
+      pageSize,
       total,
-      // ...pagination,
     };
 
     const rowSelection = {

@@ -54,11 +54,11 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
 
-      const response = yield call(queryGoods, {});
-      yield put({
-        type: 'modify',
-        payload: response.data,
-      });
+    //   const response = yield call(queryGoods, {});
+    //   yield put({
+    //     type: 'modify',
+    //     payload: response.data,
+    //   });
     },
     *queryLogs({ module, gno, success, error }, { call, put }) {
       const res = yield call(queryOperationLog, { module, gno });

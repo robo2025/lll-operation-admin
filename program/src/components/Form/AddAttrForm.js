@@ -14,7 +14,7 @@ class AddAttrForm extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { defaultValue } = this.props;
-    console.log('穿过来要被修改的数据', defaultValue);
+    // console.log('穿过来要被修改的数据', defaultValue);
     return (
       <Form>
         <Row gutter={24}>
@@ -48,6 +48,9 @@ class AddAttrForm extends Component {
                   rules: [{
                     required: true,
                     message: '请输入',
+                  },{
+                    max: 50,
+                    message: '长度不能超过50',
                   }],
                   initialValue: defaultValue ? defaultValue.spec_name : '',
                 })(
