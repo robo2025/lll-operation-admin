@@ -29,7 +29,7 @@ export default class CustomizableTable extends React.Component {
       pageSize,
       total,
     };
-    console.log('rokey', rowKey);
+    // console.log('rokey', rowKey);
 
     return (
       <div className={styles.standardTable}>

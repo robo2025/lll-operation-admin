@@ -9,7 +9,7 @@ import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
 import ModelContent from './ModelContent';
 import styles from './style.less';
-import { PAGE_SIZE, SUCCESS_STATUS, FAIL_STATUS } from '../../constant/config';
+import { PAGE_SIZE, SUCCESS_STATUS, FAIL_STATUS,MAIN_URL } from '../../constant/config';
 import { handleServerMsgObj, checkFile } from '../../utils/tools';
 
 const FormItem = Form.Item;
@@ -47,6 +47,11 @@ export default class ProductModelList extends Component {
             isShowModal: false,
             isImportModal: false,
             args: qs.parse(props.location.search || { page: 1, pageSize: 10 }, { ignoreQueryPrefix: true }),
+            modelContentArgs: {// 下载模板选择参数保存
+                page: 1,
+                pageSize: 6,
+                params: {}
+            }
         };
         this.columns = [{
             title: '序号',
@@ -150,7 +155,7 @@ export default class ProductModelList extends Component {
             type: 'catalog/fetchLevel',
         });
         // 请求产品列表
-        this.dispatchProductList({ offset: 0, limit: 6 });
+        this.dispatchProductList({});
     }
 
     onSelectChange = (selectedRowKeys, selectedRows) => {
@@ -178,11 +183,20 @@ export default class ProductModelList extends Component {
     };
 
     // 请求产品列表
-    dispatchProductList = ({ offset, limit, params = {} }) => {
+    dispatchProductList = ({ offset = this.state.modelContentArgs.page - 1, limit = this.state.modelContentArgs.pageSize, params = this.state.modelContentArgs.params }) => {
         const { dispatch } = this.props;
+        const { modelContentArgs } = this.state;
+        this.setState({
+            modelContentArgs:
+            {
+                page: offset + 1,
+                pageSize: limit,
+                params
+            }
+        })
         dispatch({
             type: 'product/fetch',
-            offset,
+            offset: offset * limit,
             limit,
             params,
         });
@@ -194,12 +208,12 @@ export default class ProductModelList extends Component {
     }
 
     handleModelOk = () => {
-        console.log('$ModelThis', this.$ModelThis, this.$ModelThis.state);
         const { modelList } = this.$ModelThis.state;
         const pnos = modelList.map(val => val.pno);
         if (pnos.length > 0) {
             this.setState({ isImportModal: false });
-            window.open(`https://testapi.robo2025.com/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);
+            console.log(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`)
+            window.open(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`,'_self');
         } else {
             this.setState({ isImportModal: false });
         }
@@ -215,12 +229,12 @@ export default class ProductModelList extends Component {
 
     // 处理下载模板产品列表改变
     handleModelTableChange = (pagination, filtersArg, sorter) => {
+        const { modelContentArgs } = this.state;
         const params = {
-            currentPage: pagination.current,
             pageSize: pagination.pageSize,
-            offset: (pagination.current - 1) * (pagination.pageSize),
+            offset: pagination.current - 1,
         };
-        this.dispatchProductList({ offset: params.offset, limit: params.pageSize });
+        this.dispatchProductList({ offset: params.offset, limit: params.pageSize, params: modelContentArgs.params });
     }
 
     // 是否显示modal
@@ -229,7 +243,7 @@ export default class ProductModelList extends Component {
     }
 
     handleModelUploadChange = ({ file }) => {
-        const DOWNLOAD_URL = 'https://testapi.robo2025.com/scm-service/download';
+        const DOWNLOAD_URL = `${MAIN_URL}/scm-service/download`;
         if (file.status === 'done' && file.response) {
             const { data, msg, rescode } = file.response;
             if (rescode >> 0 === SUCCESS_STATUS) {
@@ -392,7 +406,7 @@ export default class ProductModelList extends Component {
                 });
             },
             error: (res) => {
-                message.error(handleServerMsgObj(res.msg)); 
+                message.error(handleServerMsgObj(res.msg));
                 dispatch({
                     type: 'productModel/fetch',
                     offset: 0,
@@ -405,7 +419,7 @@ export default class ProductModelList extends Component {
                     search: `?page=1&pageSize=${args.pageSize}`,
                 });
                 this.setState({
-                    selectedRows: [], selectedRowKeys: [], 
+                    selectedRows: [], selectedRowKeys: [],
                     args: {
                         page: 1,
                         pageSize: args.pageSize
@@ -551,16 +565,20 @@ export default class ProductModelList extends Component {
     render() {
         const {
             selectedRowKeys, selectedRows,
-            currProductModel, isShowModal, isImportModal, args,
+            currProductModel, isShowModal, isImportModal, args,modelContentArgs
         } = this.state;
-        const { productModel, good, product, loading } = this.props;
+        const { productModel, good, product, loading, catalog } = this.props;
         const rowSelection = {
             fixed: true,
             selectedRowKeys,
             onChange: this.onSelectChange,
         };
+        const { level } = catalog;
+        getStandardCategory(level);
         const productModelPage = args.page >> 0;
         const productModelPageSize = args.pageSize >> 0;
+        const modelContentPage = modelContentArgs.page >> 0;
+        const modelContentPageSize = modelContentArgs.pageSize >> 0;
         return (
             <PageHeaderLayout title="产品型号列表">
                 <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -585,7 +603,7 @@ export default class ProductModelList extends Component {
                                 <Upload
                                     className={styles.upload}
                                     name="file"
-                                    action="https://testapi.robo2025.com/scm-service/models/template"
+                                    action={`${MAIN_URL}/scm-service/models/template`}
                                     headers={{
                                         Authorization: Cookies.get('access_token') || 'null',
                                     }}
@@ -641,8 +659,11 @@ export default class ProductModelList extends Component {
                         onOk={this.handleModelOk}
                     >
                         <ModelContent
+                            level={level}
                             dataSource={product.list}
                             total={product.total}
+                            current={modelContentPage}
+                            pageSize={modelContentPageSize}
                             loading={loading.models.product}
                             onModelTableChange={this.handleModelTableChange}
                             bindModelThis={this.bindModelThis}
