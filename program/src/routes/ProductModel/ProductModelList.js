@@ -212,8 +212,8 @@ export default class ProductModelList extends Component {
         const pnos = modelList.map(val => val.pno);
         if (pnos.length > 0) {
             this.setState({ isImportModal: false });
-            console.log(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`)
-            window.open(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`,'_self');
+            console.log(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);
+            window.open(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);
         } else {
             this.setState({ isImportModal: false });
         }

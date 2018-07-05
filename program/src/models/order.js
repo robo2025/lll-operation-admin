@@ -136,7 +136,7 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
       const { headers } = res;            
-
+      
       yield put({
         type: 'saveSearch',
         payload: res.data,

@@ -442,7 +442,7 @@ export default class ProductManager extends Component {
                             >
                                 <Button >
                                     删除
-                </Button>
+                                </Button>
                             </Popconfirm>
                             <Button onClick={this.showExportModal}>导出数据</Button>
                         </div>
