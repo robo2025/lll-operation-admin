@@ -52,7 +52,7 @@ export const SlnStatus = ({ status }) => {
     case 5:
       return (
         <span>
-          <Badge status="processing" />发货中
+          <Badge status="processing" />已发货待确认
         </span>
       );
     case 6:
@@ -242,6 +242,7 @@ class SolutionOrderList extends React.Component {
                   {getFieldDecorator('status')(
                     <Select placeholder="请选择" style={{ width: '100%' }}>
                       <Option value="0">全部</Option>
+                      <Option value="1">待支付</Option>
                       <Option value="3">备货中</Option>
                       <Option value="4">待发货</Option>
                       <Option value="5">已发货待确认</Option>
@@ -267,6 +268,7 @@ class SolutionOrderList extends React.Component {
                     {getFieldDecorator('plan_pay_status')(
                       <Select placeholder="请选择" style={{ width: '100%' }}>
                         <Option value="0">全部</Option>
+                        <Option value="1">首款未支付</Option>
                         <Option value="2">尾款未支付</Option>
                         <Option value="3">已全部支付</Option>
                         <Option value="4">订单已取消</Option>
