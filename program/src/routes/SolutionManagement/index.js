@@ -60,7 +60,7 @@ const AssignedModal = Form.create()((props) => {
     sln_no,
     sln_name,
     sln_date,
-    user_name,
+    customer_name,
     modalVisible,
     handleAssigned,
     handleModalVisible,
@@ -83,7 +83,7 @@ const AssignedModal = Form.create()((props) => {
       <DescriptionList size="small" col="2">
         <Description term="方案询价单号">{sln_no}</Description>
         <Description term="方案名称">{sln_name}</Description>
-        <Description term="客户">{user_name}</Description>
+        <Description term="客户">{customer_name}</Description>
         <Description term="创建时间">
           {moment.unix(sln_date).format('YYYY-MM-DD HH:mm')}
         </Description>
