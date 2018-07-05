@@ -95,7 +95,7 @@ const adiDeviceTableColumns = [
 class SupplierOrder extends React.Component {
   render() {
     const { profile } = this.props;
-    const { supplier, supplierInfo } = profile;
+    const { supplier, supplierInfo, customer } = profile;
     if (!supplier || !supplierInfo) {
       return <div>暂无数据</div>;
     }
@@ -105,6 +105,7 @@ class SupplierOrder extends React.Component {
       sln_support,
       sln_device,
     } = supplier;
+    const { sewage_info } = customer;
     const coreDeviceTableData = sln_device.filter(
       item => item.device_type === '核心设备'
     );
@@ -131,6 +132,7 @@ class SupplierOrder extends React.Component {
             dataSource={coreDeviceTableData.map((item) => {
               return { ...item, key: item.device_id };
             })}
+            footer={() => (sewage_info ? <span style={{ color: 'red' }}>注（常规指标）：{sewage_info.general_norm}</span> : null)}
             pagination={false}
           />
         </Card>
