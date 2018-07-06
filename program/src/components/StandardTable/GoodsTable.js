@@ -6,17 +6,21 @@
  */
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
-import { Table, Alert, Badge, Divider, Popconfirm, message, Button } from 'antd';
+import { Table, Alert, Badge, Divider, Button, Modal, Form,Input ,Row, Col  } from 'antd';
 import { AUDIT_STATUS, PUBLISH_STATUS } from '../../constant/statusList';
 import styles from './goods-table.less';
 
+const FormItem = Form.Item;
+const {TextArea} = Input;
 const AuditStatusMap = ['processing', 'success', 'error'];// 审核状态
 const GoodsStatusMap = ['default', 'success', 'processing'];// 上下架状态
-
+@Form.create()
 class GoodsTable extends PureComponent {
     state = {
         selectedRowKeys: [],
         totalCallNo: 0,
+        visible: false,
+        recordGno:""
     };
 
     componentWillReceiveProps(nextProps) {
@@ -48,11 +52,33 @@ class GoodsTable extends PureComponent {
     cleanSelectedKeys = () => {
         this.handleRowSelectChange([], []);
     }
-
+   
+    handleSubmit = (e) => {
+        e.preventDefault();
+        const {form,onPublish} = this.props;
+        const {recordGno} = this.state;
+        form.validateFields((err,fieldValues) => {
+            if (err) return;
+            onPublish(recordGno,{...fieldValues,publish_status:0});
+            form.resetFields();
+            this.setState({
+                visible:false,
+                recordGno:'',
+            })
+        })
+    }
+    handleReset=() => {
+        const {form} = this.props;
+        form.resetFields();
+        this.setState({
+            visible:false,
+            recordGno:'',
+        })
+    }
     render() {
         const { selectedRowKeys, totalCallNo } = this.state;
         const { data, loading, onPublish, defaultPage, total, current, pageSize } = this.props;
-
+        const { getFieldDecorator } = this.props.form;
         const columns = [{
             title: '商品ID',
             dataIndex: 'gno',
@@ -114,13 +140,13 @@ class GoodsTable extends PureComponent {
                 <Fragment>
                     <a href={`#/goods/list/detail?gno=${record.gno}&audit=1`} disabled={record.publish_status === 1}>审核</a>
                     <Divider type="vertical" />
-                    {/* <a
-            onClick={() => onPublish(record.gno, 0)}
-            disabled={(record.audit_status !== 1) || (record.publish_status === 0)}
-          >
-            下架
-          </a> */}
-                    <Popconfirm
+                    <a
+                        onClick={() => { this.setState({ visible: true ,recordGno:record.gno}) }}
+                        disabled={(record.audit_status !== 1) || (record.publish_status === 0)}
+                    >
+                        下架
+                    </a>
+                    {/* <Popconfirm
                         title="确定下架该商品吗？"
                         cancelText="取消"
                         okText="确定"
@@ -129,7 +155,7 @@ class GoodsTable extends PureComponent {
                         <a disabled={(record.audit_status !== 1) || (record.publish_status === 0)}>
                             下架
                         </a>
-                    </Popconfirm>
+                    </Popconfirm> */}
                     <Divider type="vertical" />
                     <a href={'#/goods/list/detail?gno=' + record.gno}>查看</a>
                 </Fragment>
@@ -153,7 +179,10 @@ class GoodsTable extends PureComponent {
                 disabled: record.disabled,
             }),
         };
-
+        const formItemLayout = {
+            labelCol: { span: 4 },
+            wrapperCol: { span: 20 },
+          };
 
         return (
             <div className={styles.standardTable}>
@@ -178,6 +207,27 @@ class GoodsTable extends PureComponent {
                     onChange={this.handleTableChange}
                     scroll={{ x: 2000 }}
                 />
+                <Modal
+                    title="商品下架"
+                    visible={this.state.visible}
+                    footer={null}
+                >
+                        <Form onSubmit={this.handleSubmit}>
+                            <FormItem label="下架说明" {...formItemLayout}>
+                                {getFieldDecorator('audit_desc', {
+                                    rules: [{ required: true, message: '请填写下架说明' }],
+                                })(
+                                    <TextArea  placeholder="请填写下架说明"/>
+                                )}
+                            </FormItem>
+                            <Row>
+                                <Col style={{textAlign:'right'}}>
+                                <Button type="primary" htmlType="submit">确认</Button>
+                                <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>取消</Button>
+                                </Col>
+                            </Row>
+                        </Form>
+                </Modal>
             </div>
         );
     }

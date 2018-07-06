@@ -42,14 +42,14 @@ export default {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); }
       
-      const response = yield call(queryGoods, {});
-      yield put({
-        type: 'modify',
-        payload: response.data,
-      });
+    //   const response = yield call(queryGoods, {});
+    //   yield put({
+    //     type: 'modify',
+    //     payload: response.data,
+    //   });
     },
-    *modifyGoodStatus({ gno, publishStatus, success, error }, { call, put }) {
-      const res = yield call(modifyGoodStatus, { gno, publishStatus });
+    *modifyGoodStatus({ gno, params, success, error }, { call, put }) {
+      const res = yield call(modifyGoodStatus, { gno, params });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === 'function') success(res);
       } else if (typeof error === 'function') { error(res); return; }
