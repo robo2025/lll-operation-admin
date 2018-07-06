@@ -41,7 +41,7 @@ export default class OrderTable extends React.Component {
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
-    const { data, defaultPage, loading, total } = this.props;
+    const { data, defaultPage, loading, total ,current,pageSize} = this.props;
 
     const columns = [{
       title: '序号',
@@ -139,6 +139,7 @@ export default class OrderTable extends React.Component {
       showQuickJumper: true,
       defaultCurrent: defaultPage ? defaultPage >> 0 : 1,
       total,
+      current,pageSize
     };
 
     const rowSelection = {

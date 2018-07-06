@@ -152,6 +152,12 @@ export default class BrandDetail extends Component {
             </FormItem>
             <FormItem
               {...formItemLayout}
+              label="注册地"
+            >
+              <span>{detail.registration_place}</span>
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
               label="品牌证书"
             >
               <div className="pic-box">
@@ -172,7 +178,7 @@ export default class BrandDetail extends Component {
               label="品牌介绍"
             >
               <p>
-                {detail.summary}
+                {detail.summary || '无'}
               </p>
             </FormItem>
           </Form>

@@ -48,7 +48,7 @@ export default class ExceptionOrdersTable extends React.Component {
 
   render() {
     const { selectedRowKeys, totalCallNo, isShowModal } = this.state;
-    const { data, loading, total } = this.props;
+    const { data, loading, total,current,pageSize } = this.props;
 
     const Actions = ({ code, text, onClick }) => {
       if (code === 13) { // 无货
@@ -212,6 +212,8 @@ export default class ExceptionOrdersTable extends React.Component {
       showSizeChanger: true,
       showQuickJumper: true,
       total,
+      current,
+      pageSize
     };
 
     const rowSelection = {

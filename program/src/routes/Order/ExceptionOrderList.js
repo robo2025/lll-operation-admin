@@ -56,7 +56,8 @@ export default class ExceptionOrderList extends Component {
             isShowModal1: false, // 推送Modal
             data: {}, // 当前列表被点击的产品数据
             modalKey: 2,
-            args: qs.parse(props.location.search, { ignoreQueryPrefix: true }),
+            args: qs.parse(props.location.search || {page:1,pageSize:10}, { ignoreQueryPrefix: true }),
+            searchValues:{is_type: 1}
         };
     }
 
@@ -65,34 +66,67 @@ export default class ExceptionOrderList extends Component {
         const { args } = this.state;
         dispatch({
             type: 'orders/fetchExptionOrders',
-            offset: (args.page - 1) * PAGE_SIZE,
-            limit: PAGE_SIZE,
+            offset: (args.page - 1) * args.pageSize,
+            limit: args.pageSize,
         });
     }
 
     handleFormReset = () => {
-        const { form } = this.props;
+        const { form ,history,dispatch} = this.props;
+        const {args} = this.state;
         form.resetFields();
+        this.setState({
+            searchValues:{is_type:1},
+            args:{
+                page:1,
+                pageSize:args.pageSize
+            }
+        })
+        history.replace({
+            search:`?page=1&pageSize=${args.pageSize}`
+        })
+        dispatch({
+            type: 'orders/fetchSearch',
+            params: {is_type:1},
+            offset:0,
+            limit:args.pageSize
+        });
     }
 
     // 处理表单搜索
     handleSearch = (e) => {
         e.preventDefault();
-
-        const { dispatch, form } = this.props;
-
+        const { dispatch, form ,history} = this.props;
+        const {args} = this.state;
         form.validateFields((err, fieldsValue) => {
             if (err) return;
+            for (var key in fieldsValue) {
+                if (fieldsValue[key] && typeof fieldsValue[key] !== 'object') {
+                    fieldsValue[key] = fieldsValue[key].trim();
+                }
+            }
             const values = {
                 ...fieldsValue,
                 is_type: 1,
-                start_time: fieldsValue.create_time ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
-                end_time: fieldsValue.create_time ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
+                start_time: fieldsValue.create_time && fieldsValue.create_time.length > 0 ? fieldsValue.create_time[0].format('YYYY-MM-DD') : '',
+                end_time: fieldsValue.create_time && fieldsValue.create_time.length > 0 ? fieldsValue.create_time[1].format('YYYY-MM-DD') : '',
             };
             delete values.create_time;
+            this.setState({
+                searchValues:values,
+                args:{
+                    page:1,
+                    pageSize:args.pageSize
+                }
+            })
+            history.replace({
+                search:`?page=1&pageSize=${args.pageSize}`
+            })
             dispatch({
                 type: 'orders/fetchSearch',
                 params: values,
+                offset:0,
+                limit:args.pageSize
             });
         });
     }
@@ -121,7 +155,7 @@ export default class ExceptionOrderList extends Component {
      * @param {string} orderId  订单ID
      */
     handleModalToggle = (modalKey, orderId, data) => {
-        console.log('toggleModal', modalKey, orderId, data);
+        // console.log('toggleModal', modalKey, orderId, data);
         this.setState({
             // ...modalTempJson,
             modalKey,
@@ -141,7 +175,7 @@ export default class ExceptionOrderList extends Component {
                 that.setState({
                     isShowModal: false,
                 });
-                console.log('表单数据', values);
+                // console.log('表单数据', values);
                 if (modalKey === 2) { // 同意并退款Modal
                     that.dispatchAgreeRefund(values);
                 } else if (modalKey === 3) { // 无货驳回
@@ -152,7 +186,7 @@ export default class ExceptionOrderList extends Component {
                     that.dispatchRejectDelay(values);
                 }
             } else {
-                console.log('校验出错', err);
+                // console.log('校验出错', err);
             }
         });
     }
@@ -164,19 +198,28 @@ export default class ExceptionOrderList extends Component {
 
     // dispatch:同意并退款
     dispatchAgreeRefund = (data) => {
-        const { orderId } = this.state;
-        const { dispatch } = this.props;
+        const { orderId,args,searchValues } = this.state;
+        const { dispatch ,history} = this.props;
         dispatch({
             type: 'orders/fetchAgreeNoGood',
             orderId,
             data,
             success: () => {
                 message.success('操作成功');
-                const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+               this.setState({
+                   args:{
+                       page:1,
+                       pageSize:args.pageSize
+                   }
+               })
+               history.replace({
+                   search:`?page=1&pageSize=${args.pageSize}`
+               })
                 dispatch({
-                    type: 'orders/fetchExptionOrders',
-                    offset: (args.page - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
+                    type: 'orders/fetchSearch',
+                    offset: 0,
+                    limit: args.pageSize,
+                    params:searchValues
                 });
             },
             error: (res) => { message.error(handleServerMsgObj(res.msg)); },
@@ -185,20 +228,29 @@ export default class ExceptionOrderList extends Component {
 
     // dispatch:无货驳回
     dispatchRejectRefund = (data) => {
-        const { orderId } = this.state;
-        const { dispatch } = this.props;
+        const { orderId,args,searchValues } = this.state;
+        const { dispatch,history } = this.props;
         dispatch({
             type: 'orders/fetchRejectNoGood',
             orderId,
             data,
             success: () => {
                 message.success('操作成功');
-                const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
-                dispatch({
-                    type: 'orders/fetchExptionOrders',
-                    offset: (args.page - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
-                });
+                this.setState({
+                    args:{
+                        page:1,
+                        pageSize:args.pageSize
+                    }
+                })
+                history.replace({
+                    search:`?page=1&pageSize=${args.pageSize}`
+                })
+                 dispatch({
+                     type: 'orders/fetchSearch',
+                     offset: 0,
+                     limit: args.pageSize,
+                     params:searchValues
+                 });
             },
             error: (res) => { message.error(handleServerMsgObj(res.msg)); },
         });
@@ -206,20 +258,29 @@ export default class ExceptionOrderList extends Component {
 
     // dispatch:同意延期
     dispatchAgreeDelay = (data) => {
-        const { orderId } = this.state;
-        const { dispatch } = this.props;
+        const { orderId,args,searchValues } = this.state;
+        const { dispatch,history } = this.props;
         dispatch({
             type: 'orders/fetchAgreeDelay',
             orderId,
             data,
             success: () => {
                 message.success('操作成功');
-                const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
-                dispatch({
-                    type: 'orders/fetchExptionOrders',
-                    offset: (args.page - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
-                });
+                this.setState({
+                    args:{
+                        page:1,
+                        pageSize:args.pageSize
+                    }
+                })
+                history.replace({
+                    search:`?page=1&pageSize=${args.pageSize}`
+                })
+                 dispatch({
+                     type: 'orders/fetchSearch',
+                     offset: 0,
+                     limit: args.pageSize,
+                     params:searchValues
+                 });
             },
             error: (res) => { message.error(handleServerMsgObj(res.msg)); },
         });
@@ -227,37 +288,55 @@ export default class ExceptionOrderList extends Component {
 
     // dispatch:驳回延期
     dispatchRejectDelay = (data) => {
-        const { orderId } = this.state;
-        const { dispatch } = this.props;
+        const { orderId,args,searchValues } = this.state;
+        const { dispatch,history } = this.props;
         dispatch({
             type: 'orders/fetchRejectDelay',
             orderId,
             data,
             success: () => {
                 message.success('操作成功');
-                const args = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
-                dispatch({
-                    type: 'orders/fetchExptionOrders',
-                    offset: (args.page - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
-                });
+                this.setState({
+                    args:{
+                        page:1,
+                        pageSize:args.pageSize
+                    }
+                })
+                history.replace({
+                    search:`?page=1&pageSize=${args.pageSize}`
+                })
+                 dispatch({
+                     type: 'orders/fetchSearch',
+                     offset: 0,
+                     limit: args.pageSize,
+                     params:searchValues
+                 });
             },
             error: (res) => { message.error(handleServerMsgObj(res.msg)); },
         });
     }
 
     handleStandardTableChange = (pagination, filtersArg, sorter) => {
-        const { dispatch } = this.props;
-        const { formValues } = this.state;
+        const { dispatch , history} = this.props;
+        const { searchValues } = this.state;
         const params = {
-            currentPage: pagination.current,
             pageSize: pagination.pageSize,
             offset: (pagination.current - 1) * (pagination.pageSize),
         };
+        history.replace({
+            search:`?page=${pagination.current}&pageSize=${pagination.pageSize}`
+        })
+        this.setState({
+            args:{
+                page:pagination.current,
+                pageSize:pagination.pageSize
+            }
+        })
         dispatch({
-            type: 'orders/fetchExptionOrders',
+            type: 'orders/fetchSearch',
             offset: params.offset,
             limit: params.pageSize,
+            params:searchValues
         });
     }
 
@@ -266,49 +345,43 @@ export default class ExceptionOrderList extends Component {
         return (
             <Form onSubmit={this.handleSearch} layout="inline">
                 <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
-                    <Col xll={4} md={6} sm={24}>
-                        <FormItem label="商品订单号">
-                            {getFieldDecorator('guest_order_sn')(
-                                <Input placeholder="请输入" />
-                            )}
-                        </FormItem>
-                    </Col>
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
                         <FormItem label="订单号">
-                            {getFieldDecorator('order_sn')(
+                            {getFieldDecorator('sn')(
                                 <Input placeholder="请输入" />
                             )}
                         </FormItem>
                     </Col>
-                    {/* <Col xll={4} md={6} sm={24}>
-            <FormItem label="支付状态">
-              {getFieldDecorator('pay_status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="">全部</Option>
-                  <Option value="2">已支付</Option>
-                  <Option value="1">未支付</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col> */}
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
                         <FormItem label="异常状态标签">
-                            {getFieldDecorator('order_status')(
+                            {getFieldDecorator('abnormal_type')(
                                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                                    <Option value="0">正常</Option>
+                                    <Option value="0">全部</Option>
                                     <Option value="1">无货</Option>
                                     <Option value="2">延期</Option>
                                 </Select>
                             )}
                         </FormItem>
                     </Col>
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
                         <FormItem label="处理状态标签">
-                            {getFieldDecorator('deal_status')(
+                            {getFieldDecorator('is_deal')(
                                 <Select placeholder="请选择" style={{ width: '100%' }}>
                                     <Option value="0">全部</Option>
-                                    <Option value="1">已处理</Option>
-                                    <Option value="2">未处理</Option>
+                                    <Option value="1">未处理</Option>
+                                    <Option value="2">已处理</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col xxl={6} md={6} sm={24}>
+                        <FormItem label="责任方">
+                            {getFieldDecorator('responsible_party')(
+                                <Select placeholder="请选择" style={{ width: '100%' }}>
+                                    <Option value="0">全部</Option>
+                                    <Option value="1">客户</Option>
+                                    <Option value="2">供应商</Option>
+                                    <Option value="3">平台</Option>
                                 </Select>
                             )}
                         </FormItem>
@@ -332,110 +405,68 @@ export default class ExceptionOrderList extends Component {
         return (
             <Form onSubmit={this.handleSearch} layout="inline">
                 <Row gutter={{ md: 8, lg: 64, xl: 48 }}>
-                    <Col xll={4} md={6} sm={24}>
-                        <FormItem label="商品订单号">
-                            {getFieldDecorator('guest_order_sn')(
-                                <Input placeholder="请输入" />
-                            )}
-                        </FormItem>
-                    </Col>
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
                         <FormItem label="订单号">
-                            {getFieldDecorator('order_sn')(
+                            {getFieldDecorator('sn')(
                                 <Input placeholder="请输入" />
                             )}
                         </FormItem>
                     </Col>
-                    {/* <Col xll={4} md={6} sm={24}>
-            <FormItem label="支付状态">
-              {getFieldDecorator('pay_status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="">全部</Option>
-                  <Option value="2">已支付</Option>
-                  <Option value="1">未支付</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col> */}
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
                         <FormItem label="异常状态标签">
-                            {getFieldDecorator('order_status')(
+                            {getFieldDecorator('abnormal_type')(
                                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                                    <Option value="0">正常</Option>
+                                    <Option value="0">全部</Option>
                                     <Option value="1">无货</Option>
                                     <Option value="2">延期</Option>
                                 </Select>
                             )}
                         </FormItem>
                     </Col>
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
                         <FormItem label="处理状态标签">
-                            {getFieldDecorator('deal_status')(
+                            {getFieldDecorator('is_deal')(
                                 <Select placeholder="请选择" style={{ width: '100%' }}>
                                     <Option value="0">全部</Option>
-                                    <Option value="1">已处理</Option>
-                                    <Option value="2">未处理</Option>
+                                    <Option value="1">未处理</Option>
+                                    <Option value="2">已处理</Option>
                                 </Select>
                             )}
                         </FormItem>
                     </Col>
-                </Row>
-                <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
-                    <Col xll={4} md={6} sm={24}>
-                        <FormItem label="是否发货">
-                            {getFieldDecorator('is_delivery')(
-                                <Select placeholder="请选择" style={{ width: '100%' }}>
-                                    <Option value="0">全部</Option>
-                                    <Option value="1">是</Option>
-                                    <Option value="2">否</Option>
-                                </Select>
-                            )}
-                        </FormItem>
-                    </Col>
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
                         <FormItem label="责任方">
-                            {getFieldDecorator('res_status')(
+                            {getFieldDecorator('responsible_party')(
                                 <Select placeholder="请选择" style={{ width: '100%' }}>
                                     <Option value="0">全部</Option>
-                                    <Option value="1">供应商</Option>
-                                    <Option value="2">客户</Option>
+                                    <Option value="1">客户</Option>
+                                    <Option value="2">供应商</Option>
                                     <Option value="3">平台</Option>
                                 </Select>
-                            )}
-                        </FormItem>
-                    </Col>
-                    <Col xll={4} md={6} sm={24}>
-                        <FormItem label="供应商公司名称">
-                            {getFieldDecorator('suppier_name')(
-                                <Input placeholder="请输入" />
-                            )}
-                        </FormItem>
-                    </Col>
-                    <Col xll={4} md={6} sm={24}>
-                        <FormItem label="客户公司名称">
-                            {getFieldDecorator(' guest_company_name')(
-                                <Input placeholder="请输入" />
                             )}
                         </FormItem>
                     </Col>
                 </Row>
                 <Row gutter={{ md: 64, lg: 64, xl: 48 }}>
 
-                    <Col xll={4} md={6} sm={24}>
-                        <FormItem label="是否接单">
-                            {getFieldDecorator('is_taking')(
-                                <Select placeholder="请选择" style={{ width: '100%' }}>
-                                    <Option value="0">全部</Option>
-                                    <Option value="1">是</Option>
-                                    <Option value="2">否</Option>
-                                </Select>
+                    <Col xxl={6} md={6} sm={24}>
+                        <FormItem label="供应商公司名称">
+                            {getFieldDecorator('supplier_name')(
+                                <Input placeholder="请输入" />
                             )}
                         </FormItem>
                     </Col>
-                    <Col xll={4} md={6} sm={24}>
+                    <Col xxl={6} md={6} sm={24}>
+                        <FormItem label="客户公司名称">
+                            {getFieldDecorator('guest_company_name')(
+                                <Input placeholder="请输入" />
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col xxl={8} md={8} sm={24}>
                         <FormItem label="下单时间">
                             {getFieldDecorator('create_time')(
-                                <RangePicker onChange={this.onChange} />
+                                <RangePicker />
                             )}
                         </FormItem>
                     </Col>
@@ -463,11 +494,13 @@ export default class ExceptionOrderList extends Component {
             isShowModal1,
             modalKey,
             data,
+            args
         } = this.state;
         const { orders, loading } = this.props;
         const { total } = orders;
         const ModalComponent = ACTIONS_DATA[modalKey].component;
-
+        const current = args.page >>0;
+        const pageSize = args.pageSize >> 0;
         return (
             <PageHeaderLayout title="异常订单列表">
                 <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -483,6 +516,8 @@ export default class ExceptionOrderList extends Component {
                             loading={loading}
                             onChange={this.handleStandardTableChange}
                             total={total}
+                            current = {current}
+                            pageSize ={pageSize}
                         />
                         <Modal
                             visible={isShowModal}
