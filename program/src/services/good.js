@@ -23,16 +23,15 @@ export async function queryGoods({ params, offset = 0, limit = 10 }) {
  * @param {string=} GoodStatus 商品状态 [0,下架，1,上架]
  * 
  */
-export async function modifyGoodStatus({ gno, publishStatus }) {
+export async function modifyGoodStatus({ gno, params }) {
+    console.log('params',params);
   const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/goods/${gno}/publish_status`, {
     method: 'put',
     headers: {
       Authorization: acessToken,
     },
-    data: {
-      is_publish: publishStatus,
-    },
+    data:params,
   });
 }
 

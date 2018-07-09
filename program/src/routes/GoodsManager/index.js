@@ -106,16 +106,16 @@ export default class GoodsMananger extends Component {
     }
 
     // 上下架商品
-    handlePublishGood = (gno, status) => {
+    handlePublishGood = (gno, params) => {
+        console.log(params)
         const { dispatch, history } = this.props;
         const { args, formValues } = this.state;
         dispatch({
             type: 'good/modifyGoodStatus',
             gno,
-            goodStatus: status,
+            params,
             success: () => {
                 message.success('下架成功');
-                console.log(formValues,args,1234567890)
                 dispatch({
                     type: 'good/fetch',
                     offset: (args.page - 1) * args.pageSize,
