@@ -7,11 +7,10 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { handleServerMsgObj, queryString } from '../../utils/tools';
 import { API_URL, PAGE_SIZE } from '../../constant/config';
 import styles from './product-manager.less';
-
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const plainOptions = ['pno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'staff_name', 'supply', 'created_time'];
+const plainOptions = ['pno', 'product_name', 'brand_name', 'registration_place', 'category', 'english_name', 'spec', 'creator', 'created_time', 'model_count'];
 
 function getStanrdCatalog(data) {
     data.forEach((val) => {
@@ -47,6 +46,8 @@ export default class ProductManager extends Component {
             formValues: {},
             isShowExportModal: false,
             exportFields: [], // 导出产品字段
+            exportDatePicker:{},  // 导出产品时间选择
+            datePickerValue:"",// 导出产品默认时间
             isCheckAll: false,
             args: queryString.parse(props.location.search) || { page: 1, pageSize: 10 },
         };
@@ -66,7 +67,7 @@ export default class ProductManager extends Component {
     }
 
     onChange = (date, dateString) => {
-        console.log(date, dateString);
+        // console.log(date, dateString);
     }
 
     // 全选按钮改变
@@ -92,21 +93,49 @@ export default class ProductManager extends Component {
 
     // 取消导出数据
     handleCancel() {
-        this.setState({ isShowExportModal: false });
+        this.setState({
+            datePickerValue:"",
+            exportDatePicker:{},
+            exportFields:[],
+            isCheckAll:false,
+            isShowExportModal: false
+        })
     }
-
+    onExportDatePickerChange=(date,dateString)=>{ // 导出产品时间选择
+        console.log(date,dateString)
+        this.setState({
+            datePickerValue:date,
+            exportDatePicker:{
+                created_start:dateString[0],
+                created_end:dateString[1],
+            }
+        })
+    }
     // 确定导出数据
     handleOk() {
-        this.setState({ isShowExportModal: false });
-        console.log('要导出的数据项目', this.state.exportFields);
+        const {exportDatePicker,exportFields} = this.state;
         const { dispatch } = this.props;
+        if(this.state.exportFields.length <= 0) {
+            message.warning('请选择导出项');
+            return;
+        }
         dispatch({
             type: 'product/queryExport',
-            fields: this.state.exportFields,
+            params:exportDatePicker,
+            fields: exportFields,
             success: (res) => {
-                console.log(`${API_URL}/product_reports?filename=${res.filename}`);
                 window.open(`${API_URL}/product_reports?filename=${res.filename}`);
+                this.setState({
+                    datePickerValue:"",
+                    exportDatePicker:{},
+                    exportFields:[],
+                    isCheckAll:false,
+                    isShowExportModal: false
+                })
             },
+            error:(res) => {
+                message.warning(res.msg);
+            }
         });
     }
 
@@ -229,11 +258,10 @@ export default class ProductManager extends Component {
             selectedRows: rows,
         });
     }
-
     handleSearch = (e) => {
         e.preventDefault();
 
-        const { dispatch, form,history } = this.props;
+        const { dispatch, form, history } = this.props;
         const { args } = this.state;
         form.validateFields((err, fieldsValue) => {
             if (err) return;
@@ -382,7 +410,7 @@ export default class ProductManager extends Component {
                     <Col xxl={6} md={12} sm={24}>
                         <FormItem label="创建日期">
                             {getFieldDecorator('created_time')(
-                                <RangePicker onChange={this.onChange} />
+                                <RangePicker />
                             )}
                         </FormItem>
                     </Col>
@@ -403,13 +431,13 @@ export default class ProductManager extends Component {
     renderForm() {
         return this.state.expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
     }
-
+    
     render() {
         const { loading, product } = this.props;
         const { selectedRows, args, isShowExportModal } = this.state;
         const data = product.list;
         const { total } = product;
-        const current = args.page>>0;
+        const current = args.page >> 0;
         const pageSize = args.pageSize >> 0;
         // 导出数据modal标题
         const exportCom = (
@@ -453,6 +481,10 @@ export default class ProductManager extends Component {
                             onCancel={this.handleCancel}
                             onOk={this.handleOk}
                         >
+                            <div className={styles['exportTip']}>
+                                <span className={styles['tip']}>选择导出字段项：</span>
+                                <RangePicker onChange={this.onExportDatePickerChange} value={this.state.datePickerValue}/>
+                            </div>
                             <CheckboxGroup
                                 onChange={this.onExportFieldsChange}
                                 isCheckAll={this.state.isCheckAll}

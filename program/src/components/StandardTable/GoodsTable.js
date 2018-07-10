@@ -211,6 +211,7 @@ class GoodsTable extends PureComponent {
                     title="商品下架"
                     visible={this.state.visible}
                     footer={null}
+                    onCancel={this.handleReset}
                 >
                         <Form onSubmit={this.handleSubmit}>
                             <FormItem label="下架说明" {...formItemLayout}>

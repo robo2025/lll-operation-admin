@@ -88,3 +88,14 @@ export async function queryProductModelDetail({ mno }) {
     },
   });
 }
+
+// 导出产品型号数据
+
+export async function exportProductModal({params,fields}) {
+    return lyRequest(`${API_URL}/product_model_reports?${queryString.toQueryString(params)}`,{
+        method:"post",
+        data:{
+            fields
+        }
+    })
+}

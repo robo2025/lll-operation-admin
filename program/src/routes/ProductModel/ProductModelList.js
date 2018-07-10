@@ -3,14 +3,16 @@ import { connect } from 'dva';
 import qs from 'qs';
 import Cookies from 'js-cookie';
 import moment from 'moment';
-import { Card, Row, Col, Form, Input, Upload, Button, Icon, DatePicker, Select, Divider, Modal, Popconfirm, message, Cascader } from 'antd';
+import { Card, Row, Col, Form, Input, Upload, Button, Icon, DatePicker, Select, Divider, Modal, Popconfirm, message, Cascader, Checkbox } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
 import ModelContent from './ModelContent';
+import ProductModalExport from "../../components/Checkbox/ProductModalExport";
 import styles from './style.less';
-import { PAGE_SIZE, SUCCESS_STATUS, FAIL_STATUS,MAIN_URL } from '../../constant/config';
+import { PAGE_SIZE, SUCCESS_STATUS, FAIL_STATUS, MAIN_URL ,API_URL} from '../../constant/config';
 import { handleServerMsgObj, checkFile } from '../../utils/tools';
+const plainOptions = ['mno', 'partnumber', 'brand_name', 'registration_place', 'pno', 'product_name', 'category', 'spec', 'creator', 'created_time', 'supplier_count'];
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -46,6 +48,11 @@ export default class ProductModelList extends Component {
             expandForm: false,
             isShowModal: false,
             isImportModal: false,
+            isShowExportModal: false,
+            exportFields: [], // 导出产品字段
+            exportDatePicker: {},  // 导出产品时间选择
+            datePickerValue: "",// 导出产品默认时间
+            isCheckAll: false,
             args: qs.parse(props.location.search || { page: 1, pageSize: 10 }, { ignoreQueryPrefix: true }),
             modelContentArgs: {// 下载模板选择参数保存
                 page: 1,
@@ -302,7 +309,6 @@ export default class ProductModelList extends Component {
             },
         });
     }
-
     handleSearch = (e) => {
         e.preventDefault();
 
@@ -561,11 +567,84 @@ export default class ProductModelList extends Component {
     renderForm() {
         return this.state.expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
     }
+    // 导出全选按钮改变
+    onCheckAllChange = (e) => {
+        this.setState({
+            isCheckAll: e.target.checked,
+            exportFields: e.target.checked ? plainOptions : [],
+        });
+    }
 
+    // 导出数据复选框改变
+    onExportFieldsChange = (fields) => {
+        this.setState({
+            exportFields: fields,
+            isCheckAll: fields.length === plainOptions.length,
+        });
+    }
+
+    // 显示导出数据框
+    showExportModal = () => {
+        this.setState({ isShowExportModal: true });
+    }
+
+    // 取消导出数据
+    handleCancel=()=> {
+        this.setState({
+            datePickerValue: "",
+            exportDatePicker: {},
+            exportFields: [],
+            isCheckAll: false,
+            isShowExportModal: false
+        })
+    }
+    onExportDatePickerChange = (date, dateString) => { // 导出产品时间选择
+        this.setState({
+            datePickerValue: date,
+            exportDatePicker: {
+                created_start: dateString[0],
+                created_end: dateString[1],
+            }
+        })
+    }
+    // 确定导出数据
+    handleOk = () => {
+        const { exportDatePicker, exportFields } = this.state;
+        const { dispatch } = this.props;
+        if (this.state.exportFields.length <= 0) {
+            message.warning('请选择导出项');
+            return;
+        }
+        dispatch({
+            type: 'productModel/queryExportProductModal',
+            params: exportDatePicker,
+            fields: exportFields,
+            success: (res) => {
+                window.open(`${API_URL}/product_model_reports?filename=${res.filename}`);
+                this.setState({
+                    datePickerValue: "",
+                    exportDatePicker: {},
+                    exportFields: [],
+                    isCheckAll: false,
+                    isShowExportModal: false
+                })
+            },
+            error: (res) => {
+                message.warning(res.msg);
+                this.setState({
+                    datePickerValue: "",
+                    exportDatePicker: {},
+                    exportFields: [],
+                    isCheckAll: false,
+                    isShowExportModal: false
+                })
+            }
+        });
+    }
     render() {
         const {
             selectedRowKeys, selectedRows,
-            currProductModel, isShowModal, isImportModal, args,modelContentArgs
+            currProductModel, isShowModal, isImportModal, args, modelContentArgs, isShowExportModal
         } = this.state;
         const { productModel, good, product, loading, catalog } = this.props;
         const rowSelection = {
@@ -579,6 +658,19 @@ export default class ProductModelList extends Component {
         const productModelPageSize = args.pageSize >> 0;
         const modelContentPage = modelContentArgs.page >> 0;
         const modelContentPageSize = modelContentArgs.pageSize >> 0;
+        // 导出数据modal标题
+        const exportCom = (
+            <h4>
+                导出数据
+                <Checkbox
+                    style={{ marginLeft: 20 }}
+                    onChange={this.onCheckAllChange}
+                    checked={this.state.isCheckAll}
+                >
+                    全选
+                </Checkbox>
+            </h4>
+        );
         return (
             <PageHeaderLayout title="产品型号列表">
                 <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -596,9 +688,28 @@ export default class ProductModelList extends Component {
                             >
                                 <Button>
                                     删除
-                </Button>
+                                </Button>
                             </Popconfirm>
                             <Button onClick={this.showExportModal}>导出数据</Button>
+                            {/* 导出数据模板 */}
+                            <Modal
+                                visible={isShowExportModal}
+                                width="600px"
+                                title={exportCom}
+                                onCancel={this.handleCancel}
+                                onOk={this.handleOk}
+                            >
+                                <div className={styles['exportTip']}>
+                                    <span className={styles['tip']}>选择导出字段项：</span>
+                                    <RangePicker onChange={this.onExportDatePickerChange} value={this.state.datePickerValue} />
+                                </div>
+                                <ProductModalExport
+                                    onChange={this.onExportFieldsChange}
+                                    isCheckAll={this.state.isCheckAll}
+                                    checkedList={this.state.exportFields}
+                                />
+                            </Modal>
+                            {/* 下载数据模板Modal */}
                             <div style={{ display: 'inline-block', marginLeft: 32 }}>
                                 <Upload
                                     className={styles.upload}

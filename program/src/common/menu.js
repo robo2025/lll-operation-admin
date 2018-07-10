@@ -91,7 +91,17 @@ const menuData = [{
       path: 'export-list',
     },
   ],
-}];
+},{
+    name: '库存管理',
+    path: 'stockManagement',
+    icon: 'api',
+    children: [
+      {
+        name: '商品库存列表',
+        path: 'goodsStockList',
+      },
+    ],
+  }];
 
 function formatter(data, parentPath = '/', parentAuthority) {
   return data.map((item) => {
