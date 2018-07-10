@@ -133,9 +133,9 @@ export async function queryOperationLog({ module, objectId, offset = 0, limit = 
 }
 
 // 导出数据
-export async function exportProduct({ fields }) {
+export async function exportProduct({ params,fields }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/product_reports`, {
+  return lyRequest(`${API_URL}/product_reports?${queryString.toQueryString(params)}`, {
     method: 'post',
     headers: {
       Authorization: acessToken,

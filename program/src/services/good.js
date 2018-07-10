@@ -88,9 +88,9 @@ export async function queryOperationLog({ module, gno }) {
 }
 
 // 导出数据
-export async function exportGood({ fields }) {
+export async function exportGood({ params,fields }) {
   const acessToken = Cookies.get('access_token');
-  return lyRequest(`${OPERATION_URL}/api/admin/goods_reports`, {
+  return lyRequest(`${OPERATION_URL}/operation/goods_reports?${queryString.toQueryString(params)}`, {
     method: 'post',
     headers: {
       Authorization: acessToken,

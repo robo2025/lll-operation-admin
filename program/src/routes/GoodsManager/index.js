@@ -6,14 +6,14 @@ import GoodsTable from '../../components/StandardTable/GoodsTable';
 import GoodCheckboxGroup from '../../components/Checkbox/GoodCheckboxGroup';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { handleServerMsg } from '../../utils/tools';
-import { PAGE_SIZE } from '../../constant/config';
+import { OPERATION_URL } from '../../constant/config';
 import styles from './index.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
-const plainOptions = ['gno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'prodution_place', 'category', 'stock', 'price', 'supplier_name', 'min_buy', 'audit_status', 'publish_status', 'created_time'];// 所有选项
+const plainOptions = ['gno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'registration_place', 'category', 'price', 'supplier_name', 'created_time', 'auditor', 'audit_time', 'stock', 'min_buy', 'audit_status', 'publish_status'];// 所有选项
 function getStandardCategory(data) {
     data.map(ele => {
         ele.value = ele.id;
@@ -67,7 +67,6 @@ export default class GoodsMananger extends Component {
 
     // 导出数据复选框改变
     onExportFieldsChange = (fields) => {
-        // console.log('exportFiles', fields);
         this.setState({
             exportFields: fields,
             isCheckAll: fields.length === plainOptions.length,
@@ -89,25 +88,52 @@ export default class GoodsMananger extends Component {
 
     // 取消导出数据
     handleCancel = () => {
-        this.setState({ isShowExportModal: false });
+        const {form} = this.props;
+        form.resetFields(['export_audit_status','export_publish_status','export_create_time']);
+        this.setState({
+            exportFields: [], // 导出产品字段 
+            isCheckAll: false,
+            isShowExportModal: false
+        })
     }
     // 确定导出数据
-    handleOk = () => {
-        this.setState({ isShowExportModal: false });
-        const { dispatch } = this.props;
-        dispatch({
-            type: 'good/queryExport',
-            fields: this.state.exportFields,
-            success: (res) => {
-                window.open('http://139.199.96.235:9005/api/admin/goods_reports?filename=' + res.filename);
-            },
-            error: (res) => { message.error(handleServerMsg(res.msg)); },
-        });
+    handleOk = (e) => {
+        e.preventDefault();
+        const { exportFields } = this.state;
+        if (exportFields.length <= 0) {
+            message.warning("请选择导出项");
+            return;
+        }
+        const { form, dispatch } = this.props;
+        form.validateFields((err, values) => {
+            if (err) return;
+            const filterValues = {}
+            if (values.export_create_time && values.export_create_time.length > 0) {
+                filterValues.created_start = values.export_create_time[0].format('YYYY-MM-DD');
+                filterValues.created_end = values.export_create_time[1].format('YYYY-MM-DD');
+            }
+            filterValues.aduit_status = values.export_audit_status;
+            filterValues.publish_status = values.export_publish_status;
+            dispatch({
+                type: 'good/queryExport',
+                params: filterValues,
+                fields: exportFields,
+                success: (res) => {
+                    window.open(`${OPERATION_URL}/operation/goods_reports?filename=${res.filename}`);
+                    this.setState({
+                        exportFields: [], // 导出产品字段 
+                        isCheckAll: false,
+                        isShowExportModal: false
+                    })
+                },
+                error: (res) => { message.error(res.msg); },
+            });
+        })
+
     }
 
     // 上下架商品
     handlePublishGood = (gno, params) => {
-        console.log(params)
         const { dispatch, history } = this.props;
         const { args, formValues } = this.state;
         dispatch({
@@ -120,7 +146,7 @@ export default class GoodsMananger extends Component {
                     type: 'good/fetch',
                     offset: (args.page - 1) * args.pageSize,
                     limit: args.pageSize,
-                    params:formValues
+                    params: formValues
                 });
             },
             error: (res) => {
@@ -141,28 +167,28 @@ export default class GoodsMananger extends Component {
             search: `?page=${pagination.current}&pageSize=${pagination.pageSize}`,
         });
         this.setState({
-            args:{
-                page:pagination.current,
-                pageSize:pagination.pageSize
+            args: {
+                page: pagination.current,
+                pageSize: pagination.pageSize
             }
         })
         dispatch({
             type: 'good/fetch',
             offset: params.offset,
             limit: params.pageSize,
-            params:formValues
+            params: formValues
         });
     }
 
     handleFormReset = () => {
-        const { form, dispatch,history } = this.props;
-        const {args} = this.state;
+        const { form, dispatch, history } = this.props;
+        const { args } = this.state;
         form.resetFields();
         this.setState({
             formValues: {},
-            args:{
-                page:1,
-                pageSize:args.pageSize
+            args: {
+                page: 1,
+                pageSize: args.pageSize
             }
         });
         // 分页：将页数提取到url上
@@ -220,8 +246,8 @@ export default class GoodsMananger extends Component {
     handleSearch = (e) => {
         e.preventDefault();
 
-        const { dispatch, form ,history} = this.props;
-        const {args} = this.state;
+        const { dispatch, form, history } = this.props;
+        const { args } = this.state;
         form.validateFields((err, fieldsValue) => {
             if (err) return;
             const createTime = {};
@@ -244,16 +270,16 @@ export default class GoodsMananger extends Component {
             delete values.category;
             this.setState({
                 formValues: values,
-                args:{
-                    page:1,
-                    pageSize:args.pageSize
+                args: {
+                    page: 1,
+                    pageSize: args.pageSize
                 }
             });
-            history.replace({search: `?page=1&pageSize=${args.pageSize}`})
+            history.replace({ search: `?page=1&pageSize=${args.pageSize}` })
             dispatch({
                 type: 'good/fetch',
                 params: values,
-                offset:0,
+                offset: 0,
                 limit: args.pageSize
             });
         });
@@ -427,20 +453,58 @@ export default class GoodsMananger extends Component {
         return this.state.expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
     }
 
+    renderExportForm = () => {
+        const { getFieldDecorator } = this.props.form;
+        return (
+            <Form onSubmit={this.handleOk} layout="inline" style={{ marginBottom: "20px" }} id="exportForm">
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col xxl={6} md={6} sm={24}>
+                        <FormItem label="审核状态">
+                            {getFieldDecorator('export_audit_status')(
+                                <Select placeholder="请选择" style={{ width: '120px' }}>
+                                    <Option value="">全部</Option>
+                                    <Option value="0">未审核</Option>
+                                    <Option value="1">审核通过</Option>
+                                    <Option value="2">审核未通过</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col xxl={6} md={6} sm={24}>
+                        <FormItem label="上下架状态">
+                            {getFieldDecorator('export_publish_status')(
+                                <Select placeholder="请选择" style={{ width: '100px' }}>
+                                    <Option value="">全部</Option>
+                                    <Option value="0">下架中</Option>
+                                    <Option value="1">上架中</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col xxl={12} md={12} sm={24}>
+                        <FormItem label="创建时间">
+                            {getFieldDecorator('export_create_time')(
+                                <RangePicker />
+                            )}
+                        </FormItem>
+                    </Col>
+                </Row>
+            </Form>
+        )
+    }
     render() {
         const { loading, good } = this.props;
         const { selectedRows, args, isShowExportModal } = this.state;
         const data = good.list;
         const { total } = good;
-        const page = args.page >>0;
-        const pageSize = args.pageSize >>0;
+        const page = args.page >> 0;
+        const pageSize = args.pageSize >> 0;
         const menu = (
             <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
                 <Menu.Item key="remove">删除</Menu.Item>
                 <Menu.Item key="approval">批量审批</Menu.Item>
             </Menu>
         );
-
         // 导出数据Modal标题
         const exportCom = (
             <h4>
@@ -470,11 +534,12 @@ export default class GoodsMananger extends Component {
                         </div>
                         <Modal
                             visible={isShowExportModal}
-                            width="600px"
+                            width="1050px"
                             title={exportCom}
                             onCancel={this.handleCancel}
                             onOk={this.handleOk}
                         >
+                            {this.renderExportForm()}
                             <GoodCheckboxGroup
                                 onChange={this.onExportFieldsChange}
                                 isCheckAll={this.state.isCheckAll}
@@ -487,7 +552,7 @@ export default class GoodsMananger extends Component {
                             data={data}
                             total={total}
                             current={page}
-                            pageSize ={pageSize}
+                            pageSize={pageSize}
                             onSelectRow={this.handleSelectRows}
                             onChange={this.handleStandardTableChange}
                             onPublish={this.handlePublishGood}
