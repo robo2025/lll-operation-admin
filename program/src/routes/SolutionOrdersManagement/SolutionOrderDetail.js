@@ -200,7 +200,7 @@ class SolutionOrderDetail extends React.Component {
               <DescriptionList size="small" col="4">
                 <Description term="首款">{pay_info[0].pay_ratio} %</Description>
                 <Description term="金额">
-                  ￥{order_info.total_money * (pay_info[0].pay_ratio / 100)}
+                ￥{pay_info[0].pay_amount}
                 </Description>
                 <Description term="支付状态">
                   {pay_info[0].status === 2 ? '已支付' : '未支付'}
@@ -214,7 +214,7 @@ class SolutionOrderDetail extends React.Component {
                   {pay_info[1].pay_ratio} %
                 </Description>
                 <Description term="金额">
-                  ￥{order_info.total_money * (pay_info[1].pay_ratio / 100)}
+                ￥{pay_info[1].pay_amount}
                 </Description>
                 <Description term="支付状态">
                   {pay_info[1].status === 2 ? '已支付' : '未支付'}
