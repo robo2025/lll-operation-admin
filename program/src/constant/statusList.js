@@ -126,6 +126,11 @@ const SLN_PAY_STATUS = {
   3: '已全部支付',
   4: '订单已取消',
 };
+const STOCK_OPERATION_STATUS = {
+    I:"入库",
+    S:"订单出库",
+    O:"调拨出库",
+}
 export {
   ACTION_STATUS,
   ACTION_FLAG,
@@ -141,4 +146,5 @@ export {
   AUDIT_STATUS,
   PUBLISH_STATUS,
   SLN_PAY_STATUS,
+  STOCK_OPERATION_STATUS
 };

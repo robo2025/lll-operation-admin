@@ -124,7 +124,7 @@ export default class ProductManager extends Component {
             params:exportDatePicker,
             fields: exportFields,
             success: (res) => {
-                window.open(`${API_URL}/product_reports?filename=${res.filename}`);
+                window.open(`${API_URL}/product_reports?filename=${res.filename}`,'_self');
                 this.setState({
                     datePickerValue:"",
                     exportDatePicker:{},

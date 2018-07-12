@@ -100,6 +100,14 @@ const menuData = [{
         name: '商品库存列表',
         path: 'goodsStockList',
       },
+      {
+        name: '库存记录',
+        path: 'goodsStockRecordList',
+      },
+      {
+        name: '库存配置',
+        path: 'stockConfigList',
+      },
     ],
   }];
 

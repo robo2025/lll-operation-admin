@@ -119,7 +119,7 @@ export default class GoodsMananger extends Component {
                 params: filterValues,
                 fields: exportFields,
                 success: (res) => {
-                    window.open(`${OPERATION_URL}/operation/goods_reports?filename=${res.filename}`);
+                    window.open(`${OPERATION_URL}/operation/goods_reports?filename=${res.filename}`,'_self');
                     this.setState({
                         exportFields: [], // 导出产品字段 
                         isCheckAll: false,

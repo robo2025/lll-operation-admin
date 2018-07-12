@@ -228,10 +228,12 @@ export default class NewProduct extends Component {
   handleSubmitProduct = () => {
     const { fields, specs } = this.state;
     const { dispatch, history } = this.props;
+    console.log(fields)
     if (fields.pics.length <= 0) {
       message.error('产品图片必须上传');
       return;
     }
+
     console.log('新建产品', { ...fields, summary: fields.summary1 || '' }, specs);
     dispatch({
       type: 'product/add',

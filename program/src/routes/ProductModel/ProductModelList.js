@@ -219,8 +219,7 @@ export default class ProductModelList extends Component {
         const pnos = modelList.map(val => val.pno);
         if (pnos.length > 0) {
             this.setState({ isImportModal: false });
-            console.log(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);
-            window.open(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`);
+            window.open(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`,'_self');
         } else {
             this.setState({ isImportModal: false });
         }
@@ -620,7 +619,7 @@ export default class ProductModelList extends Component {
             params: exportDatePicker,
             fields: exportFields,
             success: (res) => {
-                window.open(`${API_URL}/product_model_reports?filename=${res.filename}`);
+                window.open(`${API_URL}/product_model_reports?filename=${res.filename}`,'_self');
                 this.setState({
                     datePickerValue: "",
                     exportDatePicker: {},
