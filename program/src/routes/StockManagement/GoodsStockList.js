@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'dva';
 import qs from 'qs';
+import moment from 'moment';
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 import { Form, Row, Col, Input, Button, Icon, Card, Select, Modal, DatePicker } from 'antd';
 import StockListTable from "../../components/StockManagement/StockListTable";
 import GoodStockRecordTable from "../../components/StockManagement/GoodStockRecordTable";
+import {STOCK_OPERATION_STATUS} from "../../constant/statusList"
 import styles from "./stockManagement.less";
 const FormItem = Form.Item;
-const InputGroup = Input.Group;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
 @Form.create()
@@ -224,9 +225,9 @@ export default class GoodsStockList extends React.Component {
                             {getFieldDecorator('audit_status')(
                                 <Select placeholder="请选择">
                                     <Option value="">全部</Option>
-                                    <Option value="G">审核通过</Option>
-                                    <Option value="D">待审核</Option>
-                                    <Option value="W">审核未通过</Option>
+                                    <Option value="0">未审核</Option>
+                                    <Option value="1">审核通过</Option>
+                                    <Option value="2">审核不通过</Option>
                                 </Select>
                             )}
                         </FormItem>
@@ -361,6 +362,31 @@ export default class GoodsStockList extends React.Component {
         const { args, viewRecordModalShow, recordArgs, recordInfo } = this.state;
         const { page, pageSize } = args;
         const current = recordArgs.page >> 0;
+        const columns = [
+            {
+                title: "序号",
+                dataIndex: "idx",
+                key: 'idx'
+            }, {
+                title: "单号",
+                dataIndex: 'order_id',
+                key: "order_id"
+            }, {
+                title: "操作类型",
+                dataIndex: "change_option",
+                key: 'change_option',
+                render: (val) => <span>{STOCK_OPERATION_STATUS[val]}</span>
+            }, {
+                title: "库存变动数量",
+                dataIndex: "change_count",
+                key: "change_count"
+            }, {
+                title: "操作时间",
+                dataIndex: "add_time",
+                key: 'add_time',
+                render: (val) => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>
+            }
+        ]
         return (
             <PageHeaderLayout title="商品库存列表">
                 <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -393,6 +419,7 @@ export default class GoodsStockList extends React.Component {
                         </Row>
                         {this.renderStockRecordFilter()}
                         <GoodStockRecordTable
+                            columns = {columns}
                             total={recordTotal}
                             loading={stockRecordLoading}
                             data={stockRecord}

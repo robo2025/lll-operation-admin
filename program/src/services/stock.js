@@ -13,3 +13,10 @@ export async function queryGoodsStockRecord({params, offset = 0, limit = 10}) {
 export async function queryGoodsStockConfig({params,offset=0,limit=10}) {
     return lyRequest(`${STOCKLIST_URL}/v1/setting?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`)
 }
+
+export async function stockConfig({params}) {
+    return lyRequest(`${STOCKLIST_URL}/v1/setting`,{
+        method:"post",
+        data:params
+    })
+}

@@ -1,29 +1,32 @@
 import React from 'react';
 import moment from 'moment';
 import { Table } from 'antd';
-import {STOCK_OPERATION_STATUS} from "../../constant/statusList"
+import { STOCK_OPERATION_STATUS } from "../../constant/statusList"
 export default class GoodsStockTable extends React.Component {
     constructor(props) {
         super(props);
     }
     render() {
-        const { total, data,loading,onRecordChange,current,pageSize} = this.props;
+        const { total, data, loading, onRecordChange, current, pageSize } = this.props;
         data.map((ele, idx) => {
             ele.idx = idx + 1;
         })
         const columns = [{
             title: "序号",
+            width:60,
             dataIndex: "idx",
             key: 'idx'
         }, {
             title: "单号",
             dataIndex: 'order_id',
             key: "order_id"
-        },{
+        },
+        {
             title: "供应商名称",
             key: "supplier_name",
-            render:(val) => <span>{val.goods_info.supplier_name}</span>
-        }, {
+            dataIndex: "supplier_name"
+        },
+        {
             title: "操作类型",
             dataIndex: "change_option",
             key: 'change_option',
@@ -34,22 +37,26 @@ export default class GoodsStockTable extends React.Component {
             key: "change_count"
         }, {
             title: "商品ID",
-            dataIndex:"gno",
+            dataIndex: "gno",
             key: 'gno',
         },
         {
             title: "产品名称",
             key: 'product_name',
-            render:(val) => <span>{val.goods_info.product_name}</span>
-        },{
+            dataIndex: "product_name"
+        }, {
             title: "产品型号",
             key: 'partnumber',
-            render:(val) => <span>{val.goods_info.partnumber}</span>
-        },{
+            dataIndex: "partnumber"
+        }, {
             title: "品牌",
             key: 'brand_name',
-            render:(val) => <span>{val.goods_info.brand_name}</span>
-        },{
+            dataIndex:"brand_name"
+        }, {
+            title: "产地",
+            key: 'registration_place',
+            dataIndex:"registration_place"
+        }, {
             title: "操作人",
             dataIndex: "operator",
             key: 'operator',
@@ -72,7 +79,7 @@ export default class GoodsStockTable extends React.Component {
                 loading={loading}
                 rowKey={record => record.idx}
                 pagination={paginationOptions}
-                scroll={{x:1300}}
+                scroll={{ x: 1500 }}
                 onChange={onRecordChange}
             />
         )

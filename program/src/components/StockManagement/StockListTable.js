@@ -62,8 +62,8 @@ export default class StockListTabel extends React.Component {
             )
         }, {
             title: '库存数量',
-            dataIndex: 'stock',
             key: 'stock',
+            render:(val) => <span>{`${val.stock} ${val.sales_unit}`}</span>
         }, {
             title:"操作",
             key:"view",

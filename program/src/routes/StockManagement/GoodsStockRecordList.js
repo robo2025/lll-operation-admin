@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import qs from 'qs';
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
-import { Card, Form, Row, Col, Input, Button, Icon, DatePicker,Select } from 'antd';
+import { Card, Form, Row, Col, Input, Button, Icon, DatePicker, Select } from 'antd';
 import GoodsStockTable from "../../components/StockManagement/GoodsStockTable";
 import styles from "./stockManagement.less";
 import { connect } from 'dva';
@@ -19,17 +19,17 @@ export default class GoodsStockRecordList extends React.Component {
         super(props);
         this.state = {
             expand: false,
-            args:qs.parse(props.location.search || {page:1,pageSize:10},{ignoreQueryPrefix:true}),
-            searchValues:{},
+            args: qs.parse(props.location.search || { page: 1, pageSize: 10 }, { ignoreQueryPrefix: true }),
+            searchValues: {},
         }
     }
     componentDidMount() {
         const { dispatch } = this.props;
-        const {args} = this.state;
+        const { args } = this.state;
         dispatch({
             type: "stock/fetchRecord",
-            offset:(args.page-1)*args.pageSize,
-            limit:args.pageSize
+            offset: (args.page - 1) * args.pageSize,
+            limit: args.pageSize
         })
     }
     toggleForm = () => {
@@ -38,76 +38,76 @@ export default class GoodsStockRecordList extends React.Component {
         })
     }
     //表格页数改变
-    onRecordChange=(pagination)=>{
-        const {dispatch,history} = this.props;
-        const {searchValues} = this.state;
+    onRecordChange = (pagination) => {
+        const { dispatch, history } = this.props;
+        const { searchValues } = this.state;
         this.setState({
-            args:{
-                page:pagination.current,
-                pageSize:pagination.pageSize
+            args: {
+                page: pagination.current,
+                pageSize: pagination.pageSize
             }
         })
         history.replace({
-            search:`?page=${pagination.current}&pageSize=${pagination.pageSize}`
+            search: `?page=${pagination.current}&pageSize=${pagination.pageSize}`
         })
         dispatch({
-            type:"stock/fetchRecord",
-            offset:(pagination.current-1)*pagination.pageSize,
-            limit:pagination.pageSize,
-            params:searchValues
+            type: "stock/fetchRecord",
+            offset: (pagination.current - 1) * pagination.pageSize,
+            limit: pagination.pageSize,
+            params: searchValues
         })
     }
-    handleSearch=()=>{
-        const {dispatch,form,history} = this.props;
-        const {args} = this.state;
-        form.validateFields((err,fieldsValues) => {
-            if(err) return;
-            const values={};
-            for(var key in fieldsValues) {
-                if(fieldsValues[key]) {
+    handleSearch = () => {
+        const { dispatch, form, history } = this.props;
+        const { args } = this.state;
+        form.validateFields((err, fieldsValues) => {
+            if (err) return;
+            const values = {};
+            for (var key in fieldsValues) {
+                if (fieldsValues[key]) {
                     values[key] = fieldsValues[key];
                 }
             }
-            if(values.create_time && values.create_time.length > 0) {
+            if (values.create_time && values.create_time.length > 0) {
                 values.start_time = values.create_time[0].format("YYYY-MM-DD");
                 values.stop_time = values.create_time[1].format("YYYY-MM-DD");
             }
             delete values.create_time;
             this.setState({
-                args:{
-                    page:1,
-                    pageSize:args.pageSize
+                args: {
+                    page: 1,
+                    pageSize: args.pageSize
                 },
-                searchValues:values
+                searchValues: values
             });
             history.replace({
-                search:`?page=1&pageSize=${args.pageSize}`
+                search: `?page=1&pageSize=${args.pageSize}`
             });
             dispatch({
-                type:"stock/fetchRecord",
-                offset:0,
-                limit:args.pageSize,
-                params:values
+                type: "stock/fetchRecord",
+                offset: 0,
+                limit: args.pageSize,
+                params: values
             })
         })
     }
-    handleFormReset=()=> {
-        const {form, history, dispatch} = this.props;
-        const {args} = this.state;
+    handleFormReset = () => {
+        const { form, history, dispatch } = this.props;
+        const { args } = this.state;
         form.resetFields();
         history.replace({
-            search:`?page=1&pageSize=${args.pageSize}`
+            search: `?page=1&pageSize=${args.pageSize}`
         });
         this.setState({
-            searchValues:{},
-            args:{
-                page:1,
-                pageSize:args.pageSize
+            searchValues: {},
+            args: {
+                page: 1,
+                pageSize: args.pageSize
             }
         });
         dispatch({
-            type:"stock/fetchRecord",
-            offset:0,
+            type: "stock/fetchRecord",
+            offset: 0,
             limit: args.pageSize,
         })
     }
@@ -126,11 +126,11 @@ export default class GoodsStockRecordList extends React.Component {
                     <Col md={8} sm={12}>
                         <FormItem label="操作类型">
                             {getFieldDecorator('change_option')(
-                               <Select placeholder="请选择">
-                                <Option value="">全部</Option>
-                                <Option value="I">入库</Option>
-                                <Option value="O">调拨</Option>
-                               </Select>
+                                <Select placeholder="请选择">
+                                    <Option value="">全部</Option>
+                                    <Option value="I">入库</Option>
+                                    <Option value="O">调拨</Option>
+                                </Select>
                             )}
                         </FormItem>
                     </Col>
@@ -169,7 +169,11 @@ export default class GoodsStockRecordList extends React.Component {
                     <Col md={8} sm={12}>
                         <FormItem label="操作类型">
                             {getFieldDecorator('change_option')(
-                                <Input placeholder='请输入' />
+                                <Select placeholder="请选择">
+                                    <Option value="">全部</Option>
+                                    <Option value="I">入库</Option>
+                                    <Option value="O">调拨</Option>
+                                </Select>
                             )}
                         </FormItem>
                     </Col>
@@ -208,8 +212,8 @@ export default class GoodsStockRecordList extends React.Component {
     render() {
         const { stock, loading } = this.props;
         const { stockRecord, recordTotal } = stock;
-        const {args} = this.state;
-        const {page,pageSize} = args;
+        const { args } = this.state;
+        const { page, pageSize } = args;
         return (
             <PageHeaderLayout title="库存记录">
                 <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -219,13 +223,13 @@ export default class GoodsStockRecordList extends React.Component {
                 </Card>
                 <Card bordered={false} className={styles['search-wrap']} >
                     <div className={styles.tableListForm}>
-                        <GoodsStockTable 
-                        data={stockRecord}
-                        total={recordTotal}
-                        current={page>>0}
-                        pageSize={pageSize>>0}
-                        loading={loading}
-                        onRecordChange={this.onRecordChange}
+                        <GoodsStockTable
+                            data={stockRecord}
+                            total={recordTotal}
+                            current={page >> 0}
+                            pageSize={pageSize >> 0}
+                            loading={loading}
+                            onRecordChange={this.onRecordChange}
                         />
                     </div>
                 </Card>
