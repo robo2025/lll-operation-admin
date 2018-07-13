@@ -199,8 +199,8 @@ export default class GoodsStockList extends React.Component {
                         <FormItem label="库存数量">
                             <Col span={11}>
                                 <FormItem>
-                                    {getFieldDecorator('goods_current_count_start')(
-                                        <Input style={{ width: '100%', textAlign: 'center' }} placeholder="最大值" />
+                                    {getFieldDecorator('stock_start')(
+                                        <Input style={{ width: '100%', textAlign: 'center' }} placeholder="最小值" />
                                     )}
                                 </FormItem>
                             </Col>
@@ -211,7 +211,7 @@ export default class GoodsStockList extends React.Component {
                             </Col>
                             <Col span={11}>
                                 <FormItem>
-                                    {getFieldDecorator('goods_current_count_end')(
+                                    {getFieldDecorator('stock_end')(
                                         <Input style={{ width: '100%', textAlign: 'center' }} placeholder="最大值" />
                                     )}
                                 </FormItem>
@@ -259,7 +259,7 @@ export default class GoodsStockList extends React.Component {
         dispatch({
             type: "stock/fetchRecord",
             params: {
-                goods_id: values.gno,
+                gno: values.gno,
             }
         })
     }
@@ -293,7 +293,7 @@ export default class GoodsStockList extends React.Component {
             dispatch({
                 type: "stock/fetchRecord",
                 params: {
-                    goods_id: recordInfo.gno,
+                    gno: recordInfo.gno,
                     ...values
                 }
             })
@@ -312,7 +312,7 @@ export default class GoodsStockList extends React.Component {
         dispatch({
             type: "stock/fetchRecord",
             params: {
-                goods_id: recordInfo.gno
+                gno: recordInfo.gno
             }
         })
     }
@@ -329,7 +329,7 @@ export default class GoodsStockList extends React.Component {
             type: "stock/fetchRecord",
             offset: (pagination.current - 1) * pagination.pageSize,
             params: {
-                goods_id: recordInfo.gno,
+                gno: recordInfo.gno,
                 ...recordValues
             }
         })
@@ -340,7 +340,7 @@ export default class GoodsStockList extends React.Component {
         return <Form onSubmit={this.handleRecordSearch} layout="inline" style={{ margin: "20px 0" }}>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                 <Col xxl={16} md={16} sm={24}>
-                    <FormItem label="商品ID">
+                    <FormItem label="时间段">
                         {getFieldDecorator('create_time')(
                             <RangePicker />
                         )}
@@ -414,8 +414,8 @@ export default class GoodsStockList extends React.Component {
                         ]}
                     >
                         <Row>
-                            <Col span={12}>产品名称: {recordInfo.product_name}</Col>
-                            <Col span={12}>产品型号: {recordInfo.partnumber}</Col>
+                            <Col span={12} style={{color:"#333"}}><span style={{marginRight:10}}>产品名称 :</span> {recordInfo.product_name}</Col>
+                            <Col span={12} style={{color:"#333"}}><span style={{marginRight:10}}>产品型号 :</span> {recordInfo.partnumber}</Col>
                         </Row>
                         {this.renderStockRecordFilter()}
                         <GoodStockRecordTable

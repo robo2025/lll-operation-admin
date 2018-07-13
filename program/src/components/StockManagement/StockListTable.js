@@ -89,7 +89,7 @@ export default class StockListTabel extends React.Component {
                 pagination={paginationOptions}
                 onChange={this.onStockTableChange}
                 loading={loading}
-                scroll={{ x: 1300 }}
+                scroll={{ x: 1500 }}
                 />
             </div>
         )
