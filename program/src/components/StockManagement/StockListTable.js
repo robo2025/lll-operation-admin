@@ -15,7 +15,7 @@ export default class StockListTabel extends React.Component {
         onViewRecord(values);
     }
     render() {
-        const { data, total,loading,current,pageSize,onViewRecord } = this.props;
+        const { data, total,loading,current,pageSize } = this.props;
         data.map((ele,idx) => {
             ele.idx = idx+1;
         })
@@ -63,7 +63,7 @@ export default class StockListTabel extends React.Component {
         }, {
             title: '库存数量',
             key: 'stock',
-            render:(val) => <span>{`${val.stock} ${val.sales_unit}`}</span>
+            render:(val) => <span>{`${val.stock}`}</span>
         }, {
             title:"操作",
             key:"view",

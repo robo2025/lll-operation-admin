@@ -64,7 +64,7 @@ export default class StockConfigListTable extends React.Component {
             title: '库存数量',
             key: "stock",
             width:120,
-            render: (val) => (<span>{`${val.stock}${val.sales_unit}`}</span>)
+            render: (val) => (<span>{`${val.stock}`}</span>)
         }, {
             title: '最大入库限制',
             dataIndex: "goods_max_in",

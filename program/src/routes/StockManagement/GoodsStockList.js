@@ -353,7 +353,6 @@ export default class GoodsStockList extends React.Component {
                     <Button style={{ marginLeft: 8 }} onClick={this.handleRecordReset}>重置</Button>
                 </span>
             </div>
-
         </Form>
     }
     render() {
