@@ -19,7 +19,7 @@ const SetRestrictModal = Form.create()(
             callback();
         }
         render() {
-            const { visible, onCancel, onOk, form,fetchSettingConfigLoading } = this.props;
+            const { visible, onCancel, onOk, form, fetchSettingConfigLoading } = this.props;
             const { getFieldDecorator } = form;
             const formItemLayout = {
                 labelCol: {
@@ -72,7 +72,7 @@ const SetRestrictModal = Form.create()(
 @Form.create()
 @connect(({ stock, loading }) => ({
     stock, loading: loading.effects['stock/fetch'], fetchSettingConfigLoading: loading.effects['stock/fetchSettingConfig'],
-    fetchConfigLoading:loading.effects['stock/fetchConfig']
+    fetchConfigLoading: loading.effects['stock/fetchConfig']
 }))
 export default class StockConfigList extends React.Component {
     constructor(props) {
@@ -84,8 +84,8 @@ export default class StockConfigList extends React.Component {
             setRestrictModalShow: false,
             recordValue: {},// 存储设置限制信息
             viewRecordModalShow: false,
-            recordArgs:{
-                page:1
+            recordArgs: {
+                page: 1
             }
         }
     }
@@ -115,8 +115,8 @@ export default class StockConfigList extends React.Component {
         this.setState({
             viewRecordModalShow: false,
             recordValue: {},
-            recordArgs:{
-                page:1
+            recordArgs: {
+                page: 1
             }
         })
     }
@@ -131,8 +131,8 @@ export default class StockConfigList extends React.Component {
             }
         })
         this.setState({
-            recordArgs:{
-                page:pagination.current
+            recordArgs: {
+                page: pagination.current
             }
         })
     }
@@ -167,15 +167,8 @@ export default class StockConfigList extends React.Component {
                             recordValue: {}
                         })
                         form.resetFields();
-                        // 设置成功之后重新请求数据
-                        dispatch({
-                            type: "stock/fetch",
-                            offset: (args.page - 1) * args.pageSize,
-                            limit: args.pageSize,
-                            params: searchValues
-                        })
                     },
-                    error:(res) => {
+                    error: (res) => {
                         Message.warning(res.msg);
                     }
                 })
@@ -406,9 +399,9 @@ export default class StockConfigList extends React.Component {
         return this.state.expand ? this.renderAdvancedForm() : this.renderSimpleForm();
     }
     render() {
-        const { stock, loading, fetchSettingConfigLoading,fetchConfigLoading } = this.props;
+        const { stock, loading, fetchSettingConfigLoading, fetchConfigLoading } = this.props;
         const { goodsStockList, total, stockConfigList, configTotal } = stock;
-        const { args, setRestrictModalShow, viewRecordModalShow, recordValue,recordArgs } = this.state;
+        const { args, setRestrictModalShow, viewRecordModalShow, recordValue, recordArgs } = this.state;
         const { page, pageSize } = args;
         const recordPage = recordArgs.page >> 0;
         const columns = [{
@@ -470,11 +463,21 @@ export default class StockConfigList extends React.Component {
                                 <div style={{ textAlign: "center" }} key="back"><Button type="primary" onClick={this.viewRecordCancel}>关闭</Button></div>,
                             ]}
                         >
-                            <Row className={styles.recordInfo}>
-                                <Col span={12}><span>供应商名称 :</span> {recordValue.supplier_name}</Col>
-                                <Col span={12}><span>产品名称 :</span> {recordValue.partnumber}</Col>
-                                <Col span={12}><span>商品ID :</span> {recordValue.gno}</Col>
-                                <Col span={12}><span>产品型号 :</span> {recordValue.partnumber}</Col>
+                            <Row className={styles.recordShow}>
+                                <Col span={12}>
+                                    <Col span={6}><span>供应商名称 :</span></Col><Col span={17}>{recordValue.supplier_name}</Col>
+
+                                </Col>
+                                <Col span={12}>
+                                    <Col span={6}><span>产品名称 :</span></Col><Col span={17}>{recordValue.product_name}</Col>
+                                </Col>
+                                <Col span={12}>
+                                    <Col span={6}><span>商品ID :</span></Col><Col span={17}>{recordValue.gno}</Col>
+
+                                </Col>
+                                <Col span={12}>
+                                    <Col span={6}><span>产品型号 :</span></Col><Col span={17}>{recordValue.partnumber}</Col>
+                                </Col>
                             </Row>
                             <GoodStockRecordTable
                                 columns={columns}

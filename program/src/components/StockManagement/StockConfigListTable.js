@@ -30,7 +30,7 @@ export default class StockConfigListTable extends React.Component {
             title: "产品型号",
             key: "partnumber",
             dataIndex: 'partnumber',
-            width:100
+            width:170
         }, {
             title: "供应商名称",
             key: "supplier_name",
@@ -70,11 +70,14 @@ export default class StockConfigListTable extends React.Component {
             dataIndex: "goods_max_in",
             width:120,
             key: "goods_max_in",
+            render:(val) => <span>{val || '--'}</span>
         }, {
             title: '最大调拨限制',
             width:120,
             dataIndex: "goods_max_out",
             key: "goods_max_out",
+            render:(val) => <span>{val || '--'}</span>
+
         }, {
             title: "操作",
             width: 200,

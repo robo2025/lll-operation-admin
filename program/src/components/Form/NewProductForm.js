@@ -64,15 +64,7 @@ function getCAD(cads) {
 
 @Form.create({
     onValuesChange(props, values) {
-        // const { form } = props;
-        // form.validateFields((err,values) => {
-        //     console.log(123)
-        //     if(err) {
-        //         return
-        //     }
             props.onChange(values);
-        // })
-        
     },
 })
 class ProductForm extends Component {

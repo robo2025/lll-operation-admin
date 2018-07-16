@@ -229,7 +229,16 @@ export default class NewProduct extends Component {
     const { fields, specs } = this.state;
     const { dispatch, history } = this.props;
     console.log(fields)
-    if (fields.pics.length <= 0) {
+    if(!fields.category_id_1) {
+        message.error('请选择类目');
+      return;
+    } else if (!fields.brand_name) {
+        message.error('请选择品牌');
+        return;
+    } else if (!fields.product_name) {
+        message.error('产品名称不能为空');
+        return;
+    } else if (fields.pics.length <= 0) {
       message.error('产品图片必须上传');
       return;
     }

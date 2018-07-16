@@ -57,7 +57,8 @@ export default class GoodsStockRecordList extends React.Component {
             params: searchValues
         })
     }
-    handleSearch = () => {
+    handleSearch = (e) => {
+        e.preventDefault();
         const { dispatch, form, history } = this.props;
         const { args } = this.state;
         form.validateFields((err, fieldsValues) => {

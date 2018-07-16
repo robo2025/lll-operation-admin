@@ -6,7 +6,7 @@ import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 import { Form, Row, Col, Input, Button, Icon, Card, Select, Modal, DatePicker } from 'antd';
 import StockListTable from "../../components/StockManagement/StockListTable";
 import GoodStockRecordTable from "../../components/StockManagement/GoodStockRecordTable";
-import {STOCK_OPERATION_STATUS} from "../../constant/statusList"
+import { STOCK_OPERATION_STATUS } from "../../constant/statusList"
 import styles from "./stockManagement.less";
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -56,7 +56,8 @@ export default class GoodsStockList extends React.Component {
             params: searchValues
         })
     }
-    handleSearch = () => {
+    handleSearch = (e) => {
+        e.preventDefault();
         const { form, dispatch, history } = this.props;
         const { args } = this.state;
         form.validateFields((err, fieldsValue) => {
@@ -276,7 +277,8 @@ export default class GoodsStockList extends React.Component {
         })
     }
     //库存记录搜索
-    handleRecordSearch = () => {
+    handleRecordSearch = (e) => {
+        e.preventDefault();
         const { form, dispatch } = this.props;
         const { recordInfo } = this.state;
         form.validateFields((err, fieldsValue) => {
@@ -334,25 +336,27 @@ export default class GoodsStockList extends React.Component {
             }
         })
     }
+
     // 库存记录搜索条件
     renderStockRecordFilter() {
         const { getFieldDecorator } = this.props.form;
-        return <Form onSubmit={this.handleRecordSearch} layout="inline" style={{ margin: "20px 0" }}>
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-                <Col xxl={16} md={16} sm={24}>
-                    <FormItem label="时间段">
-                        {getFieldDecorator('create_time')(
-                            <RangePicker />
-                        )}
-                    </FormItem>
-                </Col>
-            </Row>
-            <div style={{ overflow: 'hidden' }}>
-                <span style={{ float: 'right', marginBottom: 24 }}>
-                    <Button type="primary" htmlType="submit">查询</Button>
-                    <Button style={{ marginLeft: 8 }} onClick={this.handleRecordReset}>重置</Button>
-                </span>
-            </div>
+        const formItemLayout = {
+            labelCol: { span: 5 },
+            wrapperCol: { span: 19 },
+        };
+        return <Form onSubmit={this.handleRecordSearch} layout="inline" style={{ marginBottom: "20px" }}>
+            <FormItem label="时间段" {...formItemLayout}>
+                {getFieldDecorator("create_time")(
+                    <RangePicker style={{ width: '95%' }} />
+                )}
+            </FormItem>
+            <FormItem>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    style={{ marginRight: 10 }}>查询</Button>
+                <Button onClick={this.handleRecordReset}>重置</Button>
+            </FormItem>
         </Form>
     }
     render() {
@@ -407,18 +411,22 @@ export default class GoodsStockList extends React.Component {
                         title="商品库存历史记录"
                         visible={viewRecordModalShow}
                         onCancel={this.handleCancel}
-                        width="800px"
+                        width="700px"
                         footer={[
                             <div style={{ textAlign: "center" }} key="back"><Button type="primary" onClick={this.handleCancel}>关闭</Button></div>,
                         ]}
                     >
-                        <Row>
-                            <Col span={12} style={{color:"#333"}}><span style={{marginRight:10}}>产品名称 :</span> {recordInfo.product_name}</Col>
-                            <Col span={12} style={{color:"#333"}}><span style={{marginRight:10}}>产品型号 :</span> {recordInfo.partnumber}</Col>
+                        <Row className={styles['recordInfo']}>
+                            <Col span={12}>
+                                <Col span={6}><span>产品名称 :</span></Col><Col span={17}>{recordInfo.product_name}</Col>
+                            </Col>
+                            <Col span={12}>
+                                <Col span={6}><span>产品型号 :</span></Col><Col span={17}>{recordInfo.partnumber}</Col>
+                            </Col>
                         </Row>
                         {this.renderStockRecordFilter()}
                         <GoodStockRecordTable
-                            columns = {columns}
+                            columns={columns}
                             total={recordTotal}
                             loading={stockRecordLoading}
                             data={stockRecord}
