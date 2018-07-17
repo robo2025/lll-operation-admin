@@ -59,7 +59,7 @@ class SolutionDetail extends React.Component {
         <Col xs={24} sm={12}>
           <div>状态</div>
           <div style={{ fontSize: 25, color: 'green' }}>
-            {supplier ? '已报价' : '未报价'}
+            {supplier === "M"? '已报价' : '未报价'}
           </div>
         </Col>
       </Row>
