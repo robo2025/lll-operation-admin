@@ -189,6 +189,17 @@ export const getRouterData = (app) => {
         },
         '/stockManagement/stockConfigList':{
             component: dynamicWrapper(app,['stock'],()=>import('../routes/StockManagement/StockConfigList'))
+        },
+        '/contractManagement/contractList' :{
+            component:dynamicWrapper(app,['contract'],() => import('../routes/ContractManagement/ContractList'))
+        },
+        '/contractManagement/:contractList/add' :{
+            component:dynamicWrapper(app,['contract'],() => import('../routes/ContractManagement/AddContract')),
+            name:"新增合同"
+        },
+        '/contractManagement/:contractList/edit' :{
+            component:dynamicWrapper(app,['contract'],() => import('../routes/ContractManagement/EditContract')),
+            name:"编辑合同"
         }
     };
 

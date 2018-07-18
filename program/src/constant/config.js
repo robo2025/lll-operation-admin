@@ -64,6 +64,12 @@ export const QINIU_SERVER = '//upload.qiniup.com';
 export const PAGE_SIZE = 10;
 // 供应商商品库存列表
 export const STOCKLIST_URL="//testapi.robo2025.com/stock";
+// 合同列表参数
+
+export const CONTRACT_URL = `${OPERATION_URL}/operation/contract`;
+
+// 获取供应商信息列表
+export const SUPPLIERLIST_URL = "//testapi.robo2025.com/user/operation/suppliers"
 // 接口请求状态码
 export const SUCCESS_STATUS = 10000; // 操作成功
 export const FAIL_STATUS = 10001; // 操作失败

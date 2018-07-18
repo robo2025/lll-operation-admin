@@ -109,6 +109,16 @@ const menuData = [{
         path: 'stockConfigList',
       },
     ],
+  },{
+    name: '合同管理',
+    path: 'contractManagement',
+    icon: 'code-o',
+    children: [
+      {
+        name: '合同列表',
+        path: 'contractList',
+      },
+    ],
   }];
 
 function formatter(data, parentPath = '/', parentAuthority) {
