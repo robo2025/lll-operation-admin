@@ -161,6 +161,7 @@ class SolutionOrderList extends React.Component {
     const paginationProps = {
       ...pagination,
       style: { float: 'right', marginTop: 24 },
+      showQuickJumper: true,
       onChange: this.onPageChange,
       onShowSizeChange: this.onPageChange,
       showSizeChanger: true,

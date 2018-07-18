@@ -299,6 +299,7 @@ class SolutionList extends React.Component {
     const { getFieldDecorator } = form;
     const paginationProps = {
       ...pagination,
+      showQuickJumper: true,
       style: { float: 'right', marginTop: 24 },
       onChange: this.onPageChange,
       onShowSizeChange: this.onPageChange,
