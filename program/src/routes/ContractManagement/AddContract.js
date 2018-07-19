@@ -3,112 +3,81 @@ import qs from "qs";
 import { connect } from "dva";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 import ContractForm from "../../components/ContractInfo/ContractForm";
-import ContractCompanyTable from "../../components/ContractInfo/ContractCompanyTable";
-import { Modal, Button, Form, Input, Row, Col,DatePicker } from "antd";
+import ContractCompanyModal from "../../components/ContractInfo/ContractCompanyModal";
+import { Modal, Button, Form, Input, Row, Col, DatePicker } from "antd";
 import styles from "./contract.less";
 const FormItem = Form.Item;
-const {RangePicker} = DatePicker;
-@connect(({ contract, loading }) => ({ contract, loading }))
+const { RangePicker } = DatePicker;
+@connect(({ contract,upload }) => ({
+  contract,upload
+}))
 @Form.create()
 export default class AddContract extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      args: props.location.search,
-      visible: true
+      params: props.location.search,
+      visible: false,
+      fields: {}
     };
   }
   componentDidMount(){
       const {dispatch} = this.props;
-      dispatch({
-          type:"contract/fetchSupplierList"
-      })
+      // 获取upload_token
+    dispatch({
+        type: 'upload/fetch',
+      });
   }
   onCancel = () => {
     this.setState({
       visible: false
     });
   };
+  onFormSubmit=(form)=>{
+     
+  }
   showModal = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "contract/fetchSupplierList",
+      offset: 0,
+      limit: 6
+    });
     this.setState({
       visible: true
     });
   };
-  handleSearch=()=>{
-
-  }
-  renderSupplierSearch() {
-    const { getFieldDecorator } = this.props.form;
-    return (
-      <Form layout="inline" className={styles.tableListForm} onSubmit={this.handleSearch}>
-        <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
-          <Col md={7} xs={12}>
-            <FormItem label="账号">
-              {getFieldDecorator("username")(<Input style={{ width: "100%" }} />)}
-            </FormItem>
-          </Col>
-          <Col md={8} xs={12}>
-            <FormItem label="企业名称">
-              {getFieldDecorator("company")(<Input />)}
-            </FormItem>
-          </Col>
-          <Col md={9} xs={12}>
-            <FormItem label="法人">
-              {getFieldDecorator("legal")(<Input />)}
-            </FormItem>
-          </Col>
-          <Col md={7} xs={12}>
-            <FormItem label="手机">
-              {getFieldDecorator("mobile")(<Input />)}
-            </FormItem>
-          </Col>
-          <Col md={8} xs={12}>
-            <FormItem label="联系邮箱">
-              {getFieldDecorator("email")(<Input />)}
-            </FormItem>
-          </Col>
-          <Col md={9} xs={12}>
-            <FormItem label="注册时间">
-              {getFieldDecorator("create_time")(<RangePicker />)}
-            </FormItem>
-          </Col>
-        </Row>
-        <div style={{ overflow: "hidden" }}>
-          <span style={{ float: "right", marginBottom: 24 }}>
-            <Button type="primary" htmlType="submit">
-              查询
-            </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-              重置
-            </Button>
-          </span>
-        </div>
-      </Form>
-    );
+  onChooseCompany = record => {
+    this.setState({
+        fields:{...record,...record.profile},
+        visible: false
+    })
+  };
+  handleFieldsChange = (form,changeFields) => {
+    console.log(form,changeFields)
+    const {fields} = this.state;
+    this.setState({
+        fields:{...fields,...changeFields}
+    })
   }
   render() {
-    const { visible } = this.state;
-    const {contract} = this.props;
-    const {supplierList, supplierTotal} = contract;
+    const { visible, fields } = this.state;
+    const {upload} = this.props;
+    console.log(fields);
     return (
       <PageHeaderLayout title="新增合同">
-        <ContractForm showModal={this.showModal} />
-        <Modal
-          title="企业信息"
+        <ContractForm 
+        showModal={this.showModal} 
+        {...fields} 
+        upload_token={upload.upload_token}
+        onChange = {this.handleFieldsChange}
+        ></ContractForm>
+        <ContractCompanyModal
           visible={visible}
-          width={1200}
           onCancel={this.onCancel}
-          footer={[
-            <div style={{ textAlign: "center" }} key="cancel">
-              <Button type="primary" onClick={this.onCancel}>
-                返回
-              </Button>
-            </div>
-          ]}
-        >
-          {this.renderSupplierSearch()}
-          <ContractCompanyTable data={supplierList} total={supplierTotal}/>
-        </Modal>
+          onChooseCompany={this.onChooseCompany}
+          onSubmit={this.onFormSubmit}
+        />
       </PageHeaderLayout>
     );
   }

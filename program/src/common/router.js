@@ -194,11 +194,11 @@ export const getRouterData = (app) => {
             component:dynamicWrapper(app,['contract'],() => import('../routes/ContractManagement/ContractList'))
         },
         '/contractManagement/:contractList/add' :{
-            component:dynamicWrapper(app,['contract'],() => import('../routes/ContractManagement/AddContract')),
+            component:dynamicWrapper(app,['contract','upload'],() => import('../routes/ContractManagement/AddContract')),
             name:"新增合同"
         },
         '/contractManagement/:contractList/edit' :{
-            component:dynamicWrapper(app,['contract'],() => import('../routes/ContractManagement/EditContract')),
+            component:dynamicWrapper(app,['contract','upload'],() => import('../routes/ContractManagement/EditContract')),
             name:"编辑合同"
         }
     };
