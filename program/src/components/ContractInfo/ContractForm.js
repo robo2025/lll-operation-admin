@@ -17,7 +17,6 @@ const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
 @Form.create({
   mapPropsToFields(props) {
-    console.log(props);
     const fields = {};
     if (props) {
       Object.keys(props).forEach(key => {
@@ -25,17 +24,12 @@ const { RangePicker } = DatePicker;
           value: props[key]
         });
       });
-      return { ...fields };
     }
+    return { ...fields };
   },
   onValuesChange(props, values) {
-    const { form } = props;
-    props.onChange(form, values);
+    props.onChange(values);
   }
-  //   onFieldsChange(props, changedFields) {
-  //       console.log(changedFields)
-  //     props.onChange(changedFields);
-  //   },
 })
 export default class ContractForm extends React.Component {
   constructor(props) {
@@ -44,6 +38,13 @@ export default class ContractForm extends React.Component {
       uploadToken: {},
       fileList: []
     };
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.contract_urls) {
+      this.setState({
+        fileList: [nextProps.contract_urls]
+      });
+    }
   }
   beforeUpload = currFile => {
     const suffixArr = currFile.name.split(".");
@@ -66,40 +67,38 @@ export default class ContractForm extends React.Component {
       }
     });
   };
-  handleUploaderChange = info => {
-    // let fileList = info.fileList;
-    // let fileList = info.fileList.slice(-1).filter(file => {
-    //   if(file.response){
-    //     return file.status === "done";
-    //   }
-    //   return;
-    // });
-    console.log(info.file,1234565)
-    // if(info.file.status === "done") {
-    //     this.setState({
-    //         fileList:[info.file]
-    //     })
-        return true;
-    // }
-    // return true;
-    // console.log(fileList)
-    // if(fileList.length) {
-    //     this.setState({
-    //         fileList
-    //     })
-    //     console.log(123456)
-    //     return true;
-    // }
-    
-    // console.log(fileList)
-  };
   removePdf = () => {
+    const { form } = this.props;
     this.setState({
       fileList: []
     });
+    form.resetFields(["contract_urls"]);
+  };
+  normFile = e => {
+    console.log("Upload event:", e);
+    if (e.file.status) {
+      if (e.file.response) {
+        e.file.url = `${FILE_SERVER}${e.file.response.key}`;
+      }
+      this.setState({
+        fileList: [e.file]
+      });
+    } else {
+      return this.state.fileList[0];
+    }
+    if (e.file.status === "done") {
+      message.success("上传成功", 1);
+      return e && e.file;
+    } else if (e.file.status === "error") {
+      message.error("上传失败");
+      this.setState({
+        fileList: []
+      });
+    }
   };
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { onFormSubmit, form, isChooseCompany, id } = this.props;
+    const { getFieldDecorator } = form;
     const { uploadToken, fileList } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -113,12 +112,21 @@ export default class ContractForm extends React.Component {
     };
     return (
       <Fragment>
-        <Form>
+        <Form onSubmit={e => onFormSubmit(form, e)}>
           <Card bordered={false}>
-            <FormItem label="企业信息" {...formItemLayout}>
-              <Button type="primary" onClick={this.props.showModal}>
-                选择企业
-              </Button>
+            {id ? null : (
+              <FormItem label="企业信息" {...formItemLayout}>
+                <Button type="primary" onClick={this.props.showModal}>
+                  {isChooseCompany ? "重选企业" : "选择企业"}
+                </Button>
+              </FormItem>
+            )}
+            <FormItem
+              label="企业名称"
+              {...formItemLayout}
+              style={{ display: "none" }}
+            >
+              {getFieldDecorator("id")(<Input disabled />)}
             </FormItem>
             <FormItem label="企业名称" {...formItemLayout}>
               {getFieldDecorator("company")(<Input disabled />)}
@@ -166,42 +174,37 @@ export default class ContractForm extends React.Component {
             </FormItem>
             <FormItem label="合同电子档" {...formItemLayout}>
               {getFieldDecorator("contract_urls", {
-                rules: [
-                  {
-                    required: true,
-                    message: "请上传合同电子档"
-                  }
-                ]
+                valuePropName: "file",
+                getValueFromEvent: this.normFile,
+                rules: [{ required: true, message: "请上传文件" }]
               })(
-                <Fragment>
-                  <div style={{ fontSize: "12px" }}>
-                    （请上传合同扫描件的PDF文件，文件大小不大于5M）
-                  </div>
-                  <Upload
-                    name="file"
-                    action={QINIU_SERVER}
-                    fileList={this.state.fileList}
-                    beforeUpload={this.beforeUpload}
-                    onChange={this.handleUploaderChange}
-                    data={uploadToken}
+                <Upload
+                  name="file"
+                  action={QINIU_SERVER}
+                  data={uploadToken}
+                  beforeUpload={this.beforeUpload}
+                  fileList={this.state.fileList}
+                  onRemove={this.removePdf}
+                >
+                  <Button
+                    style={{
+                      border: "1px solid #b3d8ff",
+                      color: "#409eff",
+                      background: "#ecf5ff"
+                    }}
                   >
-                    <Button
-                      icon="upload"
-                      style={{
-                        border: "1px solid #b3d8ff",
-                        color: "#409eff",
-                        background: "#ecf5ff"
-                      }}
-                    >
-                      {fileList.length ? "重新上传" : "上传"}
-                    </Button>
-                  </Upload>
-                </Fragment>
+                    <Icon type="upload" />
+                    {fileList.length ? "重新上传" : "上传"}
+                  </Button>
+                </Upload>
               )}
+              <div style={{ fontSize: "12px" }}>
+                （请上传合同扫描件的PDF文件，文件大小不大于5M）
+              </div>
             </FormItem>
             <div style={{ textAlign: "center", margin: "20px 0 40px 0" }}>
               <Button type="primary" htmlType="submit">
-                确认提交
+                {id ? "确认修改" : "确认提交"}
               </Button>
             </div>
           </Card>

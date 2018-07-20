@@ -4,38 +4,46 @@ import { connect } from "dva";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 import ContractForm from "../../components/ContractInfo/ContractForm";
 import ContractCompanyModal from "../../components/ContractInfo/ContractCompanyModal";
-import { Modal, Button, Form, Input, Row, Col, DatePicker } from "antd";
+import {
+  Modal,
+  Button,
+  Form,
+  Input,
+  Row,
+  Col,
+  DatePicker,
+  message
+} from "antd";
 import styles from "./contract.less";
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
-@connect(({ contract,upload }) => ({
-  contract,upload
+@connect(({ contract, upload }) => ({
+  contract,
+  upload
 }))
 @Form.create()
 export default class AddContract extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      params: props.location.search,
+      id: props.location.search,
       visible: false,
-      fields: {}
+      fields: {},
+      isChooseCompany: false
     };
   }
-  componentDidMount(){
-      const {dispatch} = this.props;
-      // 获取upload_token
+  componentDidMount() {
+    const { dispatch } = this.props;
+    // 获取upload_token
     dispatch({
-        type: 'upload/fetch',
-      });
+      type: "upload/fetch"
+    });
   }
   onCancel = () => {
     this.setState({
       visible: false
     });
   };
-  onFormSubmit=(form)=>{
-     
-  }
   showModal = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -48,30 +56,67 @@ export default class AddContract extends React.Component {
     });
   };
   onChooseCompany = record => {
+    // 选择企业进行绑定
+    const { fields } = this.state;
     this.setState({
-        fields:{...record,...record.profile},
-        visible: false
-    })
+      fields: { ...fields, ...record, ...record.profile },
+      visible: false,
+      isChooseCompany: true
+    });
   };
-  handleFieldsChange = (form,changeFields) => {
-    console.log(form,changeFields)
-    const {fields} = this.state;
+  handleFieldsChange = changeFields => {
+    //表单数据改变
+    const { fields } = this.state;
     this.setState({
-        fields:{...fields,...changeFields}
-    })
-  }
+      fields: { ...fields, ...changeFields }
+    });
+  };
+  onFormSubmit = (form, e) => {
+    const { dispatch, history } = this.props;
+    const { fields } = this.state;
+    e.preventDefault();
+    if (!fields.id) {
+      message.warning("请选择企业");
+      return;
+    }
+    form.validateFields({ first: true, force: true }, (err, fieldsValue) => {
+      if (err) return;
+      let values = {};
+      values.start_time = fieldsValue.create_time[0].format("YYYY-MM-DD");
+      values.end_time = fieldsValue.create_time[1].format("YYYY-MM-DD");
+      values.contract_urls = `${fieldsValue.contract_urls.name}@${
+        fieldsValue.contract_urls.url
+      }`;
+      const { id, company, contract_type, contract_no } = fieldsValue;
+      values = { id, company, contract_type, contract_no, ...values };
+      dispatch({
+        type: "contract/fetchAddContract",
+        params: values,
+        success: res => {
+          console.log(res);
+          message.success(res.msg,1);
+          history.replace("/contractManagement/contractList");
+        },
+        error: error => {
+          message.error(error.msg);
+        }
+      });
+    });
+  };
   render() {
-    const { visible, fields } = this.state;
-    const {upload} = this.props;
-    console.log(fields);
+    const { visible, fields, isChooseCompany,id } = this.state;
+    const { upload } = this.props;
     return (
       <PageHeaderLayout title="新增合同">
-        <ContractForm 
-        showModal={this.showModal} 
-        {...fields} 
-        upload_token={upload.upload_token}
-        onChange = {this.handleFieldsChange}
-        ></ContractForm>
+        <ContractForm
+          showModal={this.showModal}
+          {...fields}
+          upload_token={upload.upload_token}
+          onChange={this.handleFieldsChange}
+          onFormSubmit={this.onFormSubmit}
+          isChooseCompany={isChooseCompany}
+          id={id}
+        />
         <ContractCompanyModal
           visible={visible}
           onCancel={this.onCancel}

@@ -154,8 +154,19 @@ export default class ContractCompanyModal extends React.Component {
       searchValues: {}
     });
   };
+  onChooseCompany = record => {
+    const { onChooseCompany } = this.props;
+    onChooseCompany(record);
+    this.setState({
+      args: {
+        page: 1,
+        pageSize: 6
+      },
+      searchValues: {}
+    });
+  };
   render() {
-    const { contract, loading, visible,onChooseCompany } = this.props;
+    const { contract, loading, visible } = this.props;
     const { supplierList, supplierTotal } = contract;
     const { args } = this.state;
     const { page, pageSize } = args;
@@ -200,15 +211,18 @@ export default class ContractCompanyModal extends React.Component {
       {
         title: "操作",
         key: "operation",
-        render: (record) => (
-          <a href="javascript:;" style={{ textDecoration: "none" }} onClick={()=>onChooseCompany(record)}>
+        render: record => (
+          <a
+            href="javascript:;"
+            style={{ textDecoration: "none" }}
+            onClick={()=>this.onChooseCompany(record)}
+          >
             选择
           </a>
         )
       }
     ];
     const paginationOptions = {
-      defaultPageSize: 6,
       showSizeChanger: true,
       showQuickJumper: true,
       total: supplierTotal,

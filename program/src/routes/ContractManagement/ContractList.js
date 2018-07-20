@@ -195,7 +195,7 @@ export default class ContractList extends React.Component {
         render: record => {
           return (
             <div className={styles.text_decoration}>
-              <a href={`#/contractManagement/contractList/edit`}>编辑</a>
+              <a href={`#/contractManagement/contractList/edit?id=${record.id}`}>编辑</a>
               <Divider type="vertical" />
               <a href={`#/contractManagement/contractList/add`}>查看</a>
               <Divider type="vertical" />
