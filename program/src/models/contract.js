@@ -2,7 +2,9 @@ import {
   queryContractList,
   querySupplierList,
   addContract,
-  queryContractDetail
+  queryContractDetail,
+  deleteContract,
+  editContract
 } from "../services/contract";
 import { SUCCESS_STATUS } from "../constant/config";
 export default {
@@ -32,8 +34,7 @@ export default {
         headers
       });
     },
-    *fetchContractDetail({ id,success,error }, { call, put }) {
-        console.log(id)
+    *fetchContractDetail({ id, success, error }, { call, put }) {
       const res = yield call(queryContractDetail, { id });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === "function") {
@@ -45,7 +46,7 @@ export default {
       }
       yield put({
         type: "saveDetail",
-        payload: res
+        payload: res.data
       });
     },
     *fetchSupplierList(
@@ -70,7 +71,28 @@ export default {
     },
     *fetchAddContract({ params, success, error }, { call }) {
       const res = yield call(addContract, { params });
-      console.log(res);
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === "function") {
+          success(res);
+        } else if (typeof error === "function") {
+          error(res);
+          return;
+        }
+      }
+    },
+    *fetchDeleteContract({ id, success, error }, { call }) {
+      const res = yield call(deleteContract, { id });
+      if (res.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === "function") {
+          success(res);
+        } else if (typeof error === "function") {
+          error(res);
+          return;
+        }
+      }
+    },
+    *fetchEditContract({ id,params, success, error }, { call }) {
+      const res = yield call(editContract, { id,params });
       if (res.rescode >> 0 === SUCCESS_STATUS) {
         if (typeof success === "function") {
           success(res);

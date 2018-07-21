@@ -14,14 +14,23 @@ import {
   InputNumber,
   Card,
   Divider,
-  Table
+  Table,
+  Modal,
+  message,
+  Spin
 } from "antd";
+import { CONTRACT_STATUS } from "../../constant/statusList";
 import styles from "./contract.less";
 import { connect } from "dva";
 const FormItem = Form.Item;
 const Option = Select.Option;
+const contractBadge = ["default", "success", "warning", "error"];
 @Form.create()
-@connect(({ contract, loading }) => ({ contract, loading }))
+@connect(({ contract, loading }) => ({
+  contract,
+  loading: loading.effects["contract/fetch"],
+  deleteLoading: loading.effects["contract/fetchDeleteContract"]
+}))
 export default class ContractList extends React.Component {
   constructor(props) {
     super(props);
@@ -29,7 +38,10 @@ export default class ContractList extends React.Component {
       expandForm: false,
       args: qs.parse(props.location.search || { page: 1, pageSize: 10 }, {
         ignoreQueryPrefix: true
-      })
+      }),
+      searchValues: {},
+      deleteVisible: false, // 确认删除模态框
+      deleteInfo: {} // 保存确认删除的对象
     };
   }
   componentDidMount() {
@@ -41,8 +53,128 @@ export default class ContractList extends React.Component {
       limit: args.pageSize
     });
   }
+  //   删除合同执行
+  deleteContract = record => {
+    console.log(record);
+    const { supplier_info } = record;
+    const { profile } = supplier_info;
+    this.setState({
+      deleteVisible: true,
+      deleteInfo: { ...profile, ...record }
+    });
+  };
+  onCancel = () => {
+    //取消删除合同
+    this.setState({
+      deleteVisible: false
+    });
+  };
+  sureDelete = () => {
+    // 确定删除合同
+    const { deleteInfo, args, searchValues } = this.state;
+    const { dispatch, history } = this.props;
+    const { id } = deleteInfo;
+    dispatch({
+      type: "contract/fetchDeleteContract",
+      id,
+      success: res => {
+        message.success(res.msg);
+        dispatch({
+          type: "contract/fetch",
+          offset: 0,
+          limit: args.pageSize,
+          params: searchValues
+        });
+        history.replace({search:`?page=1&pageSize=${args.pageSize}`})
+        this.setState({
+          args: {
+            page: 1,
+            pageSize: args.pageSize
+          },
+          deleteVisible: false
+        });
+      },
+      error: res => {
+        message.error(res.msg);
+      }
+    });
+  };
+  onTableChange = pagination => {
+    //表格页码发生改变
+    const { dispatch, history } = this.props;
+    const { searchValues } = this.state;
+    this.setState({
+      args: {
+        page: pagination.current,
+        pageSize: pagination.pageSize
+      }
+    });
+    history.replace({
+      search: `?page=${pagination.current}&pageSize=${pagination.pageSize}`
+    });
+    dispatch({
+      type: "contract/fetch",
+      offset: pagination.pageSize * (pagination.current - 1),
+      limit: pagination.pageSize,
+      params: searchValues
+    });
+  };
   // 搜索条件
-  handleSearch = () => {};
+  handleSearch = e => {
+    e.preventDefault();
+    const { form, dispatch, history } = this.props;
+    const { args } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const values = {};
+      if (fieldsValue.create_time && fieldsValue.create_time.length > 0) {
+        values.start_time = fieldsValue.create_time[0].format("YYYY-MM-DD");
+        values.end_time = fieldsValue.create_time[1].format("YYYY-MM-DD");
+        delete fieldsValue.create_time;
+      }
+      for (var key in fieldsValue) {
+        if (fieldsValue[key]) {
+          values[key] = fieldsValue[key];
+        }
+      }
+      this.setState({
+        searchValues: values,
+        args: {
+          page: 1,
+          pageSize: args.pageSize
+        }
+      });
+      history.replace({
+        search: `?page=1&pageSize=${args.pageSize}`
+      });
+      dispatch({
+        type: "contract/fetch",
+        offset: 0,
+        limit: args.pageSize,
+        params: values
+      });
+    });
+  };
+  handleFormReset = () => {
+    const { form, history, dispatch } = this.props;
+    const { args } = this.state;
+    form.resetFields();
+    this.setState({
+      args: {
+        page: 1,
+        pageSize: args.pageSize
+      },
+      searchValues: {}
+    });
+    history.replace({
+      search: `?page=1&pageSize=${args.pageSize}`
+    });
+    dispatch({
+      type: "contract/fetch",
+      offset: 0,
+      limit: args.pageSize
+    });
+  };
   renderForm() {
     const { form } = this.props;
     const { expandForm } = this.state;
@@ -84,7 +216,12 @@ export default class ContractList extends React.Component {
               <Col xll={4} md={8} sm={24}>
                 <FormItem label="合同状态">
                   {getFieldDecorator("contract_status")(
-                    <Input placeholder="请输入" />
+                    <Select placeholder="请选择">
+                      <Option value="">全部</Option>
+                      <Option value="1">未过期</Option>
+                      <Option value="2">即将过期</Option>
+                      <Option value="3">已过期</Option>
+                    </Select>
                   )}
                 </FormItem>
               </Col>
@@ -137,8 +274,10 @@ export default class ContractList extends React.Component {
     );
   }
   render() {
-    const { contract } = this.props;
+    const { contract, loading, deleteLoading } = this.props;
     const { contractList, contractTotal } = contract;
+    const { args, deleteVisible, deleteInfo } = this.state;
+    const { page, pageSize } = args;
     const columns = [
       {
         title: "序号",
@@ -179,7 +318,10 @@ export default class ContractList extends React.Component {
       {
         title: "合同状态",
         dataIndex: "contract_status",
-        key: "contract_status"
+        key: "contract_status",
+        render: val => (
+          <Badge status={contractBadge[val]} text={CONTRACT_STATUS[val]} />
+        )
       },
       {
         title: "创建时间",
@@ -195,11 +337,20 @@ export default class ContractList extends React.Component {
         render: record => {
           return (
             <div className={styles.text_decoration}>
-              <a href={`#/contractManagement/contractList/edit?id=${record.id}`}>编辑</a>
+              <a
+                href={`#/contractManagement/contractList/edit?id=${record.id}`}
+              >
+                编辑
+              </a>
               <Divider type="vertical" />
-              <a href={`#/contractManagement/contractList/add`}>查看</a>
+              <a href={`#/contractManagement/contractList/view?id=${record.id}`}>查看</a>
               <Divider type="vertical" />
-              <a href="javascript:;">删除</a>
+              <a
+                href="javascript:;"
+                onClick={() => this.deleteContract(record)}
+              >
+                删除
+              </a>
             </div>
           );
         }
@@ -208,31 +359,65 @@ export default class ContractList extends React.Component {
     const paginationOptions = {
       total: contractTotal,
       showSizeChanger: true,
-      showQuickJumper: true
+      showQuickJumper: true,
+      current: page >> 0,
+      pageSize: pageSize >> 0
     };
     return (
       <PageHeaderLayout title="供应商合同列表">
-        <Card title="搜索条件"  className={styles['search-wrap']}>
-        <div className={styles.tableListForm}>
-        {this.renderForm()}
-        </div>
-        
+        <Card title="搜索条件" className={styles["search-wrap"]}>
+          <div className={styles.tableListForm}>{this.renderForm()}</div>
         </Card>
         <Card>
-            <div className={styles.addInfo}>
-                <Button type="primary">
-                    <a href={"#/contractManagement/contractList/add"}>
-                    <Icon type="plus" /> 新增合同
-                    </a>
-                </Button>
-            </div>
+          <div className={styles.addInfo}>
+            <Button type="primary">
+              <a href={"#/contractManagement/contractList/add"}>
+                <Icon type="plus" /> 新增合同
+              </a>
+            </Button>
+          </div>
           <Table
             columns={columns}
             dataSource={contractList}
             rowKey={record => record.id}
             scroll={{ x: 1300 }}
             pagination={paginationOptions}
+            loading={loading}
+            onChange={this.onTableChange}
           />
+          <Modal
+            visible={deleteVisible}
+            title="删除合同"
+            width="600px"
+            onCancel={this.onCancel}
+            footer={[
+              <Button key="back" onClick={this.onCancel}>
+                取消
+              </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                loading={deleteLoading}
+                onClick={this.sureDelete}
+              >
+                确认
+              </Button>
+            ]}
+          >
+            <Row className={styles.deleteModal}>
+              <Col span={12}>
+                <Col span={7}>合同编号：</Col>
+                <Col span={17}>{deleteInfo.contract_no}</Col>
+              </Col>
+              <Col span={12}>
+                <Col span={7}>企业名称：</Col>
+                <Col span={17}>{deleteInfo.company}</Col>
+              </Col>
+            </Row>
+            <p className={styles.deleteModalInfo}>
+              确定删除该合同吗？删除后将不能恢复！
+            </p>
+          </Modal>
         </Card>
       </PageHeaderLayout>
     );

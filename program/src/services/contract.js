@@ -22,3 +22,17 @@ export async function addContract({params}){
         data:params
     })
 }
+// 删除合同
+export async function deleteContract({id}){
+    return lyRequest(`${CONTRACT_URL}/${id}`,{
+        method:"delete"
+    })
+}
+// 编辑合同
+
+export async function editContract({id,params}) {
+    return lyRequest(`${CONTRACT_URL}/${id}`,{
+        method:"put",
+        data:params
+    })
+}

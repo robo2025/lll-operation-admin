@@ -26,7 +26,7 @@ export default class AddContract extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: props.location.search,
+      contractId: props.location.search,
       visible: false,
       fields: {},
       isChooseCompany: false
@@ -57,6 +57,7 @@ export default class AddContract extends React.Component {
   };
   onChooseCompany = record => {
     // 选择企业进行绑定
+    console.log(record)
     const { fields } = this.state;
     this.setState({
       fields: { ...fields, ...record, ...record.profile },
@@ -82,6 +83,7 @@ export default class AddContract extends React.Component {
     form.validateFields({ first: true, force: true }, (err, fieldsValue) => {
       if (err) return;
       let values = {};
+      console.log(fieldsValue)
       values.start_time = fieldsValue.create_time[0].format("YYYY-MM-DD");
       values.end_time = fieldsValue.create_time[1].format("YYYY-MM-DD");
       values.contract_urls = `${fieldsValue.contract_urls.name}@${
@@ -104,7 +106,7 @@ export default class AddContract extends React.Component {
     });
   };
   render() {
-    const { visible, fields, isChooseCompany,id } = this.state;
+    const { visible, fields, isChooseCompany,contractId } = this.state;
     const { upload } = this.props;
     return (
       <PageHeaderLayout title="新增合同">
@@ -115,7 +117,7 @@ export default class AddContract extends React.Component {
           onChange={this.handleFieldsChange}
           onFormSubmit={this.onFormSubmit}
           isChooseCompany={isChooseCompany}
-          id={id}
+          contractId={contractId}
         />
         <ContractCompanyModal
           visible={visible}

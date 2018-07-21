@@ -40,7 +40,11 @@ export default class ContractForm extends React.Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.contract_urls) {
+    if (
+      nextProps.contract_urls &&
+      nextProps.contract_urls.status !== "removed" &&
+      !nextProps.contract_urls.lastModified
+    ) {
       this.setState({
         fileList: [nextProps.contract_urls]
       });
@@ -75,7 +79,7 @@ export default class ContractForm extends React.Component {
     form.resetFields(["contract_urls"]);
   };
   normFile = e => {
-    console.log("Upload event:", e);
+    // console.log("Upload event:", e);
     if (e.file.status) {
       if (e.file.response) {
         e.file.url = `${FILE_SERVER}${e.file.response.key}`;
@@ -83,8 +87,6 @@ export default class ContractForm extends React.Component {
       this.setState({
         fileList: [e.file]
       });
-    } else {
-      return this.state.fileList[0];
     }
     if (e.file.status === "done") {
       message.success("上传成功", 1);
@@ -97,7 +99,7 @@ export default class ContractForm extends React.Component {
     }
   };
   render() {
-    const { onFormSubmit, form, isChooseCompany, id } = this.props;
+    const { onFormSubmit, form, isChooseCompany, contractId } = this.props;
     const { getFieldDecorator } = form;
     const { uploadToken, fileList } = this.state;
     const formItemLayout = {
@@ -114,7 +116,7 @@ export default class ContractForm extends React.Component {
       <Fragment>
         <Form onSubmit={e => onFormSubmit(form, e)}>
           <Card bordered={false}>
-            {id ? null : (
+            {contractId ? null : (
               <FormItem label="企业信息" {...formItemLayout}>
                 <Button type="primary" onClick={this.props.showModal}>
                   {isChooseCompany ? "重选企业" : "选择企业"}
@@ -122,7 +124,7 @@ export default class ContractForm extends React.Component {
               </FormItem>
             )}
             <FormItem
-              label="企业名称"
+              label="用户id"
               {...formItemLayout}
               style={{ display: "none" }}
             >
@@ -204,7 +206,7 @@ export default class ContractForm extends React.Component {
             </FormItem>
             <div style={{ textAlign: "center", margin: "20px 0 40px 0" }}>
               <Button type="primary" htmlType="submit">
-                {id ? "确认修改" : "确认提交"}
+                {contractId? "确认修改" : "确认提交"}
               </Button>
             </div>
           </Card>
