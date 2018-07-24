@@ -95,7 +95,7 @@ export const getRouterData = (app) => {
             name: '商品详情页',
         },
         '/product/list': {
-            component: dynamicWrapper(app, ['product', 'testApi','catalog'], () => import('../routes/ProductManager')),
+            component: dynamicWrapper(app, ['product', 'testApi', 'catalog'], () => import('../routes/ProductManager')),
         },
         '/product/model': {
             component: dynamicWrapper(app, ['brand', 'product', 'good', 'productModel', 'catalog'], () => import('../routes/ProductModel/ProductModelList')),
@@ -182,14 +182,26 @@ export const getRouterData = (app) => {
             name: '方案订单详情',
         },
         '/stockManagement/goodsStockList': {
-            component: dynamicWrapper(app, ['stock'], () => import('../routes/StockManagement/GoodsStockList'))
+            component: dynamicWrapper(app, ['stock'], () => import('../routes/StockManagement/GoodsStockList')),
         },
-        '/stockManagement/goodsStockRecordList':{
-            component: dynamicWrapper(app,['stock'],()=>import('../routes/StockManagement/GoodsStockRecordList'))
+        '/stockManagement/goodsStockRecordList': {
+            component: dynamicWrapper(app, ['stock'], () => import('../routes/StockManagement/GoodsStockRecordList')),
         },
-        '/stockManagement/stockConfigList':{
-            component: dynamicWrapper(app,['stock'],()=>import('../routes/StockManagement/StockConfigList'))
-        }
+        '/stockManagement/stockConfigList': {
+            component: dynamicWrapper(app, ['stock'], () => import('../routes/StockManagement/StockConfigList')),
+        },
+        '/sysAccountManagement/positions': {
+            component: dynamicWrapper(app, ['sysAccount'], () => import('../routes/SysAccountManagement/Positions')),
+        },
+        '/supAccountManagement/accountCheckList': {
+            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountCheckList')),
+        },
+        '/supAccountManagement/accountCheckDetail': {
+            component: dynamicWrapper(app, ['supAccount', 'upload'], () => import('../routes/SupAccountManagement/AccountCheck.js')),
+        },
+        // '/supAccountManagement/accountList': {
+        //     component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/Positions')),
+        // },
     };
 
     // Get name from ./menu.js or just set it in the router data.

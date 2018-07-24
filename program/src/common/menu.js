@@ -1,97 +1,105 @@
 import { isUrl } from '../utils/utils';
 
-const menuData = [{
-  name: '产品管理',
-  icon: 'appstore-o',
-  path: 'product',
-  children: [
-    {
-      name: '产品类目列表',
-      path: 'menu',
-    },
-    {
-      name: '产品列表',
-      path: 'list',
-    },
-    {
-      name: '产品型号列表',
-      path: 'model',
-    },
-  ],
-}, {
-  name: '商品管理',
-  icon: 'shop',
-  path: 'goods',
-  children: [
-    {
-      name: '供应商商品列表',
-      path: 'list',
-    },
-  ],
-}, {
-  name: '商品订单管理',
-  path: 'orders',
-  icon: 'pay-circle-o',
-  children: [
-    {
-      name: '商品订单列表',
-      path: 'list',
-    },
-    {
-      name: '异常订单列表',
-      path: 'exception-list',
-    },
-  ],
-}, {
-  name: '退货管理',
-  path: 'returns',
-  icon: 'disconnect',
-  children: [
-    {
-      name: '退货单列表',
-      path: 'list',
-    },
-  ],
-}, {
-  name: '品牌管理',
-  path: 'brand',
-  icon: 'apple-o',
-  children: [
-    {
-      name: '品牌列表',
-      path: 'list',
-    },
-  ],
-}, {
-  name: '方案管理',
-  path: 'solution',
-  icon: 'solution',
-  children: [
-    {
-      name: '方案询价单列表',
-      path: 'priceQuotation',
-    },
-    {
-      name: '方案订单列表',
-      path: 'orders',
-    },
-  ],
-}, {
-  name: '导入导出管理',
-  path: 'import-export',
-  icon: 'export',
-  hideInMenu: true, // 隐藏导入导出菜单
-  children: [
-    {
-      name: '导入列表',
-      path: 'import-list',
-    },
-    {
-      name: '导出列表',
-      path: 'export-list',
-    },
-  ],
-},{
+const menuData = [
+  {
+    name: '产品管理',
+    icon: 'appstore-o',
+    path: 'product',
+    children: [
+      {
+        name: '产品类目列表',
+        path: 'menu',
+      },
+      {
+        name: '产品列表',
+        path: 'list',
+      },
+      {
+        name: '产品型号列表',
+        path: 'model',
+      },
+    ],
+  },
+  {
+    name: '商品管理',
+    icon: 'shop',
+    path: 'goods',
+    children: [
+      {
+        name: '供应商商品列表',
+        path: 'list',
+      },
+    ],
+  },
+  {
+    name: '商品订单管理',
+    path: 'orders',
+    icon: 'pay-circle-o',
+    children: [
+      {
+        name: '商品订单列表',
+        path: 'list',
+      },
+      {
+        name: '异常订单列表',
+        path: 'exception-list',
+      },
+    ],
+  },
+  {
+    name: '退货管理',
+    path: 'returns',
+    icon: 'disconnect',
+    children: [
+      {
+        name: '退货单列表',
+        path: 'list',
+      },
+    ],
+  },
+  {
+    name: '品牌管理',
+    path: 'brand',
+    icon: 'apple-o',
+    children: [
+      {
+        name: '品牌列表',
+        path: 'list',
+      },
+    ],
+  },
+  {
+    name: '方案管理',
+    path: 'solution',
+    icon: 'solution',
+    children: [
+      {
+        name: '方案询价单列表',
+        path: 'priceQuotation',
+      },
+      {
+        name: '方案订单列表',
+        path: 'orders',
+      },
+    ],
+  },
+  {
+    name: '导入导出管理',
+    path: 'import-export',
+    icon: 'export',
+    hideInMenu: true, // 隐藏导入导出菜单
+    children: [
+      {
+        name: '导入列表',
+        path: 'import-list',
+      },
+      {
+        name: '导出列表',
+        path: 'export-list',
+      },
+    ],
+  },
+  {
     name: '库存管理',
     path: 'stockManagement',
     icon: 'api',
@@ -109,7 +117,38 @@ const menuData = [{
         path: 'stockConfigList',
       },
     ],
-  }];
+  },
+  {
+    name: '系统账号管理',
+    path: 'sysAccountManagement',
+    icon: 'team',
+    children: [
+      {
+        name: '账号列表',
+        path: 'accountList',
+      },
+      {
+        name: '职位管理',
+        path: 'positions',
+      },
+    ],
+  },
+  {
+    name: '供应商账号管理',
+    path: 'supAccountManagement',
+    icon: 'team',
+    children: [
+      {
+        name: '供应商账号审核',
+        path: 'accountCheckList',
+      },
+      {
+        name: '供应商主账号列表',
+        path: 'accountList',
+      },
+    ],
+  },
+];
 
 function formatter(data, parentPath = '/', parentAuthority) {
   return data.map((item) => {
@@ -123,11 +162,14 @@ function formatter(data, parentPath = '/', parentAuthority) {
       authority: item.authority || parentAuthority,
     };
     if (item.children) {
-      result.children = formatter(item.children, `${parentPath}${item.path}/`, item.authority);
+      result.children = formatter(
+        item.children,
+        `${parentPath}${item.path}/`,
+        item.authority
+      );
     }
     return result;
   });
 }
 
 export const getMenuData = () => formatter(menuData);
-
