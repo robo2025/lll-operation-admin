@@ -18,7 +18,7 @@ export const UPLOAD_URL = 'https://testapi.robo2025.com/common';
 // 用户管理系统API URL
 export const USERS_URL = 'https://testapi.robo2025.com/user/service';
 
-export const MAIN_URL = "//testapi.robo2025.com";
+export const MAIN_URL = '//testapi.robo2025.com';
 // 用户管理系统URL
 export const USERS_SERVER = '//testapi.robo2025.com/user';
 
@@ -58,12 +58,12 @@ export const VERIFY_PAGE = `${myHost}/#/test`;
 export const FILE_SERVER = '//imgcdn.robo2025.com/';
 
 // 七牛云上传地址
-export const QINIU_SERVER = '//upload.qiniup.com';
+export const QINIU_SERVER = 'https://upload.qiniup.com';
 
 // 分页：每页显示多少记录
 export const PAGE_SIZE = 10;
 // 供应商商品库存列表
-export const STOCKLIST_URL="//testapi.robo2025.com/stock";
+export const STOCKLIST_URL = '//testapi.robo2025.com/stock';
 // 接口请求状态码
 export const SUCCESS_STATUS = 10000; // 操作成功
 export const FAIL_STATUS = 10001; // 操作失败
