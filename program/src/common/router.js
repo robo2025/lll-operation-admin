@@ -202,6 +202,21 @@ export const getRouterData = (app) => {
         // '/supAccountManagement/accountList': {
         //     component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/Positions')),
         // },
+        '/contractManagement/contractList': {
+            component: dynamicWrapper(app, ['contract'], () => import('../routes/ContractManagement/ContractList')),
+        },
+        '/contractManagement/:contractList/add': {
+            component: dynamicWrapper(app, ['contract', 'upload'], () => import('../routes/ContractManagement/AddContract')),
+            name: '新增合同',
+        },
+        '/contractManagement/:contractList/edit': {
+            component: dynamicWrapper(app, ['contract', 'upload'], () => import('../routes/ContractManagement/EditContract')),
+            name: '编辑合同',
+        },
+        '/contractManagement/:contractList/view': {
+            component: dynamicWrapper(app, ['contract'], () => import('../routes/ContractManagement/ContractDetail')),
+            name: '查看合同',
+        },
     };
 
     // Get name from ./menu.js or just set it in the router data.

@@ -119,6 +119,17 @@ const menuData = [
     ],
   },
   {
+    name: '合同管理',
+    path: 'contractManagement',
+    icon: 'code-o',
+    children: [
+      {
+        name: '合同列表',
+        path: 'contractList',
+      },
+    ],
+  },
+  {
     name: '系统账号管理',
     path: 'sysAccountManagement',
     icon: 'team',

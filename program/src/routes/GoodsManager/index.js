@@ -296,8 +296,6 @@ export default class GoodsMananger extends Component {
         // 将子组件的this.props.form传给父组件，方便后面校验
         this.formObj = formObj;
     }
-
-
     renderSimpleForm() {
         const { getFieldDecorator } = this.props.form;
         return (

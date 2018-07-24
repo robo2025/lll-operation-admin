@@ -131,6 +131,11 @@ const STOCK_OPERATION_STATUS = {
     S:"订单出库",
     O:"调拨出库",
 }
+const CONTRACT_STATUS = {
+    1:'未过期',
+    2:'即将过期',
+    3:'已过期'
+}
 export {
   ACTION_STATUS,
   ACTION_FLAG,
@@ -146,5 +151,6 @@ export {
   AUDIT_STATUS,
   PUBLISH_STATUS,
   SLN_PAY_STATUS,
-  STOCK_OPERATION_STATUS
+  STOCK_OPERATION_STATUS,
+  CONTRACT_STATUS
 };
