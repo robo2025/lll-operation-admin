@@ -1,4 +1,4 @@
-import { getSupplierInfo, getUserInfo } from '../services/user';
+import { getSupplierInfo, getUserInfo, getSMSCode } from '../services/user';
 import { setAuthority } from '../utils/authority';
 import { SUCCESS_STATUS } from '../constant/config.js';
 
@@ -39,6 +39,16 @@ export default {
         type: 'saveSupplier',
         payload: response.data,
       });
+    },
+    *fectchSMS({ mobile, success, error }, { call }) {
+      const response = yield call(getSMSCode, { mobile });
+      if (response.rescode >> 0 === SUCCESS_STATUS) {
+        if (typeof success === 'function') {
+          success(response);
+        }
+      } else if (typeof error === 'function') {
+        error(response);
+      }
     },
   },
 

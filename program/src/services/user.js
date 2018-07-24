@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
-import { URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE } from '../constant/config';
+import { URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE, MAIN_URL } from '../constant/config';
 
 
 // 获取用户信息
@@ -49,4 +49,9 @@ export function login() {
 // 纯跳转到登录页面
 export function jumpToLogin() {
   window.location.href = `${LOGIN_URL}?next=${encodeURIComponent(VERIFY_PAGE)}&disable_redirect=1`;  
+}
+
+// 获取手机验证码
+export async function getSMSCode({ mobile }) {
+  return lyRequest(`${MAIN_URL}/common/sms?mobile=${mobile}`);
 }
