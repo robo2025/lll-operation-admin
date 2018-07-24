@@ -438,7 +438,9 @@ export default class ProductModelList extends Component {
         const { getFieldDecorator } = this.props.form;
         const { catalog } = this.props;
         const { level } = catalog;
-        getStandardCategory(level);
+        console.log(level)
+        // getStandardCategory(level);
+        // console.log(level)
         return (
             <Form onSubmit={this.handleSearch} layout="inline">
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }}>

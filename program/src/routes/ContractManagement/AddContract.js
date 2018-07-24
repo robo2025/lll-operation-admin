@@ -12,14 +12,16 @@ import {
   Row,
   Col,
   DatePicker,
-  message
+  message,
+  Spin
 } from "antd";
 import styles from "./contract.less";
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
-@connect(({ contract, upload }) => ({
+@connect(({ contract, upload,loading }) => ({
   contract,
-  upload
+  upload,
+  loading:loading.effects['contract/fetchAddContract']
 }))
 @Form.create()
 export default class AddContract extends React.Component {
@@ -57,11 +59,9 @@ export default class AddContract extends React.Component {
   };
   onChooseCompany = record => {
     // 选择企业进行绑定
-    console.log(record)
     const { fields } = this.state;
     this.setState({
       fields: { ...fields, ...record, ...record.profile },
-      visible: false,
       isChooseCompany: true
     });
   };
@@ -83,7 +83,11 @@ export default class AddContract extends React.Component {
     form.validateFields({ first: true, force: true }, (err, fieldsValue) => {
       if (err) return;
       let values = {};
-      console.log(fieldsValue)
+    //   console.log(fieldsValue);
+      if(!fieldsValue.contract_urls) {
+        message.warning("请上传合同电子档");
+        return;
+      }
       values.start_time = fieldsValue.create_time[0].format("YYYY-MM-DD");
       values.end_time = fieldsValue.create_time[1].format("YYYY-MM-DD");
       values.contract_urls = `${fieldsValue.contract_urls.name}@${
@@ -95,8 +99,8 @@ export default class AddContract extends React.Component {
         type: "contract/fetchAddContract",
         params: values,
         success: res => {
-          console.log(res);
-          message.success(res.msg,1);
+        //   console.log(res);
+          message.success(res.msg, 1);
           history.replace("/contractManagement/contractList");
         },
         error: error => {
@@ -106,10 +110,11 @@ export default class AddContract extends React.Component {
     });
   };
   render() {
-    const { visible, fields, isChooseCompany,contractId } = this.state;
-    const { upload } = this.props;
+    const { visible, fields, isChooseCompany, contractId } = this.state;
+    const { upload,loading } = this.props;
     return (
       <PageHeaderLayout title="新增合同">
+      <Spin spinning = {loading || false}>
         <ContractForm
           showModal={this.showModal}
           {...fields}
@@ -125,6 +130,7 @@ export default class AddContract extends React.Component {
           onChooseCompany={this.onChooseCompany}
           onSubmit={this.onFormSubmit}
         />
+        </Spin>
       </PageHeaderLayout>
     );
   }

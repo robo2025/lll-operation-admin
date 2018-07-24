@@ -53,7 +53,7 @@ export default class ContractCompanyModal extends React.Component {
       delete fieldsValue.create_time;
       for (let key in fieldsValue) {
         if (fieldsValue[key]) {
-          values[key] = fieldsValue[key];
+          values[key] = fieldsValue[key].trim();
         }
       }
       this.setState({
@@ -157,13 +157,7 @@ export default class ContractCompanyModal extends React.Component {
   onChooseCompany = record => {
     const { onChooseCompany } = this.props;
     onChooseCompany(record);
-    this.setState({
-      args: {
-        page: 1,
-        pageSize: 6
-      },
-      searchValues: {}
-    });
+    this.onCancel();
   };
   render() {
     const { contract, loading, visible } = this.props;

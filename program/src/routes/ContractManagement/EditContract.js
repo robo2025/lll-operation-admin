@@ -6,10 +6,12 @@ import { connect } from "dva";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 import ContractForm from "../../components/ContractInfo/ContractForm";
 import { Form, message, Spin, Card,Table } from "antd";
+import {ACTION_FLAG} from "../../constant/statusList";
 @connect(({ contract, upload, loading }) => ({
   contract,
   upload,
-  loading: loading.effects["contract/fetchContractDetail"]
+  loading: loading.effects["contract/fetchContractDetail"],
+  editLoading: loading.effects['contract/fetchEditContract']
 }))
 @Form.create()
 export default class EditContract extends React.Component {
@@ -86,8 +88,11 @@ export default class EditContract extends React.Component {
     const { dispatch, history } = this.props;
     const { contractId } = this.state;
     form.validateFields({ first: true }, (err, fieldsValue) => {
-      console.log(fieldsValue);
       if (err) return;
+      if(!fieldsValue.contract_urls) {
+        message.warning("请上传合同电子档");
+        return;
+      }
       let values = {};
       values.start_time = fieldsValue.create_time[0].format("YYYY-MM-DD");
       values.end_time = fieldsValue.create_time[1].format("YYYY-MM-DD");
@@ -101,7 +106,6 @@ export default class EditContract extends React.Component {
         id: contractId,
         params: values,
         success: res => {
-          console.log(res);
           message.success(res.msg, 1);
           history.replace("/contractManagement/contractList");
         },
@@ -111,12 +115,9 @@ export default class EditContract extends React.Component {
       });
     });
   };
-  onRecordPaginationChange = (pagination) => {
-    
-  }
   render() {
-    const { fields, isChooseCompany, contractId,args } = this.state;
-    const { upload, contract, loading } = this.props;
+    const { fields, isChooseCompany, contractId } = this.state;
+    const { upload, contract, loading,editLoading } = this.props;
     const {contractDetail} = contract;
     const {operation_records} = contractDetail;
     const paginationOptions = {
@@ -130,11 +131,6 @@ export default class EditContract extends React.Component {
         key: "order",
         render: (record, text, index) => index + 1
       },
-    //   {
-    //     title: "操作人",
-    //     key: "operator",
-    //     render: (record, text, index) => index + 1
-    //   },
       {
         title: "操作描述",
         key: "change_message",
@@ -144,6 +140,7 @@ export default class EditContract extends React.Component {
         title: "执行结果",
         key: "action_flag",
         dataIndex:'action_flag',
+        render:(val) => ACTION_FLAG[val]
       },
       {
         title: "备注",
@@ -160,6 +157,7 @@ export default class EditContract extends React.Component {
     ];
     return (
       <PageHeaderLayout title="编辑合同">
+        <Spin spinning={editLoading || false}>
         <Spin spinning={loading}>
           <ContractForm
             showModal={this.showModal}
@@ -175,8 +173,10 @@ export default class EditContract extends React.Component {
             columns={columns}
             dataSource={operation_records}
             pagination={paginationOptions}
+            rowKey={record => record.created_time + 100}
             />
           </Card>
+        </Spin>
         </Spin>
       </PageHeaderLayout>
     );

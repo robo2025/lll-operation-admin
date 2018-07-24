@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import qs from "qs";
 import moment from "moment";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
@@ -17,13 +17,15 @@ import {
   Table,
   Modal,
   message,
-  Spin
+  Spin,
+  DatePicker
 } from "antd";
 import { CONTRACT_STATUS } from "../../constant/statusList";
 import styles from "./contract.less";
 import { connect } from "dva";
 const FormItem = Form.Item;
 const Option = Select.Option;
+const { RangePicker } = DatePicker;
 const contractBadge = ["default", "success", "warning", "error"];
 @Form.create()
 @connect(({ contract, loading }) => ({
@@ -55,7 +57,7 @@ export default class ContractList extends React.Component {
   }
   //   删除合同执行
   deleteContract = record => {
-    console.log(record);
+    // console.log(record);
     const { supplier_info } = record;
     const { profile } = supplier_info;
     this.setState({
@@ -85,7 +87,7 @@ export default class ContractList extends React.Component {
           limit: args.pageSize,
           params: searchValues
         });
-        history.replace({search:`?page=1&pageSize=${args.pageSize}`})
+        history.replace({ search: `?page=1&pageSize=${args.pageSize}` });
         this.setState({
           args: {
             page: 1,
@@ -130,11 +132,11 @@ export default class ContractList extends React.Component {
       if (fieldsValue.create_time && fieldsValue.create_time.length > 0) {
         values.start_time = fieldsValue.create_time[0].format("YYYY-MM-DD");
         values.end_time = fieldsValue.create_time[1].format("YYYY-MM-DD");
-        delete fieldsValue.create_time;
       }
+      delete fieldsValue.create_time;
       for (var key in fieldsValue) {
-        if (fieldsValue[key]) {
-          values[key] = fieldsValue[key];
+        if (fieldsValue[key] && fieldsValue[key].trim().length > 0) {
+          values[key] = fieldsValue[key].trim();
         }
       }
       this.setState({
@@ -182,38 +184,40 @@ export default class ContractList extends React.Component {
     return (
       <Form className={styles.tableListForm} onSubmit={this.handleSearch}>
         <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
-          <Col xll={4} md={8} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="企业名称">
               {getFieldDecorator("company")(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          <Col xll={4} md={8} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="法人">
               {getFieldDecorator("legal")(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          <Col xll={4} md={8} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="手机">
               {getFieldDecorator("mobile")(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          {expandForm ? (
+        </Row>
+        {expandForm ? (
+          <Fragment>
             <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
-              <Col xll={4} md={8} sm={24}>
+              <Col md={8} sm={24}>
                 <FormItem label="合同编号">
                   {getFieldDecorator("contract_no")(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
-              <Col xll={4} md={8} sm={24}>
+              <Col md={8} sm={24}>
                 <FormItem label="合同类型">
                   {getFieldDecorator("contract_type")(
                     <Input placeholder="请输入" />
                   )}
                 </FormItem>
               </Col>
-              <Col xll={4} md={8} sm={24}>
+              <Col md={8} sm={24}>
                 <FormItem label="合同状态">
                   {getFieldDecorator("contract_status")(
                     <Select placeholder="请选择">
@@ -225,16 +229,16 @@ export default class ContractList extends React.Component {
                   )}
                 </FormItem>
               </Col>
-              <Col xll={4} md={8} sm={24}>
+            </Row>
+            <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
+              <Col md={9} sm={24}>
                 <FormItem label="创建时间">
-                  {getFieldDecorator("create_time")(
-                    <Input placeholder="请输入" />
-                  )}
+                  {getFieldDecorator("create_time")(<RangePicker />)}
                 </FormItem>
               </Col>
             </Row>
-          ) : null}
-        </Row>
+          </Fragment>
+        ) : null}
         <div style={{ overflow: "hidden" }}>
           <span style={{ float: "right", marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">
@@ -281,17 +285,20 @@ export default class ContractList extends React.Component {
     const columns = [
       {
         title: "序号",
+        width:"60px",
         key: "idx",
         dataIndex: "idx",
         render: (text, record, index) => index + 1
       },
       {
         title: "合同编号",
+        width:"200px",
         dataIndex: "contract_no",
         key: "contract_no"
       },
       {
         title: "合同类型",
+        width:"200px",
         dataIndex: "contract_type",
         key: "contract_type"
       },
@@ -302,21 +309,25 @@ export default class ContractList extends React.Component {
       },
       {
         title: "法人",
+        width:"160px",
         key: "legal",
         render: record => record.supplier_info.profile.legal
       },
       {
         title: "手机",
+        width:"160px",
         key: "mobile",
         render: record => record.supplier_info.mobile
       },
       {
         title: "合同有效期",
+        width:"200px",
         key: "startAndEnd",
         render: record => `${record.start_time} ~ ${record.end_time}`
       },
       {
         title: "合同状态",
+        width:"160px",
         dataIndex: "contract_status",
         key: "contract_status",
         render: val => (
@@ -325,6 +336,7 @@ export default class ContractList extends React.Component {
       },
       {
         title: "创建时间",
+        width:"200px",
         key: "created_time",
         dataIndex: "created_time",
         render: val => moment(val * 1000).format("YYYY-MM-DD HH:mm:ss")
@@ -343,7 +355,11 @@ export default class ContractList extends React.Component {
                 编辑
               </a>
               <Divider type="vertical" />
-              <a href={`#/contractManagement/contractList/view?id=${record.id}`}>查看</a>
+              <a
+                href={`#/contractManagement/contractList/view?id=${record.id}`}
+              >
+                查看
+              </a>
               <Divider type="vertical" />
               <a
                 href="javascript:;"
@@ -380,7 +396,7 @@ export default class ContractList extends React.Component {
             columns={columns}
             dataSource={contractList}
             rowKey={record => record.id}
-            scroll={{ x: 1300 }}
+            scroll={{ x: 1700 }}
             pagination={paginationOptions}
             loading={loading}
             onChange={this.onTableChange}

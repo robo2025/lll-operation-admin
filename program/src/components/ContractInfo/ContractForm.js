@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { QINIU_SERVER, FILE_SERVER } from "../../constant/config";
 import { getFileSuffix } from "../../utils/tools";
+import rule from "../../../mock/rule";
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
 @Form.create({
@@ -80,6 +81,7 @@ export default class ContractForm extends React.Component {
   };
   normFile = e => {
     // console.log("Upload event:", e);
+    const {fileList} = this.state;
     if (e.file.status) {
       if (e.file.response) {
         e.file.url = `${FILE_SERVER}${e.file.response.key}`;
@@ -96,6 +98,8 @@ export default class ContractForm extends React.Component {
       this.setState({
         fileList: []
       });
+    } else if(!e.file.status){
+        return fileList[0] // 上传图片时执行
     }
   };
   render() {
@@ -174,11 +178,10 @@ export default class ContractForm extends React.Component {
                 rules: [{ required: true, message: "请选择合同有效期" }]
               })(<RangePicker />)}
             </FormItem>
-            <FormItem label="合同电子档" {...formItemLayout}>
+            <FormItem label="合同电子档" {...formItemLayout} required>
               {getFieldDecorator("contract_urls", {
                 valuePropName: "file",
                 getValueFromEvent: this.normFile,
-                rules: [{ required: true, message: "请上传文件" }]
               })(
                 <Upload
                   name="file"
