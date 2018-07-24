@@ -1,0 +1,203 @@
+@import '~antd/lib/style/themes/default.less';
+
+.tableListForm {
+  :global {
+    .ant-form-item {
+      margin-bottom: 24px;
+      margin-right: 0;
+      display: flex;
+      > .ant-form-item-label {
+        width: auto;
+        line-height: 32px;
+        padding-right: 8px;
+      }
+      .ant-form-item-control {
+        line-height: 32px;
+      }
+    }
+    .ant-form-item-control-wrapper {
+      flex: 1;
+    }
+    .ant-calendar-picker {
+      width: 100%;
+    }
+  }
+  .submitButtons {
+    white-space: nowrap;
+    margin-bottom: 24px;
+  }
+}
+.unfold {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  display: inline-block;
+  width: 70px;
+}
+
+.register-wrap {
+  :global {
+    .ant-input-group-addon {
+      padding: 0;
+    }
+    .ant-btn {
+      border-radius: 0;
+      height: 38px;
+      border: none;
+    }
+  }
+}
+
+.register-modal {
+  :global {
+    .ant-modal-body {
+      max-height: 600px;
+      overflow: auto;
+    }
+  }
+}
+
+.card {
+  margin-bottom: 24px;
+}
+
+.heading {
+  font-size: 14px;
+  line-height: 22px;
+  margin: 0 0 16px 0;
+}
+
+.steps:global(.ant-steps) {
+  max-width: 750px;
+  margin: 16px auto;
+}
+
+.errorIcon {
+  cursor: pointer;
+  color: @error-color;
+  margin-right: 24px;
+  i {
+    margin-right: 4px;
+  }
+}
+
+.errorPopover {
+  :global {
+    .ant-popover-inner-content {
+      padding: 0;
+      max-height: 290px;
+      overflow: auto;
+      min-width: 256px;
+    }
+  }
+}
+
+.errorListItem {
+  list-style: none;
+  border-bottom: 1px solid @border-color-split;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover {
+    background: @primary-1;
+  }
+  &:last-child {
+    border: 0;
+  }
+  .errorIcon {
+    color: @error-color;
+    float: left;
+    margin-top: 4px;
+    margin-right: 12px;
+    padding-bottom: 22px;
+  }
+  .errorField {
+    font-size: 12px;
+    color: @text-color-secondary;
+    margin-top: 2px;
+  }
+}
+
+.editable {
+  td {
+    padding-top: 13px !important;
+    padding-bottom: 12.5px !important;
+  }
+}
+
+// custom footer for fixed footer toolbar
+.advancedForm + div {
+  padding-bottom: 64px;
+}
+
+.advancedForm {
+  :global {
+    .ant-form .ant-row:last-child .ant-form-item {
+      margin-bottom: 24px;
+    }
+    .ant-table td {
+      transition: none !important;
+    }
+  }
+}
+
+.optional {
+  color: @text-color-secondary;
+  font-style: normal;
+}
+
+.main {
+  width: 368px;
+  margin: 0 auto;
+
+  :global {
+    .ant-form-item {
+      margin-bottom: 24px;
+    }
+  }
+
+  h3 {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .getCaptcha {
+    display: block;
+    width: 100%;
+  }
+
+  .submit {
+    width: 50%;
+  }
+
+  .login {
+    float: right;
+    line-height: @btn-height-lg;
+  }
+}
+
+.success,
+.warning,
+.error {
+  transition: color 0.3s;
+}
+
+.success {
+  color: @success-color;
+}
+
+.warning {
+  color: @warning-color;
+}
+
+.error {
+  color: @error-color;
+}
+
+.progress-pass > .progress {
+  :global {
+    .ant-progress-bg {
+      background-color: @warning-color;
+    }
+  }
+}
