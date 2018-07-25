@@ -129,7 +129,8 @@ const SLN_PAY_STATUS = {
 const STOCK_OPERATION_STATUS = {
     I:"入库",
     S:"订单出库",
-    O:"调拨出库",
+    O:"调拨",
+    N:"第一次入库"
 }
 const CONTRACT_STATUS = {
     1:'未过期',

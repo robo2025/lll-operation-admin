@@ -4,54 +4,58 @@ import {
   queryUserInfo,
   querySuppliers,
   handleAssigned,
-} from '../services/solution';
-import { getSupplierInfo } from '../services/user';
+  queryOperationLog,
+  queryOfferOperation,
+} from "../services/solution";
+import { getSupplierInfo } from "../services/user";
 
 export default {
-  namespace: 'solution',
+  namespace: "solution",
   state: {
     list: [],
     profile: {},
     pagination: { current: 1, pageSize: 10 },
     suppliers: [],
+    operationLogList: [],
+    offerOperationList:[]
   },
   effects: {
     *fetch({ payload }, { call, put, select }) {
-      const pagination = yield select((state) => {
+      const pagination = yield select(state => {
         return state.solution.pagination;
       });
       const { current, pageSize } = pagination;
       const params = {
         offset: (current - 1) * pageSize,
-        limit: pageSize,
+        limit: pageSize
       };
       const response = yield call(queryList, {
         ...payload,
-        ...params,
+        ...params
       });
       const { data, headers, rescode } = response;
       if (rescode === 10000) {
-        const dataWithKey = data.map((item) => {
+        const dataWithKey = data.map(item => {
           return { ...item, key: item.sln_no };
         });
         yield put({
-          type: 'save',
-          payload: dataWithKey,
+          type: "save",
+          payload: dataWithKey
         });
       } else {
         yield put({
-          type: 'save',
-          payload: data,
+          type: "save",
+          payload: data
         });
       }
       const newPagination = {
         ...pagination,
-        total: parseInt(headers['x-content-total'], 10),
-        current: parseInt(headers['x-content-range'][0], 10) + 1,
+        total: parseInt(headers["x-content-total"], 10),
+        current: parseInt(headers["x-content-range"][0], 10) + 1
       };
       yield put({
-        type: 'savePagination',
-        payload: newPagination,
+        type: "savePagination",
+        payload: newPagination
       });
     },
     *fetchDetail({ payload, callback }, { call, put }) {
@@ -61,7 +65,7 @@ export default {
       if (response.rescode === 10000) {
         if (response.data.customer) {
           const res = yield call(queryUserInfo, {
-            id: response.data.customer.sln_basic_info.customer_id,
+            id: response.data.customer.sln_basic_info.customer_id
           });
           userInfo = res.data;
           if (callback) {
@@ -80,25 +84,27 @@ export default {
         }
       }
       yield put({
-        type: 'saveSolutionOrder',
-        payload: { ...response.data, userInfo, supplierInfo },
+        type: "saveSolutionOrder",
+        payload: { ...response.data, userInfo, supplierInfo }
       });
     },
     *fetchSuppliers({ payload, callback }, { call, put }) {
       const response = yield call(querySuppliers, { ...payload });
       const { data, msg, rescode } = response;
-      if (rescode === '10000') {
-        const dataWithKey = data.map((item) => { return { ...item, key: item.id }; });
+      if (rescode === "10000") {
+        const dataWithKey = data.map(item => {
+          return { ...item, key: item.id };
+        });
         yield put({
-          type: 'saveSuppliers',
-          payload: dataWithKey,
+          type: "saveSuppliers",
+          payload: dataWithKey
         });
         if (callback) {
           callback(true, msg);
         }
       } else if (callback) {
-          callback(false, msg);
-        }
+        callback(false, msg);
+      }
     },
     *handleAssigned({ payload, callback }, { call, put }) {
       const response = yield call(handleAssigned, { ...payload });
@@ -108,35 +114,76 @@ export default {
           callback(true, msg);
         }
       } else if (callback) {
-          callback(false, msg);
-        }
+        callback(false, msg);
+      }
     },
+    *fetchOperationLog({ sln_no, success, error }, { call, put }) {
+      const res = yield call(queryOperationLog, { sln_no });
+      const { rescode } = res;
+      if (rescode === 10000) {
+        if (success) {
+          success(res);
+        }
+      } else if (error) {
+        error(res);
+      }
+      yield put({
+        type: "saveLog",
+        payload: res.data
+      });
+    },
+    *fetchOfferOperation({sln_no,success,error},{call,put}) {
+        const res = yield call(queryOfferOperation,{sln_no});
+        const { rescode } = res;
+      if (rescode === 10000) {
+        if (success) {
+          success(res);
+        }
+      } else if (error) {
+        error(res);
+      }
+      yield put({
+        type: "saveOfferOperation",
+        payload: res.data
+      });
+    }
   },
-
   reducers: {
     save(state, { payload }) {
       return {
         ...state,
-        list: payload,
+        list: payload
       };
     },
     savePagination(state, { payload }) {
       return {
         ...state,
-        pagination: payload,
+        pagination: payload
       };
     },
     saveSolutionOrder(state, { payload }) {
       return {
         ...state,
-        profile: payload,
+        profile: payload
       };
     },
     saveSuppliers(state, { payload }) {
       return {
         ...state,
-        suppliers: payload,
+        suppliers: payload
       };
     },
-  },
+    saveLog(state, action) {
+      return {
+        ...state,
+        operationLogList: action.payload
+      };
+    },
+    saveOfferOperation(state,action){
+        return {
+            ...state,
+            offerOperationList:action.payload
+        }
+    }
+  }
 };
