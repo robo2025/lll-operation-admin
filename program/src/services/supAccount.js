@@ -14,3 +14,11 @@ export async function querySuppliers(params) {
 export async function queryDetail({ id }) {
   return lyRequest(`${USERS_SERVER}/operation/audit/${id}`);
 }
+
+export async function accountAudit({ formData, id, audit_status, remark }) {
+  console.log({ formData, audit_status, remark });
+  return lyRequest(`${USERS_SERVER}/operation/audit/${id}`, {
+    method: 'put',
+    data: { ...formData, audit_status, remark },
+  });
+}

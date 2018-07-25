@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -36,7 +36,7 @@ const { RangePicker } = DatePicker;
   loading: loading.effects['supAccount/fetch'],
 }))
 @Form.create()
-class AccountCheckList extends React.Component {
+export default class AccountList extends Component {
   state = {
     formExpand: false,
   };
@@ -197,34 +197,7 @@ class AccountCheckList extends React.Component {
         render: row => (
           <Fragment>
             <a
-              disabled={row.audit_status !== 0}
-              onClick={() => {
-                this.props.dispatch(
-                  routerRedux.push({
-                    pathname: '/supAccountManagement/accountCheck',
-                    search: `?id=${row.id}`,
-                  })
-                );
-              }}
-            >
-              审核
-            </a>
-            <Divider type="vertical" />
-            <a
-              disabled={row.audit_status !== 1}
-              onClick={() => {
-                this.props.dispatch(
-                  routerRedux.push({
-                    pathname: '/supAccountManagement/accountCheckModify',
-                    search: `?id=${row.id}`,
-                  })
-                );
-              }}
-            >
-              编辑
-            </a>
-            <Divider type="vertical" />
-            <a
+              disabled={row.audit_status === 1}
               onClick={() => {
                 this.props.dispatch(
                   routerRedux.push({
@@ -234,8 +207,12 @@ class AccountCheckList extends React.Component {
                 );
               }}
             >
-              查看
+              审核
             </a>
+            <Divider type="vertical" />
+            <a disabled={row.audit_status !== 1}>编辑</a>
+            <Divider type="vertical" />
+            <a>查看</a>
           </Fragment>
         ),
       },
@@ -387,4 +364,3 @@ class AccountCheckList extends React.Component {
   }
 }
 
-export default AccountCheckList;

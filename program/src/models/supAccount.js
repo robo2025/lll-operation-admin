@@ -1,4 +1,4 @@
-import { querySuppliers, queryDetail } from '../services/supAccount';
+import { querySuppliers, queryDetail, accountAudit } from '../services/supAccount';
 
 export default {
   namespace: 'supAccount',
@@ -41,7 +41,6 @@ export default {
       const newPagination = {
         ...pagination,
         total: parseInt(headers['x-content-total'], 10),
-        current: parseInt(headers['x-content-range'][0], 10) + 1,
       };
       yield put({
         type: 'savePagination',
@@ -63,6 +62,18 @@ export default {
         callback(false, msg);
       }
     },
+    *accountAudit({ payload, callback }, { call, put }) {
+      const response = yield call(accountAudit, { ...payload });
+      const { rescode, msg } = response;
+      if (rescode === '10000') {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+        callback(false, msg);
+      }
+    },
+    
   },
 
   reducers: {

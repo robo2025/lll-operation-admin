@@ -196,8 +196,17 @@ export const getRouterData = (app) => {
         '/supAccountManagement/accountCheckList': {
             component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountCheckList')),
         },
+        '/supAccountManagement/accountCheck': {
+            component: dynamicWrapper(app, ['supAccount', 'upload'], () => import('../routes/SupAccountManagement/AccountCheck')),
+            name: '供应商账号审核',
+        },
+        '/supAccountManagement/AccountCheckModify': {
+            component: dynamicWrapper(app, ['supAccount', 'upload'], () => import('../routes/SupAccountManagement/AccountCheckModify')),
+            name: '供应商账号编辑',
+        },
         '/supAccountManagement/accountCheckDetail': {
-            component: dynamicWrapper(app, ['supAccount', 'upload'], () => import('../routes/SupAccountManagement/AccountCheck.js')),
+            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountCheckDetail')),
+            name: '供应商账号审核详情',
         },
         // '/supAccountManagement/accountList': {
         //     component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/Positions')),

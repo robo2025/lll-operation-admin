@@ -14,16 +14,15 @@ import {
   message,
   Checkbox,
   Cascader,
+  Spin,
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
 import {
   checkFile,
   getFileSuffix,
-  handleServerMsgObj,
 } from '../../utils/tools';
 import options from '../../utils/cascader-address-options';
-import { jumpToLogin } from '../../services/user';
 
 import styles from './index.less';
 
@@ -31,14 +30,15 @@ export const IMAGE_TYPES = ['jpg', 'png', 'gif', 'jpeg'];
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
 
-@connect(({ upload, supAccount }) => ({
+@connect(({ upload, supAccount, loading }) => ({
   upload,
   profile: supAccount.profile,
+  loading: loading.effects['supAccount/fetchDetail'],
 }))
 @Form.create({
   mapPropsToFields(props) {
     const { profile } = props;
-    const { basic_info, qualification_info } = profile;
+    const { basic_info, qualifications } = profile;
     if (!basic_info) {
       return {};
     }
@@ -52,7 +52,7 @@ const { RangePicker } = DatePicker;
     });
     // 日期
     let dateData = {};
-    qualification_info.map((item) => {
+    qualifications.map((item) => {
       dateData = {
         ...dateData,
         [`${item.qualifi_name}_date`]: Form.createFormField({
@@ -78,11 +78,13 @@ const { RangePicker } = DatePicker;
         ],
       }),
     };
-    const licenseData = qualification_info.filter(
+    const licenseData = qualifications.filter(
       item => item.qualifi_name === 'license'
     );
     if (!licenseData.length) {
-      return { ...formData };
+      return {
+        ...formData,
+      };
     }
     return {
       ...formData,
@@ -130,9 +132,9 @@ export default class EditableProfile extends Component {
       payload: location.href.split('=').pop(),
       callback: (success, data) => {
         if (success) {
-          const { basic_info, qualification_info } = data;
+          const { basic_info, qualifications } = data;
           this.setState({ companyType: basic_info.company_type });
-          const flagArray = qualification_info.filter(
+          const flagArray = qualifications.filter(
             item =>
               item.qualifi_name === 'production' ||
               item.qualifi_name === 'certification' ||
@@ -144,7 +146,7 @@ export default class EditableProfile extends Component {
             });
           }
           // 一般纳税人照片
-          const isGeneralTaxpayerArray = qualification_info.filter(
+          const isGeneralTaxpayerArray = qualifications.filter(
             item => item.qualifi_name === 'taxpayer'
           );
           if (isGeneralTaxpayerArray.length > 0) {
@@ -152,11 +154,11 @@ export default class EditableProfile extends Component {
               isGeneralTaxpayer: true,
             });
           }
-          qualification_info.map((item) => {
+          qualifications.map((item) => {
             this.setState({
               [item.qualifi_name]: [
                 {
-                  uid: item.effective_date + item.qualifi_url, // 时间+url做为ID吧
+                  uid: item.effective_date + item.qualifi_url, // 时间+url做为ID
                   status: 'done',
                   url: FILE_SERVER + item.qualifi_url,
                   response: {
@@ -168,28 +170,26 @@ export default class EditableProfile extends Component {
             return null;
           });
           let licenseData = [];
-          if (qualification_info) {
-            licenseData = qualification_info.filter(
+          if (qualifications) {
+            licenseData = qualifications.filter(
               item => item.qualifi_name === 'license'
             );
           }
-
-          this.setState({
-            photos: licenseData.length
-              ? [
-                  {
-                    uid:
-                      licenseData[0].effective_date +
-                      licenseData[0].qualifi_url, // 时间+url做为ID吧
-                    status: 'done',
-                    url: FILE_SERVER + licenseData[0].qualifi_url,
-                    response: {
-                      key: licenseData[0].qualifi_url,
-                    },
+          if (licenseData.length) {
+            this.setState({
+              photos: [
+                {
+                  uid:
+                    licenseData[0].effective_date + licenseData[0].qualifi_url, // 时间+url做为ID
+                  status: 'done',
+                  url: FILE_SERVER + licenseData[0].qualifi_url,
+                  response: {
+                    key: licenseData[0].qualifi_url,
                   },
-                ]
-              : [],
-          });
+                },
+              ],
+            });
+          }
         }
       },
     });
@@ -214,8 +214,11 @@ export default class EditableProfile extends Component {
 
   // 文件上传状态改变时处理
   handleUploadChange = (key, fileList) => {
-    console.log({ [key]: fileList });
     this.setState({ [key]: fileList });
+    // 删除license的值触发表单校验
+    if (key === 'photos' && !fileList.length) {
+      this.props.form.setFieldsValue({ license: undefined });
+    }
   };
 
   // 图片预览
@@ -245,7 +248,6 @@ export default class EditableProfile extends Component {
         console.log('校验出错:', err, values);
         return;
       }
-      console.log(values);
       const qualifications = []; // 资质证书
       // 营业执照
       const license = {
@@ -356,7 +358,6 @@ export default class EditableProfile extends Component {
     });
   };
 
-
   // 公司性质单选框改变时
   handleCompanyTypeChange = (e) => {
     this.setState({ companyType: e.target.value });
@@ -369,7 +370,7 @@ export default class EditableProfile extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { upload, type } = this.props;
+    const { upload, type, loading } = this.props;
     const {
       previewVisible,
       previewImage,
@@ -413,7 +414,7 @@ export default class EditableProfile extends Component {
       },
     };
     const content = (
-      <Fragment>
+      <Spin spinning={loading}>
         <Form onSubmit={this.handleSubmit} style={{ marginTop: 8 }}>
           <Card
             title="基本信息"
@@ -536,8 +537,7 @@ export default class EditableProfile extends Component {
               })(<Input />)}
             </FormItem>
             <FormItem {...formItemLayout} label="营业执照照片">
-              {getFieldDecorator('qualifications', {
-                initialValue: ' ',
+              {getFieldDecorator('license', {
                 rules: [
                   {
                     required: true,
@@ -988,7 +988,12 @@ export default class EditableProfile extends Component {
               </FormItem>
             </div>
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary" htmlType="submit" loading={false} size="large">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={false}
+                size="large"
+              >
                 {this.props.buttonText}
               </Button>
             </FormItem>
@@ -1002,7 +1007,7 @@ export default class EditableProfile extends Component {
             </Modal>
           </Card>
         </Form>
-      </Fragment>
+      </Spin>
     );
     if (type === 'update') {
       return content;
