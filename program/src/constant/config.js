@@ -6,17 +6,17 @@
 export const URL = 'https://testlogin.robo2025.com';
 
 // 网站内容接口URL
-export const API_URL = 'https://testapi.robo2025.com/scm/operation';
+export const API_URL = '//testapi.robo2025.com/scm/operation';
 
 
 // 操作日志URL
-export const OPERATION_URL = 'https://testapi.robo2025.com/scm';
+export const OPERATION_URL = '//testapi.robo2025.com/scm';
 
 // 上传文件获取token URL
-export const UPLOAD_URL = 'https://testapi.robo2025.com/common';
+export const UPLOAD_URL = '//testapi.robo2025.com/common';
 
 // 用户管理系统API URL
-export const USERS_URL = 'https://testapi.robo2025.com/user/service';
+export const USERS_URL = '//testapi.robo2025.com/user/service';
 
 export const MAIN_URL = '//testapi.robo2025.com';
 // 用户管理系统URL
@@ -30,7 +30,7 @@ export const SLN_ORDER_URL = '//testapi.robo2025.com/sln-order';
 // export const SLN_ORDER_URL = 'http://192.168.2.109:9009';
 
 // 订单系统接口
-export const ORDERS_URL = 'https://testapi.robo2025.com/order';
+export const ORDERS_URL = '//testapi.robo2025.com/order';
 // export const ORDERS_URL = 'http://192.168.2.109:8009';
 
 // 验证登录接口URL
