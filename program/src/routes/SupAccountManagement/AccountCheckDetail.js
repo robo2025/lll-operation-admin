@@ -135,7 +135,15 @@ export default class AccountCheckDetail extends Component {
             </FormItem>
           ) : null}
         </Card>
-        <RecordTable dataSource={operation_records} />
+        <RecordTable
+          dataSource={
+            operation_records
+              ? operation_records.map((item) => {
+                  return { ...item, key: item.created_time };
+                })
+              : []
+          }
+        />      
       </PageHeaderLayout>
     );
   }
