@@ -4,6 +4,8 @@ import {
   queryUserInfo,
   querySuppliers,
   handleAssigned,
+  queryOperationLog,
+  queryOfferOperation,
 } from '../services/solution';
 import { getSupplierInfo } from '../services/user';
 
@@ -14,6 +16,8 @@ export default {
     profile: {},
     pagination: { current: 1, pageSize: 10 },
     suppliers: [],
+    operationLogList: [],
+    offerOperationList: [],
   },
   effects: {
     *fetch({ payload }, { call, put, select }) {
@@ -87,7 +91,9 @@ export default {
       const response = yield call(querySuppliers, { ...payload });
       const { data, msg, rescode } = response;
       if (rescode === '10000') {
-        const dataWithKey = data.map((item) => { return { ...item, key: item.id }; });
+        const dataWithKey = data.map((item) => {
+          return { ...item, key: item.id };
+        });
         yield put({
           type: 'saveSuppliers',
           payload: dataWithKey,
@@ -96,8 +102,8 @@ export default {
           callback(true, msg);
         }
       } else if (callback) {
-          callback(false, msg);
-        }
+        callback(false, msg);
+      }
     },
     *handleAssigned({ payload, callback }, { call, put }) {
       const response = yield call(handleAssigned, { ...payload });
@@ -107,11 +113,40 @@ export default {
           callback(true, msg);
         }
       } else if (callback) {
-          callback(false, msg);
+        callback(false, msg);
+      }
+    },
+    *fetchOperationLog({ sln_no, success, error }, { call, put }) {
+      const res = yield call(queryOperationLog, { sln_no });
+      const { rescode } = res;
+      if (rescode === 10000) {
+        if (success) {
+          success(res);
         }
+      } else if (error) {
+        error(res);
+      }
+      yield put({
+        type: 'saveLog',
+        payload: res.data,
+      });
+    },
+    *fetchOfferOperation({ sln_no, success, error }, { call, put }) {
+        const res = yield call(queryOfferOperation, { sln_no });
+        const { rescode } = res;
+      if (rescode === 10000) {
+        if (success) {
+          success(res);
+        }
+      } else if (error) {
+        error(res);
+      }
+      yield put({
+        type: 'saveOfferOperation',
+        payload: res.data,
+      });
     },
   },
-
   reducers: {
     save(state, { payload }) {
       return {
@@ -136,6 +171,18 @@ export default {
         ...state,
         suppliers: payload,
       };
+    },
+    saveLog(state, action) {
+      return {
+        ...state,
+        operationLogList: action.payload,
+      };
+    },
+    saveOfferOperation(state, action) {
+        return {
+            ...state,
+            offerOperationList: action.payload,
+        };
     },
   },
 };

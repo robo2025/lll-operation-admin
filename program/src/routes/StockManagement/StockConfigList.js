@@ -330,6 +330,8 @@ export default class StockConfigList extends React.Component {
                         )}
                     </FormItem>
                 </Col>
+                </Row>
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                 <Col xxl={8} md={8} sm={24}>
                     <FormItem label="上下架状态">
                         {getFieldDecorator('publish_status')(
@@ -360,6 +362,8 @@ export default class StockConfigList extends React.Component {
                         )}
                     </FormItem>
                 </Col>
+                </Row>
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                 <Col md={8} sm={12}>
                     <FormItem label="库存数量">
                         <Col span={11}>

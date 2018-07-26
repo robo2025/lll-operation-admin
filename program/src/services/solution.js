@@ -41,3 +41,11 @@ export async function handleAssigned({ supplier_id, sln_no }) {
     },
   });
 }
+
+export async function queryOperationLog({sln_no}) {
+    return lyRequest(`${SOLUTION_URL}/v1/log?sln_no=${sln_no}`)
+}
+
+export async function queryOfferOperation({sln_no}) {
+    return lyRequest(`${SOLUTION_URL}/v1/offer-operation?sln_no=${sln_no}&sbm_no=1`)
+}

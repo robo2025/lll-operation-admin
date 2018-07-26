@@ -1,9 +1,9 @@
 import React from "react";
 import qs from "qs";
-import moment from 'moment';
+import moment from "moment";
 import { connect } from "dva";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
-import { Card, Spin, message, Row, Col, Form, Table } from "antd";
+import { Card, Spin, message, Form, Table, Button } from "antd";
 import DescriptionList from "../../components/DescriptionList";
 import styles from "./contract.less";
 import { ACTION_FLAG } from "../../constant/statusList";
@@ -58,7 +58,7 @@ export default class ContractDeatil extends React.Component {
       },
       {
         title: "操作描述",
-        width:"400px",
+        width: "400px",
         key: "change_message",
         dataIndex: "change_message"
       },
@@ -126,10 +126,26 @@ export default class ContractDeatil extends React.Component {
           <Card title="操作日志" style={{ marginTop: "30px" }}>
             <Table
               columns={columns}
-              dataSource={operation_records.map(item=>{return {...item,key:item.created_time}})}
+              dataSource={
+                operation_records
+                  ? operation_records.map(item => {
+                      return { ...item, key: item.created_time };
+                    })
+                  : []
+              }
               pagination={paginationOptions}
             />
           </Card>
+          <div style={{ textAlign: "center", marginTop: 20 }}>
+            <Button
+              type="primary"
+              size="large"
+              style={{ width: 120 }}
+              onClick={() => history.go(-1)}
+            >
+              返回
+            </Button>
+          </div>
         </Spin>
       </PageHeaderLayout>
     );
