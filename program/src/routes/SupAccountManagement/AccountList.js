@@ -15,22 +15,44 @@ import {
   Table,
   Pagination,
   Divider,
-  Cascader,
-  Badge,
+  message,
+  Modal,
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './index.less';
-import options, { getAreaBycode } from '../../utils/cascader-address-options';
 
-const company_type_status = {
-  supplier: '厂家',
-  integrator: '集成商',
-  agency: '代理商',
-  other: '其他',
-};
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+const PasswordModal = Form.create()((props) => {
+  const { form, handleModalVisible, handleSubmit, modalVisible } = props;
+  const { getFieldDecorator } = form;
+  return (
+    <Modal
+      visible={modalVisible}
+      onCancel={() => {
+        handleModalVisible(false);
+      }}
+      onOk={() => {
+        form.validateFields((err, value) => {
+          if (err) {
+            return; 
+          }
+          handleSubmit(value);
+        });
+      }}
+      title="重置密码"
+    >
+      <Form layout="inline" style={{ marginTop: 15 }}>
+        <FormItem label="新密码">
+          {getFieldDecorator('password', {
+            rules: [{ required: true, message: '请输入密码!' }],
+          })(<Input placeholder="请输入密码" />)}
+        </FormItem>
+      </Form>
+    </Modal>
+  );
+});
 @connect(({ supAccount, loading }) => ({
   supAccount,
   loading: loading.effects['supAccount/fetch'],
@@ -39,6 +61,8 @@ const { RangePicker } = DatePicker;
 export default class AccountList extends Component {
   state = {
     formExpand: false,
+    modalVisible: false,
+    rowSelected: {},
   };
   componentDidMount() {
     this.props.dispatch({
@@ -56,17 +80,14 @@ export default class AccountList extends Component {
     this.props.dispatch({
       type: 'supAccount/fetch',
       payload: {
-        start_time:
+        created_start:
           rangeValue && rangeValue.length
             ? rangeValue[0].format('YYYY-MM-DD')
             : null,
-        end_time:
+        created_end:
           rangeValue && rangeValue.length
             ? rangeValue[1].format('YYYY-MM-DD')
             : null,
-        province_id: district && district.length >= 1 ? district[0] : null,
-        city_id: district && district.length >= 2 ? district[1] : null,
-        district_id: district && district.length === 3 ? district[2] : null,
         ...others,
       },
     });
@@ -84,21 +105,16 @@ export default class AccountList extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const rangeValue = fieldsValue['range-picker'];
-      const { district, ...others } = fieldsValue;
       const values = {
-        ...others,
-        start_time:
+        ...fieldsValue,
+        created_start:
           rangeValue && rangeValue.length
             ? rangeValue[0].format('YYYY-MM-DD')
             : null,
-        end_time:
+        created_end:
           rangeValue && rangeValue.length
             ? rangeValue[1].format('YYYY-MM-DD')
             : null,
-        province_id: district && district.length >= 1 ? district[0] : null,
-        city_id: district && district.length >= 2 ? district[1] : null,
-        district_id: district && district.length === 3 ? district[2] : null,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
       };
       dispatch({
         type: 'supAccount/savePagination',
@@ -110,6 +126,40 @@ export default class AccountList extends Component {
       });
     });
   };
+  disableAccount = (id, is_active) => {
+    this.props.dispatch({
+      type: 'supAccount/disableAccount',
+      payload: { id, active_status: is_active },
+      callback: (success, msg) => {
+        if (success) {
+          message.success(msg);
+        } else {
+          message.error(msg);
+        }
+      },
+    });
+  };
+  handleModalVisible=(flag) => {
+    this.setState({ modalVisible: flag });
+  }
+  hanldePasswordChange= (row) => {
+    this.setState({ rowSelected: row });
+    this.handleModalVisible(true);
+  };
+  handleModalSubmit=({ password }) => {
+    const { rowSelected } = this.state;
+    this.props.dispatch({
+      type: 'supAccount/passwordChange',
+      payload: { id: rowSelected.id, password },
+      callback: (success, msg) => {
+        if (success) {
+          message.success(msg);
+        } else {
+          message.error(msg);
+        }
+      },
+    });
+  }
   render() {
     const { loading, supAccount } = this.props;
     const { supplierList, pagination } = supAccount;
@@ -135,19 +185,13 @@ export default class AccountList extends Component {
       },
       {
         title: '企业名称',
-        dataIndex: 'company',
-        key: 'company',
-      },
-      {
-        title: '企业性质',
-        dataIndex: 'company_type',
-        key: 'company_type',
-        render: text => company_type_status[text],
+        dataIndex: 'profile.company',
+        key: 'profile.company',
       },
       {
         title: '法人',
-        dataIndex: 'legal',
-        key: 'legal',
+        dataIndex: 'profile.legal',
+        key: 'profile.legal',
       },
       {
         title: '手机',
@@ -161,56 +205,31 @@ export default class AccountList extends Component {
         render: text => text || '-',
       },
       {
-        title: '地区',
-        dataIndex: 'district_id',
-        key: 'district_id',
-        render: text => getAreaBycode(`${text}`),
-      },
-      {
         title: '注册日期',
-        dataIndex: 'date_joined',
-        key: 'date_joined',
+        dataIndex: 'created_time',
+        key: 'created_time',
         render: text => moment.unix(text).format('YYYY-MM-DD'),
       },
       {
-        title: '审核状态',
-        dataIndex: 'audit_status',
-        key: 'audit_status',
-        render: text =>
-          (text === 1 ? (
-            <span>
-              <Badge status="success" />通过
-            </span>
-          ) : text === 0 ? (
-            <span>
-              <Badge status="default" />待审核
-            </span>
-          ) : (
-            <span>
-              <Badge status="error" />未通过
-            </span>
-          )),
+        title: '状态',
+        dataIndex: 'is_active',
+        key: 'is_active',
+        render: text => (text ? '启用' : '禁用'),
       },
       {
         title: '操作',
         key: 'option',
         render: row => (
           <Fragment>
-            <a
-              disabled={row.audit_status === 1}
-              onClick={() => {
-                this.props.dispatch(
-                  routerRedux.push({
-                    pathname: '/supAccountManagement/accountCheckDetail',
-                    search: `?id=${row.id}`,
-                  })
-                );
-              }}
-            >
-              审核
-            </a>
+            {row.is_active ? (
+              <a onClick={() => this.disableAccount(row.id, 0)}>禁用</a>
+            ) : (
+              <a onClick={() => this.disableAccount(row.id, 1)}>启用</a>
+            )}
             <Divider type="vertical" />
-            <a disabled={row.audit_status !== 1}>编辑</a>
+            <a>子账号管理</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.hanldePasswordChange(row)}>密码重置</a>
             <Divider type="vertical" />
             <a>查看</a>
           </Fragment>
@@ -240,16 +259,8 @@ export default class AccountList extends Component {
               </Col>
 
               <Col xll={4} md={8} sm={24}>
-                <FormItem label="企业性质">
-                  {getFieldDecorator('company_type')(
-                    <Select placeholder="请选择" style={{ width: '100%' }}>
-                      <Option value="">全部</Option>
-                      <Option value="supplier">厂家</Option>
-                      <Option value="agency">代理商</Option>
-                      <Option value="integrator">集成商</Option>
-                      <Option value="other">其他</Option>
-                    </Select>
-                  )}
+                <FormItem label="注册时间">
+                  {getFieldDecorator('range-picker')(<RangePicker />)}
                 </FormItem>
               </Col>
             </Row>
@@ -280,31 +291,13 @@ export default class AccountList extends Component {
                 </Row>
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                   <Col xll={4} md={8} sm={24}>
-                    <FormItem label="审核状态">
-                      {getFieldDecorator('audit_status')(
+                    <FormItem label="状态">
+                      {getFieldDecorator('active_status')(
                         <Select placeholder="请选择" style={{ width: '100%' }}>
-                          <Option value="">全部</Option>
-                          <Option value="0">待审核</Option>
-                          <Option value="1">通过</Option>
-                          <Option value="2">未通过</Option>
+                          <Option value="0">禁用</Option>
+                          <Option value="1">启用</Option>
                         </Select>
                       )}
-                    </FormItem>
-                  </Col>
-                  <Col xll={4} md={8} sm={24}>
-                    <FormItem label="地区">
-                      {getFieldDecorator('district')(
-                        <Cascader
-                          options={options}
-                          changeOnSelect
-                          placeholder="请选择"
-                        />
-                      )}
-                    </FormItem>
-                  </Col>
-                  <Col xll={4} md={8} sm={24}>
-                    <FormItem label="注册时间">
-                      {getFieldDecorator('range-picker')(<RangePicker />)}
                     </FormItem>
                   </Col>
                 </Row>
@@ -359,8 +352,12 @@ export default class AccountList extends Component {
           />
           <Pagination {...paginationProps} />
         </Card>
+        <PasswordModal
+          handleSubmit={this.handleModalSubmit}
+          handleModalVisible={this.handleModalVisible}
+          modalVisible={this.state.modalVisible}
+        />
       </PageHeaderLayout>
     );
   }
 }
-

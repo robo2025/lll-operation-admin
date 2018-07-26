@@ -5,6 +5,7 @@ import { Card, Form, Spin } from 'antd';
 import { getAreaBycode } from '../../utils/cascader-address-options';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { FILE_SERVER } from '../../constant/config';
+import RecordTable from './RecordTable';
 
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -28,15 +29,15 @@ const COMPANY_TYPE = {
   other: '其他',
 };
 
-@connect(({ supAccount, loading }) => ({
-  profile: supAccount.profile,
-  loading: loading.effects['supAccount/fetchDetail'],
+@connect(({ supAudit, loading }) => ({
+  profile: supAudit.profile,
+  loading: loading.effects['supAudit/fetchDetail'],
 }))
 export default class AccountCheckDetail extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'supAccount/fetchDetail',
+      type: 'supAudit/fetchDetail',
       payload: location.href.split('=').pop(),
     });
   }
@@ -134,6 +135,7 @@ export default class AccountCheckDetail extends Component {
             </FormItem>
           ) : null}
         </Card>
+        <RecordTable dataSource={operation_records} />
       </PageHeaderLayout>
     );
   }

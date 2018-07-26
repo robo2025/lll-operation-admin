@@ -1,7 +1,7 @@
-import { querySuppliers, queryDetail, disableAccount, passwordChange } from '../services/supAccount';
+import { querySuppliers, queryDetail, accountAudit } from '../services/supAudit';
 
 export default {
-  namespace: 'supAccount',
+  namespace: 'supAudit',
 
   state: {
     supplierList: [],
@@ -12,7 +12,7 @@ export default {
   effects: {
     *fetch({ payload }, { call, put, select }) {
       const pagination = yield select((state) => {
-        return state.supAccount.pagination;
+        return state.supAudit.pagination;
       });
       const { current, pageSize } = pagination;
       const params = {
@@ -62,19 +62,8 @@ export default {
         callback(false, msg);
       }
     },
-    *disableAccount({ payload, callback }, { call, put }) {
-      const response = yield call(disableAccount, { ...payload });
-      const { rescode, msg } = response;
-      if (rescode === '10000') {
-        if (callback) {
-          callback(true, msg);
-        }
-      } else if (callback) {
-        callback(false, msg);
-      }
-    },
-    *passwordChange({ payload, callback }, { call, put }) {
-      const response = yield call(passwordChange, { ...payload });
+    *accountAudit({ payload, callback }, { call, put }) {
+      const response = yield call(accountAudit, { ...payload });
       const { rescode, msg } = response;
       if (rescode === '10000') {
         if (callback) {

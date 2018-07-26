@@ -31,9 +31,9 @@ const company_type_status = {
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-@connect(({ supAccount, loading }) => ({
-  supAccount,
-  loading: loading.effects['supAccount/fetch'],
+@connect(({ supAudit, loading }) => ({
+  supAudit,
+  loading: loading.effects['supAudit/fetch'],
 }))
 @Form.create()
 class AccountCheckList extends React.Component {
@@ -42,7 +42,7 @@ class AccountCheckList extends React.Component {
   };
   componentDidMount() {
     this.props.dispatch({
-      type: 'supAccount/fetch',
+      type: 'supAudit/fetch',
     });
   }
   onPageChange = (page, pageSize) => {
@@ -50,11 +50,11 @@ class AccountCheckList extends React.Component {
     const rangeValue = fieldsValue['range-picker'];
     const { district, ...others } = fieldsValue;
     this.props.dispatch({
-      type: 'supAccount/savePagination',
+      type: 'supAudit/savePagination',
       payload: { current: page, pageSize },
     });
     this.props.dispatch({
-      type: 'supAccount/fetch',
+      type: 'supAudit/fetch',
       payload: {
         start_time:
           rangeValue && rangeValue.length
@@ -75,12 +75,12 @@ class AccountCheckList extends React.Component {
     const { dispatch, form } = this.props;
     form.resetFields();
     dispatch({
-      type: 'supAccount/fetch',
+      type: 'supAudit/fetch',
     });
   };
   handleSearch = (e) => {
     e.preventDefault();
-    const { dispatch, form, supAccount } = this.props;
+    const { dispatch, form, supAudit } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const rangeValue = fieldsValue['range-picker'];
@@ -101,18 +101,18 @@ class AccountCheckList extends React.Component {
         updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
       };
       dispatch({
-        type: 'supAccount/savePagination',
-        payload: { ...supAccount.pagination, current: 1 },
+        type: 'supAudit/savePagination',
+        payload: { ...supAudit.pagination, current: 1 },
       });
       dispatch({
-        type: 'supAccount/fetch',
+        type: 'supAudit/fetch',
         payload: values,
       });
     });
   };
   render() {
-    const { loading, supAccount } = this.props;
-    const { supplierList, pagination } = supAccount;
+    const { loading, supAudit } = this.props;
+    const { supplierList, pagination } = supAudit;
     const { getFieldDecorator } = this.props.form;
     const paginationProps = {
       ...pagination,

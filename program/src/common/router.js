@@ -194,23 +194,24 @@ export const getRouterData = (app) => {
             component: dynamicWrapper(app, ['sysAccount'], () => import('../routes/SysAccountManagement/Positions')),
         },
         '/supAccountManagement/accountCheckList': {
-            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountCheckList')),
+            component: dynamicWrapper(app, ['supAudit'], () => import('../routes/SupAccountManagement/AccountCheckList')),
         },
         '/supAccountManagement/accountCheck': {
-            component: dynamicWrapper(app, ['supAccount', 'upload'], () => import('../routes/SupAccountManagement/AccountCheck')),
+            component: dynamicWrapper(app, ['supAudit', 'upload'], () => import('../routes/SupAccountManagement/AccountCheck')),
             name: '供应商账号审核',
         },
         '/supAccountManagement/AccountCheckModify': {
-            component: dynamicWrapper(app, ['supAccount', 'upload'], () => import('../routes/SupAccountManagement/AccountCheckModify')),
+            component: dynamicWrapper(app, ['supAudit', 'upload'], () => import('../routes/SupAccountManagement/AccountCheckModify')),
             name: '供应商账号编辑',
         },
         '/supAccountManagement/accountCheckDetail': {
-            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountCheckDetail')),
+            component: dynamicWrapper(app, ['supAudit'], () => import('../routes/SupAccountManagement/AccountCheckDetail')),
             name: '供应商账号审核详情',
         },
-        // '/supAccountManagement/accountList': {
-        //     component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/Positions')),
-        // },
+        '/supAccountManagement/accountList': {
+            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountList')),
+            name: '供应商主账号列表',
+        },
         '/contractManagement/contractList': {
             component: dynamicWrapper(app, ['contract'], () => import('../routes/ContractManagement/ContractList')),
         },

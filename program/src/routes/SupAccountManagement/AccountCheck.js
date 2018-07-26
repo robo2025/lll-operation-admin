@@ -1,13 +1,16 @@
 import React from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Modal, Radio, Input, Form, message } from 'antd';
+import { Modal, Radio, Input, Form, message, Spin } from 'antd';
 import EditableProfile from './EditableProfile';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import RecordTable from './RecordTable';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
-@connect()
+@connect(({ supAudit }) => ({
+  profile: supAudit.profile,
+}))
 @Form.create()
 class AccountCheck extends React.Component {
   state = {
@@ -30,7 +33,7 @@ class AccountCheck extends React.Component {
     form.validateFields();
     const { reason } = form.getFieldsValue();
     this.props.dispatch({
-      type: 'supAccount/accountAudit',
+      type: 'supAudit/accountAudit',
       payload: {
         formData,
         id: location.href.split('=').pop(),
@@ -53,6 +56,7 @@ class AccountCheck extends React.Component {
     this.setState({ formData });
   };
   render() {
+    const { operation_records } = this.props.profile || [];
     const { getFieldDecorator } = this.props.form;
     return (
       <PageHeaderLayout title="供应商账号审核">
@@ -94,6 +98,11 @@ class AccountCheck extends React.Component {
             ) : null}
           </div>
         </Modal>
+        <RecordTable
+          dataSource={operation_records ? operation_records.map((item) => {
+            return { ...item, key: item.created_time };
+          }) : []}
+        />
       </PageHeaderLayout>
     );
   }

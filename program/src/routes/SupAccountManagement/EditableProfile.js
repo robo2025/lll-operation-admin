@@ -30,10 +30,10 @@ export const IMAGE_TYPES = ['jpg', 'png', 'gif', 'jpeg'];
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
 
-@connect(({ upload, supAccount, loading }) => ({
+@connect(({ upload, supAudit, loading }) => ({
   upload,
-  profile: supAccount.profile,
-  loading: loading.effects['supAccount/fetchDetail'],
+  profile: supAudit.profile,
+  loading: loading.effects['supAudit/fetchDetail'],
 }))
 @Form.create({
   mapPropsToFields(props) {
@@ -128,7 +128,7 @@ export default class EditableProfile extends Component {
       type: 'upload/fetch',
     });
     dispatch({
-      type: 'supAccount/fetchDetail',
+      type: 'supAudit/fetchDetail',
       payload: location.href.split('=').pop(),
       callback: (success, data) => {
         if (success) {
