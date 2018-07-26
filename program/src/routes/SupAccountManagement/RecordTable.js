@@ -33,7 +33,6 @@ export default class RecordTable extends Component {
                 title: '执行描述',
                 dataIndex: 'change_message',
                 key: 'change_message',
-                render: '', 
               },
               {
                 title: '备注',
