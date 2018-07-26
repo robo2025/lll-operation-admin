@@ -14,7 +14,7 @@ export async function querySuppliers(params) {
   });
 }
 export async function queryDetail({ id }) {
-  return lyRequest(`${USERS_SERVER}/operation/audit/${id}`);
+  return lyRequest(`${USERS_SERVER}/operation/suppliers/${id}`);
 }
 
 export async function disableAccount({ id, active_status }) {
@@ -28,4 +28,7 @@ export async function passwordChange({ id, password }) {
     method: 'put',
     data: { password: sha256(password) },
   });
+}
+export async function fetchSubAccounts({ id }) {
+  return lyRequest(`${USERS_SERVER}/operation/suppliers/${id}/subusers`);
 }

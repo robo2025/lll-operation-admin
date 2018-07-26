@@ -24,31 +24,50 @@ import styles from './index.less';
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+
 const PasswordModal = Form.create()((props) => {
-  const { form, handleModalVisible, handleSubmit, modalVisible } = props;
+  const { form, handleModalVisible, handleSubmit, modalVisible, row } = props;
   const { getFieldDecorator } = form;
   return (
     <Modal
       visible={modalVisible}
       onCancel={() => {
+        form.resetFields();
         handleModalVisible(false);
       }}
       onOk={() => {
         form.validateFields((err, value) => {
           if (err) {
-            return; 
+            return;
           }
+          form.resetFields();
           handleSubmit(value);
         });
       }}
       title="重置密码"
     >
       <Form layout="inline" style={{ marginTop: 15 }}>
-        <FormItem label="新密码">
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: '请输入密码!' }],
-          })(<Input placeholder="请输入密码" />)}
-        </FormItem>
+        <div style={{ textAlign: 'center' }}>
+          <FormItem label="账号">{row.username}</FormItem>
+          <FormItem label="企业名称">
+            {row.profile ? row.profile.company : ''}
+          </FormItem>
+        </div>
+        <Divider />
+        <div style={{ textAlign: 'center' }}>
+          <FormItem label="新密码">
+            {getFieldDecorator('password', {
+              rules: [
+                {
+                  required: true,
+                  min: 6,
+                  max: 12,
+                  message: '密码应在6-12位数之间!',
+                },
+              ],
+            })(<Input type="password" placeholder="请输入密码" />)}
+          </FormItem>
+        </div>
       </Form>
     </Modal>
   );
@@ -139,14 +158,14 @@ export default class AccountList extends Component {
       },
     });
   };
-  handleModalVisible=(flag) => {
+  handleModalVisible = (flag) => {
     this.setState({ modalVisible: flag });
-  }
-  hanldePasswordChange= (row) => {
+  };
+  hanldePasswordChange = (row) => {
     this.setState({ rowSelected: row });
     this.handleModalVisible(true);
   };
-  handleModalSubmit=({ password }) => {
+  handleModalSubmit = ({ password }) => {
     const { rowSelected } = this.state;
     this.props.dispatch({
       type: 'supAccount/passwordChange',
@@ -160,7 +179,7 @@ export default class AccountList extends Component {
         }
       },
     });
-  }
+  };
   render() {
     const { loading, supAccount } = this.props;
     const { supplierList, pagination } = supAccount;
@@ -232,7 +251,18 @@ export default class AccountList extends Component {
             <Divider type="vertical" />
             <a onClick={() => this.hanldePasswordChange(row)}>密码重置</a>
             <Divider type="vertical" />
-            <a>查看</a>
+            <a
+              onClick={() =>
+                this.props.dispatch(
+                  routerRedux.push({
+                    pathname: '/supAccountManagement/accountListDetail',
+                    search: `?id=${row.id}`,
+                  })
+                )
+              }
+            >
+              查看
+            </a>
           </Fragment>
         ),
       },
@@ -357,6 +387,7 @@ export default class AccountList extends Component {
           handleSubmit={this.handleModalSubmit}
           handleModalVisible={this.handleModalVisible}
           modalVisible={this.state.modalVisible}
+          row={this.state.rowSelected}
         />
       </PageHeaderLayout>
     );

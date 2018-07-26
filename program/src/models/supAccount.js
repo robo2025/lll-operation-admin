@@ -1,10 +1,17 @@
-import { querySuppliers, queryDetail, disableAccount, passwordChange } from '../services/supAccount';
+import {
+  querySuppliers,
+  queryDetail,
+  disableAccount,
+  passwordChange,
+  fetchSubAccounts,
+} from '../services/supAccount';
 
 export default {
   namespace: 'supAccount',
 
   state: {
     supplierList: [],
+    subAccountList: [],
     profile: {},
     pagination: { current: 1, pageSize: 10 },
   },
@@ -84,7 +91,21 @@ export default {
         callback(false, msg);
       }
     },
-    
+    *fetchSubAccounts({ payload, callback }, { call, put }) {
+      const response = yield call(fetchSubAccounts, { ...payload });
+      const { rescode, data, msg } = response;
+      yield put({
+        type: 'saveSubAccounts',
+        payload: data,
+      });
+      if (rescode === '10000') {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+        callback(false, msg);
+      }
+    },
   },
 
   reducers: {
@@ -104,6 +125,12 @@ export default {
       return {
         ...state,
         profile: payload,
+      };
+    },
+    saveSubAccounts(state, { payload }) {
+      return {
+        ...state,
+        subAccountList: payload,
       };
     },
   },
