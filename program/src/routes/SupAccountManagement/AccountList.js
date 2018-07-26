@@ -154,6 +154,7 @@ export default class AccountList extends Component {
       callback: (success, msg) => {
         if (success) {
           message.success(msg);
+          this.handleModalVisible(false);
         } else {
           message.error(msg);
         }

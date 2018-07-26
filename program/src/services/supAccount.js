@@ -1,6 +1,6 @@
+import { sha256 } from 'js-sha256';
 import lyRequest from '../utils/lyRequest';
 import { USERS_SERVER } from '../constant/config';
-import { sha256 } from 'js-sha256';
 
 
 export async function querySuppliers(params) {
