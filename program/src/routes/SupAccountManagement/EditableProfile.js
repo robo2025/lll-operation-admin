@@ -18,10 +18,7 @@ import {
 } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { QINIU_SERVER, FILE_SERVER } from '../../constant/config';
-import {
-  checkFile,
-  getFileSuffix,
-} from '../../utils/tools';
+import { checkFile, getFileSuffix } from '../../utils/tools';
 import options from '../../utils/cascader-address-options';
 
 import styles from './index.less';
@@ -620,52 +617,28 @@ export default class EditableProfile extends Component {
                   ],
                 })(
                   <div>
-                    {this.state.agency.length ? (
-                      <Fragment>
-                        <img
-                          src={this.state.agency[0].url}
-                          alt="代理商相关证书"
-                          style={{
-                            width: 100,
-                            height: 100,
-                            borderRadius: '3%',
-                          }}
-                        />
-                        <a
-                          style={{ marginLeft: 30 }}
-                          onClick={() => {
-                            Modal.confirm({
-                              content: '确认删除这张图片？',
-                              onOk: () => this.setState({ agency: [] }),
-                            });
-                          }}
-                        >
-                          删除
-                        </a>
-                      </Fragment>
-                    ) : (
-                      <Upload
-                        name="file"
-                        action={QINIU_SERVER}
-                        listType="picture-card"
-                        className="avatar-uploader"
-                        beforeUpload={currFile =>
-                          this.handleBeforeUpload('agency', currFile)
-                        }
-                        onChange={({ fileList }) => {
-                          this.handleUploadChange('agency', fileList);
-                        }}
-                        onPreview={this.handlePreview}
-                        data={{
-                          token: upload.upload_token,
-                          key: `supplier/qualification/images/${
-                            file.uid
-                          }.${getFileSuffix(file.name)}`,
-                        }}
-                      >
-                        {agency && agency.length >= 1 ? null : uploadButton}
-                      </Upload>
-                    )}
+                    <Upload
+                      name="file"
+                      action={QINIU_SERVER}
+                      listType="picture-card"
+                      fileList={this.state.agency}
+                      className="avatar-uploader"
+                      beforeUpload={currFile =>
+                        this.handleBeforeUpload('agency', currFile)
+                      }
+                      onChange={({ fileList }) => {
+                        this.handleUploadChange('agency', fileList);
+                      }}
+                      onPreview={this.handlePreview}
+                      data={{
+                        token: upload.upload_token,
+                        key: `supplier/qualification/images/${
+                          file.uid
+                        }.${getFileSuffix(file.name)}`,
+                      }}
+                    >
+                      {agency && agency.length >= 1 ? null : uploadButton}
+                    </Upload>
 
                     <FormItem label="有效期">
                       {getFieldDecorator('agency_date', {

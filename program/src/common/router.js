@@ -213,8 +213,12 @@ export const getRouterData = (app) => {
             name: '供应商主账号列表',
         },
         '/supAccountManagement/accountListDetail': {
-            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountListDetail')),
+            component: dynamicWrapper(app, ['supAccount', 'log'], () => import('../routes/SupAccountManagement/AccountListDetail')),
             name: '供应商主账号详情',
+        },
+        '/supAccountManagement/subAccountList': {
+            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/SubAccountList')),
+            name: '供应商子账号列表',
         },
         '/contractManagement/contractList': {
             component: dynamicWrapper(app, ['contract'], () => import('../routes/ContractManagement/ContractList')),

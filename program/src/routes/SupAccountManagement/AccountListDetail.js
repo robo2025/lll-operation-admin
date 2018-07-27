@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Badge, Spin } from 'antd';
+import { Card, Badge, Spin, Table } from 'antd';
 import DescriptionList from '../../components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { getAreaBycode } from '../../utils/cascader-address-options';
-import SubAccountList from './SubAccountList';
+import LogTable from '../../components/LogTable';
 
 const { Description } = DescriptionList;
 const COMPANY_TYPE = {
@@ -26,7 +26,58 @@ const ACTIVE_STATUS = {
     </span>
   ),
 };
-
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'id',
+    render: (text, record, index) => index + 1,
+  },
+  {
+    title: '子帐号帐号',
+    dataIndex: 'username',
+    key: 'username',
+  },
+  {
+    title: '姓名',
+    dataIndex: 'profile.realname',
+    key: 'profile.realname',
+  },
+  {
+    title: '联系方式',
+    dataIndex: 'profile.telphone',
+    key: 'profile.telphone',
+    render: text => text || '-',
+  },
+  {
+    title: '岗位',
+    dataIndex: 'profile.position',
+    key: 'profile.position',
+    render: text => text || '-',
+  },
+  {
+    title: '创建日期',
+    dataIndex: 'created_time',
+    key: 'created_time',
+    render: text => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
+  },
+  {
+    title: '状态',
+    dataIndex: 'is_active',
+    key: 'is_active',
+    render: text => ACTIVE_STATUS[text],
+    filters: [
+      {
+        text: '启用',
+        value: '1',
+      },
+      {
+        text: '禁用',
+        value: '0',
+      },
+    ],
+    onFilter: (value, record) => `${record.is_active}` === value, // 类型不同
+  },
+];
 @connect(({ supAccount, loading }) => ({
   profile: supAccount.profile,
   subAccountList: supAccount.subAccountList,
@@ -80,15 +131,21 @@ export default class AccountListDetail extends Component {
             </Description>
           </DescriptionList>
         </Card>
-        <SubAccountList
-          dataSource={
-            subAccountList
-              ? subAccountList.map((item) => {
-                  return { ...item, key: item.created_time };
-                })
-              : []
-          }
-        />
+        <Card title="子帐号信息" style={{ marginTop: 24 }}>
+          <Table
+            columns={columns}
+            dataSource={
+              subAccountList
+                ? subAccountList.map((item) => {
+                    return { ...item, key: item.created_time };
+                  })
+                : []
+            }
+          />
+        </Card>
+        <Card title="操作记录" style={{ marginTop: 24 }}>
+          <LogTable object_id={profile.id} module="auth_user" />
+        </Card>
       </PageHeaderLayout>
     );
   }
