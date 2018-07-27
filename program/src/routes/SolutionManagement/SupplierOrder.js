@@ -1,126 +1,126 @@
-import React, { Fragment } from "react";
-import moment from "moment";
-import { Card, Table } from "antd";
-import DescriptionList from "../../components/DescriptionList";
-import { getAreaBycode } from "../../utils/cascader-address-options";
+import React, { Fragment } from 'react';
+import moment from 'moment';
+import { Card, Table } from 'antd';
+import DescriptionList from '../../components/DescriptionList';
+import { getAreaBycode } from '../../utils/cascader-address-options';
 
 const { Description } = DescriptionList;
 
 const coreDeviceTableColumns = [
   {
-    title: "组成部分",
-    dataIndex: "device_component",
-    key: "device_component"
+    title: '组成部分',
+    dataIndex: 'device_component',
+    key: 'device_component',
   },
   {
-    title: "商品名称",
-    dataIndex: "device_name",
-    key: "device_name"
+    title: '商品名称',
+    dataIndex: 'device_name',
+    key: 'device_name',
   },
   {
-    title: "型号",
-    dataIndex: "device_model",
-    key: "device_model"
+    title: '型号',
+    dataIndex: 'device_model',
+    key: 'device_model',
   },
   {
-    title: "品牌",
-    dataIndex: "brand_name",
-    key: "brand_name"
+    title: '品牌',
+    dataIndex: 'brand_name',
+    key: 'brand_name',
   },
   {
-    title: "数量",
-    dataIndex: "device_num",
-    key: "device_num"
+    title: '数量',
+    dataIndex: 'device_num',
+    key: 'device_num',
   },
   {
-    title: "单价（元）",
-    dataIndex: "device_price",
-    key: "device_price"
+    title: '单价（元）',
+    dataIndex: 'device_price',
+    key: 'device_price',
   },
   {
-    title: "小计（元）",
-    key: "total_price",
-    render: row => <span>{row.device_num * row.device_price}</span>
+    title: '小计（元）',
+    key: 'total_price',
+    render: row => <span>{row.device_num * row.device_price}</span>,
   },
   {
-    title: "备注",
-    key: "device_note",
-    dataIndex: "device_note",
-    render: text => (text === "" ? "无" : text)
-  }
+    title: '备注',
+    key: 'device_note',
+    dataIndex: 'device_note',
+    render: text => (text === '' ? '无' : text),
+  },
 ];
 const adiDeviceTableColumns = [
   {
-    title: "所属类型",
-    dataIndex: "device_component",
-    key: "device_component"
+    title: '所属类型',
+    dataIndex: 'device_component',
+    key: 'device_component',
   },
   {
-    title: "商品名称",
-    dataIndex: "device_name",
-    key: "device_name"
+    title: '商品名称',
+    dataIndex: 'device_name',
+    key: 'device_name',
   },
   {
-    title: "型号",
-    dataIndex: "device_model",
-    key: "device_model"
+    title: '型号',
+    dataIndex: 'device_model',
+    key: 'device_model',
   },
   {
-    title: "品牌",
-    dataIndex: "brand_name",
-    key: "brand_name"
+    title: '品牌',
+    dataIndex: 'brand_name',
+    key: 'brand_name',
   },
   {
-    title: "数量",
-    dataIndex: "device_num",
-    key: "device_num"
+    title: '数量',
+    dataIndex: 'device_num',
+    key: 'device_num',
   },
   {
-    title: "单价（元）",
-    dataIndex: "device_price",
-    key: "device_price"
+    title: '单价（元）',
+    dataIndex: 'device_price',
+    key: 'device_price',
   },
   {
-    title: "小计（元）",
-    key: "total_price",
-    render: row => <span>{row.device_num * row.device_price}</span>
+    title: '小计（元）',
+    key: 'total_price',
+    render: row => <span>{row.device_num * row.device_price}</span>,
   },
   {
-    title: "备注",
-    key: "device_note",
-    dataIndex: "device_note",
-    render: text => (text === "" ? "无" : text)
-  }
+    title: '备注',
+    key: 'device_note',
+    dataIndex: 'device_note',
+    render: text => (text === '' ? '无' : text),
+  },
 ];
 const offerOperationColumns = [
   {
-    title: "序号",
-    key: "idx",
-    render: (record, text, index) => index + 1
+    title: '序号',
+    key: 'idx',
+    render: (record, text, index) => index + 1,
   },
   {
-    title: "角色",
+    title: '角色',
     width: 110,
-    key: "operator",
-    dataIndex: "operator"
+    key: 'operator',
+    dataIndex: 'operator',
   },
   {
-    title: "操作项目",
+    title: '操作项目',
     width: 110,
-    key: "operating_part",
-    dataIndex: "operating_part"
+    key: 'operating_part',
+    dataIndex: 'operating_part',
   },
   {
-    title: "执行动作",
+    title: '执行动作',
     width: 110,
-    key: "operating_type",
-    dataIndex: "operating_type"
+    key: 'operating_type',
+    dataIndex: 'operating_type',
   },
   {
-    title: "操作内容",
-    key: "content",
-    dataIndex: "content"
-  }
+    title: '操作内容',
+    key: 'content',
+    dataIndex: 'content',
+  },
 ];
 class SupplierOrder extends React.Component {
   render() {
@@ -133,19 +133,19 @@ class SupplierOrder extends React.Component {
       sln_supplier_info,
       welding_tech_param,
       sln_support,
-      sln_device
+      sln_device,
     } = supplier;
     const { sewage_info } = customer;
     const coreDeviceTableData = sln_device.filter(
-      item => item.device_type === "核心设备"
+      item => item.device_type === '核心设备'
     );
     const aidDeviceTableData = sln_device.filter(
-      item => item.device_type === "辅助设备"
+      item => item.device_type === '辅助设备'
     );
     const offerOperationPagination = {
       showSizeChanger: true,
       showQuickJumper: true,
-      total: offerOperationList ? offerOperationList.length : 0
+      total: offerOperationList ? offerOperationList.length : 0,
     };
     return (
       <Fragment>
@@ -165,7 +165,7 @@ class SupplierOrder extends React.Component {
           <Card title="核心设备清单" style={{ marginTop: 30 }}>
             <Table
               columns={coreDeviceTableColumns}
-              dataSource={coreDeviceTableData.map(item => {
+              dataSource={coreDeviceTableData.map((item) => {
                 return { ...item, key: item.device_id };
               })}
               pagination={false}
@@ -185,7 +185,7 @@ class SupplierOrder extends React.Component {
           <Card title="辅助设备" style={{ marginTop: 30 }}>
             <Table
               columns={adiDeviceTableColumns}
-              dataSource={aidDeviceTableData.map(item => {
+              dataSource={aidDeviceTableData.map((item) => {
                 return { ...item, key: item.device_id };
               })}
               pagination={false}
@@ -224,7 +224,7 @@ class SupplierOrder extends React.Component {
                   <Description term={item.name} key={index}>
                     ￥{item.price}元<span style={{ marginLeft: 35 }}>
                       备注：{item.note}
-                    </span>
+                                  </span>
                   </Description>
                 );
               })}
@@ -259,7 +259,7 @@ class SupplierOrder extends React.Component {
                             : null}
                     </DescriptionList>
                 </Card> */}
-        {customer.sln_basic_info.sln_status === "M" ? (
+        {customer.sln_basic_info.sln_status === 'M' ? (
           <Card style={{ marginTop: 30 }} title="报价信息">
             <DescriptionList size="small" col="3">
               <Description term="付款比例">
@@ -275,7 +275,7 @@ class SupplierOrder extends React.Component {
               <Description term="报价有效期">
                 {moment
                   .unix(sln_supplier_info.expired_date)
-                  .format("YYYY年MM月DD日")}
+                  .format('YYYY年MM月DD日')}
               </Description>
               <Description term="方案发货期">
                 {sln_supplier_info.delivery_date}
@@ -293,11 +293,19 @@ class SupplierOrder extends React.Component {
           <Card style={{ marginTop: 30 }} title="报价操作记录">
             <Table
               columns={offerOperationColumns}
-              dataSource={offerOperationList.map(item => {
-                return { ...item, key: item.add_time };
+              dataSource={offerOperationList.map((item, index) => {
+                return { ...item, key: index };
               })}
               pagination={offerOperationPagination}
             />
+            <div style={{ textAlign: 'right' }}>
+              <span>
+                操作时间：
+                {moment(offerOperationList[0].add_time * 1000).format(
+                  'YYYY-MM-DD HH:mm:ss'
+                )}
+              </span>
+            </div>
           </Card>
         ) : null}
       </Fragment>
