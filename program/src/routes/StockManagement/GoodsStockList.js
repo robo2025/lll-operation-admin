@@ -2,18 +2,19 @@ import React from 'react';
 import { connect } from 'dva';
 import qs from 'qs';
 import moment from 'moment';
-import PageHeaderLayout from "../../layouts/PageHeaderLayout";
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { Form, Row, Col, Input, Button, Icon, Card, Select, Modal, DatePicker } from 'antd';
-import StockListTable from "../../components/StockManagement/StockListTable";
-import GoodStockRecordTable from "../../components/StockManagement/GoodStockRecordTable";
-import { STOCK_OPERATION_STATUS } from "../../constant/statusList"
-import styles from "./stockManagement.less";
+import StockListTable from '../../components/StockManagement/StockListTable';
+import GoodStockRecordTable from '../../components/StockManagement/GoodStockRecordTable';
+import { STOCK_OPERATION_STATUS } from '../../constant/statusList';
+import styles from './stockManagement.less';
+
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
 @Form.create()
 @connect(({ stock, loading }) => ({
-    stock, loading: loading.effects['stock/fetch'], stockRecordLoading: loading.effects['stock/fetchRecord']
+    stock, loading: loading.effects['stock/fetch'], stockRecordLoading: loading.effects['stock/fetchRecord'],
 }))
 export default class GoodsStockList extends React.Component {
     constructor(props) {
@@ -25,36 +26,36 @@ export default class GoodsStockList extends React.Component {
             recordValues: {},
             viewRecordModalShow: false,
             recordInfo: {},
-            recordArgs: { page: 1 }
+            recordArgs: { page: 1 },
         };
     }
     componentDidMount() {
         const { dispatch } = this.props;
         const { args } = this.state;
         dispatch({
-            type: "stock/fetch",
+            type: 'stock/fetch',
             offset: (args.page - 1) * args.pageSize,
-            limit: args.pageSize
-        })
+            limit: args.pageSize,
+        });
     }
-    stockListTabelChange = (pagination, filter, sorter) => {
+    onStockListTabelChange = (pagination, filter, sorter) => {
         const { dispatch, history } = this.props;
         const { searchValues } = this.state;
         this.setState({
             args: {
                 page: pagination.current,
-                pageSize: pagination.pageSize
-            }
-        })
+                pageSize: pagination.pageSize,
+            },
+        });
         history.replace({
-            search: `?page=${pagination.current}&pageSize=${pagination.pageSize}`
-        })
+            search: `?page=${pagination.current}&pageSize=${pagination.pageSize}`,
+        });
         dispatch({
-            type: "stock/fetch",
+            type: 'stock/fetch',
             offset: pagination.pageSize * (pagination.current - 1),
             limit: pagination.pageSize,
-            params: searchValues
-        })
+            params: searchValues,
+        });
     }
     handleSearch = (e) => {
         e.preventDefault();
@@ -63,7 +64,7 @@ export default class GoodsStockList extends React.Component {
         form.validateFields((err, fieldsValue) => {
             if (err) return;
             const values = {};
-            for (var key in fieldsValue) {
+            for (const key in fieldsValue) {
                 if (fieldsValue[key]) {
                     values[key] = fieldsValue[key];
                 }
@@ -72,19 +73,19 @@ export default class GoodsStockList extends React.Component {
                 searchValues: values,
                 args: {
                     page: 1,
-                    pageSize: args.pageSize
-                }
-            })
+                    pageSize: args.pageSize,
+                },
+            });
             history.replace({
-                search: `?page=1&pageSize=${args.pageSize}`
-            })
+                search: `?page=1&pageSize=${args.pageSize}`,
+            });
             dispatch({
-                type: "stock/fetch",
+                type: 'stock/fetch',
                 offset: 0,
                 limit: args.pageSize,
-                params: values
-            })
-        })
+                params: values,
+            });
+        });
     }
     handleFormReset = () => {
         const { form, history, dispatch } = this.props;
@@ -93,25 +94,25 @@ export default class GoodsStockList extends React.Component {
         this.setState({
             args: {
                 page: 1,
-                pageSize: args.pageSize
+                pageSize: args.pageSize,
             },
-            searchValues: {}
-        })
+            searchValues: {},
+        });
         history.replace({
-            search: `?page=1&pageSize=${args.pageSize}`
-        })
+            search: `?page=1&pageSize=${args.pageSize}`,
+        });
         dispatch({
-            type: "stock/fetch",
+            type: 'stock/fetch',
             offset: 0,
-            limit: args.pageSize
-        })
+            limit: args.pageSize,
+        });
     }
     toggleForm = () => {
         this.setState({
             expandForm: !this.state.expandForm,
         });
     }
-    renderSimpleForm() {
+    onRenderSimpleForm() {
         const { getFieldDecorator } = this.props.form;
         return (
             <Form onSubmit={this.handleSearch} layout="inline">
@@ -148,9 +149,9 @@ export default class GoodsStockList extends React.Component {
                     </span>
                 </div>
             </Form>
-        )
+        );
     }
-    renderAdvancedForm() {
+    onRenderAdvancedForm() {
         const { getFieldDecorator } = this.props.form;
         return (
             <Form onSubmit={this.handleSearch} layout="inline">
@@ -244,10 +245,10 @@ export default class GoodsStockList extends React.Component {
                     </span>
                 </div>
             </Form>
-        )
+        );
     }
     renderForm() {
-        return this.state.expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
+        return this.state.expandForm ? this.onRenderAdvancedForm() : this.onRenderSimpleForm();
     }
     // 查看库存记录
     viewRecord = (values) => {
@@ -255,14 +256,14 @@ export default class GoodsStockList extends React.Component {
         this.setState({
             viewRecordModalShow: true,
             recordInfo: values,
-            recordArgs: { page: 1 }
-        })
+            recordArgs: { page: 1 },
+        });
         dispatch({
-            type: "stock/fetchRecord",
+            type: 'stock/fetchRecord',
             params: {
                 gno: values.gno,
-            }
-        })
+            },
+        });
     }
     // 关闭库存记录框
     handleCancel = () => {
@@ -271,12 +272,12 @@ export default class GoodsStockList extends React.Component {
         this.setState({
             viewRecordModalShow: false,
             recordArgs: {
-                page: 1
+                page: 1,
             },
             recordInfo: {},
-        })
+        });
     }
-    //库存记录搜索
+    // 库存记录搜索
     handleRecordSearch = (e) => {
         e.preventDefault();
         const { form, dispatch } = this.props;
@@ -290,17 +291,16 @@ export default class GoodsStockList extends React.Component {
             }
             this.setState({
                 recordValues: values,
-                recordArgs: { page: 1 }
-            })
+                recordArgs: { page: 1 },
+            });
             dispatch({
-                type: "stock/fetchRecord",
+                type: 'stock/fetchRecord',
                 params: {
                     gno: recordInfo.gno,
-                    ...values
-                }
-            })
-        })
-
+                    ...values,
+                },
+            });
+        });
     }
     // 库存记录搜索重置
     handleRecordReset = () => {
@@ -309,14 +309,14 @@ export default class GoodsStockList extends React.Component {
         form.resetFields(['create_time']);
         this.setState({
             recordValues: {},
-            recordArgs: { page: 1 }
-        })
+            recordArgs: { page: 1 },
+        });
         dispatch({
-            type: "stock/fetchRecord",
+            type: 'stock/fetchRecord',
             params: {
-                gno: recordInfo.gno
-            }
-        })
+                gno: recordInfo.gno,
+            },
+        });
     }
     // 库存记录页码改变
     recordTableChange = (pagination) => {
@@ -324,17 +324,17 @@ export default class GoodsStockList extends React.Component {
         const { recordInfo, recordValues } = this.state;
         this.setState({
             recordArgs: {
-                page: pagination.current
-            }
-        })
+                page: pagination.current,
+            },
+        });
         dispatch({
-            type: "stock/fetchRecord",
+            type: 'stock/fetchRecord',
             offset: (pagination.current - 1) * pagination.pageSize,
             params: {
                 gno: recordInfo.gno,
-                ...recordValues
-            }
-        })
+                ...recordValues,
+            },
+        });
     }
 
     // 库存记录搜索条件
@@ -344,9 +344,10 @@ export default class GoodsStockList extends React.Component {
             labelCol: { span: 5 },
             wrapperCol: { span: 19 },
         };
-        return <Form onSubmit={this.handleRecordSearch} layout="inline" style={{ marginBottom: "20px" }}>
+        return (
+<Form onSubmit={this.handleRecordSearch} layout="inline" style={{ marginBottom: '20px' }}>
             <FormItem label="时间段" {...formItemLayout}>
-                {getFieldDecorator("create_time")(
+                {getFieldDecorator('create_time')(
                     <RangePicker style={{ width: '95%' }} />
                 )}
             </FormItem>
@@ -354,42 +355,45 @@ export default class GoodsStockList extends React.Component {
                 <Button
                     type="primary"
                     htmlType="submit"
-                    style={{ marginRight: 10 }}>查询</Button>
+                    style={{ marginRight: 10 }}
+                >查询
+                </Button>
                 <Button onClick={this.handleRecordReset}>重置</Button>
             </FormItem>
-        </Form>
+</Form>
+);
     }
     render() {
-        const { stock, loading, form, stockRecordLoading } = this.props;
+        const { stock, loading, stockRecordLoading } = this.props;
         const { goodsStockList, total, recordTotal, stockRecord } = stock;
         const { args, viewRecordModalShow, recordArgs, recordInfo } = this.state;
         const { page, pageSize } = args;
         const current = recordArgs.page >> 0;
         const columns = [
             {
-                title: "序号",
-                dataIndex: "idx",
-                key: 'idx'
+                title: '序号',
+                dataIndex: 'idx',
+                key: 'idx',
             }, {
-                title: "单号",
+                title: '单号',
                 dataIndex: 'order_id',
-                key: "order_id"
+                key: 'order_id',
             }, {
-                title: "操作类型",
-                dataIndex: "change_option",
+                title: '操作类型',
+                dataIndex: 'change_option',
                 key: 'change_option',
-                render: (val) => <span>{STOCK_OPERATION_STATUS[val]}</span>
+                render: val => <span>{STOCK_OPERATION_STATUS[val]}</span>,
             }, {
-                title: "库存变动数量",
-                dataIndex: "change_count",
-                key: "change_count"
+                title: '库存变动数量',
+                dataIndex: 'change_count',
+                key: 'change_count',
             }, {
-                title: "操作时间",
-                dataIndex: "add_time",
+                title: '操作时间',
+                dataIndex: 'add_time',
                 key: 'add_time',
-                render: (val) => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>
-            }
-        ]
+                render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+            },
+        ];
         return (
             <PageHeaderLayout title="商品库存列表">
                 <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -402,7 +406,7 @@ export default class GoodsStockList extends React.Component {
                         data={goodsStockList}
                         total={total}
                         loading={loading}
-                        onChange={this.stockListTabelChange}
+                        onChange={this.onStockListTabelChange}
                         pageSize={pageSize >> 0}
                         current={page >> 0}
                         onViewRecord={this.viewRecord}
@@ -413,10 +417,10 @@ export default class GoodsStockList extends React.Component {
                         onCancel={this.handleCancel}
                         width="700px"
                         footer={[
-                            <div style={{ textAlign: "center" }} key="back"><Button type="primary" onClick={this.handleCancel}>关闭</Button></div>,
+                            <div style={{ textAlign: 'center' }} key="back"><Button type="primary" onClick={this.handleCancel}>关闭</Button></div>,
                         ]}
                     >
-                        <Row className={styles['recordInfo']}>
+                        <Row className={styles.recordInfo}>
                             <Col span={12}>
                                 <Col span={6}><span>产品名称 :</span></Col><Col span={17}>{recordInfo.product_name}</Col>
                             </Col>
@@ -436,6 +440,6 @@ export default class GoodsStockList extends React.Component {
                     </Modal>
                 </Card>
             </PageHeaderLayout>
-        )
+        );
     }
 }

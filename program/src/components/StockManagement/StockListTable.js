@@ -1,24 +1,22 @@
 import React from 'react';
-import { Table,Button,Badge } from 'antd';
-import {AUDIT_STATUS,PUBLISH_STATUS} from "../../constant/statusList";
+import { Table, Badge } from 'antd';
+import { AUDIT_STATUS, PUBLISH_STATUS } from '../../constant/statusList';
+
 const AuditStatusMap = ['processing', 'success', 'error'];// 审核状态
 const GoodsStatusMap = ['default', 'success', 'processing'];// 上下架状态
 export default class StockListTabel extends React.Component {
-    constructor(props) {
-        super(props);
+    onStockTableChange=(pagination, filters, sorter) => {
+        this.props.onChange(pagination, filters, sorter);
     }
-    onStockTableChange=(pagination,filters,sorter) => {
-        this.props.onChange(pagination,filters,sorter)
-    }
-    viewStockRecord=(values)=>{
-        const {onViewRecord} = this.props;
+    viewStockRecord=(values) => {
+        const { onViewRecord } = this.props;
         onViewRecord(values);
     }
     render() {
-        const { data, total,loading,current,pageSize } = this.props;
-        data.map((ele,idx) => {
-            ele.idx = idx+1;
-        })
+        const { data, total, loading, current, pageSize } = this.props;
+        data.map((ele, idx) => {
+            return { ...ele, idx: idx + 1 };
+        });
         
         const columns = [{
             title: '序号',
@@ -52,46 +50,48 @@ export default class StockListTabel extends React.Component {
             title: '审核状态',
             dataIndex: 'audit_status',
             key: 'audit_status',
-            render:(record) => (<Badge status={AuditStatusMap[record]} text={AUDIT_STATUS[record]} />)
+            render: record => (<Badge status={AuditStatusMap[record]} text={AUDIT_STATUS[record]} />),
         }, {
             title: '上下架状态',
             dataIndex: 'publish_status',
             key: 'publish_status',
-            render:(record) => (
+            render: record => (
                 (<Badge status={GoodsStatusMap[record]} text={PUBLISH_STATUS[record]} />)
-            )
+            ),
         }, {
             title: '库存数量',
             key: 'stock',
-            render:(val) => <span>{`${val.stock}`}</span>
+            render: val => <span>{`${val.stock}`}</span>,
         }, {
-            title:"操作",
-            key:"view",
-            fixed:"right",
-            width:130,
-            render:(text,record) => (
-                <a href="javascript:;" style={{textDecoration:"none"}} onClick={()=>this.viewStockRecord(record)}>查看记录</a>
-            )
-        }
+            title: '操作',
+            key: 'view',
+            fixed: 'right',
+            width: 130,
+            render: (text, record) => (
+                <a href=" javascript:;" style={{ textDecoration: 'none' }} onClick={() => this.viewStockRecord(record)}>查看记录</a>
+            ),
+        },
         ];
         const paginationOptions = {
             total,
-            showQuickJumper:true,
-            showSizeChanger:true,
+            showQuickJumper: true,
+            showSizeChanger: true,
             current,
-            pageSize
+            pageSize,
             
-        }
+        };
         return (
             <div>
-                <Table dataSource={data} columns={columns} 
-                rowKey={record=>record.idx}
+                <Table
+dataSource={data}
+columns={columns} 
+                rowKey={record => record.idx}
                 pagination={paginationOptions}
                 onChange={this.onStockTableChange}
                 loading={loading}
                 scroll={{ x: 1500 }}
                 />
             </div>
-        )
+        );
     }
 }
