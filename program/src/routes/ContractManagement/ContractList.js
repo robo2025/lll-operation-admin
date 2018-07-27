@@ -18,6 +18,7 @@ import {
     DatePicker,
   } from 'antd';
   import { connect } from 'dva';
+  import locale from 'antd/lib/date-picker/locale/zh_CN';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { CONTRACT_STATUS } from '../../constant/statusList';
 import styles from './contract.less';
@@ -234,7 +235,7 @@ export default class ContractList extends React.Component {
             <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
               <Col md={9} sm={24}>
                 <FormItem label="创建时间">
-                  {getFieldDecorator('create_time')(<RangePicker />)}
+                  {getFieldDecorator('create_time')(<RangePicker locale={locale} />)}
                 </FormItem>
               </Col>
             </Row>

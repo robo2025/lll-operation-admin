@@ -2,15 +2,16 @@ import React from 'react';
 import { connect } from 'dva';
 import qs from 'qs';
 import moment from 'moment';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 import { Form, Row, Col, Input, Button, Icon, Card, Select, Modal, DatePicker } from 'antd';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import StockListTable from '../../components/StockManagement/StockListTable';
 import GoodStockRecordTable from '../../components/StockManagement/GoodStockRecordTable';
 import { STOCK_OPERATION_STATUS } from '../../constant/statusList';
 import styles from './stockManagement.less';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
+const { Option } = Select;
 const { RangePicker } = DatePicker;
 @Form.create()
 @connect(({ stock, loading }) => ({
@@ -348,7 +349,7 @@ export default class GoodsStockList extends React.Component {
 <Form onSubmit={this.handleRecordSearch} layout="inline" style={{ marginBottom: '20px' }}>
             <FormItem label="时间段" {...formItemLayout}>
                 {getFieldDecorator('create_time')(
-                    <RangePicker style={{ width: '95%' }} />
+                    <RangePicker style={{ width: '95%' }} locale={locale} />
                 )}
             </FormItem>
             <FormItem>
