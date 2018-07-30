@@ -217,7 +217,7 @@ export const getRouterData = (app) => {
             name: '供应商主账号详情',
         },
         '/supAccountManagement/subAccountList': {
-            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/SubAccountList')),
+            component: dynamicWrapper(app, ['supAccount', 'log'], () => import('../routes/SupAccountManagement/SubAccountList')),
             name: '供应商子账号列表',
         },
         '/contractManagement/contractList': {
