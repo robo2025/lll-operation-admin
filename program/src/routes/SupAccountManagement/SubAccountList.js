@@ -23,6 +23,7 @@ import {
   convertCodeToName,
   convertNameToCode,
 } from '../../constant/permissionDetail';
+import LogTable from '../../components/LogTable';
 
 const CheckboxGroup = Checkbox.Group;
 const { Description } = DescriptionList;
@@ -77,6 +78,7 @@ const FormModal = Form.create({
   },
 })((props) => {
   const {
+    rowSelected,
     visible,
     handleAdd,
     handleModify,
@@ -117,6 +119,8 @@ const FormModal = Form.create({
   };
   return (
     <Modal
+      destroyOnClose
+      width={modalType === 'modify' ? 800 : undefined}
       title={modalType === 'add' ? '新增子账号' : '修改子账号'}
       visible={visible}
       onOk={okHandle}
@@ -136,6 +140,20 @@ const FormModal = Form.create({
           ],
         })(<Input placeholder="请输入" />)}
       </FormItem>
+      {modalType === 'add' ? (
+        <FormItem label="密码" {...formItemLayout}>
+          {form.getFieldDecorator('password', {
+            rules: [
+              {
+                required: true,
+                min: 6,
+                max: 16,
+                message: '密码应在6-16位数之间!',
+              },
+            ],
+          })(<Input type="password" placeholder="请输入密码" />)}
+        </FormItem>
+      ) : null}
       <FormItem label="姓名" {...formItemLayout}>
         {form.getFieldDecorator('realname')(<Input placeholder="请输入" />)}
       </FormItem>
@@ -166,6 +184,11 @@ const FormModal = Form.create({
           ],
         })(<CheckboxGroup options={allPermissions} />)}
       </FormItem>
+      {modalType === 'modify' ? (
+        <Card title="操作日志">
+          <LogTable object_id={rowSelected.id} module="auth_user" />
+        </Card>
+      ) : null}
     </Modal>
   );
 });
