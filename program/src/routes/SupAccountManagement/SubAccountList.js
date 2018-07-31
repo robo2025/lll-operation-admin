@@ -203,7 +203,7 @@ export default class SubAccountList extends Component {
   state = {
     passwordModalVisible: false,
     modalVisible: false,
-    modalType: 'add',
+    modalType: 'modify',
     rowSelected: {},
   };
   componentDidMount() {
@@ -311,9 +311,13 @@ export default class SubAccountList extends Component {
   };
   handleAdd = (formData) => {
     const id = location.href.split('=').pop();
+    const { permissions } = formData;
     this.props.dispatch({
       type: 'supAccount/addSubAccount',
-      payload: { formData, id },
+      payload: {
+        formData: { ...formData, permissions: convertNameToCode(permissions) },
+        id,
+      },
       callback: (success, msg) => {
         if (success) {
           message.success(msg);
@@ -330,9 +334,14 @@ export default class SubAccountList extends Component {
   };
   handleModify = (formData) => {
     const id = location.href.split('=').pop();
+    const { permissions } = formData;
     this.props.dispatch({
       type: 'supAccount/modifySubAccount',
-      payload: { formData, id, subuserid: this.state.rowSelected.id },
+      payload: {
+        formData: { ...formData, permissions: convertNameToCode(permissions) },
+        id,
+        subuserid: this.state.rowSelected.id,
+      },
       callback: (success, msg) => {
         if (success) {
           message.success(msg);
