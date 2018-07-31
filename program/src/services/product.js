@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 import { API_URL, OPERATION_URL } from '../constant/config';
 import { queryString } from '../utils/tools';
@@ -9,24 +8,14 @@ import { queryString } from '../utils/tools';
  *
 */
 export async function queryProducts({ params, offset = 0, limit = 10 }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/products?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`, {
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/products?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`);
 }
 
 /**
  * 根据目录id,品牌id获取产品列表
  */
 export async function queryProductsByParams({ params }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/products/all?${queryString.toQueryString(params)}`, {
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/products/all?${queryString.toQueryString(params)}`);
 }
 
 
@@ -36,12 +25,8 @@ export async function queryProductsByParams({ params }) {
  * @param {object} data 产品数据
 */
 export async function addProduct({ data }) {
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/products`, {
     method: 'post',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       ...data,
     },
@@ -56,12 +41,8 @@ export async function addProduct({ data }) {
  *
 */
 export async function modifyProduct({ pno, data }) {
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/products/${pno}`, {
     method: 'put',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       ...data,
     },
@@ -74,13 +55,7 @@ export async function modifyProduct({ pno, data }) {
  * @param {number} pno 产品ID编号
 */
 export async function queryProductDetail({ pno }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/products/${pno}`, {
-    method: 'get',
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/products/${pno}`);
 }
 
 
@@ -90,12 +65,8 @@ export async function queryProductDetail({ pno }) {
  * @param {array} ids 产品id数组
 */
 export async function removeProducts({ pnos }) {
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/products`, {
     method: 'delete',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       pnos,
     },
@@ -108,13 +79,7 @@ export async function removeProducts({ pnos }) {
  * @param {array} module 模块
 */
 export async function querySupplyInfo({ productId }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/goods?product_id=${productId}`, {
-    method: 'get',
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/goods?product_id=${productId}`);
 }
 
 /**
@@ -123,23 +88,13 @@ export async function querySupplyInfo({ productId }) {
  * @param {array} module 模块
 */
 export async function queryOperationLog({ module, objectId, offset = 0, limit = 10 }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${OPERATION_URL}/operationlogs?offset=${offset}&limit=${limit}&object_id=${objectId}`, {
-    method: 'get',
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${OPERATION_URL}/operationlogs?offset=${offset}&limit=${limit}&object_id=${objectId}`);
 }
 
 // 导出数据
-export async function exportProduct({ params,fields }) {
-  const acessToken = Cookies.get('access_token');
+export async function exportProduct({ params, fields }) {
   return lyRequest(`${API_URL}/product_reports?${queryString.toQueryString(params)}`, {
     method: 'post',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       fields,
     },

@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 import { API_URL, OPERATION_URL } from '../constant/config';
 import { queryString } from '../utils/tools';
@@ -9,12 +8,7 @@ import { queryString } from '../utils/tools';
  *
 */
 export async function queryGoods({ params, offset = 0, limit = 10 }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/goods?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`, {
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/goods?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`);
 }
 
 /**
@@ -24,14 +18,9 @@ export async function queryGoods({ params, offset = 0, limit = 10 }) {
  * 
  */
 export async function modifyGoodStatus({ gno, params }) {
-    console.log('params',params);
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/goods/${gno}/publish_status`, {
     method: 'put',
-    headers: {
-      Authorization: acessToken,
-    },
-    data:params,
+    data: params,
   });
 }
 
@@ -44,12 +33,8 @@ export async function modifyGoodStatus({ gno, params }) {
  *
 */
 export async function modifyGoodInfo({ gno, data }) {
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/goods/${gno}`, {
     method: 'put',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       ...data,
     },
@@ -62,13 +47,7 @@ export async function modifyGoodInfo({ gno, data }) {
  * @param {number} gno 商品id
 */
 export async function queryGoodDetail({ gno }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/goods/${gno}`, {
-    method: 'get',
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/goods/${gno}`);
 }
 
 
@@ -78,23 +57,13 @@ export async function queryGoodDetail({ gno }) {
  * @param {array} ids 商品id数组
 */
 export async function queryOperationLog({ module, gno }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/operationlogs?module=${module}&object_id=${gno}`, {
-    method: 'get',
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/operationlogs?module=${module}&object_id=${gno}`);
 }
 
 // 导出数据
-export async function exportGood({ params,fields }) {
-  const acessToken = Cookies.get('access_token');
+export async function exportGood({ params, fields }) {
   return lyRequest(`${OPERATION_URL}/operation/goods_reports?${queryString.toQueryString(params)}`, {
     method: 'post',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       fields,
     },

@@ -5,23 +5,13 @@ import { URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_
 
 // 获取用户信息
 export async function getUserInfo() {
-  const accessToken = Cookies.get('access_token');
-  return lyRequest(`${URL}/server/verify`, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+  return lyRequest(`${URL}/server/verify`);
 }
 
 
 // 获取供应商信息
 export async function getSupplierInfo(supplierid) {
-  const accessToken = Cookies.get('access_token');
-  return lyRequest(`${USERS_URL}/suppliers/${supplierid}`, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+  return lyRequest(`${USERS_URL}/suppliers/${supplierid}`);
 }
 
 // 注册操作
