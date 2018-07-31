@@ -45,9 +45,10 @@ export async function hanldeSubAccountDelete({ main_user_id, subuserid }) {
   });
 }
 export async function addSubAccount({ formData, id }) {
+  const { password } = formData;
   return lyRequest(`${USERS_SERVER}/operation/suppliers/${id}/subusers`, {
     method: 'post',
-    data: { ...formData },
+    data: { ...formData, password: sha256(password) },
   });
 }
 export async function modifySubAccount({ formData, id, subuserid }) {
