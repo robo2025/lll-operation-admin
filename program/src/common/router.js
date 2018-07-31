@@ -213,11 +213,11 @@ export const getRouterData = (app) => {
             name: '供应商主账号列表',
         },
         '/supAccountManagement/accountListDetail': {
-            component: dynamicWrapper(app, ['supAccount', 'log'], () => import('../routes/SupAccountManagement/AccountListDetail')),
+            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/AccountListDetail')),
             name: '供应商主账号详情',
         },
         '/supAccountManagement/subAccountList': {
-            component: dynamicWrapper(app, ['supAccount', 'log'], () => import('../routes/SupAccountManagement/SubAccountList')),
+            component: dynamicWrapper(app, ['supAccount'], () => import('../routes/SupAccountManagement/SubAccountList')),
             name: '供应商子账号列表',
         },
         '/contractManagement/contractList': {
@@ -234,6 +234,10 @@ export const getRouterData = (app) => {
         '/contractManagement/:contractList/view': {
             component: dynamicWrapper(app, ['contract'], () => import('../routes/ContractManagement/ContractDetail')),
             name: '查看合同',
+        },
+        '/authorizationManagement/authorizationList': {
+            component: dynamicWrapper(app, ['authorizationManagement'], () => import('../routes/AuthorizationManagement/AuthorizationList')),
+            name: '供应商产品授权列表',
         },
     };
 
