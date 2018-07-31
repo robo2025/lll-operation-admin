@@ -28,7 +28,16 @@ const COMPANY_TYPE = {
   agency: '代理商',
   other: '其他',
 };
-
+const IMAGE_NAME = {
+  license: '营业执照照片',
+  production: '生产许可证',
+  certification: '产品合格证',
+  supplier: '厂家相关证书',
+  taxpayer: '纳税人相关证书',
+  integrator: '集成商相关证书',
+  agency: '代理商相关证书',
+  other: '其他证书',
+};
 @connect(({ supAudit, loading }) => ({
   profile: supAudit.profile,
   loading: loading.effects['supAudit/fetchDetail'],
@@ -47,11 +56,7 @@ export default class AccountCheckDetail extends Component {
     if (!basic_info) {
       return <Spin />;
     }
-    const { company_type } = basic_info;
     const license = qualifications.find(val => val.qualifi_name === 'license');
-    const companyTypeLicense = qualifications.find(
-      val => val.qualifi_name === company_type
-    ) || {};
     return (
       <PageHeaderLayout title="企业信息">
         <Card title="基本信息" bordered style={{ marginTop: 35 }} hoverable>
@@ -89,51 +94,35 @@ export default class AccountCheckDetail extends Component {
           <FormItem {...formItemLayout} label="营业执照号" style={style}>
             <span>{license.qualifi_code}</span>
           </FormItem>
-          <FormItem {...formItemLayout} label="营业执照照片" style={style}>
-            <div>
-              <img
-                width={100}
-                height={100}
-                src={FILE_SERVER + license.qualifi_url}
-                alt="营业执照"
-                onClick={() => { window.open(FILE_SERVER + license.qualifi_url); }}
-              />
-              <div>
-                有效期：{moment
-                  .unix(license.effective_date)
-                  .format('YYYY-MM-DD')}~{moment
-                  .unix(license.expire_date)
-                  .format('YYYY-MM-DD')}
-              </div>
-            </div>
-          </FormItem>
           <FormItem {...formItemLayout} label="企业性质" style={style}>
             <span>{COMPANY_TYPE[basic_info.company_type]}</span>
           </FormItem>
-          {companyTypeLicense && Object.keys(companyTypeLicense).length > 0 ? (
+          {qualifications.map(item => (
             <FormItem
+              key={item.id}
               {...formItemLayout}
-              label={`${COMPANY_TYPE[basic_info.company_type]}证书`}
+              label={`${IMAGE_NAME[item.qualifi_name]}`}
               style={style}
             >
               <div>
                 <img
                   width={100}
                   height={100}
-                  src={FILE_SERVER + companyTypeLicense.qualifi_url}
-                  alt={`${COMPANY_TYPE[basic_info.company_type]}证书`}
-                  onClick={() => { window.open(FILE_SERVER + companyTypeLicense.qualifi_url); }}
+                  src={FILE_SERVER + item.qualifi_url}
+                  alt={`${IMAGE_NAME[item.qualifi_name]}`}
+                  onClick={() => {
+                    window.open(FILE_SERVER + item.qualifi_url);
+                  }}
                 />
                 <div>
-                  有效期：{moment
-                    .unix(companyTypeLicense.effective_date)
-                    .format('YYYY-MM-DD')}~{moment
-                    .unix(companyTypeLicense.expire_date)
-                    .format('YYYY-MM-DD')}
+                  有效期：
+                  {moment.unix(item.effective_date).format('YYYY-MM-DD')}
+                  ~
+                  {moment.unix(item.expire_date).format('YYYY-MM-DD')}
                 </div>
               </div>
             </FormItem>
-          ) : null}
+          ))}
         </Card>
         <RecordTable
           dataSource={
@@ -143,7 +132,7 @@ export default class AccountCheckDetail extends Component {
                 })
               : []
           }
-        />      
+        />
       </PageHeaderLayout>
     );
   }

@@ -141,6 +141,12 @@ const slnStatus = (status) => {
           <Badge status="default" />未发布
         </span>
       );
+    case 'E':
+      return (
+        <span>
+          <Badge status="error" />失效
+        </span>
+      );
     default:
       return (
         <span>

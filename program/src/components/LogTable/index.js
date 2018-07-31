@@ -15,8 +15,9 @@ const PLATFORM_STATUS = {
   operation: '运营',
   supplier: '供应商',
 };
-@connect(({ log }) => ({
+@connect(({ log, loading }) => ({
   log,
+  loading: loading.effects['log/fetch'],
 }))
 export default class RecordTable extends Component {
   static defaultProps = {
@@ -55,7 +56,10 @@ export default class RecordTable extends Component {
     });
   };
   render() {
-    const { log } = this.props;
+    const { log, loading } = this.props;
+    if (!log) {
+        return <Card loading />;
+    }
     const { list, total } = log;
     const { pagination } = this.state;
     const paginationProps = {
@@ -113,18 +117,17 @@ export default class RecordTable extends Component {
       },
     ];
     return (
-      <Card title="操作记录" style={{ marginTop: 24 }}>
-        <Table
+         <Table
+          loading={loading}
           columns={columns}
           dataSource={list}
           pagination={{ ...paginationProps }}
-        />
-      </Card>
+         /> 
     );
   }
 }
 RecordTable.propTypes = {
-  object_id: PropTypes.string.isRequired,
+  object_id: PropTypes.number.isRequired,
   module: PropTypes.string.isRequired,
   platform: PropTypes.string,
 };

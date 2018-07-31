@@ -2,8 +2,12 @@ import {
   querySuppliers,
   queryDetail,
   disableAccount,
+  disableSubAccount,
   passwordChange,
   fetchSubAccounts,
+  hanldeSubAccountDelete,
+  addSubAccount,
+  modifySubAccount,
 } from '../services/supAccount';
 
 export default {
@@ -69,7 +73,7 @@ export default {
         callback(false, msg);
       }
     },
-    *disableAccount({ payload, callback }, { call, put }) {
+    *disableAccount({ payload, callback }, { call }) {
       const response = yield call(disableAccount, { ...payload });
       const { rescode, msg } = response;
       if (rescode === '10000') {
@@ -80,7 +84,18 @@ export default {
         callback(false, msg);
       }
     },
-    *passwordChange({ payload, callback }, { call, put }) {
+    *disableSubAccount({ payload, callback }, { call }) {
+      const response = yield call(disableSubAccount, { ...payload });
+      const { rescode, msg } = response;
+      if (rescode === '10000') {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+        callback(false, msg);
+      }
+    },
+    *passwordChange({ payload, callback }, { call }) {
       const response = yield call(passwordChange, { ...payload });
       const { rescode, msg } = response;
       if (rescode === '10000') {
@@ -98,6 +113,39 @@ export default {
         type: 'saveSubAccounts',
         payload: data,
       });
+      if (rescode === '10000') {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+        callback(false, msg);
+      }
+    },
+    *hanldeSubAccountDelete({ payload, callback }, { call }) {
+      const response = yield call(hanldeSubAccountDelete, { ...payload });
+      const { rescode, msg } = response;
+      if (rescode === '10000') {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+        callback(false, msg);
+      }
+    },
+    *addSubAccount({ payload, callback }, { call }) {
+      const response = yield call(addSubAccount, { ...payload });
+      const { rescode, msg } = response;
+      if (rescode === '10000') {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+        callback(false, msg);
+      }
+    },
+    *modifySubAccount({ payload, callback }, { call }) {
+      const response = yield call(modifySubAccount, { ...payload });
+      const { rescode, msg } = response;
       if (rescode === '10000') {
         if (callback) {
           callback(true, msg);

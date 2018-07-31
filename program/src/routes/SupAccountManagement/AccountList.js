@@ -61,8 +61,8 @@ const PasswordModal = Form.create()((props) => {
                 {
                   required: true,
                   min: 6,
-                  max: 12,
-                  message: '密码应在6-12位数之间!',
+                  max: 16,
+                  message: '密码应在6-16位数之间!',
                 },
               ],
             })(<Input type="password" placeholder="请输入密码" />)}
@@ -247,7 +247,17 @@ export default class AccountList extends Component {
               <a onClick={() => this.disableAccount(row.id, 1)}>启用</a>
             )}
             <Divider type="vertical" />
-            <a>子账号管理</a>
+            <a
+              onClick={() =>
+                this.props.dispatch(
+                  routerRedux.push({
+                    pathname: '/supAccountManagement/subAccountList',
+                    search: `?id=${row.id}`,
+                  })
+                )
+              }
+            >子账号管理
+            </a>
             <Divider type="vertical" />
             <a onClick={() => this.hanldePasswordChange(row)}>密码重置</a>
             <Divider type="vertical" />
@@ -393,3 +403,4 @@ export default class AccountList extends Component {
     );
   }
 }
+export { PasswordModal };
