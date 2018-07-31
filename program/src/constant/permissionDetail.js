@@ -36,9 +36,17 @@ const permissionDetail = [
     name: '方案订单管理',
   },
   {
-    code: 'company_all',
-    name: '企业信息',
+    code: 'account_management_all',
+    name: '账号管理',
   },
+  {
+    code: 'financial_settlement_all',
+    name: '财务结算',
+  },
+  // {
+  //   code: 'company_all',
+  //   name: '企业信息',
+  // },
 ];
 const allPermissions = permissionDetail.map(item => item.name);
 
@@ -75,4 +83,4 @@ const convertNameToCode = (nameList) => {
   }
 };
 export default permissionDetail;
-export { allPermissions, convertCodeToName, convertNameToCode };
+export { permissionDetail, allPermissions, convertCodeToName, convertNameToCode };
