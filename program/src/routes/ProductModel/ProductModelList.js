@@ -8,10 +8,11 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import CustomizableTable from '../../components/CustomTable/CustomizableTable';
 import SupplyInformation from '../../components/SupplyInformation/SupplyInformation';
 import ModelContent from './ModelContent';
-import ProductModalExport from "../../components/Checkbox/ProductModalExport";
+import ProductModalExport from '../../components/Checkbox/ProductModalExport';
 import styles from './style.less';
-import { PAGE_SIZE, SUCCESS_STATUS, FAIL_STATUS, MAIN_URL ,API_URL} from '../../constant/config';
+import { PAGE_SIZE, SUCCESS_STATUS, FAIL_STATUS, MAIN_URL, API_URL, TOKEN_NAME } from '../../constant/config';
 import { handleServerMsgObj, checkFile } from '../../utils/tools';
+
 const plainOptions = ['mno', 'partnumber', 'brand_name', 'registration_place', 'pno', 'product_name', 'category', 'spec', 'creator', 'created_time', 'supplier_count'];
 
 const FormItem = Form.Item;
@@ -26,8 +27,7 @@ function getStandardCategory(data) {
         } else {
             delete ele.children;
         }
-
-    })
+    });
 }
 @connect(({ brand, good, product, productModel, loading, catalog }) => ({
     brand,
@@ -35,7 +35,7 @@ function getStandardCategory(data) {
     product,
     productModel,
     loading,
-    catalog
+    catalog,
 }))
 @Form.create()
 export default class ProductModelList extends Component {
@@ -50,15 +50,15 @@ export default class ProductModelList extends Component {
             isImportModal: false,
             isShowExportModal: false,
             exportFields: [], // 导出产品字段
-            exportDatePicker: {},  // 导出产品时间选择
-            datePickerValue: "",// 导出产品默认时间
+            exportDatePicker: {}, // 导出产品时间选择
+            datePickerValue: '', // 导出产品默认时间
             isCheckAll: false,
             args: qs.parse(props.location.search || { page: 1, pageSize: 10 }, { ignoreQueryPrefix: true }),
             modelContentArgs: {// 下载模板选择参数保存
                 page: 1,
                 pageSize: 6,
-                params: {}
-            }
+                params: {},
+            },
         };
         this.columns = [{
             title: '序号',
@@ -137,7 +137,7 @@ export default class ProductModelList extends Component {
                     <Divider type="vertical" />
                     <a href={`#/product/model/edit?mno=${record.mno}`}>
                         编辑
-          </a>
+                    </a>
                     <Divider type="vertical" />
                     <a onClick={() => { this.handleBtnClick(record); }}>供货消息</a>
                 </Fragment>
@@ -198,9 +198,9 @@ export default class ProductModelList extends Component {
             {
                 page: offset + 1,
                 pageSize: limit,
-                params
-            }
-        })
+                params,
+            },
+        });
         dispatch({
             type: 'product/fetch',
             offset: offset * limit,
@@ -219,7 +219,7 @@ export default class ProductModelList extends Component {
         const pnos = modelList.map(val => val.pno);
         if (pnos.length > 0) {
             this.setState({ isImportModal: false });
-            window.open(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`,'_self');
+            window.open(`${MAIN_URL}/scm-service/models/template?${qs.stringify({ pnos }, { indices: false })}`, '_self');
         } else {
             this.setState({ isImportModal: false });
         }
@@ -281,14 +281,14 @@ export default class ProductModelList extends Component {
         this.setState({
             args: {
                 page: pagination.current,
-                pageSize: pagination.pageSize
-            }
-        })
+                pageSize: pagination.pageSize,
+            },
+        });
         dispatch({
             type: 'productModel/fetch',
             offset: params.offset,
             limit: params.pageSize,
-            params: formValues
+            params: formValues,
         });
     }
 
@@ -329,7 +329,7 @@ export default class ProductModelList extends Component {
             const values = {
                 ...fieldsValue,
                 ...createTime,
-                ...categoryId
+                ...categoryId,
             };
             delete values.created_time;
             delete values.catalog;
@@ -337,8 +337,8 @@ export default class ProductModelList extends Component {
                 formValues: values,
                 args: {
                     page: 1,
-                    pageSize: args.pageSize
-                }
+                    pageSize: args.pageSize,
+                },
             });
             // 分页：将页数提取到url上
             history.replace({
@@ -349,7 +349,7 @@ export default class ProductModelList extends Component {
                 type: 'productModel/fetch',
                 params: values,
                 offset: 0,
-                limit: args.pageSize
+                limit: args.pageSize,
             });
         });
     }
@@ -361,9 +361,9 @@ export default class ProductModelList extends Component {
             formValues: {},
             args: {
                 page: 1,
-                pageSize: args.pageSize
-            }
-        })
+                pageSize: args.pageSize,
+            },
+        });
         // 分页：将页数提取到url上
         history.replace({
             pathname: '/product/model',
@@ -371,11 +371,11 @@ export default class ProductModelList extends Component {
         });
 
         dispatch({
-            type: "productModel/fetch",
+            type: 'productModel/fetch',
             offset: 0,
             limit: args.pageSize,
-            params: {}
-        })
+            params: {},
+        });
     }
 
     // 删除产品型号
@@ -396,7 +396,7 @@ export default class ProductModelList extends Component {
                     type: 'productModel/fetch',
                     offset: 0,
                     limit: args.pageSize,
-                    params: formValues
+                    params: formValues,
                 });
                 // 分页：将页数提取到url上
                 history.replace({
@@ -404,10 +404,12 @@ export default class ProductModelList extends Component {
                     search: `?page=1&pageSize=${args.pageSize}`,
                 });
                 this.setState({
-                    selectedRows: [], selectedRowKeys: [], args: {
+                    selectedRows: [],
+selectedRowKeys: [],
+args: {
                         page: 1,
-                        pageSize: args.pageSize
-                    }
+                        pageSize: args.pageSize,
+                    },
                 });
             },
             error: (res) => {
@@ -416,7 +418,7 @@ export default class ProductModelList extends Component {
                     type: 'productModel/fetch',
                     offset: 0,
                     limit: args.pageSize,
-                    params: formValues
+                    params: formValues,
                 });
                 // 分页：将页数提取到url上
                 history.replace({
@@ -424,11 +426,12 @@ export default class ProductModelList extends Component {
                     search: `?page=1&pageSize=${args.pageSize}`,
                 });
                 this.setState({
-                    selectedRows: [], selectedRowKeys: [],
+                    selectedRows: [],
+selectedRowKeys: [],
                     args: {
                         page: 1,
-                        pageSize: args.pageSize
-                    }
+                        pageSize: args.pageSize,
+                    },
                 });
             },
         });
@@ -438,7 +441,7 @@ export default class ProductModelList extends Component {
         const { getFieldDecorator } = this.props.form;
         const { catalog } = this.props;
         const { level } = catalog;
-        console.log(level)
+        console.log(level);
         // getStandardCategory(level);
         // console.log(level)
         return (
@@ -590,14 +593,14 @@ export default class ProductModelList extends Component {
     }
 
     // 取消导出数据
-    handleCancel=()=> {
+    handleCancel=() => {
         this.setState({
-            datePickerValue: "",
+            datePickerValue: '',
             exportDatePicker: {},
             exportFields: [],
             isCheckAll: false,
-            isShowExportModal: false
-        })
+            isShowExportModal: false,
+        });
     }
     onExportDatePickerChange = (date, dateString) => { // 导出产品时间选择
         this.setState({
@@ -605,8 +608,8 @@ export default class ProductModelList extends Component {
             exportDatePicker: {
                 created_start: dateString[0],
                 created_end: dateString[1],
-            }
-        })
+            },
+        });
     }
     // 确定导出数据
     handleOk = () => {
@@ -621,31 +624,31 @@ export default class ProductModelList extends Component {
             params: exportDatePicker,
             fields: exportFields,
             success: (res) => {
-                window.open(`${API_URL}/product_model_reports?filename=${res.filename}`,'_self');
+                window.open(`${API_URL}/product_model_reports?filename=${res.filename}`, '_self');
                 this.setState({
-                    datePickerValue: "",
+                    datePickerValue: '',
                     exportDatePicker: {},
                     exportFields: [],
                     isCheckAll: false,
-                    isShowExportModal: false
-                })
+                    isShowExportModal: false,
+                });
             },
             error: (res) => {
                 message.warning(res.msg);
                 this.setState({
-                    datePickerValue: "",
+                    datePickerValue: '',
                     exportDatePicker: {},
                     exportFields: [],
                     isCheckAll: false,
-                    isShowExportModal: false
-                })
-            }
+                    isShowExportModal: false,
+                });
+            },
         });
     }
     render() {
         const {
             selectedRowKeys, selectedRows,
-            currProductModel, isShowModal, isImportModal, args, modelContentArgs, isShowExportModal
+            currProductModel, isShowModal, isImportModal, args, modelContentArgs, isShowExportModal,
         } = this.state;
         const { productModel, good, product, loading, catalog } = this.props;
         const rowSelection = {
@@ -700,8 +703,8 @@ export default class ProductModelList extends Component {
                                 onCancel={this.handleCancel}
                                 onOk={this.handleOk}
                             >
-                                <div className={styles['exportTip']}>
-                                    <span className={styles['tip']}>选择导出字段项：</span>
+                                <div className={styles.exportTip}>
+                                    <span className={styles.tip}>选择导出字段项：</span>
                                     <RangePicker onChange={this.onExportDatePickerChange} value={this.state.datePickerValue} />
                                 </div>
                                 <ProductModalExport
@@ -717,7 +720,7 @@ export default class ProductModelList extends Component {
                                     name="file"
                                     action={`${MAIN_URL}/scm-service/models/template`}
                                     headers={{
-                                        Authorization: Cookies.get('access_token') || 'null',
+                                        Authorization: Cookies.get(TOKEN_NAME) || 'null',
                                     }}
                                     showUploadList={false}
                                     beforeUpload={this.handleBeforeUpload}
@@ -725,7 +728,7 @@ export default class ProductModelList extends Component {
                                 >
                                     <Button type="primary">
                                         <Icon type="upload" />导入产品数据
-                  </Button>
+                                    </Button>
                                 </Upload>
                                 <Button onClick={() => { this.toggleModal('isImportModal', true); }}>下载数据模板</Button>
                             </div>

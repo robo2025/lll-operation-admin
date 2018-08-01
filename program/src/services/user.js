@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
-import { URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE, MAIN_URL } from '../constant/config';
+import { TOKEN_NAME, URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE, MAIN_URL } from '../constant/config';
 
 
 // 获取用户信息
@@ -20,9 +20,9 @@ export function register() {
 }
 // 登出
 export function logout() {
-  const accessToken = Cookies.get('access_token');
+  const accessToken = Cookies.get(TOKEN_NAME);
   if (accessToken) {
-    Cookies.remove('access_token');
+    Cookies.remove(TOKEN_NAME);
     window.location.href = `${LOGOUT_URL}?access_token=${accessToken}&next=${HOME_PAGE}`;
   } else {
     window.location.href = `${LOGOUT_URL}`;
