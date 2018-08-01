@@ -20,7 +20,6 @@ import { logout } from '../services/user';
 
 const { AuthorizedRoute, check } = Authorized;
 
-
 /**
  * 根据菜单取得重定向地址.
  */
@@ -71,7 +70,7 @@ class BasicLayout extends React.PureComponent {
   static childContextTypes = {
     location: PropTypes.object,
     breadcrumbNameMap: PropTypes.object,
-  }
+  };
   state = {
     isMobile,
   };
@@ -89,10 +88,9 @@ class BasicLayout extends React.PureComponent {
       });
     });
 
-    /*  this.props.dispatch({
-       type: 'user/fetch',
-     }); */
-    // console.log('基础也渲染好了', Cookies.get('userinfo'));
+    this.props.dispatch({
+      type: 'user/fetchCurrent',
+    });
   }
   getPageTitle() {
     const { routerData, location } = this.props;
@@ -128,16 +126,16 @@ class BasicLayout extends React.PureComponent {
       type: 'global/changeLayoutCollapsed',
       payload: collapsed,
     });
-  }
+  };
   handleNoticeClear = (type) => {
     message.success(`清空了${type}`);
     this.props.dispatch({
       type: 'global/clearNotices',
       payload: type,
     });
-  }
-  handleMenuClick = ({ key }) => {
-    console.log('退出登录');
+  };
+  handleMenuClick = (e) => {
+    const { key } = e;
     if (key === 'triggerError') {
       this.props.dispatch(routerRedux.push('/exception/trigger'));
       return;
@@ -146,19 +144,26 @@ class BasicLayout extends React.PureComponent {
       // 退出登录
       logout();
     }
-  }
+  };
   handleNoticeVisibleChange = (visible) => {
     if (visible) {
       this.props.dispatch({
         type: 'global/fetchNotices',
       });
     }
-  }
+  };
   render() {
     const {
-      collapsed, fetchingNotices, notices, routerData, match, location,
+      collapsed,
+      fetchingNotices,
+      notices,
+      routerData,
+      match,
+      location,
     } = this.props;
-    const currentUser = Cookies.get('userinfo') ? JSON.parse(Cookies.get('userinfo')) : {};
+    const currentUser = Cookies.get('userinfo')
+      ? JSON.parse(Cookies.get('userinfo'))
+      : {};
     const bashRedirect = this.getBashRedirect();
 
     const layout = (
@@ -192,7 +197,12 @@ class BasicLayout extends React.PureComponent {
             <div style={{ minHeight: 'calc(100vh - 260px)' }}>
               <Switch>
                 {redirectData.map(item => (
-                  <Redirect key={item.from} exact from={item.from} to={item.to} />
+                  <Redirect
+                    key={item.from}
+                    exact
+                    from={item.from}
+                    to={item.to}
+                  />
                 ))}
                 {getRoutes(match.path, routerData).map(item => (
                   <AuthorizedRoute
