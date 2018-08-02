@@ -125,7 +125,7 @@ export default class AuthorizationDetail extends Component {
               {COMPANY_TYPE[basic_info.company_type]}
             </Description>
             <Description term="注册时间">
-              {moment.unix(basic_info.created_time).format('YYYY-MM-DD')}
+              {moment(basic_info.date_joined).format('YYYY-MM-DD')}
             </Description>
           </DescriptionList>
         </Card>
