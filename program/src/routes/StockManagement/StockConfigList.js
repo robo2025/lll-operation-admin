@@ -1,19 +1,20 @@
 import React from 'react';
 import qs from 'qs';
 import moment from 'moment';
-import PageHeaderLayout from "../../layouts/PageHeaderLayout";
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { Row, Col, Card, Form, Input, Button, Icon, Select, Modal, InputNumber, Message, Spin } from 'antd';
 import { connect } from 'dva';
-import StockConfigListTable from "../../components/StockManagement/StockConfigListTable";
-import GoodStockRecordTable from "../../components/StockManagement/GoodStockRecordTable";
-import styles from "./stockManagement.less";
+import StockConfigListTable from '../../components/StockManagement/StockConfigListTable';
+import GoodStockRecordTable from '../../components/StockManagement/GoodStockRecordTable';
+import styles from './stockManagement.less';
+
 const FormItem = Form.Item;
 const Option = Select.Option;
 const SetRestrictModal = Form.create()(
     class extends React.Component {
         checkNum = (rule, value, callback) => {
             if (value < 0) {
-                callback("请输入正整数");
+                callback('请输入正整数');
                 return;
             }
             callback();
@@ -44,35 +45,37 @@ const SetRestrictModal = Form.create()(
                             <FormItem label="最大入库值" {...formItemLayout}>
                                 {getFieldDecorator('goods_max_in_info', {
                                     rules: [
-                                        { message: "请输入数字", type: "number" },
+                                        { message: '请输入数字', type: 'number' },
                                         { validator: this.checkNum },
-                                    ]
+                                    ],
                                 })(
-                                    <InputNumber placeholder="请输入" style={{ width: "80%" }} />
+                                    <InputNumber placeholder="请输入" style={{ width: '80%' }} />
                                 )}
                             </FormItem>
                             <FormItem label="最大调拨值" {...formItemLayout}>
                                 {getFieldDecorator('goods_max_out_info', {
                                     rules: [
-                                        { message: "请输入数字", type: "number" },
+                                        { message: '请输入数字', type: 'number' },
                                         { validator: this.checkNum },
-                                    ]
+                                    ],
                                 }
                                 )(
-                                    <InputNumber placeholder="请输入" style={{ width: "80%" }} />
+                                    <InputNumber placeholder="请输入" style={{ width: '80%' }} />
                                 )}
                             </FormItem>
                         </Form>
                     </Spin>
                 </Modal>
-            )
+            );
         }
     }
-)
+);
 @Form.create()
 @connect(({ stock, loading }) => ({
-    stock, loading: loading.effects['stock/fetch'], fetchSettingConfigLoading: loading.effects['stock/fetchSettingConfig'],
-    fetchConfigLoading: loading.effects['stock/fetchConfig']
+    stock,
+loading: loading.effects['stock/fetch'],
+fetchSettingConfigLoading: loading.effects['stock/fetchSettingConfig'],
+    fetchConfigLoading: loading.effects['stock/fetchConfig'],
 }))
 export default class StockConfigList extends React.Component {
     constructor(props) {
@@ -82,67 +85,67 @@ export default class StockConfigList extends React.Component {
             args: qs.parse(props.location.search || { page: 1, pageSize: 10 }, { ignoreQueryPrefix: true }),
             searchValues: {},
             setRestrictModalShow: false,
-            recordValue: {},// 存储设置限制信息
+            recordValue: {}, // 存储设置限制信息
             viewRecordModalShow: false,
             recordArgs: {
-                page: 1
-            }
-        }
+                page: 1,
+            },
+        };
     }
     componentDidMount() {
         const { dispatch } = this.props;
         const { args } = this.state;
         dispatch({
-            type: "stock/fetch",
+            type: 'stock/fetch',
             offset: (args.page - 1) * args.pageSize,
-            limit: args.pageSize
-        })
+            limit: args.pageSize,
+        });
     }
     viewRecord = (record) => { // 查看记录模态框
         const { dispatch } = this.props;
         this.setState({
             viewRecordModalShow: true,
-            recordValue: record
-        })
+            recordValue: record,
+        });
         dispatch({
-            type: "stock/fetchConfig",
+            type: 'stock/fetchConfig',
             params: {
                 gno: record.gno,
-            }
-        })
+            },
+        });
     }
-    viewRecordCancel = () => {// 关闭查看记录模态框
+    viewRecordCancel = () => { // 关闭查看记录模态框
         this.setState({
             viewRecordModalShow: false,
             recordValue: {},
             recordArgs: {
-                page: 1
-            }
-        })
+                page: 1,
+            },
+        });
     }
-    onRecordTableChange = (pagination) => {// 记录模态框页面改变
+    onRecordTableChange = (pagination) => { // 记录模态框页面改变
         const { dispatch } = this.props;
         const { recordValue } = this.state;
         dispatch({
-            type: "stock/fetchConfig",
+            type: 'stock/fetchConfig',
             offset: (pagination.current - 1) * pagination.pageSize,
             params: {
                 gno: recordValue.gno,
-            }
-        })
+            },
+        });
         this.setState({
             recordArgs: {
-                page: pagination.current
-            }
-        })
+                page: pagination.current,
+            },
+        });
     }
-    onSetRestrict = (record) => {//设置限制模态框
+    onSetRestrict = (record) => { // 设置限制模态框
         this.setState({
             setRestrictModalShow: true,
-            recordValue: record
-        })
+            recordValue: record,
+        });
     }
-    handleSetRestrictOk = () => {// 设置限制模态框点击确认按钮
+    handleSetRestrictOk = () => { // 设置限制模态框点击确认按钮
         const form = this.formRef.props.form;
         const { dispatch } = this.props;
         const { recordValue, searchValues, args } = this.state;
@@ -150,41 +153,41 @@ export default class StockConfigList extends React.Component {
             if (err) return;
             const values = {};
             let hasValue = false;
-            for (var key in fieldsValue) {
+            for (let key in fieldsValue) {
                 if (fieldsValue[key]) {
-                    hasValue = true
+                    hasValue = true;
                     values[key] = fieldsValue[key];
                 }
             }
             if (hasValue) {
                 dispatch({
-                    type: "stock/fetchSettingConfig",
+                    type: 'stock/fetchSettingConfig',
                     params: { gno: recordValue.gno, ...values },
                     success: (res) => {
-                        Message.success("设置成功");
+                        Message.success('设置成功');
                         this.setState({
                             setRestrictModalShow: false,
-                            recordValue: {}
-                        })
+                            recordValue: {},
+                        });
                         form.resetFields();
                     },
                     error: (res) => {
                         Message.warning(res.msg);
-                    }
-                })
+                    },
+                });
             } else {
                 // 如果两个都为空，是否提示
-                Message.warning("至少一项不为空");
+                Message.warning('至少一项不为空');
             }
-        })
+        });
     }
-    handleSetRestrictCancel = () => {// 设置限制模态框点击取消按钮
+    handleSetRestrictCancel = () => { // 设置限制模态框点击取消按钮
         const form = this.formRef.props.form;
         form.resetFields();
         this.setState({
             setRestrictModalShow: false,
-            recordValue: {}
-        })
+            recordValue: {},
+        });
     }
     saveFormRef = (formRef) => {
         this.formRef = formRef;
@@ -197,22 +200,22 @@ export default class StockConfigList extends React.Component {
             args: {
                 page: pagination.current,
                 pageSize: pagination.pageSize,
-            }
+            },
         });
         history.replace({
-            search: `?page=${pagination.current}&pageSize=${pagination.pageSize}`
+            search: `?page=${pagination.current}&pageSize=${pagination.pageSize}`,
         });
         dispatch({
-            type: "stock/fetch",
+            type: 'stock/fetch',
             offset: (pagination.current - 1) * pagination.pageSize,
             limit: pagination.pageSize,
-            params: searchValues
-        })
+            params: searchValues,
+        });
     }
     toggleForm = () => {
         this.setState({
-            expand: !this.state.expand
-        })
+            expand: !this.state.expand,
+        });
     }
     // 搜索框点击搜索按钮
     handleSearch = (e) => {
@@ -222,28 +225,28 @@ export default class StockConfigList extends React.Component {
         form.validateFields((err, fieldsValue) => {
             if (err) return;
             const values = {};
-            for (var key in fieldsValue) {
+            for (let key in fieldsValue) {
                 if (fieldsValue[key]) {
-                    values[key] = fieldsValue[key]
+                    values[key] = fieldsValue[key];
                 }
             }
             this.setState({
                 searchValues: values,
                 args: {
                     page: 1,
-                    pageSize: args.pageSize
-                }
-            })
+                    pageSize: args.pageSize,
+                },
+            });
             history.replace({
-                search: `?page=1&pageSize=${args.pageSize}`
-            })
+                search: `?page=1&pageSize=${args.pageSize}`,
+            });
             dispatch({
-                type: "stock/fetch",
+                type: 'stock/fetch',
                 offset: 0,
                 limit: args.pageSize,
-                params: values
-            })
-        })
+                params: values,
+            });
+        });
     }
     // 重置搜索框
     handleFormReset = () => {
@@ -253,18 +256,18 @@ export default class StockConfigList extends React.Component {
         this.setState({
             args: {
                 page: 1,
-                pageSize: args.pageSize
+                pageSize: args.pageSize,
             },
-            searchValues: {}
-        })
+            searchValues: {},
+        });
         history.replace({
-            search: `?page=1&pageSize=${args.pageSize}`
-        })
+            search: `?page=1&pageSize=${args.pageSize}`,
+        });
         dispatch({
-            type: "stock/fetch",
+            type: 'stock/fetch',
             offset: 0,
             limit: args.pageSize,
-        })
+        });
     }
     renderSimpleForm() {
         const { getFieldDecorator } = this.props.form;
@@ -303,11 +306,12 @@ export default class StockConfigList extends React.Component {
                     </span>
                 </div>
             </Form>
-        )
+        );
     }
     renderAdvancedForm() {
         const { getFieldDecorator } = this.props.form;
-        return (<Form onSubmit={this.handleSearch} layout="inline">
+        return (
+<Form onSubmit={this.handleSearch} layout="inline">
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                 <Col md={8} sm={12}>
                     <FormItem label="商品ID">
@@ -397,7 +401,8 @@ export default class StockConfigList extends React.Component {
                     </a>
                 </span>
             </div>
-        </Form>)
+        </Form>
+);
     }
     renderForm() {
         return this.state.expand ? this.renderAdvancedForm() : this.renderSimpleForm();
@@ -409,29 +414,29 @@ export default class StockConfigList extends React.Component {
         const { page, pageSize } = args;
         const recordPage = recordArgs.page >> 0;
         const columns = [{
-            title: "序号",
-            dataIndex: "idx",
-            key: 'idx'
+            title: '序号',
+            dataIndex: 'idx',
+            key: 'idx',
         }, {
-            title: "操作人",
-            dataIndex: "operator",
-            key: "operator"
+            title: '操作人',
+            dataIndex: 'operator',
+            key: 'operator',
         }, {
-            title: "最大入库限制",
-            dataIndex: "goods_max_in_info",
-            key: "goods_max_in_info",
-            render: (val) => <span>{val || "--"}</span>
+            title: '最大入库限制',
+            dataIndex: 'goods_max_in_info',
+            key: 'goods_max_in_info',
+            render: val => <span>{val || '--'}</span>,
         }, {
-            title: "最大调拨限制",
-            dataIndex: "goods_max_out_info",
-            key: "goods_max_out_info",
-            render: (val) => <span>{val || "--"}</span>
+            title: '最大调拨限制',
+            dataIndex: 'goods_max_out_info',
+            key: 'goods_max_out_info',
+            render: val => <span>{val || '--'}</span>,
         }, {
-            title: "操作时间",
-            dataIndex: "add_time",
-            key: "add_time",
-            render: (val) => <span>{moment(val * 1000).format("YYYY-MM-DD HH:mm:ss")}</span>
-        }]
+            title: '操作时间',
+            dataIndex: 'add_time',
+            key: 'add_time',
+            render: val => <span>{moment(val * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        }];
         return (
             <PageHeaderLayout title="库存配置">
                 <Card bordered={false} className={styles['search-wrap']} title="搜索条件">
@@ -464,7 +469,7 @@ export default class StockConfigList extends React.Component {
                             width="800px"
                             onCancel={this.viewRecordCancel}
                             footer={[
-                                <div style={{ textAlign: "center" }} key="back"><Button type="primary" onClick={this.viewRecordCancel}>关闭</Button></div>,
+                                <div style={{ textAlign: 'center' }} key="back"><Button type="primary" onClick={this.viewRecordCancel}>关闭</Button></div>,
                             ]}
                         >
                             <Row className={styles.recordShow}>
@@ -495,6 +500,6 @@ export default class StockConfigList extends React.Component {
                     </div>
                 </Card>
             </PageHeaderLayout>
-        )
+        );
     }
 }

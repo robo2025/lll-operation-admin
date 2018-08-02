@@ -235,6 +235,9 @@ export const getRouterData = (app) => {
             component: dynamicWrapper(app, ['contract'], () => import('../routes/ContractManagement/ContractDetail')),
             name: '查看合同',
         },
+        '/userCenter/accountManagementList': {
+            component: dynamicWrapper(app, ['userCenter'], () => import('../routes/UserCenter/AccountManagementList')),
+        },
     };
 
     // Get name from ./menu.js or just set it in the router data.

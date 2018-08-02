@@ -374,7 +374,7 @@ export default class GoodsStockList extends React.Component {
             {
                 title: '序号',
                 dataIndex: 'idx',
-                key: 'idx',
+                render: (record, text, index) => index + 1,
             }, {
                 title: '单号',
                 dataIndex: 'order_id',

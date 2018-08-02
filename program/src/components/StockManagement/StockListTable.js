@@ -14,14 +14,11 @@ export default class StockListTabel extends React.Component {
     }
     render() {
         const { data, total, loading, current, pageSize } = this.props;
-        data.map((ele, idx) => {
-            return { ...ele, idx: idx + 1 };
-        });
         
         const columns = [{
             title: '序号',
             dataIndex: 'idx',
-            key: 'idx',
+            render: (record, text, index) => index + 1,
         }, {
             title: '商品ID',
             dataIndex: 'gno',
@@ -83,8 +80,8 @@ export default class StockListTabel extends React.Component {
         return (
             <div>
                 <Table
-dataSource={data}
-columns={columns} 
+                dataSource={data.map((ele) => { return { ...ele, key: ele.gno }; })}
+                columns={columns} 
                 rowKey={record => record.idx}
                 pagination={paginationOptions}
                 onChange={this.onStockTableChange}

@@ -30,12 +30,11 @@ const ACTION_FLAG = {
 };
 
 // 异常状态
-const ABNORMAL_TYPE = { 
-  0: '', 
-  1: '(无货)', 
-  2: '(延期)', 
+const ABNORMAL_TYPE = {
+  0: '',
+  1: '(无货)',
+  2: '(延期)',
 };
-
 
 // 订单状态
 const ORDER_STATUS = {
@@ -127,25 +126,59 @@ const SLN_PAY_STATUS = {
   4: '订单已取消',
 };
 const STOCK_OPERATION_STATUS = {
-    I:"入库",
-    S:"订单出库",
-    O:"调拨",
-    N:"第一次入库"
-}
+  I: '入库',
+  S: '订单出库',
+  O: '调拨',
+  N: '第一次入库',
+};
 const CONTRACT_STATUS = {
-    1:'未过期',
-    2:'即将过期',
-    3:'已过期'
-}
+  1: '未过期',
+  2: '即将过期',
+  3: '已过期',
+};
+// 企业性质
+const NATURE = {
+  state: '国营',
+  private: '私企',
+  institute: '研究院',
+  foreign: '外企',
+  'sino-foreign': '中外合资',
+  university: '高校',
+  other: '其他',
+};
+// 公司人数
+const PROPLE_LEVEL = {
+  1: '20',
+  2: '20-100',
+  3: '100-200',
+  4: '200-500',
+  5: '500以上',
+};
+// 所属行业
+const INDUSTRY = {
+  industry: '工业',
+  consumer: '消费业',
+  'raw-material': '原材料业',
+  service: '服务业',
+  energy: '能源业',
+  utility: '公用',
+  construction: '建筑业',
+};
+// 公司类型
+const COMPANY_TYPE = {
+  supplier: '供应商',
+  integrator: '集成商',
+  agency: '代理商',
+};
 export {
   ACTION_STATUS,
   ACTION_FLAG,
   ABNORMAL_TYPE,
   ORDER_STATUS,
   PAY_STATUS,
-  RETURNS_STATUS, 
+  RETURNS_STATUS,
   REFUND_STATUS,
-  RESPONSIBLE_PARTY, 
+  RESPONSIBLE_PARTY,
   MONTHER_ORDER_STATUS,
   PIC_TYPES,
   SHIPPING_FEE_TYPE,
@@ -153,5 +186,9 @@ export {
   PUBLISH_STATUS,
   SLN_PAY_STATUS,
   STOCK_OPERATION_STATUS,
-  CONTRACT_STATUS
+  CONTRACT_STATUS,
+  NATURE,
+  PROPLE_LEVEL,
+  INDUSTRY,
+  COMPANY_TYPE,
 };
