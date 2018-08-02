@@ -28,10 +28,9 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const AuthorizationModal = Form.create()((props) => {
   const { form, handleModalVisible, modalVisible, row } = props;
-  const { getFieldDecorator } = form;
   return (
     <Modal
-      width={1000}
+      width={1100}
       visible={modalVisible}
       onCancel={() => {
         form.resetFields();
@@ -48,6 +47,10 @@ const AuthorizationModal = Form.create()((props) => {
       }}
       title="产品授权"
     >
+      <Row style={{ marginLeft: 30, marginBottom: 8 }}>
+        <Col span={12}>企业名称：{row.company}</Col>
+        <Col span={12}>账号：{row.username}</Col>
+      </Row>
       <AuthorizationTable id={row.id} />
     </Modal>
   );
@@ -223,7 +226,7 @@ export default class AuthorizationList extends Component {
               onClick={() =>
                 this.props.dispatch(
                   routerRedux.push({
-                    pathname: '/supAccountManagement/accountListDetail',
+                    pathname: '/authorizationManagement/authorizationDetail',
                     search: `?id=${row.id}`,
                   })
                 )

@@ -15,12 +15,21 @@ import {
   Badge,
   message,
   Alert,
+  Cascader,
 } from 'antd';
 import styles from './index.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-
+function getStandardCategory(data) {
+  data.map((ele) => {
+    if (ele.children && ele.children.length > 0 && ele.level < 3) {
+      getStandardCategory(ele.children);
+    } else {
+      delete ele.children;
+    }
+  });
+}
 @connect(({ authorizationManagement, loading }) => ({
   authorizationManagement,
   loading: loading.effects['authorizationManagement/fetchAuthorizationList'],
@@ -32,18 +41,29 @@ export default class AuthorizationTable extends Component {
     selectedRowKeys: [],
   };
   componentDidMount() {
-    const { id } = this.props;
-    this.props.dispatch({
+    const { id, dispatch } = this.props;
+    dispatch({
       type: 'authorizationManagement/fetchAuthorizationList',
       payload: { id },
     });
+    dispatch({
+      type: 'authorizationManagement/fetchLevel',
+    });
   }
-  onSelectChange = (selectedRowKeys, selectedRows) => {
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
   };
   onPageChange = (page, pageSize) => {
     const fieldsValue = this.props.form.getFieldsValue();
-    const { rangeValue, district, ...others } = fieldsValue;
+    const { rangeValue, category, ...others } = fieldsValue;
+    let categoryId = {};
+    if (category && category.length > 0) {
+      categoryId = {
+        category_id_1: category[0],
+        category_id_2: category[1],
+        category_id_3: category[2],
+      };
+    }
     this.props.dispatch({
       type: 'authorizationManagement/saveAuthorizationListPagination',
       payload: { current: page, pageSize },
@@ -61,6 +81,7 @@ export default class AuthorizationTable extends Component {
           rangeValue && rangeValue.length
             ? rangeValue[1].format('YYYY-MM-DD')
             : null,
+        ...categoryId,
       },
     });
   };
@@ -78,7 +99,15 @@ export default class AuthorizationTable extends Component {
     const { dispatch, form, authorizationManagement } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const { rangeValue, ...others } = fieldsValue;
+      const { rangeValue, category, ...others } = fieldsValue;
+      let categoryId = {};
+      if (category && category.length > 0) {
+        categoryId = {
+          category_id_1: category[0],
+          category_id_2: category[1],
+          category_id_3: category[2],
+        };
+      }
       const values = {
         ...others,
         id: this.props.id,
@@ -90,6 +119,7 @@ export default class AuthorizationTable extends Component {
           rangeValue && rangeValue.length
             ? rangeValue[1].format('YYYY-MM-DD')
             : null,
+        ...categoryId,
       };
       dispatch({
         type: 'authorizationManagement/saveAuthorizationListPagination',
@@ -148,7 +178,9 @@ export default class AuthorizationTable extends Component {
     const {
       authorizationList,
       authorizationListPagination,
+      level,
     } = authorizationManagement;
+    getStandardCategory(level);
     const { getFieldDecorator } = this.props.form;
     const paginationProps = {
       ...authorizationListPagination,
@@ -170,40 +202,10 @@ export default class AuthorizationTable extends Component {
         key: 'product_name',
       },
       {
-        title: '品牌',
-        dataIndex: 'brand_name',
-        key: 'brand_name',
-      },
-      {
-        title: '注册地',
-        dataIndex: 'registration_place',
-        key: 'registration_place',
-      },
-      {
-        title: '所属三级类目',
-        dataIndex: 'category_id_3',
-        key: 'category_id_3',
-      },
-      {
-        title: '所属二级类目',
-        dataIndex: 'category_id_2',
-        key: 'category_id_2',
-        render: text => text || '-',
-      },
-      {
-        title: '所属一级类目',
-        dataIndex: 'category_id_1',
-        key: 'category_id_1',
-      },
-      {
-        title: '企业已上架商品数',
-        dataIndex: 'publish_goods_count',
-        key: 'publish_goods_count',
-      },
-      {
         title: '授权状态',
         dataIndex: 'status',
         key: 'status',
+        width: 150,
         render: text =>
           // 2已授权 1未授权
           (text === 2 ? (
@@ -215,6 +217,36 @@ export default class AuthorizationTable extends Component {
               <Badge status="error" />未授权
             </span>
           )),
+      },
+      {
+        title: '品牌',
+        dataIndex: 'brand_name',
+        key: 'brand_name',
+      },
+      {
+        title: '注册地',
+        dataIndex: 'registration_place',
+        key: 'registration_place',
+      },
+      {
+        title: '所属三级类目',
+        dataIndex: 'category_id_3.category_name',
+        key: 'category_id_3.id',
+      },
+      {
+        title: '所属二级类目',
+        dataIndex: 'category_id_2.category_name',
+        key: 'category_id_2.id',
+      },
+      {
+        title: '所属一级类目',
+        dataIndex: 'category_id_1.category_name',
+        key: 'category_id_1.id',
+      },
+      {
+        title: '企业已上架商品数',
+        dataIndex: 'publish_goods_count',
+        key: 'publish_goods_count',
       },
       {
         title: '操作',
@@ -240,7 +272,11 @@ export default class AuthorizationTable extends Component {
               <Col xll={4} md={12} sm={24}>
                 <FormItem label="所属类目">
                   {getFieldDecorator('category')(
-                    <Input placeholder="请输入" />
+                    <Cascader
+                      options={level}
+                      changeOnSelect
+                      placeholder="请选择类目"
+                    />
                   )}
                 </FormItem>
               </Col>
@@ -317,7 +353,13 @@ export default class AuthorizationTable extends Component {
           </Form>
         </Card>
         <Card style={{ marginTop: 10 }} loading={loading}>
-          <Button type="primary" onClick={() => this.handleAuthorize(this.state.selectedRowKeys)}> 批量授权</Button>
+          <Button
+            type="primary"
+            onClick={() => this.handleAuthorize(this.state.selectedRowKeys)}
+          >
+            {' '}
+            批量授权
+          </Button>
           <div style={{ marginTop: 8 }}>
             <Alert
               message={

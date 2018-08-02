@@ -1,5 +1,5 @@
 import lyRequest from '../utils/lyRequest';
-import { OPERATION_URL } from '../constant/config';
+import { OPERATION_URL, API_URL } from '../constant/config';
 
 
 export async function queryList(params) {
@@ -37,4 +37,8 @@ export async function handleAuthorize({ pnos, id }) {
     method: 'put',
     data: { pnos },
   });
+}
+// 获取级联目录
+export async function queryCatalogLevel({ pid = 0 }) {
+  return lyRequest(`${API_URL}/product_categories/level_selection?pid=${pid}`);  
 }

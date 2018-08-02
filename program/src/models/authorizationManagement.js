@@ -4,6 +4,7 @@ import {
   queryAuthorizationList,
   handleAuthorize,
   handleCancelAuthorize,
+  queryCatalogLevel,
 } from '../services/authorizationManagement';
 
 export default {
@@ -13,6 +14,7 @@ export default {
     supplierList: [],
     profile: {},
     authorizationList: [],
+    level: [],
     authorizationListPagination: { current: 1, pageSize: 10 },
     pagination: { current: 1, pageSize: 10 },
   },
@@ -129,7 +131,21 @@ export default {
         callback(false, msg);
       }
     },
-    
+    *fetchLevel({ payload, callback }, { call, put }) {
+      const response = yield call(queryCatalogLevel, { ...payload });
+      const { rescode, msg } = response;
+      if (rescode === '10000') {
+        if (callback) {
+          callback(true, msg);
+        }
+      } else if (callback) {
+        callback(false, msg);
+      }
+      yield put({
+        type: 'saveLevel',
+        payload: response.data,
+      });
+    },
   },
 
   reducers: {
@@ -161,6 +177,12 @@ export default {
       return {
         ...state,
         authorizationListPagination: payload,
+      };
+    },
+    saveLevel(state, { payload }) {
+      return {
+        ...state,
+        level: payload,
       };
     },
   },
