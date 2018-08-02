@@ -239,6 +239,10 @@ export const getRouterData = (app) => {
             component: dynamicWrapper(app, ['authorizationManagement'], () => import('../routes/AuthorizationManagement/AuthorizationList')),
             name: '供应商产品授权列表',
         },
+        '/authorizationManagement/authorizationDetail': {
+            component: dynamicWrapper(app, ['authorizationManagement'], () => import('../routes/AuthorizationManagement/AuthorizationDetail')),
+            name: '供应商产品授权详情',
+        },
     };
 
     // Get name from ./menu.js or just set it in the router data.
