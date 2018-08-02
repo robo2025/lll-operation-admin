@@ -160,6 +160,17 @@ const menuData = [
     ],
   },
   {
+    name: '供应商产品授权',
+    path: 'authorizationManagement',
+    icon: 'check-circle-o',
+    children: [
+      {
+        name: '供应商产品授权列表',
+        path: 'authorizationList',
+      },
+    ],
+  },
+  {
     name: '用户中心',
     path: 'userCenter',
     icon: 'user',

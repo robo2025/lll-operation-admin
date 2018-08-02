@@ -5,7 +5,7 @@ import { Card, Form, Spin } from 'antd';
 import { getAreaBycode } from '../../utils/cascader-address-options';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { FILE_SERVER } from '../../constant/config';
-import RecordTable from './RecordTable';
+import RecordTable from '../../components/RecordTable';
 
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -99,7 +99,7 @@ export default class AccountCheckDetail extends Component {
           </FormItem>
           {qualifications.map(item => (
             <FormItem
-              key={item.id}
+              key={item.effective_date + item.expire_date}
               {...formItemLayout}
               label={`${IMAGE_NAME[item.qualifi_name]}`}
               style={style}

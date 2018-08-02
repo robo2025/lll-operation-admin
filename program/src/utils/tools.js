@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { LOGIN_URL, VERIFY_PAGE } from '../constant/config';
+import { LOGIN_URL, VERIFY_PAGE, TOKEN_NAME } from '../constant/config';
 
 // 验证是否登录
 export function verifyLogin() {
@@ -9,20 +9,20 @@ export function verifyLogin() {
   if (paramas.access_token) {
     const accessToken = paramas.access_token.split('#/')[0];
     if (location.host.indexOf('robo2025') !== -1) {
-      Cookies.set('access_token', accessToken, { expires: 7, path: '/', domain: '.robo2025.com' });
+      Cookies.set(TOKEN_NAME, accessToken, { expires: 7, path: '/', domain: '.robo2025.com' });
     } else {
-      Cookies.set('access_token', accessToken);
+      Cookies.set(TOKEN_NAME, accessToken);
     } 
 } else {
     window.location.href = `${LOGIN_URL}?next=${VERIFY_PAGE}`;
   }
   // 读取cookie，如果没有access_token,则跳转到登录页面
-  /* if (!Cookies.get('access_token')) {
+  /* if (!Cookies.get(TOKEN_NAME)) {
     console.log('用户未登录');
     // window.location.href = REGISTER_URL + '?next='+ LOGIN_URL + "?next=" + NEXT_URL;
     window.location.href = LOGIN_URL + '?next=' + NEXT_URL;
   } else {
-    console.log('用户已登录',Cookies.get('access_token'));
+    console.log('用户已登录',Cookies.get(TOKEN_NAME));
     // window.location.href = HOME_PAGE;
   } */
 }

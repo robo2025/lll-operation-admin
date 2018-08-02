@@ -9,21 +9,13 @@ import { HOME_PAGE } from '../../constant/config';
 })
 class Test extends React.Component {
   componentDidMount() {
-    verifyLogin();
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'user/fetch',
-      success: (res) => { 
-        Cookies.set('userinfo', JSON.stringify(res.data), { expires: 7 });        
-        window.location.href = HOME_PAGE; 
-      },
+    this.props.dispatch({
+      type: 'user/verify',
     });
   }
 
   render() {
-    return (
-      <div>跳转中...</div>
-    );
+    return <div>跳转中...</div>;
   }
 }
 export default Test;

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { message } from 'antd';
 import EditableProfile from './EditableProfile';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import RecordTable from './RecordTable';
+import RecordTable from '../../components/RecordTable';
 
 @connect(({ supAudit }) => ({
   profile: supAudit.profile,

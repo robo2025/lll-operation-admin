@@ -1,27 +1,17 @@
 import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
-import { URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE, MAIN_URL } from '../constant/config';
+import { TOKEN_NAME, URL, USERS_URL, LOGIN_URL, LOGOUT_URL, REGISTER_URL, VERIFY_PAGE, HOME_PAGE, MAIN_URL } from '../constant/config';
 
 
 // 获取用户信息
 export async function getUserInfo() {
-  const accessToken = Cookies.get('access_token');
-  return lyRequest(`${URL}/server/verify`, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+  return lyRequest(`${URL}/server/verify`);
 }
 
 
 // 获取供应商信息
 export async function getSupplierInfo(supplierid) {
-  const accessToken = Cookies.get('access_token');
-  return lyRequest(`${USERS_URL}/suppliers/${supplierid}`, {
-    headers: {
-      Authorization: accessToken,
-    },
-  });
+  return lyRequest(`${USERS_URL}/suppliers/${supplierid}`);
 }
 
 // 注册操作
@@ -30,9 +20,9 @@ export function register() {
 }
 // 登出
 export function logout() {
-  const accessToken = Cookies.get('access_token');
+  const accessToken = Cookies.get(TOKEN_NAME);
   if (accessToken) {
-    Cookies.remove('access_token');
+    Cookies.remove(TOKEN_NAME);
     window.location.href = `${LOGOUT_URL}?access_token=${accessToken}&next=${HOME_PAGE}`;
   } else {
     window.location.href = `${LOGOUT_URL}`;

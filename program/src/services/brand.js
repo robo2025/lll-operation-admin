@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import lyRequest from '../utils/lyRequest';
 import { API_URL } from '../constant/config';
 import { queryString } from '../utils/tools';
@@ -9,12 +8,7 @@ import { queryString } from '../utils/tools';
  *
 */
 export async function queryBrands({ params, offset = 0, limit = 10 }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/brands?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`, {
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/brands?offset=${offset}&limit=${limit}&${queryString.toQueryString(params)}`);
 }
 
 
@@ -24,12 +18,8 @@ export async function queryBrands({ params, offset = 0, limit = 10 }) {
  * @param {object} data 产品数据
 */
 export async function addBrand({ data }) {
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/brands`, {
     method: 'post',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       ...data,
     },
@@ -44,12 +34,8 @@ export async function addBrand({ data }) {
  *
 */
 export async function modifyBrand({ bno, data }) {
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/brands/${bno}`, {
     method: 'put',
-    headers: {
-      Authorization: acessToken,
-    },
     data: {
       ...data,
     },
@@ -62,12 +48,8 @@ export async function modifyBrand({ bno, data }) {
  * @param {array} ids 产品id数组
 */
 export async function removeBrand({ bno }) {
-  const acessToken = Cookies.get('access_token');
   return lyRequest(`${API_URL}/brands/${bno}`, {
     method: 'delete',
-    headers: {
-      Authorization: acessToken,
-    },
   });
 }
 
@@ -78,22 +60,10 @@ export async function removeBrand({ bno }) {
  * @param {string} bno 品牌id
 */
 export async function queryBrandDetail({ bno }) {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/brands/${bno}`, {
-    method: 'get',
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/brands/${bno}`);
 }
 
 // 获取所有品牌列表：不做分页限制
 export async function queryAllBrands() {
-  const acessToken = Cookies.get('access_token');
-  return lyRequest(`${API_URL}/brands/all_brands`, {
-    method: 'get',
-    headers: {
-      Authorization: acessToken,
-    },
-  });
+  return lyRequest(`${API_URL}/brands/all_brands`);
 }
