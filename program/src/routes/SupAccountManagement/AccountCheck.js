@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import { Modal, Radio, Input, Form, message, Spin } from 'antd';
+import RecordTable from '../../components/RecordTable';
 import EditableProfile from './EditableProfile';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import RecordTable from './RecordTable';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
