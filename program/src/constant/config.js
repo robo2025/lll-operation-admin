@@ -1,9 +1,9 @@
 /*
 * 后台管理系统常量：
 * */
-export const TOKEN_NAME = 'access_token';
+export const TOKEN_NAME = 'test_access_token';
 // 单点登录URL
-export const URL = 'https://testlogin.robo2025.com';
+export const URL = '//testapi.robo2025.com/sso';
 
 // 网站内容接口URL
 export const API_URL = '//testapi.robo2025.com/scm/operation';
