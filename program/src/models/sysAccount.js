@@ -1,19 +1,37 @@
-import { query } from '../services/upload';
+import { queryPositionList, editPosition } from '../services/sysAccount';
 
 export default {
   namespace: 'sysAccount',
-
   state: {
-    upload_token: '',
+    positionList: [],
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(query);
+    *fetchPositions({ success, error }, { call, put }) {
+      const res = yield call(queryPositionList);
+      const { rescode } = res;
+      if (rescode >> 0 === 10000) {
+        if (success) {
+          success(res);
+        }
+      } else if (error) {
+        error(res);
+      }
       yield put({
         type: 'save',
-        payload: response,
+        payload: res.data,
       });
+    },
+    *fetchEditPosition({ params, success, error }, { call }) {
+      const res = yield call(editPosition, { params });
+      const { rescode } = res;
+      if (rescode >> 0 === 10000) {
+        if (success) {
+          success(res);
+        }
+      } else if (error) {
+        error(res);
+      }
     },
   },
 
@@ -21,7 +39,7 @@ export default {
     save(state, action) {
       return {
         ...state,
-        upload_token: action.payload.upload_token,
+        positionList: action.payload,
       };
     },
   },

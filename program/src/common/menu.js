@@ -132,7 +132,7 @@ const menuData = [
   {
     name: '系统账号管理',
     path: 'sysAccountManagement',
-    icon: 'team',
+    icon: 'select',
     children: [
       {
         name: '账号列表',
