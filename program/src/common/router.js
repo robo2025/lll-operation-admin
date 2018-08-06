@@ -279,6 +279,11 @@ export const getRouterData = (app) => {
         import('../routes/SysAccountManagement/Positions')
       ),
     },
+    '/sysAccountManagement/department': {
+        component: dynamicWrapper(app, ['sysAccount'], () =>
+          import('../routes/SysAccountManagement/Department')
+        ),
+      },
     '/supAccountManagement/accountCheckList': {
       component: dynamicWrapper(app, ['supAudit'], () =>
         import('../routes/SupAccountManagement/AccountCheckList')

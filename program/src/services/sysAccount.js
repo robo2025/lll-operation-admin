@@ -11,3 +11,13 @@ export async function editPosition({ params }) {
         data: { data: params },
     });
 }
+
+export async function deletePosition({ positionId }) {
+    return lyRequest(`${USERS_SERVER}/operation/positions/${positionId}`, {
+        method: 'delete',
+    });
+}
+
+export async function queryDepartmentList() {
+    return lyRequest(`${USERS_SERVER}/operation/depts`);
+}

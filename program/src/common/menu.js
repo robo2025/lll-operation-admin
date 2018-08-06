@@ -139,6 +139,10 @@ const menuData = [
         path: 'accountList',
       },
       {
+        name: '部门管理',
+        path: 'department',
+      },
+      {
         name: '职位管理',
         path: 'positions',
       },

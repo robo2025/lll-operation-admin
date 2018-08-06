@@ -1,11 +1,15 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Card, Form, Input, Icon, Button } from 'antd';
+import { Card, message, Spin, Form } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import EditPosition from './EditPostiton';
 
-@connect(({ sysAccount }) => ({
+@Form.create()
+@connect(({ sysAccount, loading }) => ({
   positionList: sysAccount.positionList,
+  loading: loading.effects['sysAccount/fetchPositions'],
+  editLoading: loading.effects['sysAccount/fetchEditPosition'],
+  deleteLoading: loading.effects['sysAccount/fetchDeletePostiton'],
 }))
 class Positions extends React.Component {
   componentDidMount() {
@@ -14,7 +18,7 @@ class Positions extends React.Component {
     });
   }
   onSubmit = (values) => {
-    const { dispatch } = this.props;
+    const { dispatch, form } = this.props;
     const { keys, ...others } = values;
     let result = [];
     Object.keys(others).forEach((id) => {
@@ -26,16 +30,37 @@ class Positions extends React.Component {
         },
       ];
     });
-    console.log(123);
     dispatch({
-        type: 'sysAccount/fetchEditPosition',
-        params: result,
-        success: (res) => {
-            console.log(res);
-        },
-        error: (error) => {
-            console.log(error);
-        },
+      type: 'sysAccount/fetchEditPosition',
+      params: result,
+      success: (res) => {
+        message.success(res.msg);
+        dispatch({
+          type: 'sysAccount/fetchPositions',
+          success: () => {
+            form.resetFields();
+          },
+        });
+      },
+      error: (error) => {
+        message.error(error.msg);
+      },
+    });
+  };
+  onRemove = (k) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'sysAccount/fetchDeletePostiton',
+      positionId: k.id,
+      success: (res) => {
+        message.success(res.msg);
+        dispatch({
+            type: 'sysAccount/fetchPositions',
+          });
+      },
+      error: (error) => {
+        message.error(error.msg);
+      },
     });
   };
   compare(pro) {
@@ -53,13 +78,21 @@ class Positions extends React.Component {
       }
     };
   }
+ 
   render() {
-    const { positionList } = this.props;
+    const { positionList, loading, editLoading, deleteLoading, form } = this.props;
     positionList.sort(this.compare('id'));
     return (
       <PageHeaderLayout title="职位信息">
         <Card title="所有职位">
-          <EditPosition initData={positionList} onSubmit={this.onSubmit} />
+            <Spin spinning={loading || editLoading || deleteLoading || false}>
+          <EditPosition
+            initData={positionList}
+            onSubmit={this.onSubmit}
+            onRemove={this.onRemove}
+            form={form}
+          />
+            </Spin>
         </Card>
       </PageHeaderLayout>
     );
