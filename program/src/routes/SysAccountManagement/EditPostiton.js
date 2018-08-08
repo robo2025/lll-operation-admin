@@ -3,8 +3,13 @@ import { Card, Form, Input, Icon, Button, Popconfirm, message } from 'antd';
 
 const FormItem = Form.Item;
 let uuid = -1;
-
+@Form.create()
 export default class EditPosition extends React.Component {
+  componentDidMount() {
+    if (this.props.bindForm) {
+      this.props.bindForm(this.props.form);
+    }
+  }
   remove = (k) => {
     const { form, onRemove } = this.props;
     const keys = form.getFieldValue('keys');
@@ -26,7 +31,6 @@ export default class EditPosition extends React.Component {
       keys: nextKeys,
     });
   };
-
   handleSubmit = (e) => {
     e.preventDefault();
     const { form, onSubmit } = this.props;
@@ -38,6 +42,10 @@ export default class EditPosition extends React.Component {
   };
 
   render() {
+    let hideDeleteIcon = false;
+      if (this.props.hideDeleteIcon) {
+        hideDeleteIcon = this.props.hideDeleteIcon;
+      }
     const { initData, form } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     const formItemLayoutWithOutLabel = {
@@ -74,6 +82,8 @@ export default class EditPosition extends React.Component {
               style={{ fontSize: 16, marginLeft: 8, color: 'red' }}
               onClick={() => this.remove(k)}
             />
+          ) : hideDeleteIcon ? (
+            ''
           ) : (
             <Popconfirm
               placement="topLeft"

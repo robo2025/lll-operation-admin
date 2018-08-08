@@ -1,0 +1,45 @@
+.treeSelect {
+  :global {
+    .ant-tree.ant-tree-directory
+      > li.ant-tree-treenode-selected
+      > span.ant-tree-node-content-wrapper:before,
+    .ant-tree.ant-tree-directory
+      .ant-tree-child-tree
+      > li.ant-tree-treenode-selected
+      > span.ant-tree-node-content-wrapper:before {
+      background: #fff;
+    }
+    .ant-tree.ant-tree-directory
+      > li
+      span.ant-tree-node-content-wrapper.ant-tree-node-selected,
+    .ant-tree.ant-tree-directory
+      .ant-tree-child-tree
+      > li
+      span.ant-tree-node-content-wrapper.ant-tree-node-selected {
+      color: #333;
+    }
+    .ant-tree.ant-tree-directory
+      > li.ant-tree-treenode-selected
+      > span.ant-tree-switcher,
+    .ant-tree.ant-tree-directory
+      .ant-tree-child-tree
+      > li.ant-tree-treenode-selected
+      > span.ant-tree-switcher {
+      color: #333;
+    }
+    .ant-tree li span.ant-tree-switcher,
+    .ant-tree li span.ant-tree-iconEle {
+      width: 8px;
+    }
+    .anticon:before {
+      display: none;
+    }
+    .ant-tree li {
+      width: 30px;
+    }
+    .ant-tree.ant-tree-directory > li span.ant-tree-node-content-wrapper:hover:before, 
+    .ant-tree.ant-tree-directory .ant-tree-child-tree > li span.ant-tree-node-content-wrapper:hover:before {
+        background-color: #fff;
+    }
+  }
+}

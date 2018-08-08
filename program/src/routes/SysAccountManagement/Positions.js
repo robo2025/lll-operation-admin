@@ -1,10 +1,9 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Card, message, Spin, Form } from 'antd';
+import { Card, message, Spin } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import EditPosition from './EditPostiton';
 
-@Form.create()
 @connect(({ sysAccount, loading }) => ({
   positionList: sysAccount.positionList,
   loading: loading.effects['sysAccount/fetchPositions'],
@@ -18,7 +17,7 @@ class Positions extends React.Component {
     });
   }
   onSubmit = (values) => {
-    const { dispatch, form } = this.props;
+    const { dispatch } = this.props;
     const { keys, ...others } = values;
     let result = [];
     Object.keys(others).forEach((id) => {
@@ -38,7 +37,7 @@ class Positions extends React.Component {
         dispatch({
           type: 'sysAccount/fetchPositions',
           success: () => {
-            form.resetFields();
+            this.$formObj.resetFields();
           },
         });
       },
@@ -78,9 +77,11 @@ class Positions extends React.Component {
       }
     };
   }
- 
+ bindForm=(form) => {
+     this.$formObj = form;
+ }
   render() {
-    const { positionList, loading, editLoading, deleteLoading, form } = this.props;
+    const { positionList, loading, editLoading, deleteLoading } = this.props;
     positionList.sort(this.compare('id'));
     return (
       <PageHeaderLayout title="职位信息">
@@ -90,7 +91,7 @@ class Positions extends React.Component {
             initData={positionList}
             onSubmit={this.onSubmit}
             onRemove={this.onRemove}
-            form={form}
+            bindForm={this.bindForm}
           />
             </Spin>
         </Card>
