@@ -170,6 +170,16 @@ const COMPANY_TYPE = {
   integrator: '集成商',
   agency: '代理商',
 };
+// 账号状态
+const ACTIVE_STATUS = {
+    0: '禁用',
+    1: '启用',
+};
+// 用户类型
+const USER_TYPE = {
+    3: '管理员',
+    4: '超级管理员',
+};
 export {
   ACTION_STATUS,
   ACTION_FLAG,
@@ -191,4 +201,6 @@ export {
   PROPLE_LEVEL,
   INDUSTRY,
   COMPANY_TYPE,
+  ACTIVE_STATUS,
+  USER_TYPE,
 };

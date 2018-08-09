@@ -139,6 +139,10 @@ const menuData = [
         path: 'accountList',
       },
       {
+        name: '角色权限',
+        path: 'rolePermission',
+      },
+      {
         name: '部门管理',
         path: 'department',
       },

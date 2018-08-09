@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import moment from 'moment';
 import {
   Card,
@@ -16,7 +16,6 @@ import {
   Icon,
   message,
   Spin,
-  Badge,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -25,7 +24,6 @@ import {
   convertCodeToName,
   convertNameToCode,
 } from '../../constant/operationPermissionDetail';
-import { ACTIVE_STATUS, USER_TYPE } from '../../constant/statusList';
 import styles from './index.less';
 
 const FormItem = Form.Item;
@@ -33,7 +31,7 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
 const { confirm } = Modal;
-const BADGE_STATUS = ['error', 'success'];
+
 const RoleModal = Form.create({
   mapPropsToFields(props) {
     const { rowSelected } = props;
@@ -83,6 +81,7 @@ const RoleModal = Form.create({
     },
   };
   const disabled = modalType === 'view';
+  const modalTitle = modalType === 'view' ? '查看角色' : modalType === 'modify' ? '编辑角色' : '新增角色';
   const checkAll = () => {
     if (
       form.getFieldValue('permissions') &&
@@ -112,7 +111,7 @@ const RoleModal = Form.create({
   return (
     <Modal
       destroyOnClose
-      title="新增角色"
+      title={modalTitle}
       visible={visible}
       width={610}
       onCancel={onRoleModalCancal}
@@ -130,9 +129,7 @@ const RoleModal = Form.create({
               ],
             })(
               <Select placeholder="请选择" disabled={disabled}>
-                {deptLevel.map(ele => (
-                  <Option key={ele.name}>{ele.name}</Option>
-                ))}
+                {deptLevel.map(ele => <Option key={ele.name}>{ele.name}</Option>)}
               </Select>
             )}
           </FormItem>
@@ -187,11 +184,11 @@ const RoleModal = Form.create({
 @Form.create()
 @connect(({ sysAccount, loading }) => ({
   sysAccount,
-  loading: loading.effects['sysAccount/fetchAccountList'],
+  loading: loading.effects['sysAccount/fetchRoleList'],
   editLoading: loading.effects['sysAccount/fetchEditRole'],
   addLoading: loading.effects['sysAccount/fetchAddRole'],
 }))
-export default class AccountList extends React.Component {
+export default class RolePermission extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -199,7 +196,6 @@ export default class AccountList extends React.Component {
         page: 1,
         pageSize: 10,
       },
-      expandForm: false,
       searchValues: {},
       visible: false,
       rowSelected: {},
@@ -208,7 +204,7 @@ export default class AccountList extends React.Component {
   }
   componentDidMount() {
     this.onGetLevel();
-    this.onGetAccountList({
+    this.onGetRoleList({
       params: {},
       offset: 0,
       limit: 10,
@@ -220,10 +216,10 @@ export default class AccountList extends React.Component {
       type: 'sysAccount/fetchDeptLevel',
     });
   }
-  onGetAccountList({ params, offset, limit }) {
+  onGetRoleList({ params, offset, limit }) {
     const { dispatch } = this.props;
     dispatch({
-      type: 'sysAccount/fetchAccountList',
+      type: 'sysAccount/fetchRoleList',
       params,
       offset,
       limit,
@@ -254,7 +250,7 @@ export default class AccountList extends React.Component {
               pageSize: args.pageSize,
             },
           });
-          this.onGetAccountList({
+          this.onGetRoleList({
             params: {},
             offset: 0,
             limit: args.pageSize,
@@ -276,7 +272,7 @@ export default class AccountList extends React.Component {
           this.setState({
             visible: false,
           });
-          this.onGetAccountList({
+          this.onGetRoleList({
             params: searchValues,
             offset: (args.page - 1) * args.pageSize,
             limit: args.pageSize,
@@ -316,7 +312,7 @@ export default class AccountList extends React.Component {
                 },
               });
               form.resetFields();
-              that.onGetAccountList({
+              that.onGetRoleList({
                 params: {},
                 offset: 0,
                 limit: args.pageSize,
@@ -342,7 +338,7 @@ export default class AccountList extends React.Component {
         pageSize: pagination.pageSize,
       },
     });
-    this.onGetAccountList({
+    this.onGetRoleList({
       params: searchValues,
       offset: (pagination.current - 1) * pagination.pageSize,
       limit: pagination.pageSize,
@@ -372,11 +368,11 @@ export default class AccountList extends React.Component {
         },
         searchValues: values,
       });
-        this.onGetAccountList({
-          params: values,
-          offset: 0,
-          limit: args.pageSize,
-        });
+      this.onGetRoleList({
+        params: values,
+        offset: 0,
+        limit: args.pageSize,
+      });
     });
   };
   handleFormReset = () => {
@@ -391,7 +387,7 @@ export default class AccountList extends React.Component {
       },
       searchValues: {},
     });
-    this.onGetAccountList({
+    this.onGetRoleList({
       params: {},
       offset: 0,
       limit: args.pageSize,
@@ -425,7 +421,6 @@ export default class AccountList extends React.Component {
     const { form, sysAccount } = this.props;
     const { getFieldDecorator } = form;
     const { deptLevel } = sysAccount;
-    const { expandForm } = this.state;
     const formItemLayout = {
       wrapperCol: {
         xs: 17,
@@ -437,97 +432,46 @@ export default class AccountList extends React.Component {
     return (
       <Form onSubmit={this.handleSearch} style={{ marginBottom: 20 }}>
         <Row gutter={{ md: 10, xs: 12 }}>
-          <Col md={8} xs={24}>
-            <FormItem label="用户名" {...formItemLayout}>
-              {getFieldDecorator('username')(<Input placeholder="请输入" />)}
+          <Col xl={8} md={12} xs={12}>
+            <FormItem label="所属部门" {...formItemLayout}>
+              {getFieldDecorator('dept_id')(
+                <Select placeholder="请选择">
+                <Option value="">全部</Option>
+                  {deptLevel.map(ele => <Option key={ele.id}>{ele.name}</Option>)}
+                </Select>
+              )}
             </FormItem>
           </Col>
-          <Col md={8} xs={24}>
-            <FormItem label="姓名" {...formItemLayout}>
-              {getFieldDecorator('realname')(<Input placeholder="请输入" />)}
+          <Col xl={8} md={12} xs={12}>
+            <FormItem label="角色名称" {...formItemLayout}>
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          <Col md={8} xs={24}>
-            <FormItem label="联系方式" {...formItemLayout}>
-              {getFieldDecorator('telphone')(<Input placeholder="请输入" />)}
+          <Col xl={8} md={12} xs={12}>
+            <FormItem label="创建日期" {...formItemLayout}>
+              {getFieldDecorator('create_time')(<RangePicker />)}
             </FormItem>
           </Col>
-          {expandForm ? (
-            <Fragment>
-              <Col md={8} xs={24}>
-                <FormItem label="账号状态" {...formItemLayout}>
-                  {getFieldDecorator('active_status')(
-                    <Select placeholder="请选择">
-                      <Option value="">全部</Option>
-                      <Option value="0">禁用</Option>
-                      <Option value="1">启用</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={8} xs={24}>
-                <FormItem label="所属部门" {...formItemLayout}>
-                  {getFieldDecorator('dept_id')(
-                    <Select placeholder="请选择">
-                    <Option value="">全部</Option>
-                      {deptLevel.map(ele => (
-                        <Option key={ele.id}>{ele.name}</Option>
-                      ))}
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={8} xs={24}>
-                <FormItem label="创建日期" {...formItemLayout}>
-                  {getFieldDecorator('create_time')(
-                    <RangePicker style={{ width: '100%' }} />
-                  )}
-                </FormItem>
-              </Col>
-            </Fragment>
-          ) : null}
-        </Row>
-        <div style={{ overflow: 'hidden' }}>
-          <span style={{ float: 'right', marginBottom: 24 }}>
+          <Col
+            xl={{ span: 8, offset: 16 }}
+            md={12}
+            xs={12}
+            style={{ textAlign: 'right' }}
+          >
             <Button type="primary" htmlType="submit">
               查询
             </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+            <Button style={{ marginLeft: 10 }} onClick={this.handleFormReset}>
               重置
             </Button>
-            <span
-              style={{ marginLeft: 8 }}
-              onClick={this.toggleForm}
-              className={styles.unfold}
-            >
-              {expandForm ? (
-                <a
-                  style={{ marginLeft: 15 }}
-                  onClick={() => {
-                    this.setState({ expandForm: false });
-                  }}
-                >
-                  收起<Icon type="up" />
-                </a>
-              ) : (
-                <a
-                  style={{ marginLeft: 15 }}
-                  onClick={() => {
-                    this.setState({ expandForm: true });
-                  }}
-                >
-                  展开<Icon type="down" />
-                </a>
-              )}
-            </span>
-          </span>
-        </div>
+          </Col>
+        </Row>
       </Form>
     );
   }
   render() {
     const { sysAccount, loading, editLoading, addLoading } = this.props;
-    const { accountList, accountTotal, deptLevel } = sysAccount;
+    const { roleList, roleListTotal, deptLevel } = sysAccount;
     const { args, visible, rowSelected, modalType } = this.state;
     const { page, pageSize } = args;
     const columns = [
@@ -537,117 +481,70 @@ export default class AccountList extends React.Component {
         render: (record, text, index) => index + 1,
       },
       {
-        title: '用户名',
-        key: 'username',
-        dataIndex: 'username',
-      },
-      {
-        title: '姓名',
-        key: 'realname',
-        dataIndex: 'realname',
-        render: (val, record) => (record.user_type === 4 ? '--' : val || '--'),
-      },
-      {
-        title: '联系方式',
-        key: 'telphone',
-        render: record =>
-          (record.user_type === 4 ? '--' : record.profile.telphone || '--'),
+        title: '角色名称',
+        key: 'name',
+        dataIndex: 'name',
       },
       {
         title: '所属部门',
         key: 'dept_name',
-        render: record =>
-          (record.user_type === 4 ? '--' : record.profile.group.dept_name || '--'),
+        dataIndex: 'dept_name',
       },
       {
-        title: '角色名称',
-        key: 'user_type',
-        dataIndex: 'user_type',
-        render: val => USER_TYPE[val],
+        title: '已有账号数',
+        key: 'user_count',
+        dataIndex: 'user_count',
       },
-        // {
-        //   title: '职位',
-        //   key: 'position',
-        //   render: record => record.profile.position || '--',
-        // },
       {
         title: '创建日期',
         key: 'created_time',
-        render: record =>
-          (record.user_type === 4
-            ? '--'
-            : moment(record.created_time * 1000).format('YYYY-MM-DD HH:mm:ss')),
-      },
-      {
-        title: '账号状态',
-        key: 'is_active',
-        dataIndex: 'is_active',
-        render: val => (
-          <Badge status={BADGE_STATUS[val]} text={ACTIVE_STATUS[val]} />
-        ),
+        dataIndex: 'created_time',
+        render: val => moment(val * 1000).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '操作',
-        width: 200,
-        fixed: 'right',
         key: 'operation',
-        render: record =>
-          (record.user_type === 4 ? (
+        render: record => (
+          <div>
+            <a
+              href=" javascript:;"
+              onClick={() => this.handleRoleModify(record)}
+            >
+              编辑
+            </a>
+            <Divider type="vertical" />
             <a href=" javascript:;" onClick={() => this.handleRoleView(record)}>
               查看
             </a>
-          ) : (
-            <div>
-              <a
-                href=" javascript:;"
-                onClick={() => this.handleRoleModify(record)}
-              >
-                编辑
-              </a>
-              <Divider type="vertical" />
-              <a
-                href=" javascript:;"
-                onClick={() => this.handleRoleView(record)}
-              >
-                查看
-              </a>
-              <Divider type="vertical" />
-              <a
-                href=" javascript:;"
-                onClick={() => this.handleRoleView(record)}
-              >
-                禁用
-              </a>
-              <Divider type="vertical" />
-              <a href=" javascript:;" onClick={() => this.onDelete(record)}>
-                删除
-              </a>
-            </div>
-          )),
+            <Divider type="vertical" />
+            <a href=" javascript:;" onClick={() => this.onDelete(record)}>
+              删除
+            </a>
+          </div>
+        ),
       },
     ];
     const paginationOptions = {
       current: page >> 0,
       pageSize: pageSize >> 0,
-      total: accountTotal >> 0,
+      total: roleListTotal >> 0,
       showSizeChanger: true,
       showQuickJumper: true,
     };
     return (
-      <PageHeaderLayout title="账号列表">
+      <PageHeaderLayout title="角色列表">
         <Card title="搜索条件" style={{ marginBottom: 30 }}>
           {this.renderForm()}
         </Card>
         <Card>
           <div style={{ marginBottom: 20 }}>
             <Button type="primary" onClick={this.handleRoleAdd}>
-              <Icon type="plus" />新增账号
+              <Icon type="plus" />新增角色
             </Button>
           </div>
           <Table
             columns={columns}
-            scroll={{ x: 1300 }}
-            dataSource={accountList.map((ele) => {
+            dataSource={roleList.map((ele) => {
               return { ...ele, key: ele.created_time };
             })}
             loading={loading}

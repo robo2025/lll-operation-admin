@@ -15,7 +15,7 @@ const InputGroup = Input.Group;
 const { RangePicker } = DatePicker;
 const plainOptions = ['gno', 'product_name', 'brand_name', 'english_name', 'partnumber', 'registration_place', 'category', 'price', 'supplier_name', 'created_time', 'auditor', 'audit_time', 'stock', 'min_buy', 'audit_status', 'publish_status'];// 所有选项
 function getStandardCategory(data) {
-    data.map(ele => {
+    data.map((ele) => {
         ele.value = ele.id;
         ele.label = ele.category_name;
         if (ele.children && ele.children.length > 0 && ele.level < 3) {
@@ -23,7 +23,7 @@ function getStandardCategory(data) {
         } else {
             delete ele.children;
         }
-    })
+    });
 }
 
 @connect(({ loading, good, catalog }) => ({
@@ -57,8 +57,8 @@ export default class GoodsMananger extends Component {
             limit: args.pageSize,
         });
         dispatch({
-            type: "catalog/fetchLevel"
-        })
+            type: 'catalog/fetchLevel',
+        });
     }
 
     onDatepickerChange = (date, dateString) => {
@@ -88,26 +88,26 @@ export default class GoodsMananger extends Component {
 
     // 取消导出数据
     handleCancel = () => {
-        const {form} = this.props;
-        form.resetFields(['export_audit_status','export_publish_status','export_create_time']);
+        const { form } = this.props;
+        form.resetFields(['export_audit_status', 'export_publish_status', 'export_create_time']);
         this.setState({
             exportFields: [], // 导出产品字段 
             isCheckAll: false,
-            isShowExportModal: false
-        })
+            isShowExportModal: false,
+        });
     }
     // 确定导出数据
     handleOk = (e) => {
         e.preventDefault();
         const { exportFields } = this.state;
         if (exportFields.length <= 0) {
-            message.warning("请选择导出项");
+            message.warning('请选择导出项');
             return;
         }
         const { form, dispatch } = this.props;
         form.validateFields((err, values) => {
             if (err) return;
-            const filterValues = {}
+            const filterValues = {};
             if (values.export_create_time && values.export_create_time.length > 0) {
                 filterValues.created_start = values.export_create_time[0].format('YYYY-MM-DD');
                 filterValues.created_end = values.export_create_time[1].format('YYYY-MM-DD');
@@ -119,17 +119,16 @@ export default class GoodsMananger extends Component {
                 params: filterValues,
                 fields: exportFields,
                 success: (res) => {
-                    window.open(`${OPERATION_URL}/operation/goods_reports?filename=${res.filename}`,'_self');
+                    window.open(`${OPERATION_URL}/operation/goods_reports?filename=${res.filename}`, '_self');
                     this.setState({
                         exportFields: [], // 导出产品字段 
                         isCheckAll: false,
-                        isShowExportModal: false
-                    })
+                        isShowExportModal: false,
+                    });
                 },
                 error: (res) => { message.error(res.msg); },
             });
-        })
-
+        });
     }
 
     // 上下架商品
@@ -146,7 +145,7 @@ export default class GoodsMananger extends Component {
                     type: 'good/fetch',
                     offset: (args.page - 1) * args.pageSize,
                     limit: args.pageSize,
-                    params: formValues
+                    params: formValues,
                 });
             },
             error: (res) => {
@@ -169,14 +168,14 @@ export default class GoodsMananger extends Component {
         this.setState({
             args: {
                 page: pagination.current,
-                pageSize: pagination.pageSize
-            }
-        })
+                pageSize: pagination.pageSize,
+            },
+        });
         dispatch({
             type: 'good/fetch',
             offset: params.offset,
             limit: params.pageSize,
-            params: formValues
+            params: formValues,
         });
     }
 
@@ -188,8 +187,8 @@ export default class GoodsMananger extends Component {
             formValues: {},
             args: {
                 page: 1,
-                pageSize: args.pageSize
-            }
+                pageSize: args.pageSize,
+            },
         });
         // 分页：将页数提取到url上
         history.replace({
@@ -264,7 +263,7 @@ export default class GoodsMananger extends Component {
             const values = {
                 ...fieldsValue,
                 ...createTime,
-                ...categoryId
+                ...categoryId,
             };
             delete values.create_time;
             delete values.category;
@@ -272,15 +271,15 @@ export default class GoodsMananger extends Component {
                 formValues: values,
                 args: {
                     page: 1,
-                    pageSize: args.pageSize
-                }
+                    pageSize: args.pageSize,
+                },
             });
-            history.replace({ search: `?page=1&pageSize=${args.pageSize}` })
+            history.replace({ search: `?page=1&pageSize=${args.pageSize}` });
             dispatch({
                 type: 'good/fetch',
                 params: values,
                 offset: 0,
-                limit: args.pageSize
+                limit: args.pageSize,
             });
         });
     }
@@ -454,7 +453,7 @@ export default class GoodsMananger extends Component {
     renderExportForm = () => {
         const { getFieldDecorator } = this.props.form;
         return (
-            <Form onSubmit={this.handleOk} layout="inline" style={{ marginBottom: "20px" }} id="exportForm">
+            <Form onSubmit={this.handleOk} layout="inline" style={{ marginBottom: '20px' }} id="exportForm">
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
                     <Col xxl={6} md={6} sm={24}>
                         <FormItem label="审核状态">
@@ -488,7 +487,7 @@ export default class GoodsMananger extends Component {
                     </Col>
                 </Row>
             </Form>
-        )
+        );
     }
     render() {
         const { loading, good } = this.props;
@@ -511,7 +510,7 @@ export default class GoodsMananger extends Component {
                     style={{ marginLeft: 20 }}
                     onChange={this.onCheckAllChange}
                     checked={this.state.isCheckAll}
-                >
+        >
                     全选
         </Checkbox>
             </h4>

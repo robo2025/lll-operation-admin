@@ -19,7 +19,7 @@ import styles from './index.less';
 
 const { DirectoryTree, TreeNode } = Tree;
 const FormItem = Form.Item;
-const confirm = Modal.confirm;
+const { confirm } = Modal;
 const EditModal = Form.create()((props) => {
   const { form, visible, editInfo, editCancel, editOk, changeNameLoading } = props;
   const { getFieldDecorator } = form;
