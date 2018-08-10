@@ -284,6 +284,22 @@ export const getRouterData = (app) => {
           import('../routes/SysAccountManagement/Department')
         ),
       },
+      '/sysAccountManagement/rolePermission': {
+        component: dynamicWrapper(app, ['sysAccount'], () =>
+          import('../routes/SysAccountManagement/RolePermission')
+        ),
+        name: '角色权限配置',
+      },
+      '/sysAccountManagement/accountList': {
+        component: dynamicWrapper(app, ['sysAccount'], () =>
+          import('../routes/SysAccountManagement/AccountList')
+        ),
+      },
+      '/sysAccountManagement/:accountList/operation': {
+        component: dynamicWrapper(app, ['sysAccount'], () =>
+          import('../routes/SysAccountManagement/OperateAccount')
+        ),
+      },
     '/supAccountManagement/accountCheckList': {
       component: dynamicWrapper(app, ['supAudit'], () =>
         import('../routes/SupAccountManagement/AccountCheckList')

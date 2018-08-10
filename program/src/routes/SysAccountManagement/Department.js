@@ -19,7 +19,7 @@ import styles from './index.less';
 
 const { DirectoryTree, TreeNode } = Tree;
 const FormItem = Form.Item;
-const confirm = Modal.confirm;
+const { confirm } = Modal;
 const EditModal = Form.create()((props) => {
   const { form, visible, editInfo, editCancel, editOk, changeNameLoading } = props;
   const { getFieldDecorator } = form;
@@ -32,7 +32,6 @@ const EditModal = Form.create()((props) => {
     },
   };
   const onOk = () => {
-    console.log(editInfo);
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       editOk(editInfo.id, fieldsValue.name);
@@ -204,7 +203,6 @@ export default class Department extends React.Component {
     const { dispatch } = this.props;
     const { expandData } = this.state;
     const { keys, ...others } = values;
-    console.log(expandData);
     let pid = 0;
     if (expandData instanceof Array || expandData.length === 0) {
       // 数组为初始化,pid为0
@@ -213,7 +211,6 @@ export default class Department extends React.Component {
       // 对象为选择之后的数据，此时选取id值为pid
       pid = expandData.id;
     }
-    console.log(pid, 'pid');
     let result = [];
     Object.keys(others).forEach((id) => {
       result = [

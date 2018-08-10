@@ -130,13 +130,17 @@ const menuData = [
     ],
   },
   {
-    name: '系统账号管理',
+    name: '系统帐号管理',
     path: 'sysAccountManagement',
     icon: 'select',
     children: [
       {
-        name: '账号列表',
+        name: '帐号列表',
         path: 'accountList',
+      },
+      {
+        name: '角色权限',
+        path: 'rolePermission',
       },
       {
         name: '部门管理',
@@ -180,7 +184,7 @@ const menuData = [
     icon: 'user',
     children: [
       {
-        name: '账号管理',
+        name: '帐号管理',
         path: 'accountManagementList',
       },
     ],
