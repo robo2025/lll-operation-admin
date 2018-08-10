@@ -34,162 +34,10 @@ const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
 const { confirm } = Modal;
 const BADGE_STATUS = ['error', 'success'];
-const RoleModal = Form.create({
-  mapPropsToFields(props) {
-    const { rowSelected } = props;
-    if (Object.keys(rowSelected).length === 0) {
-      return {}; // 如果为空,返回false
-    }
-    const { permissions, ...others } = rowSelected;
-    let formData = {};
-    const data = { ...others };
-    Object.keys(data).map((item) => {
-      formData = {
-        ...formData,
-        [item]: Form.createFormField({ value: data[item] }),
-      };
-      return null;
-    });
-    let permissionList = [];
-    Object.keys(permissions).map((key) => {
-      permissionList = permissionList.concat(permissions[key]);
-      return null;
-    });
-    return {
-      ...formData,
-      permissions: Form.createFormField({
-        value: convertCodeToName(permissionList), // 获得已有的permissions
-      }),
-    };
-  },
-})((props) => {
-  const {
-    form,
-    visible,
-    deptLevel,
-    onRoleModalCancal,
-    modalType,
-    onRoleModalOk,
-    editLoading,
-    addLoading,
-  } = props;
-  const { getFieldDecorator } = form;
-  const formItemLayout = {
-    labelCol: {
-      md: 6,
-    },
-    wrapperCol: {
-      md: 14,
-    },
-  };
-  const disabled = modalType === 'view';
-  const checkAll = () => {
-    if (
-      form.getFieldValue('permissions') &&
-      form.getFieldValue('permissions').length ===
-        operationAllPermissions.length
-    ) {
-      form.setFieldsValue({ permissions: [] });
-    } else {
-      form.setFieldsValue({ permissions: operationAllPermissions });
-    }
-  };
-  const onOk = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const { permissions, dept_name, name } = fieldsValue;
-      const arr = deptLevel.filter((ele) => {
-        return ele.name === dept_name;
-      });
-      const values = {
-        permissions: convertNameToCode(permissions),
-        dept_id: arr[0].id,
-        name: name.trim(),
-      };
-      onRoleModalOk(values);
-    });
-  };
-  return (
-    <Modal
-      destroyOnClose
-      title="新增角色"
-      visible={visible}
-      width={610}
-      onCancel={onRoleModalCancal}
-      onOk={onOk}
-    >
-      <Spin spinning={editLoading || addLoading || false}>
-        <Form>
-          <FormItem label="所属部门" {...formItemLayout}>
-            {getFieldDecorator('dept_name', {
-              rules: [
-                {
-                  required: true,
-                  message: '请选择所属部门',
-                },
-              ],
-            })(
-              <Select placeholder="请选择" disabled={disabled}>
-                {deptLevel.map(ele => (
-                  <Option key={ele.name}>{ele.name}</Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="角色名称" {...formItemLayout}>
-            {getFieldDecorator('name', {
-              rules: [
-                {
-                  required: true,
-                  message: '请输入角色名称',
-                  whitespace: true,
-                },
-                {
-                  max: 50,
-                  message: '角色长度不可超过50',
-                },
-              ],
-            })(<Input placeholder="请输入" disabled={disabled} />)}
-          </FormItem>
-          <FormItem label="模块权限" {...formItemLayout}>
-            <Checkbox
-              disabled={disabled}
-              onChange={() => checkAll()}
-              checked={
-                form.getFieldValue('permissions')
-                  ? form.getFieldValue('permissions').length ===
-                    operationAllPermissions.length
-                  : false
-              }
-            >
-              全部模块
-            </Checkbox>
-            {getFieldDecorator('permissions', {
-              rules: [
-                {
-                  required: true,
-                  message: '请选择模块权限!',
-                },
-              ],
-            })(
-              <CheckboxGroup
-                disabled={disabled}
-                className={styles.roleModal}
-                options={operationAllPermissions}
-              />
-            )}
-          </FormItem>
-        </Form>
-      </Spin>
-    </Modal>
-  );
-});
 @Form.create()
 @connect(({ sysAccount, loading }) => ({
   sysAccount,
   loading: loading.effects['sysAccount/fetchAccountList'],
-  editLoading: loading.effects['sysAccount/fetchEditRole'],
-  addLoading: loading.effects['sysAccount/fetchAddRole'],
 }))
 export default class AccountList extends React.Component {
   constructor(props) {
@@ -201,9 +49,6 @@ export default class AccountList extends React.Component {
       },
       expandForm: false,
       searchValues: {},
-      visible: false,
-      rowSelected: {},
-      modalType: '',
     };
   }
   componentDidMount() {
@@ -229,74 +74,13 @@ export default class AccountList extends React.Component {
       limit,
     });
   }
-  onRoleModalCancal = () => {
-    // 点击模态框取消按钮
-    this.setState({
-      visible: false,
-    });
-  };
-  onRoleModalOk = (values) => {
-    // 点击模态框确认按钮
-    const { modalType, args, searchValues, rowSelected } = this.state;
-    const { dispatch, form } = this.props;
-    if (modalType === 'add') {
-      // 新增
-      dispatch({
-        type: 'sysAccount/fetchAddRole',
-        params: values,
-        success: (res) => {
-          message.success(res.msg);
-          this.setState({
-            visible: false,
-            searchValues: {},
-            args: {
-              page: 1,
-              pageSize: args.pageSize,
-            },
-          });
-          this.onGetAccountList({
-            params: {},
-            offset: 0,
-            limit: args.pageSize,
-          });
-          form.resetFields();
-        },
-        error: (error) => {
-          message.error(error.msg);
-        },
-      });
-    } else if (modalType === 'modify') {
-      // 编辑
-      dispatch({
-        type: 'sysAccount/fetchEditRole',
-        params: values,
-        groupid: rowSelected.id,
-        success: (res) => {
-          message.success(res.msg);
-          this.setState({
-            visible: false,
-          });
-          this.onGetAccountList({
-            params: searchValues,
-            offset: (args.page - 1) * args.pageSize,
-            limit: args.pageSize,
-          });
-        },
-      });
-    } else if (modalType === 'view') {
-      // 查看
-      this.setState({
-        visible: false,
-      });
-    }
-  };
   onDelete = (record) => {
-    // 删除角色
+    // 删除帐号
     const { dispatch, form } = this.props;
     const { args } = this.state;
     const that = this;
     confirm({
-      title: `您确定删除${record.name}吗？`,
+      title: `您确定删除${record.username}吗？`,
       okText: '确定',
       okType: 'primary',
       cancelText: '取消',
@@ -304,8 +88,8 @@ export default class AccountList extends React.Component {
       onOk() {
         return new Promise((resolve, reject) => {
           dispatch({
-            type: 'sysAccount/fetchDeleteRole',
-            groupid: record.id,
+            type: 'sysAccount/fetchDeleteAccount',
+            userid: record.id,
             success: (res) => {
               message.success(res.msg);
               that.setState({
@@ -333,6 +117,45 @@ export default class AccountList extends React.Component {
       onCancel() {},
     });
   };
+  onIsActive = (record) => {
+      // 禁用或者启用帐号
+    const { dispatch, form } = this.props;
+    const { args, searchValues } = this.state;
+    const { is_active } = record;
+    const name = is_active === 0 ? '启用' : '禁用';
+    const active_status = is_active === 0 ? 1 : 0;
+    const that = this;
+    confirm({
+      title: `您确定删除${name}${record.username}吗？`,
+      okText: '确定',
+      okType: 'primary',
+      cancelText: '取消',
+      iconType: 'exclamation-circle',
+      onOk() {
+        return new Promise((resolve, reject) => {
+          dispatch({
+            type: 'sysAccount/fetcChangeStatus',
+            userid: record.id,
+            active_status,
+            success: (res) => {
+              message.success(res.msg);
+              that.onGetAccountList({
+                params: searchValues,
+                offset: (args.page - 1) * args.pageSize,
+                limit: args.pageSize,
+              });
+              resolve();
+            },
+            error: (res) => {
+              message.error(res.msg);
+              reject();
+            },
+          });
+        });
+      },
+      onCancel() {},
+    });
+  }
   onPaginationChange = (pagination) => {
     // table页码改变
     const { searchValues } = this.state;
@@ -372,11 +195,11 @@ export default class AccountList extends React.Component {
         },
         searchValues: values,
       });
-        this.onGetAccountList({
-          params: values,
-          offset: 0,
-          limit: args.pageSize,
-        });
+      this.onGetAccountList({
+        params: values,
+        offset: 0,
+        limit: args.pageSize,
+      });
     });
   };
   handleFormReset = () => {
@@ -395,30 +218,6 @@ export default class AccountList extends React.Component {
       params: {},
       offset: 0,
       limit: args.pageSize,
-    });
-  };
-  handleRoleAdd = () => {
-    // 新增角色
-    this.setState({
-      rowSelected: {},
-      visible: true,
-      modalType: 'add',
-    });
-  };
-  handleRoleModify = (record) => {
-    // 编辑角色
-    this.setState({
-      rowSelected: record,
-      visible: true,
-      modalType: 'modify',
-    });
-  };
-  handleRoleView = (record) => {
-    // 查看角色
-    this.setState({
-      rowSelected: record,
-      visible: true,
-      modalType: 'view',
     });
   };
   renderForm() {
@@ -455,7 +254,7 @@ export default class AccountList extends React.Component {
           {expandForm ? (
             <Fragment>
               <Col md={8} xs={24}>
-                <FormItem label="账号状态" {...formItemLayout}>
+                <FormItem label="帐号状态" {...formItemLayout}>
                   {getFieldDecorator('active_status')(
                     <Select placeholder="请选择">
                       <Option value="">全部</Option>
@@ -469,7 +268,7 @@ export default class AccountList extends React.Component {
                 <FormItem label="所属部门" {...formItemLayout}>
                   {getFieldDecorator('dept_id')(
                     <Select placeholder="请选择">
-                    <Option value="">全部</Option>
+                      <Option value="">全部</Option>
                       {deptLevel.map(ele => (
                         <Option key={ele.id}>{ele.name}</Option>
                       ))}
@@ -507,7 +306,8 @@ export default class AccountList extends React.Component {
                     this.setState({ expandForm: false });
                   }}
                 >
-                  收起<Icon type="up" />
+                  收起
+                  <Icon type="up" />
                 </a>
               ) : (
                 <a
@@ -516,7 +316,8 @@ export default class AccountList extends React.Component {
                     this.setState({ expandForm: true });
                   }}
                 >
-                  展开<Icon type="down" />
+                  展开
+                  <Icon type="down" />
                 </a>
               )}
             </span>
@@ -526,9 +327,9 @@ export default class AccountList extends React.Component {
     );
   }
   render() {
-    const { sysAccount, loading, editLoading, addLoading } = this.props;
-    const { accountList, accountTotal, deptLevel } = sysAccount;
-    const { args, visible, rowSelected, modalType } = this.state;
+    const { sysAccount, loading } = this.props;
+    const { accountList, accountTotal } = sysAccount;
+    const { args } = this.state;
     const { page, pageSize } = args;
     const columns = [
       {
@@ -565,11 +366,13 @@ export default class AccountList extends React.Component {
         dataIndex: 'user_type',
         render: val => USER_TYPE[val],
       },
-        // {
-        //   title: '职位',
-        //   key: 'position',
-        //   render: record => record.profile.position || '--',
-        // },
+      {
+        title: '职位',
+        key: 'position',
+        render: record => (record.user_type === 4
+            ? '--' :
+            record.profile.position || '--'),
+      },
       {
         title: '创建日期',
         key: 'created_time',
@@ -579,7 +382,7 @@ export default class AccountList extends React.Component {
             : moment(record.created_time * 1000).format('YYYY-MM-DD HH:mm:ss')),
       },
       {
-        title: '账号状态',
+        title: '帐号状态',
         key: 'is_active',
         dataIndex: 'is_active',
         render: val => (
@@ -593,30 +396,30 @@ export default class AccountList extends React.Component {
         key: 'operation',
         render: record =>
           (record.user_type === 4 ? (
-            <a href=" javascript:;" onClick={() => this.handleRoleView(record)}>
-              查看
-            </a>
+            '--'
           ) : (
             <div>
               <a
-                href=" javascript:;"
-                onClick={() => this.handleRoleModify(record)}
+                href={`${location.href}/operation?typeId=${
+                  record.id
+                }&type=modify`}
               >
                 编辑
               </a>
               <Divider type="vertical" />
               <a
-                href=" javascript:;"
-                onClick={() => this.handleRoleView(record)}
+                href={`${location.href}/operation?typeId=${
+                    record.id
+                  }&type=view`}
               >
                 查看
               </a>
               <Divider type="vertical" />
               <a
                 href=" javascript:;"
-                onClick={() => this.handleRoleView(record)}
+                onClick={() => this.onIsActive(record)}
               >
-                禁用
+              {record.is_active === 0 ? '启用' : '禁用'}
               </a>
               <Divider type="vertical" />
               <a href=" javascript:;" onClick={() => this.onDelete(record)}>
@@ -634,14 +437,17 @@ export default class AccountList extends React.Component {
       showQuickJumper: true,
     };
     return (
-      <PageHeaderLayout title="账号列表">
+      <PageHeaderLayout title="帐号列表">
         <Card title="搜索条件" style={{ marginBottom: 30 }}>
           {this.renderForm()}
         </Card>
         <Card>
           <div style={{ marginBottom: 20 }}>
-            <Button type="primary" onClick={this.handleRoleAdd}>
-              <Icon type="plus" />新增账号
+            <Button type="primary">
+              <a href={`${location.href}/operation?type=add`}>
+                <Icon type="plus" />
+                新增帐号
+              </a>
             </Button>
           </div>
           <Table
@@ -655,16 +461,6 @@ export default class AccountList extends React.Component {
             onChange={this.onPaginationChange}
           />
         </Card>
-        <RoleModal
-          visible={visible}
-          deptLevel={deptLevel}
-          onRoleModalCancal={this.onRoleModalCancal}
-          modalType={modalType}
-          rowSelected={rowSelected}
-          onRoleModalOk={this.onRoleModalOk}
-          editLoading={editLoading}
-          addLoading={addLoading}
-        />
       </PageHeaderLayout>
     );
   }

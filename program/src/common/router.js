@@ -295,7 +295,7 @@ export const getRouterData = (app) => {
           import('../routes/SysAccountManagement/AccountList')
         ),
       },
-      '/sysAccountManagement/:accountList/:id': {
+      '/sysAccountManagement/:accountList/operation': {
         component: dynamicWrapper(app, ['sysAccount'], () =>
           import('../routes/SysAccountManagement/OperateAccount')
         ),

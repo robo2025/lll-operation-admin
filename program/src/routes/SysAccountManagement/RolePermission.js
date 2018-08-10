@@ -25,6 +25,7 @@ import {
   convertNameToCode,
 } from '../../constant/operationPermissionDetail';
 import styles from './index.less';
+import LogTable from '../../components/LogTable/index';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -70,6 +71,7 @@ const RoleModal = Form.create({
     onRoleModalOk,
     editLoading,
     addLoading,
+    rowSelected,
   } = props;
   const { getFieldDecorator } = form;
   const formItemLayout = {
@@ -81,7 +83,18 @@ const RoleModal = Form.create({
     },
   };
   const disabled = modalType === 'view';
-  const modalTitle = modalType === 'view' ? '查看角色' : modalType === 'modify' ? '编辑角色' : '新增角色';
+  const modalTitle =
+    modalType === 'view'
+      ? '查看角色'
+      : modalType === 'modify'
+        ? '编辑角色'
+        : '新增角色';
+  const buttonTitle =
+    modalType === 'view'
+      ? '返回'
+      : modalType === 'modify'
+        ? '确认编辑'
+        : '确认新增';
   const checkAll = () => {
     if (
       form.getFieldValue('permissions') &&
@@ -113,12 +126,13 @@ const RoleModal = Form.create({
       destroyOnClose
       title={modalTitle}
       visible={visible}
-      width={610}
+      width={1000}
       onCancel={onRoleModalCancal}
       onOk={onOk}
+      footer={null}
     >
       <Spin spinning={editLoading || addLoading || false}>
-        <Form>
+        <Form style={{ width: 610, margin: '0 auto' }}>
           <FormItem label="所属部门" {...formItemLayout}>
             {getFieldDecorator('dept_name', {
               rules: [
@@ -129,7 +143,9 @@ const RoleModal = Form.create({
               ],
             })(
               <Select placeholder="请选择" disabled={disabled}>
-                {deptLevel.map(ele => <Option key={ele.name}>{ele.name}</Option>)}
+                {deptLevel.map(ele => (
+                  <Option key={ele.name}>{ele.name}</Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -176,7 +192,21 @@ const RoleModal = Form.create({
               />
             )}
           </FormItem>
+          <div style={{ textAlign: 'center' }}>
+            <Button type="primary" onClick={onOk}>
+              {buttonTitle}
+            </Button>
+          </div>
         </Form>
+        {modalType !== 'add' ? (
+          <Card style={{ marginTop: 30 }}>
+          <LogTable
+                object_id={rowSelected.id >> 0}
+                module="auth_user"
+                platform="operation"
+          />
+          </Card>
+        ) : null}
       </Spin>
     </Modal>
   );
@@ -436,8 +466,10 @@ export default class RolePermission extends React.Component {
             <FormItem label="所属部门" {...formItemLayout}>
               {getFieldDecorator('dept_id')(
                 <Select placeholder="请选择">
-                <Option value="">全部</Option>
-                  {deptLevel.map(ele => <Option key={ele.id}>{ele.name}</Option>)}
+                  <Option value="">全部</Option>
+                  {deptLevel.map(ele => (
+                    <Option key={ele.id}>{ele.name}</Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
@@ -491,7 +523,7 @@ export default class RolePermission extends React.Component {
         dataIndex: 'dept_name',
       },
       {
-        title: '已有账号数',
+        title: '已有帐号数',
         key: 'user_count',
         dataIndex: 'user_count',
       },
@@ -539,7 +571,8 @@ export default class RolePermission extends React.Component {
         <Card>
           <div style={{ marginBottom: 20 }}>
             <Button type="primary" onClick={this.handleRoleAdd}>
-              <Icon type="plus" />新增角色
+              <Icon type="plus" />
+              新增角色
             </Button>
           </div>
           <Table

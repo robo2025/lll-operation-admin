@@ -119,3 +119,12 @@ export async function deleteAccount({ userid }) {
 export async function queryRoleLevel() {
     return lyRequest(`${USERS_SERVER}/operation/groups/level_selection`);
 }
+// 禁用或者启用帐号
+export async function accountChangeActive({ userid, active_status }) {
+    return lyRequest(`${USERS_SERVER}/operation/accounts/${userid}/active_status`, {
+        method: 'put',
+        data: {
+            active_status,
+        },
+    });
+}

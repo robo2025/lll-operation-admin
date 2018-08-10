@@ -14,6 +14,11 @@ import {
   deleteRole,
   queryAccountList,
   queryRoleLevel,
+  queryAccountDetail,
+  addAccount,
+  editAccount,
+  deleteAccount,
+  accountChangeActive,
 } from '../services/sysAccount';
 
 export default {
@@ -26,10 +31,10 @@ export default {
     roleList: [], // 角色列表
     roleListTotal: 0, // 角色列表总数
     roleDetail: {}, // 角色详情
-    accountList: [], // 账号列表
-    accountTotal: 0, // 账号详情
-    operationType: '', // 账号操作类型,view查看,modify编辑,add新增
+    accountList: [], // 帐号列表
+    accountTotal: 0, // 帐号总数
     roleLevel: [], // 角色联动
+    accountDetail: {}, // 帐号详情
   },
 
   effects: {
@@ -231,6 +236,65 @@ export default {
         payload: res.data,
       });
     },
+    *fetchAccountDetail({ userid, success, error }, { call, put }) {
+        const res = yield call(queryAccountDetail, { userid });
+        const { rescode } = res;
+        if (rescode >> 0 === 10000) {
+          if (success) {
+            success(res);
+          }
+        } else if (error) {
+          error(res);
+        }
+        yield put({
+          type: 'saveAccountDetail',
+          payload: res.data,
+        });
+    },
+    *fetchAddAccount({ params, success, error }, { call }) {
+        const res = yield call(addAccount, { params });
+        const { rescode } = res;
+        if (rescode >> 0 === 10000) {
+          if (success) {
+            success(res);
+          }
+        } else if (error) {
+          error(res);
+        }
+    },
+    *fetchEditAccount({ params, userid, success, error }, { call }) {
+        const res = yield call(editAccount, { params, userid });
+        const { rescode } = res;
+        if (rescode >> 0 === 10000) {
+          if (success) {
+            success(res);
+          }
+        } else if (error) {
+          error(res);
+        }
+    },
+    *fetchDeleteAccount({ userid, success, error }, { call }) {
+        const res = yield call(deleteAccount, { userid });
+        const { rescode } = res;
+        if (rescode >> 0 === 10000) {
+          if (success) {
+            success(res);
+          }
+        } else if (error) {
+          error(res);
+        }
+    },
+    *fetcChangeStatus({ userid, active_status, success, error }, { call }) {
+        const res = yield call(accountChangeActive, { userid, active_status });
+        const { rescode } = res;
+        if (rescode >> 0 === 10000) {
+          if (success) {
+            success(res);
+          }
+        } else if (error) {
+          error(res);
+        }
+    },
   },
 
   reducers: {
@@ -289,6 +353,13 @@ export default {
         return {
             ...state,
             roleLevel: action.payload,
+        };
+    },
+    saveAccountDetail(state, action) {
+        console.log(action.payload);
+        return {
+            ...state,
+            accountDetail: action.payload,
         };
     },
   },
