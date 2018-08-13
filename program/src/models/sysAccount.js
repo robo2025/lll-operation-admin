@@ -19,6 +19,7 @@ import {
   editAccount,
   deleteAccount,
   accountChangeActive,
+  modifyPassword,
 } from '../services/sysAccount';
 
 export default {
@@ -295,6 +296,17 @@ export default {
           error(res);
         }
     },
+    *fetchModifyPassword({ userid, password, success, error }, { call }) {
+        const res = yield call(modifyPassword, { userid, password });
+        const { rescode } = res;
+        if (rescode >> 0 === 10000) {
+          if (success) {
+            success(res);
+          }
+        } else if (error) {
+          error(res);
+        }
+    },
   },
 
   reducers: {
@@ -356,7 +368,6 @@ export default {
         };
     },
     saveAccountDetail(state, action) {
-        console.log(action.payload);
         return {
             ...state,
             accountDetail: action.payload,

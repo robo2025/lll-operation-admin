@@ -49,7 +49,8 @@ const myHost = `${window.location.protocol}//${window.location.host}`;
 export const NEXT_URL = `${myHost}/#/test`;
 
 // 前端首页URL
-export const HOME_PAGE = `${myHost}/#/product/menu`;
+// export const HOME_PAGE = `${myHost}/#/product/menu`;
+export const HOME_PAGE = `${myHost}/#`;
 
 // 前端验证URL
 export const VERIFY_PAGE = `${myHost}/#/test`;

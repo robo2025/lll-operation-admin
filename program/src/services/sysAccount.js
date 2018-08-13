@@ -128,3 +128,13 @@ export async function accountChangeActive({ userid, active_status }) {
         },
     });
 }
+
+// 修改密码
+export async function modifyPassword({ userid, password }) {
+    return lyRequest(`${USERS_SERVER}/operation/accounts/${userid}/password`, {
+        method: 'put',
+        data: {
+            password,
+        },
+    });
+}

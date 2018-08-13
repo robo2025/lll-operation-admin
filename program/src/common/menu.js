@@ -5,6 +5,7 @@ const menuData = [
     name: '产品管理',
     icon: 'appstore-o',
     path: 'product',
+    authority: 'admin',
     children: [
       {
         name: '产品类目列表',
@@ -24,6 +25,7 @@ const menuData = [
     name: '商品管理',
     icon: 'shop',
     path: 'goods',
+    authority: 'admin',
     children: [
       {
         name: '供应商商品列表',
@@ -35,6 +37,7 @@ const menuData = [
     name: '商品订单管理',
     path: 'orders',
     icon: 'pay-circle-o',
+    authority: 'admin',
     children: [
       {
         name: '商品订单列表',
@@ -50,6 +53,7 @@ const menuData = [
     name: '退货管理',
     path: 'returns',
     icon: 'disconnect',
+    authority: 'admin',
     children: [
       {
         name: '退货单列表',
@@ -61,6 +65,7 @@ const menuData = [
     name: '品牌管理',
     path: 'brand',
     icon: 'apple-o',
+    authority: 'admin',
     children: [
       {
         name: '品牌列表',
@@ -72,6 +77,7 @@ const menuData = [
     name: '方案管理',
     path: 'solution',
     icon: 'solution',
+    authority: 'admin',
     children: [
       {
         name: '方案询价单列表',
@@ -87,6 +93,7 @@ const menuData = [
     name: '导入导出管理',
     path: 'import-export',
     icon: 'export',
+    authority: 'admin',
     hideInMenu: true, // 隐藏导入导出菜单
     children: [
       {
@@ -103,6 +110,7 @@ const menuData = [
     name: '库存管理',
     path: 'stockManagement',
     icon: 'api',
+    authority: 'admin',
     children: [
       {
         name: '商品库存列表',
@@ -122,6 +130,7 @@ const menuData = [
     name: '合同管理',
     path: 'contractManagement',
     icon: 'code-o',
+    authority: 'admin',
     children: [
       {
         name: '合同列表',
@@ -133,6 +142,7 @@ const menuData = [
     name: '系统帐号管理',
     path: 'sysAccountManagement',
     icon: 'select',
+    authority: 'admin',
     children: [
       {
         name: '帐号列表',
@@ -156,6 +166,7 @@ const menuData = [
     name: '供应商账号管理',
     path: 'supAccountManagement',
     icon: 'team',
+    authority: 'admin',
     children: [
       {
         name: '供应商账号审核',
@@ -171,6 +182,7 @@ const menuData = [
     name: '供应商产品授权',
     path: 'authorizationManagement',
     icon: 'check-circle-o',
+    authority: 'admin',
     children: [
       {
         name: '供应商产品授权列表',
@@ -182,6 +194,7 @@ const menuData = [
     name: '用户中心',
     path: 'userCenter',
     icon: 'user',
+    authority: 'admin',
     children: [
       {
         name: '帐号管理',
@@ -206,7 +219,7 @@ function formatter(data, parentPath = '/', parentAuthority) {
       result.children = formatter(
         item.children,
         `${parentPath}${item.path}/`,
-        item.authority
+        // item.authority
       );
     }
     return result;

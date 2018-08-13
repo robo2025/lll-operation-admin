@@ -19,6 +19,7 @@ import {
   Badge,
 } from 'antd';
 import { connect } from 'dva';
+import { sha256 } from 'js-sha256';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import {
   operationAllPermissions,
@@ -34,10 +35,98 @@ const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
 const { confirm } = Modal;
 const BADGE_STATUS = ['error', 'success'];
+const ModifyPasswordModal = Form.create()((props) => {
+    const {
+      passwordModalVisible,
+      modifyPasswordModalCancel,
+      modifyPasswordOk,
+      form,
+      recordInfo,
+      modifyPasswordLoading,
+    } = props;
+    const { getFieldDecorator } = form;
+    const formItemLayout = {
+      labelCol: {
+        sm: 5,
+      },
+      wrapperCol: {
+        sm: 16,
+      },
+    };
+    const checkConfirm = (rule, value, callback) => {
+      if (value && value.length < 6) {
+        callback('密码长度为6-12位');
+      } else if (value && value.length > 12) {
+        callback('密码长度为6-12位');
+      } else if (value && value !== form.getFieldValue('password')) {
+        callback('两次输入的密码不匹配!');
+      } else {
+        callback();
+      }
+    };
+    const checkNewpassword = (rule, value, callback) => {
+      const newPassword = form.getFieldValue('new_password');
+      if (newPassword && newPassword.length >= 6) {
+        form.validateFields(['new_password'], { force: true });
+      }
+      callback();
+    };
+    const onOk = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+          const { new_password } = fieldsValue;
+          const values = sha256.hex(new_password);
+          modifyPasswordOk(values);
+      });
+    };
+    return (
+      <Modal
+        title="修改密码"
+        okText="确认修改"
+        destroyOnClose
+        onOk={onOk}
+        onCancel={() => modifyPasswordModalCancel()}
+        visible={passwordModalVisible}
+      >
+      <Spin spinning={modifyPasswordLoading || false}>
+      <Form>
+          <FormItem label="新密码" {...formItemLayout}>
+            {getFieldDecorator('password', {
+              rules: [
+                { required: true, message: '请输入新密码' },
+                {
+                  min: 6,
+                  message: '密码长度为6-12位',
+                },
+                {
+                  max: 12,
+                  message: '密码长度为6-12位',
+                },
+                {
+                  validator: checkNewpassword,
+                },
+              ],
+            })(<Input type="password" placeholder="请输入新密码" />)}
+          </FormItem>
+          <FormItem label="确认密码" {...formItemLayout}>
+            {getFieldDecorator('new_password', {
+              rules: [
+                { required: true, message: '请输入密码' },
+                { validator: checkConfirm },
+              ],
+            })(<Input placeholder="请确认密码" type="password" />)}
+          </FormItem>
+      </Form>
+      </Spin>
+        
+      </Modal>
+    );
+  });
 @Form.create()
 @connect(({ sysAccount, loading }) => ({
   sysAccount,
   loading: loading.effects['sysAccount/fetchAccountList'],
+  modifyPasswordLoading: loading.effects['sysAccount/fetchModifyPassword'],
 }))
 export default class AccountList extends React.Component {
   constructor(props) {
@@ -49,6 +138,8 @@ export default class AccountList extends React.Component {
       },
       expandForm: false,
       searchValues: {},
+      passwordModalVisible: false,
+      recordInfo: {}, // 修改密码存储信息
     };
   }
   componentDidMount() {
@@ -220,6 +311,39 @@ export default class AccountList extends React.Component {
       limit: args.pageSize,
     });
   };
+  // 弹出修改密码模态框
+  modifyPassword = (record) => {
+    this.setState({
+      passwordModalVisible: true,
+      recordInfo: record,
+    });
+  };
+  // 修改密码模态框取消
+  modifyPasswordModalCancel = () => {
+    this.setState({
+      passwordModalVisible: false,
+    });
+  };
+  // 确认修改密码
+  modifyPasswordOk = (values) => {
+    const { recordInfo } = this.state;
+    const { dispatch } = this.props;
+    console.log(recordInfo);
+    dispatch({
+      type: 'sysAccount/fetchModifyPassword',
+      userid: recordInfo.id,
+      password: values,
+      success: () => {
+        message.success('修改密码成功');
+        this.setState({
+            passwordModalVisible: false,
+        });
+      },
+      error: (res) => {
+        message.error(res.msg);
+      },
+    });
+  };
   renderForm() {
     const { form, sysAccount } = this.props;
     const { getFieldDecorator } = form;
@@ -327,9 +451,9 @@ export default class AccountList extends React.Component {
     );
   }
   render() {
-    const { sysAccount, loading } = this.props;
+    const { sysAccount, loading, modifyPasswordLoading } = this.props;
     const { accountList, accountTotal } = sysAccount;
-    const { args } = this.state;
+    const { args, passwordModalVisible, recordInfo } = this.state;
     const { page, pageSize } = args;
     const columns = [
       {
@@ -391,7 +515,7 @@ export default class AccountList extends React.Component {
       },
       {
         title: '操作',
-        width: 200,
+        width: 270,
         fixed: 'right',
         key: 'operation',
         render: record =>
@@ -413,6 +537,10 @@ export default class AccountList extends React.Component {
                   }&type=view`}
               >
                 查看
+              </a>
+              <Divider type="vertical" />
+              <a href=" javascript:;" onClick={() => this.modifyPassword(record)}>
+                修改密码
               </a>
               <Divider type="vertical" />
               <a
@@ -461,6 +589,13 @@ export default class AccountList extends React.Component {
             onChange={this.onPaginationChange}
           />
         </Card>
+        <ModifyPasswordModal
+          passwordModalVisible={passwordModalVisible}
+          modifyPasswordModalCancel={this.modifyPasswordModalCancel}
+          recordInfo={recordInfo}
+          modifyPasswordOk={this.modifyPasswordOk}
+          modifyPasswordLoading={modifyPasswordLoading}
+        />
       </PageHeaderLayout>
     );
   }

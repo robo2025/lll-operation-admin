@@ -23,7 +23,7 @@ export default {
   },
 
   effects: {
-    *fetchCurrent(_, { call, put }) {
+    *fetchCurrent({ callback }, { call, put }) {
       const response = yield call(getUserInfo);
       yield put({
         type: 'saveCurrentUser',
@@ -31,15 +31,24 @@ export default {
       });
       Cookies.set('userinfo', JSON.stringify(response.data), { expires: 7 });
       // 注册客服;
-      Services.service.initService({
-        username: response.data.username,
-        mobile: response.data.mobile,
-        email: response.data.email,
-      });
+    //   Services.service.initService({
+    //     username: response.data.username,
+    //     mobile: response.data.mobile,
+    //     email: response.data.email,
+    //   });
+      if (callback) {
+          callback(response.data);
+      }
     },
     *changeAuthorityUrl(_, { call }) {
-      yield call(getUserInfo);
-      setAuthority('2');
+      const userInfo = yield call(getUserInfo);
+      const { data } = userInfo;
+      const { user_type } = data;
+      if (user_type === 4) {
+        setAuthority('admin');
+      } else {
+        setAuthority('3');
+      }
       location.href = `${HOME_PAGE}`;
     },
     *verify(_, { call, put }) {

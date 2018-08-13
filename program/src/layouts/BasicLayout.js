@@ -1,6 +1,7 @@
 import React from 'react';
 import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { Layout, Icon, message } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
@@ -17,6 +18,9 @@ import { getMenuData } from '../common/menu';
 import Authorized from '../utils/Authorized';
 import logo from '../assets/logo.svg';
 import { logout } from '../services/user';
+import {
+  convertCodeToName,
+} from '../constant/operationPermissionDetail';
 
 const { AuthorizedRoute, check } = Authorized;
 
@@ -65,7 +69,9 @@ let isMobile;
 enquireScreen((b) => {
   isMobile = b;
 });
-
+@connect(({ user }) => ({
+  currentUser: user.currentUser,
+}))
 class BasicLayout extends React.PureComponent {
   static childContextTypes = {
     location: PropTypes.object,
@@ -73,6 +79,8 @@ class BasicLayout extends React.PureComponent {
   };
   state = {
     isMobile,
+    redirectUrl: '',
+    menuData: [],
   };
   getChildContext() {
     const { location, routerData } = this.props;
@@ -90,6 +98,13 @@ class BasicLayout extends React.PureComponent {
 
     this.props.dispatch({
       type: 'user/fetchCurrent',
+      callback: () => {
+        //   const { permissions } = data || [];
+        // const menuData = this.getAuthoritedMenuData(permissions);
+        // this.setState({
+        //     menuData,
+        // });
+      },
     });
   }
   getPageTitle() {
@@ -120,6 +135,48 @@ class BasicLayout extends React.PureComponent {
       return authorizedPath;
     }
     return redirect;
+  };
+  getRedirectUrl=(filterMenu) => {
+      const findRedirectUrl = (data) => {
+        if (data.children && data.children.length > 0) {
+            return findRedirectUrl(data.children[0]);
+        } else {
+            return data.path;
+        }
+      };
+      const redirectUrl = findRedirectUrl(filterMenu);
+      return redirectUrl;
+  }
+  getAuthoritedMenuData = (permissions) => {
+    const menuData = getMenuData();
+    if (!permissions || !menuData) {
+      return [];
+    }
+    const findMenu = (data, name) => {
+      return data.map((item) => {
+        let result = { ...item };
+        if (item.name === name) {
+          result = { ...item, authority: '3' };
+        }
+        if (item.children) {
+          findMenu(item.children, name);
+        }
+        return result;
+      });
+    };
+    const findAuthoritedMenu = (data) => {
+      let result = [...data];
+        // convertCodeToName转成中文
+        convertCodeToName(_.flattenDeep(Object.values(permissions))).forEach(
+          (menuName) => {
+            result = findMenu(result, menuName);
+          }
+        );
+      return result;
+    };
+    const authoritedMenuData = findAuthoritedMenu(menuData);
+    return authoritedMenuData;
+    // return authoritedMenuData;
   };
   handleMenuCollapse = (collapsed) => {
     this.props.dispatch({
@@ -160,15 +217,27 @@ class BasicLayout extends React.PureComponent {
       routerData,
       match,
       location,
+      currentUser,
     } = this.props;
-    const currentUser = Cookies.get('userinfo')
-      ? JSON.parse(Cookies.get('userinfo'))
-      : {};
     const bashRedirect = this.getBashRedirect();
-
+    const { permissions } = currentUser || [];
     const layout = (
       <Layout>
-        <SiderMenu
+        {permissions ? (
+          <SiderMenu
+            logo={logo}
+            // 不带Authorized参数的情况下如果没有权限,会强制跳到403界面
+            // If you do not have the Authorized parameter
+            // you will be forced to jump to the 403 interface without permission
+            Authorized={Authorized}
+            menuData={this.getAuthoritedMenuData(permissions)}
+            collapsed={collapsed}
+            location={location}
+            isMobile={this.state.isMobile}
+            onCollapse={this.handleMenuCollapse}
+          />
+        ) : null}
+        {/* <SiderMenu
           logo={logo}
           // 不带Authorized参数的情况下如果没有权限,会强制跳到403界面
           // If you do not have the Authorized parameter
@@ -179,7 +248,7 @@ class BasicLayout extends React.PureComponent {
           location={location}
           isMobile={this.state.isMobile}
           onCollapse={this.handleMenuCollapse}
-        />
+        /> */}
         <Layout>
           <GlobalHeader
             logo={logo}
@@ -214,7 +283,7 @@ class BasicLayout extends React.PureComponent {
                     redirectPath="/exception/403"
                   />
                 ))}
-                <Redirect exact from="/" to="/test" />
+                {/* <Redirect exact from="/" to={`${redirectUrl}`} /> */}
                 <Route render={NotFound} />
               </Switch>
             </div>
