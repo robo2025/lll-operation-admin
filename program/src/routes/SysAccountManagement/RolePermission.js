@@ -118,7 +118,10 @@ const RoleModal = Form.create({
         dept_id: arr[0].id,
         name: name.trim(),
       };
-      onRoleModalOk(values);
+      const changeValues = {
+        permissions: convertNameToCode(permissions), dept_name: dept_name.trim(), name: name.trim(),
+      };
+      onRoleModalOk(values, changeValues);
     });
   };
   return (
@@ -261,10 +264,13 @@ export default class RolePermission extends React.Component {
       visible: false,
     });
   };
-  onRoleModalOk = (values) => {
+  onRoleModalOk = (values, changeValues) => {
     // 点击模态框确认按钮
     const { modalType, args, searchValues, rowSelected } = this.state;
     const { dispatch, form } = this.props;
+    this.setState({
+        rowSelected: { ...rowSelected, ...changeValues },
+    });
     if (modalType === 'add') {
       // 新增
       dispatch({

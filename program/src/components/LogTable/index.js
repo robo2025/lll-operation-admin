@@ -30,7 +30,6 @@ export default class RecordTable extends Component {
     },
   };
   componentDidMount() {
-      console.log(this.props, 123456);
     const { object_id, module, platform } = this.props;
     const { pagination } = this.state;
     this.props.dispatch({

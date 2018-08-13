@@ -16,6 +16,7 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import {
   operationAllPermissions,
   convertCodeToName,
+  convertNameToCode,
 } from '../../constant/operationPermissionDetail';
 import styles from './index.less';
 import LogTable from '../../components/LogTable/index';
@@ -33,16 +34,15 @@ const CheckboxGroup = Checkbox.Group;
   mapPropsToFields(props) {
     const { sysAccount } = props;
     const { accountDetail } = sysAccount;
-    console.log(accountDetail, 123);
     if (Object.keys(accountDetail).length === 0) {
       return {}; // 如果为空,返回false
     }
     const { profile, ...others } = accountDetail;
-    const { group } = profile;
-    const { permissions } = group;
+    const { group } = profile || {};
+    const permissions = accountDetail.permissions || group.permissions;
     let formData = {};
     // profile解构
-    const data = { ...others, ...profile, ...group };
+    const data = { ...profile, ...group, ...others };
     Object.keys(data).map((item) => {
       formData = {
         ...formData,
@@ -57,9 +57,6 @@ const CheckboxGroup = Checkbox.Group;
     });
     return {
       ...formData,
-      password: Form.createFormField({
-        value: '123456', // 编辑或查看的时候随便传值
-      }),
       permissions: Form.createFormField({
         value: convertCodeToName(permissionList), // 获得已有的permissions
       }),
@@ -131,14 +128,37 @@ export default class OperateAccount extends React.Component {
     form.validateFields((err, fieldsValue) => {
       // roleParams为{},则选取accountDetail中的值
       if (err) return;
-      const { username, password, realname, telphone, position } = fieldsValue;
-      const values = {
+      const {
+        username,
+        password,
+        realname,
+        telphone,
+        position,
+        permissions,
+        name,
+        dept_name,
+      } = fieldsValue;
+        const values = {
+          username: username.trim(),
+          password: sha256(password),
+          realname: realname.trim(),
+          telphone,
+          position: position || '',
+        };
+      const setValues = {
         username: username.trim(),
-        password: sha256(password),
+        password,
         realname: realname.trim(),
         telphone,
-        position: position || '',
+        position,
+        permissions: convertNameToCode(permissions),
+        name,
+        dept_name,
       };
+      dispatch({
+        type: 'sysAccount/saveAccountDetail',
+        payload: { ...accountDetail, ...setValues },
+      });
       if (Object.keys(roleParams).length > 0) {
         values.group_id = roleParams.id;
       } else {
@@ -254,6 +274,7 @@ export default class OperateAccount extends React.Component {
                 message: '请输入6-16位密码',
               },
             ],
+            initialValue: type === 'add' ? '' : '123456',
           })(
             <Input
               type="password"
