@@ -18,9 +18,7 @@ import { getMenuData } from '../common/menu';
 import Authorized from '../utils/Authorized';
 import logo from '../assets/logo.svg';
 import { logout } from '../services/user';
-import {
-  convertCodeToName,
-} from '../constant/operationPermissionDetail';
+import { convertCodeToName } from '../constant/operationPermissionDetail';
 
 const { AuthorizedRoute, check } = Authorized;
 
@@ -136,17 +134,17 @@ class BasicLayout extends React.PureComponent {
     }
     return redirect;
   };
-  getRedirectUrl=(filterMenu) => {
-      const findRedirectUrl = (data) => {
-        if (data.children && data.children.length > 0) {
-            return findRedirectUrl(data.children[0]);
-        } else {
-            return data.path;
-        }
-      };
-      const redirectUrl = findRedirectUrl(filterMenu);
-      return redirectUrl;
-  }
+  getRedirectUrl = (filterMenu) => {
+    const findRedirectUrl = (data) => {
+      if (data.children && data.children.length > 0) {
+        return findRedirectUrl(data.children[0]);
+      } else {
+        return data.path;
+      }
+    };
+    const redirectUrl = findRedirectUrl(filterMenu);
+    return redirectUrl;
+  };
   getAuthoritedMenuData = (permissions) => {
     const menuData = getMenuData();
     if (!permissions || !menuData) {
@@ -156,7 +154,8 @@ class BasicLayout extends React.PureComponent {
       return data.map((item) => {
         let result = { ...item };
         if (item.name === name) {
-          result = { ...item, authority: '3' };
+          const redirectPathname = this.getRedirectUrl(item);
+          result = { ...item, authority: '3', redirectPathname };
         }
         if (item.children) {
           findMenu(item.children, name);
@@ -166,12 +165,12 @@ class BasicLayout extends React.PureComponent {
     };
     const findAuthoritedMenu = (data) => {
       let result = [...data];
-        // convertCodeToName转成中文
-        convertCodeToName(_.flattenDeep(Object.values(permissions))).forEach(
-          (menuName) => {
-            result = findMenu(result, menuName);
-          }
-        );
+      // convertCodeToName转成中文
+      convertCodeToName(_.flattenDeep(Object.values(permissions))).forEach(
+        (menuName) => {
+          result = findMenu(result, menuName);
+        }
+      );
       return result;
     };
     const authoritedMenuData = findAuthoritedMenu(menuData);
@@ -219,8 +218,12 @@ class BasicLayout extends React.PureComponent {
       location,
       currentUser,
     } = this.props;
-    const bashRedirect = this.getBashRedirect();
     const { permissions } = currentUser || [];
+    const menuData = this.getAuthoritedMenuData(permissions);
+    const redirectUrl = menuData.filter((ele) => {
+      return ele.redirectPathname;
+    });
+    const bashRedirect = this.getBashRedirect();
     const layout = (
       <Layout>
         {permissions ? (
@@ -230,7 +233,7 @@ class BasicLayout extends React.PureComponent {
             // If you do not have the Authorized parameter
             // you will be forced to jump to the 403 interface without permission
             Authorized={Authorized}
-            menuData={this.getAuthoritedMenuData(permissions)}
+            menuData={menuData}
             collapsed={collapsed}
             location={location}
             isMobile={this.state.isMobile}
@@ -283,7 +286,13 @@ class BasicLayout extends React.PureComponent {
                     redirectPath="/exception/403"
                   />
                 ))}
-                {/* <Redirect exact from="/" to={`${redirectUrl}`} /> */}
+                {redirectUrl.length > 0 ? (
+                  <Redirect
+                    exact
+                    from="/"
+                    to={`${redirectUrl[0].redirectPathname}`}
+                  />
+                ) : null}
                 <Route render={NotFound} />
               </Switch>
             </div>
