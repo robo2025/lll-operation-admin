@@ -2,7 +2,7 @@ import React from 'react';
 import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Layout, Icon, message } from 'antd';
+import { Layout, Icon, message, Spin, Form } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { Route, Redirect, Switch, routerRedux } from 'dva/router';
@@ -17,7 +17,8 @@ import { getRoutes } from '../utils/utils';
 import { getMenuData } from '../common/menu';
 import Authorized from '../utils/Authorized';
 import logo from '../assets/logo.svg';
-import { logout } from '../services/user';
+import ModifyPassword from '../components/ModifyPassword/ModifyPassword';
+import { logout, jumpToLogin, login } from '../services/user';
 import { convertCodeToName } from '../constant/operationPermissionDetail';
 
 const { AuthorizedRoute, check } = Authorized;
@@ -77,8 +78,7 @@ class BasicLayout extends React.PureComponent {
   };
   state = {
     isMobile,
-    redirectUrl: '',
-    menuData: [],
+    passwordModalVisible: false,
   };
   getChildContext() {
     const { location, routerData } = this.props;
@@ -96,13 +96,7 @@ class BasicLayout extends React.PureComponent {
 
     this.props.dispatch({
       type: 'user/fetchCurrent',
-      callback: () => {
-        //   const { permissions } = data || [];
-        // const menuData = this.getAuthoritedMenuData(permissions);
-        // this.setState({
-        //     menuData,
-        // });
-      },
+      callback: () => {},
     });
   }
   getPageTitle() {
@@ -177,6 +171,12 @@ class BasicLayout extends React.PureComponent {
     return authoritedMenuData;
     // return authoritedMenuData;
   };
+  onCancel = () => {
+    // 修改密码模态框取消
+    this.setState({
+      passwordModalVisible: false,
+    });
+  };
   handleMenuCollapse = (collapsed) => {
     this.props.dispatch({
       type: 'global/changeLayoutCollapsed',
@@ -200,7 +200,34 @@ class BasicLayout extends React.PureComponent {
       // 退出登录
       logout();
     }
+    if (key === 'modifyPassword') {
+      this.setState({
+        passwordModalVisible: true,
+      });
+    }
   };
+  modifyPasswordOk = (values) => {
+      const { dispatch } = this.props;
+      dispatch({
+          type: 'user/fetchModifyPassword',
+          params: values,
+          success: (res) => {
+              message.success(res.msg);
+              login();
+              this.setState({
+                  passwordModalVisible: false,
+              });
+          },
+          error: (error) => {
+              console.log(error);
+              if (error.msg.indexOf(':') !== -1) {
+                  message.error(error.msg.split(':')[1]);
+              } else {
+                  message.error(error.msg);
+              }
+          },
+      });
+  }
   handleNoticeVisibleChange = (visible) => {
     if (visible) {
       this.props.dispatch({
@@ -208,6 +235,7 @@ class BasicLayout extends React.PureComponent {
       });
     }
   };
+
   render() {
     const {
       collapsed,
@@ -218,6 +246,7 @@ class BasicLayout extends React.PureComponent {
       location,
       currentUser,
     } = this.props;
+    const { passwordModalVisible } = this.state;
     const { permissions } = currentUser || [];
     const menuData = this.getAuthoritedMenuData(permissions);
     const redirectUrl = menuData.filter((ele) => {
@@ -265,58 +294,69 @@ class BasicLayout extends React.PureComponent {
             onMenuClick={this.handleMenuClick}
             onNoticeVisibleChange={this.handleNoticeVisibleChange}
           />
-          <Content style={{ margin: '24px 24px 0', height: '100%' }}>
-            <div style={{ minHeight: 'calc(100vh - 260px)' }}>
-              <Switch>
-                {redirectData.map(item => (
-                  <Redirect
-                    key={item.from}
-                    exact
-                    from={item.from}
-                    to={item.to}
-                  />
-                ))}
-                {getRoutes(match.path, routerData).map(item => (
-                  <AuthorizedRoute
-                    key={item.key}
-                    path={item.path}
-                    component={item.component}
-                    exact={item.exact}
-                    authority={item.authority}
-                    redirectPath="/exception/403"
-                  />
-                ))}
-                {redirectUrl.length > 0 ? (
-                  <Redirect
-                    exact
-                    from="/"
-                    to={`${redirectUrl[0].redirectPathname}`}
-                  />
-                ) : null}
-                <Route render={NotFound} />
-              </Switch>
-            </div>
-            <GlobalFooter
-              // links={[{
-              //   title: 'Pro 首页',
-              //   href: 'http://pro.ant.design',
-              //   blankTarget: true,
-              // }, {
-              //   title: 'GitHub',
-              //   href: 'https://github.com/ant-design/ant-design-pro',
-              //   blankTarget: true,
-              // }, {
-              //   title: 'Ant Design',
-              //   href: 'http://ant.design',
-              //   blankTarget: true,
-              // }]}
-              copyright={
-                <div>
-                  Copyright <Icon type="copyright" /> 2018 工业魔方
-                </div>
-              }
-            />
-          </Content>
+          {permissions ? (
+            <Content style={{ margin: '24px 24px 0', height: '100%' }}>
+              <div style={{ minHeight: 'calc(100vh - 260px)' }}>
+                <Switch>
+                  {redirectData.map(item => (
+                    <Redirect
+                      key={item.from}
+                      exact
+                      from={item.from}
+                      to={item.to}
+                    />
+                  ))}
+                  {getRoutes(match.path, routerData).map(item => (
+                    <AuthorizedRoute
+                      key={item.key}
+                      path={item.path}
+                      component={item.component}
+                      exact={item.exact}
+                      authority={item.authority}
+                      redirectPath="/exception/403"
+                    />
+                  ))}
+                  {redirectUrl.length > 0 ? (
+                    <Redirect
+                      exact
+                      from="/"
+                      to={`${redirectUrl[0].redirectPathname}`}
+                    />
+                  ) : (
+                    <Redirect exact from="/" to="product/menu" />
+                  )}
+                  <Route render={NotFound} />
+                </Switch>
+              </div>
+              <GlobalFooter
+                // links={[{
+                //   title: 'Pro 首页',
+                //   href: 'http://pro.ant.design',
+                //   blankTarget: true,
+                // }, {
+                //   title: 'GitHub',
+                //   href: 'https://github.com/ant-design/ant-design-pro',
+                //   blankTarget: true,
+                // }, {
+                //   title: 'Ant Design',
+                //   href: 'http://ant.design',
+                //   blankTarget: true,
+                // }]}
+                copyright={
+                  <div>
+                    Copyright <Icon type="copyright" /> 2018 工业魔方
+                  </div>
+                }
+              />
+              <ModifyPassword
+                passwordModalVisible={passwordModalVisible}
+                onCancel={this.onCancel}
+                modifyPasswordOk={this.modifyPasswordOk}
+              />
+            </Content>
+          ) : (
+            <Spin />
+          )}
         </Layout>
       </Layout>
     );

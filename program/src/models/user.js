@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { getSupplierInfo, getUserInfo, getSMSCode } from '../services/user';
+import { getSupplierInfo, getUserInfo, getSMSCode, modifyPassword } from '../services/user';
 import { setAuthority } from '../utils/authority';
 import {
   SUCCESS_STATUS,
@@ -30,12 +30,12 @@ export default {
         payload: response.data,
       });
       Cookies.set('userinfo', JSON.stringify(response.data), { expires: 7 });
-      // 注册客服;
-    //   Services.service.initService({
-    //     username: response.data.username,
-    //     mobile: response.data.mobile,
-    //     email: response.data.email,
-    //   });
+    //   注册客服;
+      Services.service.initService({
+        username: response.data.username,
+        mobile: response.data.mobile,
+        email: response.data.email,
+      });
       if (callback) {
           callback(response.data);
       }
@@ -45,11 +45,13 @@ export default {
       const { data } = userInfo;
       const { user_type } = data;
       if (user_type === 4) {
+          console.log(456);
         setAuthority('admin');
+        location.href = `${HOME_PAGE}/product/menu`;
       } else {
         setAuthority('3');
+        location.href = `${HOME_PAGE}`;
       }
-      location.href = `${HOME_PAGE}`;
     },
     *verify(_, { call, put }) {
       const { href } = window.location;
@@ -71,7 +73,7 @@ export default {
         }
         yield put({ type: 'changeAuthorityUrl' });
       } else {
-        window.location.href = `${LOGIN_URL}?next=${VERIFY_PAGE}&from=supplier`;
+        window.location.href = `${LOGIN_URL}?next=${VERIFY_PAGE}&from=operation`;
       }
     },
     *fetchSupplierInfo({ supplierid }, { call, put }) {
@@ -90,6 +92,15 @@ export default {
       } else if (typeof error === 'function') {
         error(response);
       }
+    },
+    *fetchModifyPassword({ params, success, error }, { call }) {
+        const res = yield call(modifyPassword, { params });
+        const { rescode } = res;
+        if (rescode >> 0 === 10000) {
+            if (success) { success(res); };
+        } else if (error) {
+            error(res);
+        }
     },
   },
 
