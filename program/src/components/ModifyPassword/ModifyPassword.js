@@ -36,7 +36,7 @@ export default class ModifyPassword extends React.Component {
     callback();
   };
   render() {
-    const { form, passwordModalVisible, onCancel } = this.props;
+    const { form, passwordModalVisible, onCancel, currentUser } = this.props;
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
@@ -56,6 +56,9 @@ export default class ModifyPassword extends React.Component {
         visible={passwordModalVisible}
       >
           <Form>
+          <FormItem label="用户名" {...formItemLayout}>
+                <span>{currentUser.username}</span>
+          </FormItem>
             <FormItem label="旧密码" {...formItemLayout}>
               {getFieldDecorator('old_password', {
                 rules: [

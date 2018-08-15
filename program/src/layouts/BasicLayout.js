@@ -352,6 +352,7 @@ class BasicLayout extends React.PureComponent {
                 passwordModalVisible={passwordModalVisible}
                 onCancel={this.onCancel}
                 modifyPasswordOk={this.modifyPasswordOk}
+                currentUser={currentUser}
               />
             </Content>
           ) : (

@@ -210,14 +210,14 @@ export default class AccountList extends React.Component {
   };
   onIsActive = (record) => {
       // 禁用或者启用帐号
-    const { dispatch, form } = this.props;
+    const { dispatch } = this.props;
     const { args, searchValues } = this.state;
     const { is_active } = record;
     const name = is_active === 0 ? '启用' : '禁用';
     const active_status = is_active === 0 ? 1 : 0;
     const that = this;
     confirm({
-      title: `您确定删除${name}${record.username}吗？`,
+      title: `您确定${name}${record.username}吗？`,
       okText: '确定',
       okType: 'primary',
       cancelText: '取消',
